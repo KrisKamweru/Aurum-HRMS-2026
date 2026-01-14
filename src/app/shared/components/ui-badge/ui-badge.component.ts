@@ -19,22 +19,22 @@ export class UiBadgeComponent {
   @Input() rounded: boolean = false;
 
   getClasses(): string {
-    const baseClasses = 'inline-flex items-center font-medium';
+    const baseClasses = 'inline-flex items-center font-semibold tracking-wide';
 
     const sizeClasses = {
-      sm: 'px-2 py-0.5 text-xs',
-      md: 'px-2.5 py-0.5 text-sm'
+      sm: 'px-2.5 py-0.5 text-[10px]',
+      md: 'px-3 py-1 text-xs'
     };
 
-    const radiusClass = this.rounded ? 'rounded-full' : 'rounded';
+    const radiusClass = this.rounded ? 'rounded-full' : 'rounded-lg';
 
     const variantClasses = {
-      success: 'bg-green-100 text-green-800',
-      warning: 'bg-yellow-100 text-yellow-800',
-      danger: 'bg-red-100 text-red-800',
-      info: 'bg-blue-100 text-blue-800',
-      neutral: 'bg-gray-100 text-gray-800',
-      primary: 'bg-rose-100 text-rose-800'
+      success: 'bg-gradient-to-br from-emerald-50 to-emerald-100 text-emerald-700 ring-1 ring-emerald-200',
+      warning: 'bg-gradient-to-br from-amber-50 to-amber-100 text-amber-700 ring-1 ring-amber-200',
+      danger: 'bg-gradient-to-br from-red-50 to-red-100 text-red-700 ring-1 ring-red-200',
+      info: 'bg-gradient-to-br from-blue-50 to-blue-100 text-blue-700 ring-1 ring-blue-200',
+      neutral: 'bg-gradient-to-br from-stone-50 to-stone-100 text-stone-600 ring-1 ring-stone-200',
+      primary: 'bg-gradient-to-br from-[#fdf2f4] to-[#fce7eb] text-[#8b1e3f] ring-1 ring-[#f9d0da]'
     };
 
     return `${baseClasses} ${sizeClasses[this.size]} ${radiusClass} ${variantClasses[this.variant]}`;

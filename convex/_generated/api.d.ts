@@ -11,6 +11,7 @@
 import type * as auth from "../auth.js";
 import type * as employees from "../employees.js";
 import type * as http from "../http.js";
+import type * as leave_requests from "../leave_requests.js";
 import type * as organization from "../organization.js";
 import type * as users from "../users.js";
 
@@ -24,6 +25,7 @@ declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   employees: typeof employees;
   http: typeof http;
+  leave_requests: typeof leave_requests;
   organization: typeof organization;
   users: typeof users;
 }>;

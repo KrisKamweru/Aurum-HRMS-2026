@@ -13,6 +13,14 @@ export const routes: Routes = [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: Dashboard },
       {
+        path: 'employees',
+        loadComponent: () => import('./features/employees/employees.component').then(m => m.EmployeesComponent)
+      },
+      {
+        path: 'leave-requests',
+        loadComponent: () => import('./features/leave-requests/leave-requests.component').then(m => m.LeaveRequestsComponent)
+      },
+      {
         path: 'organization',
         loadChildren: () => import('./features/organization/organization.routes').then(m => m.ORGANIZATION_ROUTES)
       }

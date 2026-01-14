@@ -1,6 +1,7 @@
 import { Component, computed, signal, OnInit, OnDestroy, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { ConvexClientService } from '../../core/services/convex-client.service';
 import { api } from '../../../../convex/_generated/api';
 import { Doc } from '../../../../convex/_generated/dataModel';
@@ -13,13 +14,17 @@ type Employee = Doc<'employees'>;
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, UiFormFieldComponent, UiButtonComponent, UiDataTableComponent],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, UiFormFieldComponent, UiButtonComponent, UiDataTableComponent],
+  providers: [DatePipe, DecimalPipe],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css',
 })
 export class Dashboard implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
   private convexService = inject(ConvexClientService);
+
+  // Today's date for the header
+  protected readonly today = new Date();
 
   // Real employee data from Convex
   protected readonly employees = signal<Employee[]>([]);

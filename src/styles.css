@@ -1,3 +1,587 @@
+/* Google Fonts Import - Industry Standard Sans-Serif */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
 @import "tailwindcss";
 
-/* You can add global styles to this file, and also import other style files */
+/* ========================================
+   AURUM HRMS - Refined Burgundy Design System
+   ======================================== */
+
+/* Design Tokens */
+:root {
+  /* Primary - Burgundy/Wine */
+  --burgundy-50: #fdf2f4;
+  --burgundy-100: #fce7eb;
+  --burgundy-200: #f9d0da;
+  --burgundy-300: #f4a9bc;
+  --burgundy-400: #ec7698;
+  --burgundy-500: #df4872;
+  --burgundy-600: #c92d5b;
+  --burgundy-700: #a82349;
+  --burgundy-800: #8b1e3f;
+  --burgundy-900: #722038;
+  --burgundy-950: #4a0d1f;
+
+  /* Accent - Gold (honoring "Aurum") */
+  --gold-50: #fffbeb;
+  --gold-100: #fef3c7;
+  --gold-200: #fde68a;
+  --gold-300: #fcd34d;
+  --gold-400: #fbbf24;
+  --gold-500: #f59e0b;
+  --gold-600: #d97706;
+
+  /* Neutral - Warm Stone */
+  --stone-50: #fafaf9;
+  --stone-100: #f5f5f4;
+  --stone-200: #e7e5e4;
+  --stone-300: #d6d3d1;
+  --stone-400: #a8a29e;
+  --stone-500: #78716c;
+  --stone-600: #57534e;
+  --stone-700: #44403c;
+  --stone-800: #292524;
+  --stone-900: #1c1917;
+
+  /* Semantic Colors */
+  --success: #059669;
+  --warning: #d97706;
+  --error: #dc2626;
+  --info: #2563eb;
+
+  /* Typography */
+  --font-display: 'Inter', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+
+  /* Shadows with burgundy warmth */
+  --shadow-sm: 0 1px 2px 0 rgba(139, 30, 63, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(139, 30, 63, 0.07), 0 2px 4px -2px rgba(139, 30, 63, 0.05);
+  --shadow-lg: 0 10px 15px -3px rgba(139, 30, 63, 0.08), 0 4px 6px -4px rgba(139, 30, 63, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(139, 30, 63, 0.1), 0 8px 10px -6px rgba(139, 30, 63, 0.05);
+  --shadow-glow: 0 0 40px rgba(139, 30, 63, 0.2);
+  --shadow-gold: 0 0 30px rgba(251, 191, 36, 0.15);
+
+  /* Border radius */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-bounce: 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Base Styles */
+html {
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background: linear-gradient(180deg, var(--stone-50) 0%, var(--stone-100) 100%);
+  color: var(--stone-800);
+  min-height: 100vh;
+}
+
+/* Subtle noise texture overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  opacity: 0.02;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* Typography hierarchy */
+h1, h2, h3, .heading {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--stone-900);
+}
+
+h1 { font-size: 2.25rem; line-height: 1.2; }
+h2 { font-size: 1.75rem; line-height: 1.25; }
+h3 { font-size: 1.25rem; line-height: 1.3; }
+
+/* Focus states */
+:focus-visible {
+  outline: 2px solid var(--burgundy-500);
+  outline-offset: 2px;
+}
+
+/* Selection */
+::selection {
+  background: var(--burgundy-200);
+  color: var(--burgundy-900);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--stone-100);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--burgundy-300), var(--burgundy-400));
+  border-radius: 5px;
+  border: 2px solid var(--stone-100);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, var(--burgundy-400), var(--burgundy-500));
+}
+
+/* ========================================
+   Animation Keyframes
+   ======================================== */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(24px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-24px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes pulse-burgundy {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(139, 30, 63, 0.4); }
+  50% { box-shadow: 0 0 0 12px rgba(139, 30, 63, 0); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes glow {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Animation utilities */
+.animate-fade-in {
+  animation: fadeIn var(--transition-base) ease-out forwards;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.5s ease-out forwards;
+  opacity: 0;
+}
+
+.animate-fade-in-down {
+  animation: fadeInDown 0.5s ease-out forwards;
+  opacity: 0;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.4s ease-out forwards;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.5s ease-out forwards;
+  opacity: 0;
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft 0.5s ease-out forwards;
+  opacity: 0;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Staggered animation delays */
+.stagger-1 { animation-delay: 50ms; }
+.stagger-2 { animation-delay: 100ms; }
+.stagger-3 { animation-delay: 150ms; }
+.stagger-4 { animation-delay: 200ms; }
+.stagger-5 { animation-delay: 250ms; }
+.stagger-6 { animation-delay: 300ms; }
+
+/* ========================================
+   Component Overrides & Utilities
+   ======================================== */
+
+/* Premium card styling */
+.card-premium {
+  background: white;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--stone-200);
+  position: relative;
+  overflow: hidden;
+  transition: all var(--transition-base);
+}
+
+.card-premium::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--burgundy-600), var(--burgundy-800), var(--burgundy-600));
+  background-size: 200% 100%;
+  opacity: 0;
+  transition: opacity var(--transition-base);
+}
+
+.card-premium:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.card-premium:hover::before {
+  opacity: 1;
+  animation: gradient-shift 3s ease infinite;
+}
+
+/* Glass effect card */
+.card-glass {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: var(--radius-xl);
+}
+
+/* Burgundy gradient backgrounds */
+.bg-burgundy-gradient {
+  background: linear-gradient(135deg, var(--burgundy-800), var(--burgundy-900));
+}
+
+.bg-burgundy-radial {
+  background: radial-gradient(ellipse at top right, var(--burgundy-700), var(--burgundy-900));
+}
+
+/* Gold accent line */
+.accent-line-gold {
+  position: relative;
+}
+
+.accent-line-gold::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 40px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--gold-400), var(--gold-500));
+  border-radius: 2px;
+}
+
+/* Shimmer effect for loading states */
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--stone-100) 25%,
+    var(--stone-50) 50%,
+    var(--stone-100) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Text gradients */
+.text-burgundy-gradient {
+  background: linear-gradient(135deg, var(--burgundy-600), var(--burgundy-800));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gold-gradient {
+  background: linear-gradient(135deg, var(--gold-500), var(--gold-400), var(--gold-500));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Stat card icon backgrounds */
+.stat-icon {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-icon::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.3), transparent);
+  transition: opacity var(--transition-base);
+}
+
+.stat-icon:hover::before {
+  opacity: 1;
+}
+
+.stat-icon-burgundy {
+  background: linear-gradient(135deg, var(--burgundy-100), var(--burgundy-50));
+  color: var(--burgundy-700);
+}
+
+.stat-icon-success {
+  background: linear-gradient(135deg, #d1fae5, #ecfdf5);
+  color: var(--success);
+}
+
+.stat-icon-warning {
+  background: linear-gradient(135deg, #fef3c7, #fffbeb);
+  color: var(--warning);
+}
+
+.stat-icon-info {
+  background: linear-gradient(135deg, #dbeafe, #eff6ff);
+  color: var(--info);
+}
+
+/* Input styling */
+input, select, textarea {
+  transition: all var(--transition-base);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--burgundy-500) !important;
+  box-shadow: 0 0 0 4px rgba(139, 30, 63, 0.1) !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--stone-400);
+}
+
+/* Button enhancements */
+.btn-primary {
+  background: linear-gradient(135deg, var(--burgundy-700), var(--burgundy-800));
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.btn-primary:hover::before {
+  left: 100%;
+}
+
+.btn-glow:hover {
+  box-shadow: var(--shadow-glow);
+}
+
+/* Table row hover */
+.table-row-hover {
+  transition: all var(--transition-base);
+}
+
+.table-row-hover:hover {
+  background: linear-gradient(90deg, var(--burgundy-50), transparent);
+}
+
+/* Sidebar nav item states */
+.nav-item {
+  position: relative;
+  transition: all var(--transition-base);
+}
+
+.nav-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--burgundy-600);
+  transform: scaleY(0);
+  transition: transform var(--transition-base);
+}
+
+.nav-item:hover::before,
+.nav-item-active::before {
+  transform: scaleY(1);
+}
+
+.nav-item-active {
+  background: linear-gradient(90deg, var(--burgundy-50), transparent);
+  color: var(--burgundy-800);
+}
+
+/* Logo styling */
+.logo {
+  background: linear-gradient(135deg, var(--burgundy-700), var(--burgundy-900));
+  position: relative;
+  overflow: hidden;
+}
+
+.logo::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 40%,
+    rgba(255,255,255,0.1) 50%,
+    transparent 60%
+  );
+  animation: shimmer 3s infinite;
+}
+
+/* Badge variants */
+.badge-burgundy {
+  background: linear-gradient(135deg, var(--burgundy-100), var(--burgundy-50));
+  color: var(--burgundy-800);
+  border: 1px solid var(--burgundy-200);
+}
+
+.badge-gold {
+  background: linear-gradient(135deg, var(--gold-100), var(--gold-50));
+  color: var(--gold-600);
+  border: 1px solid var(--gold-200);
+}
+
+/* Modal backdrop */
+.modal-backdrop {
+  background: rgba(28, 25, 23, 0.6);
+  backdrop-filter: blur(4px);
+}
+
+/* Toast enhancements */
+.toast {
+  border-left: 4px solid var(--burgundy-500);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Divider with flair */
+.divider-fancy {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.divider-fancy::before,
+.divider-fancy::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--stone-300), transparent);
+}
+
+/* Decorative elements */
+.decorative-circle {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--burgundy-500) 0%, transparent 70%);
+  opacity: 0.1;
+  pointer-events: none;
+}
+
+.decorative-line {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--burgundy-300), transparent);
+}
+
+/* Page transition */
+.page-enter {
+  animation: fadeInUp 0.4s ease-out forwards;
+}
+
+/* Hover effects */
+.hover-lift {
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-xl);
+}
+
+.hover-glow {
+  transition: box-shadow var(--transition-base);
+}
+
+.hover-glow:hover {
+  box-shadow: var(--shadow-glow);
+}
+
+/* Responsive utilities */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Dark mode preparation (optional) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Can add dark mode tokens here later */
+  }
+}

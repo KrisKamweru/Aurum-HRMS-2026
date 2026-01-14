@@ -30,6 +30,9 @@ import { AbstractControl, ReactiveFormsModule } from '@angular/forms';
     </div>
   `,
   styles: [`
+    :host {
+      display: block;
+    }
     .animate-slide-down {
       animation: slideDown 0.2s ease-out;
     }

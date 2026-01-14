@@ -52,3 +52,39 @@ export const updateStatus = mutation({
     await ctx.db.patch(args.id, { status: args.status });
   },
 });
+
+// Update employee details
+export const update = mutation({
+  args: {
+    id: v.id("employees"),
+    firstName: v.string(),
+    lastName: v.string(),
+    email: v.string(),
+    department: v.string(),
+    position: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const userId = await auth.getUserId(ctx);
+    if (!userId) {
+      throw new Error("Unauthorized");
+    }
+
+    const { id, ...updates } = args;
+    await ctx.db.patch(id, updates);
+  },
+});
+
+// Delete employee
+export const remove = mutation({
+  args: {
+    id: v.id("employees"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await auth.getUserId(ctx);
+    if (!userId) {
+      throw new Error("Unauthorized");
+    }
+
+    await ctx.db.delete(args.id);
+  },
+});
