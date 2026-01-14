@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { UiIconComponent } from '../../shared/components/ui-icon/ui-icon.component';
 
 @Component({
   selector: 'app-auth-layout',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, UiIconComponent],
   template: `
     <div class="min-h-screen flex">
       <!-- Left Panel - Branding -->
@@ -48,25 +49,19 @@ import { RouterOutlet } from '@angular/router';
           <div class="space-y-5 animate-fade-in-up stagger-3">
             <div class="flex items-center gap-4 text-white/80 hover:text-white transition-colors group">
               <div class="w-12 h-12 rounded-xl bg-white/10 backdrop-blur-sm border border-white/10 flex items-center justify-center group-hover:bg-white/20 transition-colors">
-                <svg class="w-6 h-6 text-amber-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                </svg>
+                <ui-icon name="users" class="w-6 h-6 text-amber-300"></ui-icon>
               </div>
               <span class="text-lg">Streamlined Employee Management</span>
             </div>
             <div class="flex items-center gap-4 text-white/80 hover:text-white transition-colors group">
               <div class="w-12 h-12 rounded-xl bg-white/10 backdrop-blur-sm border border-white/10 flex items-center justify-center group-hover:bg-white/20 transition-colors">
-                <svg class="w-6 h-6 text-amber-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
+                <ui-icon name="chart-bar" class="w-6 h-6 text-amber-300"></ui-icon>
               </div>
               <span class="text-lg">Insightful Analytics & Reports</span>
             </div>
             <div class="flex items-center gap-4 text-white/80 hover:text-white transition-colors group">
               <div class="w-12 h-12 rounded-xl bg-white/10 backdrop-blur-sm border border-white/10 flex items-center justify-center group-hover:bg-white/20 transition-colors">
-                <svg class="w-6 h-6 text-amber-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
+                <ui-icon name="lock-closed" class="w-6 h-6 text-amber-300"></ui-icon>
               </div>
               <span class="text-lg">Enterprise-Grade Security</span>
             </div>

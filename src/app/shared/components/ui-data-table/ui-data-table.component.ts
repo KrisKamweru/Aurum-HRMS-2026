@@ -2,6 +2,7 @@ import { Component, Input, Output, EventEmitter, TemplateRef, computed, signal }
 import { CommonModule, DatePipe, CurrencyPipe } from '@angular/common';
 import { UiButtonComponent } from '../ui-button/ui-button.component';
 import { UiBadgeComponent, BadgeVariant } from '../ui-badge/ui-badge.component';
+import { UiIconComponent } from '../ui-icon/ui-icon.component';
 
 export type ColumnType = 'text' | 'date' | 'currency' | 'badge';
 
@@ -23,7 +24,7 @@ export interface SortEvent {
 @Component({
   selector: 'ui-data-table',
   standalone: true,
-  imports: [CommonModule, UiButtonComponent, UiBadgeComponent],
+  imports: [CommonModule, UiButtonComponent, UiBadgeComponent, UiIconComponent],
   providers: [DatePipe, CurrencyPipe],
   template: `
     <div class="bg-white rounded-2xl shadow-lg shadow-stone-200/50 border border-stone-200 overflow-hidden">
@@ -44,17 +45,11 @@ export interface SortEvent {
                     @if (col.sortable) {
                       <div class="flex flex-col">
                         @if (sortKey() === col.key && sortDirection() === 'asc') {
-                          <svg class="w-4 h-4 text-[#8b1e3f]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
-                          </svg>
+                          <ui-icon name="chevron-up" class="w-4 h-4 text-[#8b1e3f]"></ui-icon>
                         } @else if (sortKey() === col.key && sortDirection() === 'desc') {
-                          <svg class="w-4 h-4 text-[#8b1e3f]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-                          </svg>
+                          <ui-icon name="chevron-down" class="w-4 h-4 text-[#8b1e3f]"></ui-icon>
                         } @else {
-                          <svg class="w-4 h-4 text-stone-300 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
-                          </svg>
+                          <ui-icon name="selector" class="w-4 h-4 text-stone-300 opacity-0 group-hover:opacity-100 transition-opacity"></ui-icon>
                         }
                       </div>
                     }
@@ -83,9 +78,7 @@ export interface SortEvent {
                 <td [attr.colspan]="totalColumns()" class="px-6 py-16 text-center">
                   <div class="flex flex-col items-center gap-3">
                     <div class="w-16 h-16 rounded-2xl bg-stone-100 flex items-center justify-center">
-                      <svg class="w-8 h-8 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-                      </svg>
+                      <ui-icon name="inbox" class="w-8 h-8 text-stone-400"></ui-icon>
                     </div>
                     <div>
                       <p class="text-sm font-medium text-stone-700">No data available</p>
@@ -153,9 +146,7 @@ export interface SortEvent {
                 [disabled]="page === 1"
                 (onClick)="onPageChange(page - 1)"
               >
-                <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-                </svg>
+                <ui-icon name="chevron-left" class="w-4 h-4 mr-1"></ui-icon>
                 Previous
               </ui-button>
               <ui-button
@@ -165,9 +156,7 @@ export interface SortEvent {
                 (onClick)="onPageChange(page + 1)"
               >
                 Next
-                <svg class="w-4 h-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-                </svg>
+                <ui-icon name="chevron-right" class="w-4 h-4 ml-1"></ui-icon>
               </ui-button>
             </div>
           </div>

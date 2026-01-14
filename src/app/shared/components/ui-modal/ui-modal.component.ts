@@ -1,12 +1,13 @@
 import { Component, Input, Output, EventEmitter, HostListener, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { UiIconComponent } from '../ui-icon/ui-icon.component';
 
 export type ModalSize = 'sm' | 'md' | 'lg' | 'xl' | 'full';
 
 @Component({
   selector: 'ui-modal',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, UiIconComponent],
   template: `
     @if (isOpenSignal()) {
       <div
@@ -47,9 +48,7 @@ export type ModalSize = 'sm' | 'md' | 'lg' | 'xl' | 'full';
                   (click)="closeModal()"
                 >
                   <span class="sr-only">Close</span>
-                  <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
+                  <ui-icon name="x-mark" class="h-5 w-5"></ui-icon>
                 </button>
               </div>
             </div>

@@ -6,11 +6,12 @@ import { ConvexClientService } from '../../core/services/convex-client.service';
 import { api } from '../../../../convex/_generated/api';
 import { Doc } from '../../../../convex/_generated/dataModel';
 import { UiNavItemComponent } from '../../shared/components/ui-nav-item/ui-nav-item.component';
+import { UiIconComponent } from '../../shared/components/ui-icon/ui-icon.component';
 
 @Component({
   selector: 'app-main-layout',
   standalone: true,
-  imports: [RouterOutlet, CommonModule, UiNavItemComponent],
+  imports: [RouterOutlet, CommonModule, UiNavItemComponent, UiIconComponent],
   templateUrl: './main-layout.component.html',
 })
 export class MainLayoutComponent implements OnInit {

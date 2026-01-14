@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { UiDataTableComponent, TableColumn } from '../../shared/components/ui-data-table/ui-data-table.component';
 import { UiButtonComponent } from '../../shared/components/ui-button/ui-button.component';
 import { UiModalComponent } from '../../shared/components/ui-modal/ui-modal.component';
+import { UiIconComponent } from '../../shared/components/ui-icon/ui-icon.component';
 import { DynamicFormComponent } from '../../shared/components/dynamic-form/dynamic-form.component';
 import { FieldConfig } from '../../shared/services/form-helper.service';
 import { ConvexClientService } from '../../core/services/convex-client.service';
@@ -11,7 +12,7 @@ import { api } from '../../../../convex/_generated/api';
 @Component({
   selector: 'app-leave-requests',
   standalone: true,
-  imports: [CommonModule, UiDataTableComponent, UiButtonComponent, UiModalComponent, DynamicFormComponent],
+  imports: [CommonModule, UiDataTableComponent, UiButtonComponent, UiModalComponent, UiIconComponent, DynamicFormComponent],
   template: `
     <div class="space-y-6">
       <div class="flex items-center justify-between">
@@ -20,9 +21,7 @@ import { api } from '../../../../convex/_generated/api';
           <p class="mt-1 text-stone-500">Manage employee leave applications.</p>
         </div>
         <ui-button (onClick)="openCreateModal()">
-          <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-          </svg>
+          <ui-icon name="plus" class="w-4 h-4 mr-2"></ui-icon>
           New Request
         </ui-button>
       </div>
@@ -44,18 +43,14 @@ import { api } from '../../../../convex/_generated/api';
               (click)="updateStatus(row, 'approved')"
               title="Approve"
             >
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-              </svg>
+              <ui-icon name="check" class="w-4 h-4"></ui-icon>
             </button>
             <button
               class="p-1.5 text-stone-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
               (click)="updateStatus(row, 'rejected')"
               title="Reject"
             >
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <ui-icon name="x-mark" class="w-4 h-4"></ui-icon>
             </button>
           </div>
         }

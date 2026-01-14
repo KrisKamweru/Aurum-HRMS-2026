@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { UiDataTableComponent, TableColumn } from '../../shared/components/ui-data-table/ui-data-table.component';
 import { UiButtonComponent } from '../../shared/components/ui-button/ui-button.component';
 import { UiModalComponent } from '../../shared/components/ui-modal/ui-modal.component';
+import { UiIconComponent } from '../../shared/components/ui-icon/ui-icon.component';
 import { DynamicFormComponent } from '../../shared/components/dynamic-form/dynamic-form.component';
 import { FieldConfig } from '../../shared/services/form-helper.service';
 import { ConvexClientService } from '../../core/services/convex-client.service';
@@ -11,7 +12,7 @@ import { api } from '../../../../convex/_generated/api';
 @Component({
   selector: 'app-employees',
   standalone: true,
-  imports: [CommonModule, UiDataTableComponent, UiButtonComponent, UiModalComponent, DynamicFormComponent],
+  imports: [CommonModule, UiDataTableComponent, UiButtonComponent, UiModalComponent, UiIconComponent, DynamicFormComponent],
   template: `
     <div class="space-y-6">
       <div class="flex items-center justify-between">
@@ -20,9 +21,7 @@ import { api } from '../../../../convex/_generated/api';
           <p class="mt-1 text-stone-500">Manage your workforce.</p>
         </div>
         <ui-button (onClick)="openCreateModal()">
-          <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-          </svg>
+          <ui-icon name="plus" class="w-4 h-4 mr-2"></ui-icon>
           Add Employee
         </ui-button>
       </div>
@@ -43,18 +42,14 @@ import { api } from '../../../../convex/_generated/api';
             (click)="openEditModal(row)"
             title="Edit"
           >
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-            </svg>
+            <ui-icon name="pencil" class="w-4 h-4"></ui-icon>
           </button>
           <button
             class="p-1.5 text-stone-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
             (click)="deleteEmployee(row)"
             title="Delete"
           >
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-            </svg>
+            <ui-icon name="trash" class="w-4 h-4"></ui-icon>
           </button>
         </div>
       </ng-template>

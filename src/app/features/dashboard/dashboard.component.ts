@@ -8,13 +8,14 @@ import { Doc } from '../../../../convex/_generated/dataModel';
 import { UiFormFieldComponent } from '../../shared/components/ui-form-field/ui-form-field.component';
 import { UiButtonComponent } from '../../shared/components/ui-button/ui-button.component';
 import { UiDataTableComponent, TableColumn } from '../../shared/components/ui-data-table/ui-data-table.component';
+import { UiIconComponent } from '../../shared/components/ui-icon/ui-icon.component';
 
 type Employee = Doc<'employees'>;
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, UiFormFieldComponent, UiButtonComponent, UiDataTableComponent],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, UiFormFieldComponent, UiButtonComponent, UiDataTableComponent, UiIconComponent],
   providers: [DatePipe, DecimalPipe],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css',
