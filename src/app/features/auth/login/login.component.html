@@ -1,0 +1,67 @@
+<div class="space-y-6">
+  <div>
+    <h3 class="text-lg font-medium text-gray-900">Sign in to your account</h3>
+    <p class="mt-1 text-sm text-gray-500">
+      Or <a routerLink="/auth/register" class="font-medium text-rose-800 hover:text-rose-700">create a new account</a>
+    </p>
+  </div>
+
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6">
+    @if (error()) {
+      <div class="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm">
+        {{ error() }}
+      </div>
+    }
+
+    <ui-form-field label="Email address" [control]="loginForm.get('email')">
+      <input
+        type="email"
+        id="email"
+        formControlName="email"
+        class="block w-full rounded-md border-gray-300 shadow-sm focus:border-rose-500 focus:ring-rose-500 sm:text-sm px-3 py-2 border"
+        [class.border-red-300]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
+        placeholder="Enter your email"
+      />
+    </ui-form-field>
+
+    <ui-form-field label="Password" [control]="loginForm.get('password')">
+      <input
+        type="password"
+        id="password"
+        formControlName="password"
+        class="block w-full rounded-md border-gray-300 shadow-sm focus:border-rose-500 focus:ring-rose-500 sm:text-sm px-3 py-2 border"
+        [class.border-red-300]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+        placeholder="Enter your password"
+      />
+    </ui-form-field>
+
+    <div class="flex items-center justify-between">
+      <div class="flex items-center">
+        <input
+          id="remember-me"
+          name="remember-me"
+          type="checkbox"
+          class="h-4 w-4 text-rose-800 focus:ring-rose-800 border-gray-300 rounded"
+        />
+        <label for="remember-me" class="ml-2 block text-sm text-gray-900">
+          Remember me
+        </label>
+      </div>
+
+      <div class="text-sm">
+        <a href="#" class="font-medium text-rose-800 hover:text-rose-700">
+          Forgot your password?
+        </a>
+      </div>
+    </div>
+
+    <ui-button
+      type="submit"
+      [loading]="isLoading()"
+      [disabled]="loginForm.invalid || isLoading()"
+      [fullWidth]="true"
+    >
+      Sign in
+    </ui-button>
+  </form>
+</div>

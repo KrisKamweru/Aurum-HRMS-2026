@@ -1,0 +1,58 @@
+<div class="space-y-6">
+  <div>
+    <h3 class="text-lg font-medium text-gray-900">Create a new account</h3>
+    <p class="mt-1 text-sm text-gray-500">
+      Already have an account? <a routerLink="/auth/login" class="font-medium text-rose-800 hover:text-rose-700">Sign in</a>
+    </p>
+  </div>
+
+  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="space-y-6">
+    @if (error()) {
+      <div class="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm">
+        {{ error() }}
+      </div>
+    }
+
+    <ui-form-field label="Full Name" [control]="registerForm.get('name')">
+      <input
+        type="text"
+        id="name"
+        formControlName="name"
+        class="block w-full rounded-md border-gray-300 shadow-sm focus:border-rose-500 focus:ring-rose-500 sm:text-sm px-3 py-2 border"
+        [class.border-red-300]="registerForm.get('name')?.invalid && registerForm.get('name')?.touched"
+        placeholder="Enter your full name"
+      />
+    </ui-form-field>
+
+    <ui-form-field label="Email address" [control]="registerForm.get('email')">
+      <input
+        type="email"
+        id="email"
+        formControlName="email"
+        class="block w-full rounded-md border-gray-300 shadow-sm focus:border-rose-500 focus:ring-rose-500 sm:text-sm px-3 py-2 border"
+        [class.border-red-300]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched"
+        placeholder="Enter your email"
+      />
+    </ui-form-field>
+
+    <ui-form-field label="Password" [control]="registerForm.get('password')" hint="Must be at least 8 characters">
+      <input
+        type="password"
+        id="password"
+        formControlName="password"
+        class="block w-full rounded-md border-gray-300 shadow-sm focus:border-rose-500 focus:ring-rose-500 sm:text-sm px-3 py-2 border"
+        [class.border-red-300]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched"
+        placeholder="Create a password"
+      />
+    </ui-form-field>
+
+    <ui-button
+      type="submit"
+      [loading]="isLoading()"
+      [disabled]="registerForm.invalid || isLoading()"
+      [fullWidth]="true"
+    >
+      Create account
+    </ui-button>
+  </form>
+</div>

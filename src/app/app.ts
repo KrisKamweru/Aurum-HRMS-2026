@@ -1,12 +1,11 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { UiToastComponent } from './shared/components/ui-toast/ui-toast.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, UiToastComponent],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
-export class App {
-  protected readonly title = signal('aurum-hrms');
-}
+export class App {}
