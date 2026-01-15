@@ -164,7 +164,8 @@ export class EmployeesComponent implements OnInit, OnDestroy {
           lastName: formData.lastName,
           email: formData.email,
           department: formData.department,
-          position: formData.position
+          position: formData.position,
+          startDate: formData.startDate
         });
 
         // Update status separately if needed, or update mutation to handle it

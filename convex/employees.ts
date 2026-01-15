@@ -62,6 +62,7 @@ export const update = mutation({
     email: v.string(),
     department: v.string(),
     position: v.string(),
+    startDate: v.string(),
   },
   handler: async (ctx, args) => {
     const userId = await auth.getUserId(ctx);
