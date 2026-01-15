@@ -7,6 +7,7 @@ import { UiIconComponent } from '../../shared/components/ui-icon/ui-icon.compone
 import { DynamicFormComponent } from '../../shared/components/dynamic-form/dynamic-form.component';
 import { FieldConfig } from '../../shared/services/form-helper.service';
 import { ConvexClientService } from '../../core/services/convex-client.service';
+import { ToastService } from '../../shared/services/toast.service';
 import { api } from '../../../../convex/_generated/api';
 
 @Component({
@@ -17,8 +18,8 @@ import { api } from '../../../../convex/_generated/api';
     <div class="space-y-6">
       <div class="flex items-center justify-between">
         <div>
-          <h2 class="text-3xl font-bold text-stone-900">Leave Requests</h2>
-          <p class="mt-1 text-stone-500">Manage employee leave applications.</p>
+          <h1 class="heading-accent">Leave Requests</h1>
+          <p class="mt-3 text-stone-500">Manage employee leave applications.</p>
         </div>
         <ui-button (onClick)="openCreateModal()">
           <ui-icon name="plus" class="w-4 h-4 mr-2"></ui-icon>
@@ -26,14 +27,12 @@ import { api } from '../../../../convex/_generated/api';
         </ui-button>
       </div>
 
-      <div class="bg-white rounded-2xl shadow-lg shadow-stone-200/50 border border-stone-200 overflow-hidden">
-        <ui-data-table
+      <ui-data-table
           [data]="requests()"
           [columns]="columns"
           [loading]="loading()"
           [actionsTemplate]="actionsRef"
         ></ui-data-table>
-      </div>
 
       <ng-template #actionsRef let-row>
         @if (row.status === 'pending') {
@@ -75,6 +74,7 @@ import { api } from '../../../../convex/_generated/api';
 })
 export class LeaveRequestsComponent implements OnInit, OnDestroy {
   private convexService = inject(ConvexClientService);
+  private toastService = inject(ToastService);
 
   requests = signal<any[]>([]);
   employees = signal<any[]>([]);
@@ -192,8 +192,10 @@ export class LeaveRequestsComponent implements OnInit, OnDestroy {
         reason: formData.reason
       });
       this.showModal.set(false);
+      this.toastService.success('Leave request submitted successfully');
     } catch (error) {
       console.error('Error creating leave request:', error);
+      this.toastService.error('Failed to submit leave request. Please try again.');
     } finally {
       this.submitting.set(false);
     }
@@ -208,8 +210,10 @@ export class LeaveRequestsComponent implements OnInit, OnDestroy {
         id: row._id,
         status
       });
+      this.toastService.success(`Leave request ${status} successfully`);
     } catch (error) {
       console.error('Error updating status:', error);
+      this.toastService.error(`Failed to ${status} request. Please try again.`);
     }
   }
 }

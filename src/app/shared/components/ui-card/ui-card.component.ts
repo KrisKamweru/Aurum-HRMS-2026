@@ -6,16 +6,16 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden h-full flex flex-col">
+    <div [class]="getContainerClasses()">
       <!-- Header -->
       @if (title || subtitle || hasHeaderActions) {
-        <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+        <div class="px-6 py-4 border-b border-stone-100 flex items-center justify-between" [class.bg-stone-50]="variant === 'default'">
           <div>
             @if (title) {
-              <h3 class="text-lg font-semibold text-gray-900">{{ title }}</h3>
+              <h3 class="text-lg font-bold text-stone-900">{{ title }}</h3>
             }
             @if (subtitle) {
-              <p class="text-sm text-gray-500 mt-0.5">{{ subtitle }}</p>
+              <p class="text-sm text-stone-500 mt-0.5">{{ subtitle }}</p>
             }
           </div>
           <div class="flex items-center gap-2">
@@ -31,19 +31,38 @@ import { CommonModule } from '@angular/common';
 
       <!-- Footer -->
       @if (hasFooter) {
-        <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
+        <div class="px-6 py-4 bg-stone-50 border-t border-stone-100">
           <ng-content select="[footer]"></ng-content>
         </div>
       }
     </div>
-  `
+  `,
+  styles: [`
+    :host {
+      display: block;
+    }
+  `]
 })
 export class UiCardComponent {
   @Input() title?: string;
   @Input() subtitle?: string;
   @Input() padding: 'none' | 'sm' | 'md' | 'lg' = 'md';
-  @Input() hasHeaderActions = false; // Manually trigger header if only actions present
+  @Input() variant: 'default' | 'premium' | 'glass' | 'outlined' = 'default';
+  @Input() hasHeaderActions = false;
   @Input() hasFooter = false;
+
+  getContainerClasses(): string {
+    const baseClasses = 'overflow-hidden h-full flex flex-col transition-all duration-300';
+
+    const variants = {
+      default: 'bg-white rounded-2xl shadow-sm border border-stone-200',
+      premium: 'card-premium',
+      glass: 'card-glass',
+      outlined: 'bg-white rounded-2xl border border-stone-200'
+    };
+
+    return `${baseClasses} ${variants[this.variant]}`;
+  }
 
   bodyClasses(): string {
     const paddings = {

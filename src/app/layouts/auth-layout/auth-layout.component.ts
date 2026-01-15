@@ -1,12 +1,16 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { UiIconComponent } from '../../shared/components/ui-icon/ui-icon.component';
+import { UiToastComponent } from '../../shared/components/ui-toast/ui-toast.component';
 
 @Component({
   selector: 'app-auth-layout',
-  imports: [RouterOutlet, UiIconComponent],
+  imports: [RouterOutlet, UiIconComponent, UiToastComponent],
   template: `
     <div class="min-h-screen flex">
+      <!-- Global Toast Container -->
+      <ui-toast></ui-toast>
+
       <!-- Left Panel - Branding -->
       <div class="hidden lg:flex lg:w-1/2 relative overflow-hidden">
         <!-- Background gradient -->

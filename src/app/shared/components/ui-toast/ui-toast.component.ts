@@ -35,11 +35,11 @@ import { Toast, ToastService } from '../../services/toast.service';
                 }
               </div>
               <div class="ml-3 w-0 flex-1 pt-0.5">
-                <p class="text-sm font-medium text-gray-900">{{ toast.message }}</p>
+                <p class="text-sm font-medium text-stone-900">{{ toast.message }}</p>
               </div>
               <div class="ml-4 flex-shrink-0 flex">
                 <button
-                  class="bg-white rounded-md inline-flex text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500"
+                  class="bg-white rounded-md inline-flex text-stone-400 hover:text-stone-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#8b1e3f]"
                   (click)="toastService.remove(toast.id)"
                 >
                   <span class="sr-only">Close</span>

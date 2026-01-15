@@ -30,13 +30,13 @@ export interface SortEvent {
     <div class="bg-white rounded-2xl shadow-lg shadow-stone-200/50 border border-stone-200 overflow-hidden">
       <div class="overflow-x-auto">
         <table class="w-full text-left text-sm">
-          <thead class="bg-gradient-to-b from-stone-50 to-stone-100 border-b border-stone-200">
+          <thead class="bg-[#fdf2f4] border-b border-[#f9d0da]">
             <tr>
               @for (col of columns; track col.key) {
                 <th
-                  class="px-6 py-4 text-xs font-bold text-stone-500 uppercase tracking-wider whitespace-nowrap"
+                  class="px-6 py-4 text-xs font-bold text-[#8b1e3f] uppercase tracking-wider whitespace-nowrap"
                   [class.cursor-pointer]="col.sortable"
-                  [class.hover:text-stone-700]="col.sortable"
+                  [class.hover:text-[#722038]]="col.sortable"
                   [style.width]="col.width"
                   (click)="handleSort(col)"
                 >

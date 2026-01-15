@@ -74,7 +74,7 @@ export class UiAvatarComponent {
   });
 
   protected containerClasses = computed(() => {
-    const base = 'relative inline-flex items-center justify-center rounded-full bg-gray-200 text-gray-600 overflow-hidden ring-2 ring-white';
+    const base = 'relative inline-flex items-center justify-center rounded-full bg-stone-100 text-stone-600 overflow-hidden ring-2 ring-white border border-stone-200 shadow-sm';
 
     const sizes = {
       xs: 'w-6 h-6',
@@ -111,10 +111,10 @@ export class UiAvatarComponent {
     };
 
     const colors = {
-      online: 'bg-green-400',
-      offline: 'bg-gray-300',
-      busy: 'bg-red-400',
-      away: 'bg-yellow-400'
+      online: 'bg-emerald-400 ring-white',
+      offline: 'bg-stone-300 ring-white',
+      busy: 'bg-red-400 ring-white',
+      away: 'bg-amber-400 ring-white'
     };
 
     const status = this.statusSignal();

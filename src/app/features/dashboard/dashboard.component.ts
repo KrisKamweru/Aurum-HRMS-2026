@@ -8,14 +8,16 @@ import { Doc } from '../../../../convex/_generated/dataModel';
 import { UiFormFieldComponent } from '../../shared/components/ui-form-field/ui-form-field.component';
 import { UiButtonComponent } from '../../shared/components/ui-button/ui-button.component';
 import { UiDataTableComponent, TableColumn } from '../../shared/components/ui-data-table/ui-data-table.component';
+import { UiCardComponent } from '../../shared/components/ui-card/ui-card.component';
 import { UiIconComponent } from '../../shared/components/ui-icon/ui-icon.component';
+import { ToastService } from '../../shared/services/toast.service';
 
 type Employee = Doc<'employees'>;
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, UiFormFieldComponent, UiButtonComponent, UiDataTableComponent, UiIconComponent],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, UiFormFieldComponent, UiButtonComponent, UiDataTableComponent, UiIconComponent, UiCardComponent],
   providers: [DatePipe, DecimalPipe],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css',
@@ -23,6 +25,7 @@ type Employee = Doc<'employees'>;
 export class Dashboard implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
   private convexService = inject(ConvexClientService);
+  private toastService = inject(ToastService);
 
   // Today's date for the header
   protected readonly today = new Date();
@@ -107,8 +110,10 @@ export class Dashboard implements OnInit, OnDestroy {
 
         // Reset form
         this.newEmployeeForm.reset();
+        this.toastService.success('Employee added successfully');
       } catch (error) {
         console.error('Failed to create employee:', error);
+        this.toastService.error('Failed to create employee. Please try again.');
       } finally {
         this.isSubmitting.set(false);
       }

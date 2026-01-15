@@ -78,10 +78,22 @@
 
   <!-- Mobile header & Content -->
   <div class="flex-1 flex flex-col md:pl-72 min-h-screen">
+    <!-- Global Toast Container -->
+    <ui-toast></ui-toast>
+
     <!-- Mobile header -->
     <div class="sticky top-0 z-10 flex-shrink-0 flex h-16 bg-white/80 backdrop-blur-lg shadow-sm border-b border-stone-100 md:hidden">
       <div class="flex-1 px-4 flex justify-between items-center">
         <div class="flex items-center gap-3">
+          <button
+            type="button"
+            class="-ml-2 p-2 rounded-md text-stone-400 hover:text-stone-500 hover:bg-stone-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#8b1e3f]"
+            (click)="toggleSidebar()"
+          >
+            <span class="sr-only">Open sidebar</span>
+            <ui-icon name="menu" class="h-6 w-6" *ngIf="!isSidebarOpen()"></ui-icon>
+            <ui-icon name="x-mark" class="h-6 w-6" *ngIf="isSidebarOpen()"></ui-icon>
+          </button>
           <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-[#8b1e3f] to-[#722038] flex items-center justify-center">
             <span class="text-amber-300 font-bold text-sm">A</span>
           </div>
@@ -92,6 +104,107 @@
         </button>
       </div>
     </div>
+
+    <!-- Mobile Sidebar Backdrop & Drawer -->
+    @if (isSidebarOpen()) {
+      <div class="fixed inset-0 z-40 flex md:hidden" role="dialog" aria-modal="true">
+        <!-- Backdrop -->
+        <div
+          class="fixed inset-0 bg-stone-900/60 backdrop-blur-sm transition-opacity opacity-100"
+          (click)="toggleSidebar()"
+        ></div>
+
+        <!-- Sidebar Panel -->
+        <div class="relative flex-1 flex flex-col max-w-xs w-full bg-white transition-transform transform translate-x-0">
+          <div class="absolute top-0 right-0 -mr-12 pt-2">
+            <button
+              type="button"
+              class="ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+              (click)="toggleSidebar()"
+            >
+              <span class="sr-only">Close sidebar</span>
+              <ui-icon name="x-mark" class="h-6 w-6 text-white"></ui-icon>
+            </button>
+          </div>
+
+          <!-- Logo -->
+          <div class="flex items-center gap-3 h-20 px-6 border-b border-stone-100">
+            <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-[#8b1e3f] to-[#722038] flex items-center justify-center shadow-md shadow-[#8b1e3f]/20 relative overflow-hidden logo">
+              <span class="relative text-amber-300 font-bold text-xl">A</span>
+            </div>
+            <div>
+              <h1 class="text-xl font-bold text-stone-900">Aurum</h1>
+              <p class="text-xs text-stone-500 -mt-0.5">HRMS</p>
+            </div>
+          </div>
+
+          <!-- Navigation -->
+          <div class="flex-1 h-0 pt-5 pb-4 overflow-y-auto px-4">
+            <nav class="space-y-1">
+              <!-- Main section -->
+              <p class="px-3 text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-3">Main</p>
+
+              <ui-nav-item route="/dashboard" [exact]="true" (click)="toggleSidebar()">
+                <ui-icon icon name="dashboard" class="w-5 h-5 text-stone-400 group-hover:text-[#8b1e3f] group-[.nav-active]:text-[#8b1e3f] transition-colors"></ui-icon>
+                Dashboard
+              </ui-nav-item>
+
+              <ui-nav-item route="/employees" (click)="toggleSidebar()">
+                <ui-icon icon name="users" class="w-5 h-5 text-stone-400 group-hover:text-[#8b1e3f] group-[.nav-active]:text-[#8b1e3f] transition-colors"></ui-icon>
+                Employees
+              </ui-nav-item>
+
+              <ui-nav-item route="/leave-requests" (click)="toggleSidebar()">
+                <ui-icon icon name="calendar" class="w-5 h-5 text-stone-400 group-hover:text-[#8b1e3f] group-[.nav-active]:text-[#8b1e3f] transition-colors"></ui-icon>
+                Leave Requests
+              </ui-nav-item>
+
+              <!-- Organization section -->
+              <div class="pt-6 pb-2">
+                <p class="px-3 text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-3">Organization</p>
+              </div>
+
+              <ui-nav-item route="/organization/departments" (click)="toggleSidebar()">
+                <ui-icon icon name="building-office" class="w-5 h-5 text-stone-400 group-hover:text-[#8b1e3f] group-[.nav-active]:text-[#8b1e3f] transition-colors"></ui-icon>
+                Departments
+              </ui-nav-item>
+
+              <ui-nav-item route="/organization/designations" (click)="toggleSidebar()">
+                <ui-icon icon name="badge-check" class="w-5 h-5 text-stone-400 group-hover:text-[#8b1e3f] group-[.nav-active]:text-[#8b1e3f] transition-colors"></ui-icon>
+                Designations
+              </ui-nav-item>
+
+              <ui-nav-item route="/organization/locations" (click)="toggleSidebar()">
+                <ui-icon icon name="map-pin" class="w-5 h-5 text-stone-400 group-hover:text-[#8b1e3f] group-[.nav-active]:text-[#8b1e3f] transition-colors"></ui-icon>
+                Locations
+              </ui-nav-item>
+            </nav>
+          </div>
+
+          <!-- User Profile -->
+          <div class="border-t border-stone-100 p-4 bg-stone-50">
+            <div class="flex items-center gap-3 p-3 rounded-xl hover:bg-stone-100 transition-colors cursor-pointer group">
+              <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#fce7eb] to-[#fdf2f4] flex items-center justify-center text-[#8b1e3f] font-semibold text-sm border border-[#f9d0da] group-hover:shadow-md transition-shadow">
+                {{ user()?.name?.charAt(0) || user()?.email?.charAt(0) || '?' }}
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-stone-800 truncate">
+                  {{ user()?.name || 'User' }}
+                </p>
+                <button (click)="logout()" class="text-xs text-stone-500 hover:text-[#8b1e3f] transition-colors">
+                  Sign out
+                </button>
+              </div>
+              <ui-icon name="user-settings" class="w-5 h-5 text-stone-400 group-hover:text-[#8b1e3f] transition-colors"></ui-icon>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex-shrink-0 w-14">
+          <!-- Force sidebar to shrink to fit close icon -->
+        </div>
+      </div>
+    }
 
     <!-- Main content -->
     <main class="flex-1 py-8 px-4 sm:px-6 lg:px-10">

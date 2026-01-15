@@ -1,7 +1,8 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UiDataTableComponent, TableColumn, SortEvent } from '../../../shared/components/ui-data-table/ui-data-table.component';
 import { UiButtonComponent } from '../../../shared/components/ui-button/ui-button.component';
+import { ToastService } from '../../../shared/services/toast.service';
 
 @Component({
   selector: 'app-tables-demo',
@@ -38,6 +39,7 @@ import { UiButtonComponent } from '../../../shared/components/ui-button/ui-butto
   `
 })
 export class TablesDemoComponent {
+  private toastService = inject(ToastService);
   loading = signal(false);
 
   columns: TableColumn[] = [
@@ -59,29 +61,31 @@ export class TablesDemoComponent {
   ]);
 
   onSort(event: SortEvent) {
-    console.log('Sort:', event);
     // In a real app, this would trigger a data fetch or local sort
     const direction = event.direction === 'asc' ? 1 : -1;
     this.users.update(users => [...users].sort((a: any, b: any) => {
       return a[event.key] > b[event.key] ? direction : -direction;
     }));
+    this.toastService.info(`Sorted by ${event.key} ${event.direction}`);
   }
 
   onPage(page: number) {
-    console.log('Page:', page);
     this.loading.set(true);
-    setTimeout(() => this.loading.set(false), 500); // Simulate fetch
+    setTimeout(() => {
+      this.loading.set(false);
+      this.toastService.info(`Loaded page ${page}`);
+    }, 500); // Simulate fetch
   }
 
   onRowClick(row: any) {
-    console.log('Row clicked:', row);
+    this.toastService.info(`Clicked row: ${row.name}`);
   }
 
   onEdit(row: any) {
-    console.log('Edit:', row);
+    this.toastService.success(`Editing ${row.name}`);
   }
 
   onDelete(row: any) {
-    console.log('Delete:', row);
+    this.toastService.error(`Deleted ${row.name}`);
   }
 }

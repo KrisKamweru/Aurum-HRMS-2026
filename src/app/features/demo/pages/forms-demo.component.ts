@@ -6,6 +6,7 @@ import { UiFormFieldComponent } from '../../../shared/components/ui-form-field/u
 import { UiButtonComponent } from '../../../shared/components/ui-button/ui-button.component';
 import { DynamicFormComponent } from '../../../shared/components/dynamic-form/dynamic-form.component';
 import { FieldConfig } from '../../../shared/services/form-helper.service';
+import { ToastService } from '../../../shared/services/toast.service';
 
 @Component({
   selector: 'app-forms-demo',
@@ -65,6 +66,7 @@ import { FieldConfig } from '../../../shared/services/form-helper.service';
 })
 export class FormsDemoComponent {
   private fb = inject(FormBuilder);
+  private toastService = inject(ToastService);
 
   // Manual Form
   manualForm = this.fb.group({
@@ -74,9 +76,10 @@ export class FormsDemoComponent {
 
   onManualSubmit() {
     if (this.manualForm.valid) {
-      alert('Manual Form Valid: ' + JSON.stringify(this.manualForm.value));
+      this.toastService.success('Manual Form Valid: ' + JSON.stringify(this.manualForm.value));
     } else {
       this.manualForm.markAllAsTouched();
+      this.toastService.error('Please fix form errors');
     }
   }
 
@@ -116,10 +119,10 @@ export class FormsDemoComponent {
   ];
 
   onDynamicSubmit(data: any) {
-    alert('Dynamic Form Data: ' + JSON.stringify(data));
+    this.toastService.success('Dynamic Form Data: ' + JSON.stringify(data));
   }
 
   onDynamicCancel() {
-    alert('Dynamic Form Cancelled');
+    this.toastService.info('Dynamic Form Cancelled');
   }
 }

@@ -7,6 +7,7 @@ import { UiIconComponent } from '../../../shared/components/ui-icon/ui-icon.comp
 import { DynamicFormComponent } from '../../../shared/components/dynamic-form/dynamic-form.component';
 import { FieldConfig } from '../../../shared/services/form-helper.service';
 import { ConvexClientService } from '../../../core/services/convex-client.service';
+import { ToastService } from '../../../shared/services/toast.service';
 import { api } from '../../../../../convex/_generated/api';
 import { Id } from '../../../../../convex/_generated/dataModel';
 
@@ -18,8 +19,8 @@ import { Id } from '../../../../../convex/_generated/dataModel';
     <div class="space-y-6">
       <div class="flex items-center justify-between">
         <div>
-          <h2 class="text-3xl font-bold text-stone-900">Departments</h2>
-          <p class="mt-1 text-stone-500">Manage organizational departments.</p>
+          <h1 class="heading-accent">Departments</h1>
+          <p class="mt-3 text-stone-500">Manage organizational departments.</p>
         </div>
         <ui-button (onClick)="openCreateModal()">
           <ui-icon name="plus" class="w-4 h-4 mr-2"></ui-icon>
@@ -27,14 +28,12 @@ import { Id } from '../../../../../convex/_generated/dataModel';
         </ui-button>
       </div>
 
-      <div class="bg-white rounded-2xl shadow-lg shadow-stone-200/50 border border-stone-200 overflow-hidden">
-        <ui-data-table
+      <ui-data-table
           [data]="departments()"
           [columns]="columns"
           [loading]="loading()"
           [actionsTemplate]="actionsRef"
         ></ui-data-table>
-      </div>
 
       <ng-template #actionsRef let-row>
         <div class="flex gap-2 justify-end">
@@ -74,6 +73,7 @@ import { Id } from '../../../../../convex/_generated/dataModel';
 })
 export class DepartmentsComponent implements OnInit, OnDestroy {
   private convexService = inject(ConvexClientService);
+  private toastService = inject(ToastService);
 
   departments = signal<any[]>([]);
   loading = signal(true);
@@ -129,18 +129,6 @@ export class DepartmentsComponent implements OnInit, OnDestroy {
 
     try {
       if (this.isEditing()) {
-        const originalRow = this.departments().find(d => d.code === this.currentDepartment().code); // Hacky find since I didn't store ID in currentDepartment properly?
-        // Wait, openEditModal sets currentDepartment to a copy of fields. I need the ID.
-        // Let's fix openEditModal to store the full row or at least the ID.
-      }
-
-      // Actually, let's fix the logic below
-      if (this.isEditing()) {
-        // Need to find the original ID.
-        // Best approach: Store the whole row in currentDepartment, but pass sanitized values to dynamic form?
-        // Dynamic form takes initialValues.
-        // I will find the ID from the `departments` signal based on the current context or just store it.
-        // Better: openEditModal(row) -> currentDepartment.set(row).
         const id = this.currentDepartment()._id;
 
         await client.mutation(api.organization.updateDepartment, {
@@ -157,9 +145,10 @@ export class DepartmentsComponent implements OnInit, OnDestroy {
         });
       }
       this.showModal.set(false);
+      this.toastService.success(this.isEditing() ? 'Department updated successfully' : 'Department created successfully');
     } catch (error) {
       console.error('Error saving department:', error);
-      // Ideally show toast here
+      this.toastService.error('Failed to save department. Please try again.');
     } finally {
       this.submitting.set(false);
     }
@@ -171,8 +160,10 @@ export class DepartmentsComponent implements OnInit, OnDestroy {
     try {
       const client = this.convexService.getClient();
       await client.mutation(api.organization.deleteDepartment, { id: row._id });
+      this.toastService.success('Department deleted successfully');
     } catch (error) {
       console.error('Error deleting department:', error);
+      this.toastService.error('Failed to delete department. Please try again.');
     }
   }
 }

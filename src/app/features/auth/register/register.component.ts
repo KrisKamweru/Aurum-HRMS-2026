@@ -5,6 +5,7 @@ import { UiFormFieldComponent } from '../../../shared/components/ui-form-field/u
 import { UiButtonComponent } from '../../../shared/components/ui-button/ui-button.component';
 import { UiIconComponent } from '../../../shared/components/ui-icon/ui-icon.component';
 import { AuthService } from '../../../core/auth/auth.service';
+import { ToastService } from '../../../shared/services/toast.service';
 
 @Component({
   selector: 'app-register',
@@ -15,6 +16,7 @@ import { AuthService } from '../../../core/auth/auth.service';
 export class RegisterComponent {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
+  private toastService = inject(ToastService);
 
   protected registerForm = this.fb.group({
     name: ['', [Validators.required]],
@@ -32,8 +34,11 @@ export class RegisterComponent {
 
       try {
         await this.authService.register(this.registerForm.value);
+        this.toastService.success('Account created successfully!');
       } catch (err: any) {
-        this.error.set(err.message || 'Registration failed. Please try again.');
+        const errorMessage = err.message || 'Registration failed. Please try again.';
+        this.error.set(errorMessage);
+        this.toastService.error(errorMessage);
         console.error(err);
       } finally {
         this.isLoading.set(false);

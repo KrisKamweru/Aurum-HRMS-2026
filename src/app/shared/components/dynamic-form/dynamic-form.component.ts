@@ -25,7 +25,7 @@ import { UiButtonComponent } from '../ui-button/ui-button.component';
               <select
                 [id]="field.name"
                 [formControlName]="field.name"
-                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-rose-500 focus:ring-rose-500 sm:text-sm px-3 py-2 border"
+                class="block w-full rounded-xl border-stone-200 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-3 py-2 border transition-colors duration-200 bg-stone-50/50 focus:bg-white"
                 [class.border-red-300]="isInvalid(field.name)"
                 [class.focus:border-red-500]="isInvalid(field.name)"
                 [class.focus:ring-red-500]="isInvalid(field.name)"
@@ -44,7 +44,7 @@ import { UiButtonComponent } from '../ui-button/ui-button.component';
                 [formControlName]="field.name"
                 [placeholder]="field.placeholder || ''"
                 rows="4"
-                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-rose-500 focus:ring-rose-500 sm:text-sm px-3 py-2 border"
+                class="block w-full rounded-xl border-stone-200 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-3 py-2 border transition-colors duration-200 bg-stone-50/50 focus:bg-white"
                 [class.border-red-300]="isInvalid(field.name)"
               ></textarea>
             }
@@ -56,9 +56,9 @@ import { UiButtonComponent } from '../ui-button/ui-button.component';
                   [id]="field.name"
                   type="checkbox"
                   [formControlName]="field.name"
-                  class="h-4 w-4 rounded border-gray-300 text-rose-600 focus:ring-rose-500"
+                  class="h-4 w-4 rounded border-stone-200 text-[#8b1e3f] focus:ring-[#8b1e3f] transition-colors"
                 />
-                <label [for]="field.name" class="ml-2 block text-sm text-gray-900">
+                <label [for]="field.name" class="ml-2 block text-sm text-stone-900 font-medium">
                   {{ field.placeholder || field.label }}
                 </label>
               </div>
@@ -71,7 +71,7 @@ import { UiButtonComponent } from '../ui-button/ui-button.component';
                 [type]="field.type"
                 [formControlName]="field.name"
                 [placeholder]="field.placeholder || ''"
-                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-rose-500 focus:ring-rose-500 sm:text-sm px-3 py-2 border"
+                class="block w-full rounded-xl border-stone-200 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-3 py-2 border transition-colors duration-200 bg-stone-50/50 focus:bg-white"
                 [class.border-red-300]="isInvalid(field.name)"
               />
             }

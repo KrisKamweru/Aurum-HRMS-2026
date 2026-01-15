@@ -1,10 +1,12 @@
-/* Google Fonts Import - Industry Standard Sans-Serif */
+/* Google Fonts Import - Clean Professional Sans-Serif */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 @import "tailwindcss";
 
 /* ========================================
-   AURUM HRMS - Refined Burgundy Design System
+   AURUM HRMS - Professional Design System
+   Typography: Inter
+   Theme: Burgundy & Gold with Warm Stone neutrals
    ======================================== */
 
 /* Design Tokens */
@@ -49,7 +51,7 @@
   --error: #dc2626;
   --info: #2563eb;
 
-  /* Typography */
+  /* Typography - Clean Sans-Serif */
   --font-display: 'Inter', system-ui, sans-serif;
   --font-body: 'Inter', system-ui, sans-serif;
 
@@ -102,7 +104,7 @@ body::before {
 /* Typography hierarchy */
 h1, h2, h3, .heading {
   font-family: var(--font-display);
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: -0.02em;
   color: var(--stone-900);
 }
@@ -468,11 +470,22 @@ textarea::placeholder {
   color: var(--burgundy-800);
 }
 
-/* Logo styling */
+/* Logo styling with gold accent */
 .logo {
   background: linear-gradient(135deg, var(--burgundy-700), var(--burgundy-900));
   position: relative;
   overflow: hidden;
+}
+
+.logo::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold-400), transparent);
+  opacity: 0.6;
 }
 
 .logo::after {
@@ -485,10 +498,27 @@ textarea::placeholder {
   background: linear-gradient(
     45deg,
     transparent 40%,
-    rgba(255,255,255,0.1) 50%,
+    rgba(251, 191, 36, 0.15) 50%,
     transparent 60%
   );
   animation: shimmer 3s infinite;
+}
+
+/* Gold accent underline for headings */
+.heading-accent {
+  position: relative;
+  display: inline-block;
+}
+
+.heading-accent::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 48px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--gold-400), var(--gold-500));
+  border-radius: 2px;
 }
 
 /* Badge variants */

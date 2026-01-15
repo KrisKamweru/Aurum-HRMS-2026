@@ -7,6 +7,7 @@ import { UiIconComponent } from '../../../shared/components/ui-icon/ui-icon.comp
 import { DynamicFormComponent } from '../../../shared/components/dynamic-form/dynamic-form.component';
 import { FieldConfig } from '../../../shared/services/form-helper.service';
 import { ConvexClientService } from '../../../core/services/convex-client.service';
+import { ToastService } from '../../../shared/services/toast.service';
 import { api } from '../../../../../convex/_generated/api';
 
 @Component({
@@ -17,8 +18,8 @@ import { api } from '../../../../../convex/_generated/api';
     <div class="space-y-6">
       <div class="flex items-center justify-between">
         <div>
-          <h2 class="text-3xl font-bold text-stone-900">Locations</h2>
-          <p class="mt-1 text-stone-500">Manage office locations.</p>
+          <h1 class="heading-accent">Locations</h1>
+          <p class="mt-3 text-stone-500">Manage office locations.</p>
         </div>
         <ui-button (onClick)="openCreateModal()">
           <ui-icon name="plus" class="w-4 h-4 mr-2"></ui-icon>
@@ -26,14 +27,12 @@ import { api } from '../../../../../convex/_generated/api';
         </ui-button>
       </div>
 
-      <div class="bg-white rounded-2xl shadow-lg shadow-stone-200/50 border border-stone-200 overflow-hidden">
-        <ui-data-table
+      <ui-data-table
           [data]="locations()"
           [columns]="columns"
           [loading]="loading()"
           [actionsTemplate]="actionsRef"
         ></ui-data-table>
-      </div>
 
       <ng-template #actionsRef let-row>
         <div class="flex gap-2 justify-end">
@@ -73,6 +72,7 @@ import { api } from '../../../../../convex/_generated/api';
 })
 export class LocationsComponent implements OnInit, OnDestroy {
   private convexService = inject(ConvexClientService);
+  private toastService = inject(ToastService);
 
   locations = signal<any[]>([]);
   loading = signal(true);
@@ -147,8 +147,10 @@ export class LocationsComponent implements OnInit, OnDestroy {
         });
       }
       this.showModal.set(false);
+      this.toastService.success(this.isEditing() ? 'Location updated successfully' : 'Location created successfully');
     } catch (error) {
       console.error('Error saving location:', error);
+      this.toastService.error('Failed to save location. Please try again.');
     } finally {
       this.submitting.set(false);
     }
@@ -160,8 +162,10 @@ export class LocationsComponent implements OnInit, OnDestroy {
     try {
       const client = this.convexService.getClient();
       await client.mutation(api.organization.deleteLocation, { id: row._id });
+      this.toastService.success('Location deleted successfully');
     } catch (error) {
       console.error('Error deleting location:', error);
+      this.toastService.error('Failed to delete location. Please try again.');
     }
   }
 }

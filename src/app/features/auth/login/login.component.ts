@@ -5,6 +5,7 @@ import { UiFormFieldComponent } from '../../../shared/components/ui-form-field/u
 import { UiButtonComponent } from '../../../shared/components/ui-button/ui-button.component';
 import { UiIconComponent } from '../../../shared/components/ui-icon/ui-icon.component';
 import { AuthService } from '../../../core/auth/auth.service';
+import { ToastService } from '../../../shared/services/toast.service';
 
 @Component({
   selector: 'app-login',
@@ -15,6 +16,7 @@ import { AuthService } from '../../../core/auth/auth.service';
 export class LoginComponent {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
+  private toastService = inject(ToastService);
 
   protected loginForm = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
@@ -31,8 +33,10 @@ export class LoginComponent {
 
       try {
         await this.authService.login(this.loginForm.value);
+        this.toastService.success('Welcome back!');
       } catch (err) {
         this.error.set('Invalid email or password');
+        this.toastService.error('Login failed. Please check your credentials.');
         console.error(err);
       } finally {
         this.isLoading.set(false);

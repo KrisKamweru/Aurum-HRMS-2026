@@ -1,13 +1,17 @@
 import { Component } from '@angular/core';
 import { RouterLink, RouterOutlet, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { UiToastComponent } from '../../shared/components/ui-toast/ui-toast.component';
 
 @Component({
   selector: 'app-demo',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterOutlet, RouterLinkActive],
+  imports: [CommonModule, RouterLink, RouterOutlet, RouterLinkActive, UiToastComponent],
   template: `
     <div class="min-h-screen bg-gray-50 flex">
+      <!-- Global Toast Container for Demo Layout -->
+      <ui-toast></ui-toast>
+
       <!-- Demo Sidebar -->
       <div class="w-64 bg-white border-r border-gray-200 min-h-screen flex flex-col fixed inset-y-0">
         <div class="p-6 border-b border-gray-200">

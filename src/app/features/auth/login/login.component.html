@@ -26,7 +26,7 @@
         type="email"
         id="email"
         formControlName="email"
-        class="block w-full rounded-xl border-stone-300 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] text-sm px-4 py-3 border bg-stone-50/50 transition-colors placeholder:text-stone-400"
+        class="block w-full rounded-xl border-stone-200 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] text-sm px-4 py-3 border bg-stone-50/50 focus:bg-white transition-colors duration-200 placeholder:text-stone-400"
         [class.border-red-300]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
         placeholder="you@company.com"
       />
@@ -37,7 +37,7 @@
         type="password"
         id="password"
         formControlName="password"
-        class="block w-full rounded-xl border-stone-300 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] text-sm px-4 py-3 border bg-stone-50/50 transition-colors placeholder:text-stone-400"
+        class="block w-full rounded-xl border-stone-200 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] text-sm px-4 py-3 border bg-stone-50/50 focus:bg-white transition-colors duration-200 placeholder:text-stone-400"
         [class.border-red-300]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
         placeholder="Enter your password"
       />
@@ -49,7 +49,7 @@
           id="remember-me"
           name="remember-me"
           type="checkbox"
-          class="h-4 w-4 text-[#8b1e3f] focus:ring-[#8b1e3f] border-stone-300 rounded"
+          class="h-4 w-4 text-[#8b1e3f] focus:ring-[#8b1e3f] border-stone-200 rounded"
         />
         <label for="remember-me" class="ml-2 block text-sm text-stone-600">
           Remember me
