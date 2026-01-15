@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, computed, effect } from '@angular/core';
 import { Router } from '@angular/router';
 import { ConvexClientService } from '../services/convex-client.service';
 import { api } from '../../../../convex/_generated/api';
@@ -7,73 +7,114 @@ import { api } from '../../../../convex/_generated/api';
   providedIn: 'root'
 })
 export class AuthService {
-  private isAuthenticated = signal(false);
-  private isLoading = signal(true);
+  private currentUser = signal<any>(null);
 
   constructor(
     private convexService: ConvexClientService,
     private router: Router
   ) {
-    this.checkAuthStatus();
+    // Subscribe to user data when authenticated
+    this.setupUserSubscription();
   }
 
-  async checkAuthStatus() {
-    this.isLoading.set(true);
-    try {
-      // Check if the user is authenticated by querying the viewer
-      const user = await this.convexService.getClient().query(api.users.viewer, {});
-      this.isAuthenticated.set(!!user);
-    } catch (error) {
-      console.error('Error checking auth status:', error);
-      this.isAuthenticated.set(false);
-    } finally {
-      this.isLoading.set(false);
-    }
+  private setupUserSubscription() {
+    // Watch auth state and subscribe to user when authenticated
+    effect(() => {
+      const isAuthenticated = this.convexService.isAuthenticated()();
+      if (isAuthenticated) {
+        this.subscribeToUser();
+      } else {
+        this.currentUser.set(null);
+      }
+    });
+  }
+
+  private subscribeToUser() {
+    const client = this.convexService.getClient();
+    client.onUpdate(api.users.viewer, {}, (user) => {
+      this.currentUser.set(user);
+    });
   }
 
   isLoggedIn() {
-    return this.isAuthenticated;
+    return this.convexService.isAuthenticated();
   }
 
   isAuthLoading() {
-    return this.isLoading;
+    return this.convexService.isLoading();
+  }
+
+  getUser() {
+    return this.currentUser;
   }
 
   async login(formData: any) {
     const { email, password } = formData;
-    await this.convexService.getClient().action(api.auth.signIn, {
-      provider: "password",
-      params: { flow: "signIn", email, password }
+
+    const result = await this.convexService.signIn("password", {
+      flow: "signIn",
+      email,
+      password
     });
 
-    await this.checkAuthStatus();
-
-    if (this.isAuthenticated()) {
+    if (result.success) {
+      // Wait a bit for the user subscription to update
+      await this.waitForUser();
       this.router.navigate(['/dashboard']);
       return true;
     }
-    return false;
+
+    throw new Error('Login failed');
   }
 
   async register(formData: any) {
     const { email, password, name } = formData;
-    await this.convexService.getClient().action(api.auth.signIn, {
-      provider: "password",
-      params: { flow: "signUp", email, password, name }
+
+    const result = await this.convexService.signIn("password", {
+      flow: "signUp",
+      email,
+      password,
+      name
     });
 
-    await this.checkAuthStatus();
-
-    if (this.isAuthenticated()) {
+    if (result.success) {
+      // Wait a bit for the user subscription to update
+      await this.waitForUser();
       this.router.navigate(['/dashboard']);
       return true;
     }
-    return false;
+
+    throw new Error('Registration failed');
+  }
+
+  async signInWithGoogle() {
+    // OAuth will redirect, so no need to handle success here
+    await this.convexService.signIn("google");
+  }
+
+  async signInWithMicrosoft() {
+    // OAuth will redirect, so no need to handle success here
+    await this.convexService.signIn("microsoft-entra-id");
   }
 
   async logout() {
-    await this.convexService.getClient().action(api.auth.signOut, {});
-    this.isAuthenticated.set(false);
+    await this.convexService.signOut();
+    this.currentUser.set(null);
     this.router.navigate(['/auth/login']);
+  }
+
+  private waitForUser(): Promise<void> {
+    return new Promise((resolve) => {
+      const checkUser = () => {
+        if (this.currentUser() !== null) {
+          resolve();
+        } else {
+          setTimeout(checkUser, 100);
+        }
+      };
+      // Set a timeout to avoid infinite wait
+      setTimeout(() => resolve(), 2000);
+      checkUser();
+    });
   }
 }

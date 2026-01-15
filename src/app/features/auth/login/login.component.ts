@@ -45,4 +45,22 @@ export class LoginComponent {
       this.loginForm.markAllAsTouched();
     }
   }
+
+  protected async signInWithGoogle() {
+    try {
+      await this.authService.signInWithGoogle();
+    } catch (err) {
+      this.toastService.error('Google sign-in failed. Please try again.');
+      console.error(err);
+    }
+  }
+
+  protected async signInWithMicrosoft() {
+    try {
+      await this.authService.signInWithMicrosoft();
+    } catch (err) {
+      this.toastService.error('Microsoft sign-in failed. Please try again.');
+      console.error(err);
+    }
+  }
 }

@@ -77,11 +77,19 @@
 
   <!-- Social logins -->
   <div class="grid grid-cols-2 gap-3">
-    <button class="flex items-center justify-center gap-2 px-4 py-2.5 border border-stone-200 rounded-xl text-sm font-medium text-stone-700 hover:bg-stone-50 transition-colors">
+    <button
+      type="button"
+      (click)="signInWithGoogle()"
+      class="flex items-center justify-center gap-2 px-4 py-2.5 border border-stone-200 rounded-xl text-sm font-medium text-stone-700 hover:bg-stone-50 hover:border-stone-300 transition-colors"
+    >
       <ui-icon name="google" class="w-5 h-5"></ui-icon>
       Google
     </button>
-    <button class="flex items-center justify-center gap-2 px-4 py-2.5 border border-stone-200 rounded-xl text-sm font-medium text-stone-700 hover:bg-stone-50 transition-colors">
+    <button
+      type="button"
+      (click)="signInWithMicrosoft()"
+      class="flex items-center justify-center gap-2 px-4 py-2.5 border border-stone-200 rounded-xl text-sm font-medium text-stone-700 hover:bg-stone-50 hover:border-stone-300 transition-colors"
+    >
       <ui-icon name="microsoft" class="w-5 h-5"></ui-icon>
       Microsoft
     </button>
