@@ -3,38 +3,39 @@ import { RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { UiFormFieldComponent } from '../../../shared/components/ui-form-field/ui-form-field.component';
 import { UiButtonComponent } from '../../../shared/components/ui-button/ui-button.component';
-import { UiIconComponent } from '../../../shared/components/ui-icon/ui-icon.component';
 import { AuthService } from '../../../core/auth/auth.service';
 import { ToastService } from '../../../shared/services/toast.service';
 import { mapAuthError } from '../../../core/auth/auth-error.handler';
 
 @Component({
-  selector: 'app-login',
+  selector: 'app-forgot-password',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, UiFormFieldComponent, UiButtonComponent, UiIconComponent],
-  templateUrl: './login.component.html',
+  imports: [ReactiveFormsModule, RouterLink, UiFormFieldComponent, UiButtonComponent],
+  templateUrl: './forgot-password.component.html',
 })
-export class LoginComponent {
+export class ForgotPasswordComponent {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private toastService = inject(ToastService);
 
-  protected loginForm = this.fb.group({
+  protected forgotPasswordForm = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required]],
   });
 
   protected error = signal<string | null>(null);
   protected isLoading = signal(false);
+  protected emailSent = signal(false);
 
   protected async onSubmit() {
-    if (this.loginForm.valid) {
+    if (this.forgotPasswordForm.valid) {
       this.isLoading.set(true);
       this.error.set(null);
 
       try {
-        await this.authService.login(this.loginForm.value);
-        this.toastService.success('Welcome back!');
+        const email = this.forgotPasswordForm.get('email')?.value;
+        await this.authService.sendPasswordResetEmail(email!);
+        this.emailSent.set(true);
+        this.toastService.success('Password reset email sent!');
       } catch (err) {
         const errorMessage = mapAuthError(err);
         this.error.set(errorMessage);
@@ -44,25 +45,7 @@ export class LoginComponent {
         this.isLoading.set(false);
       }
     } else {
-      this.loginForm.markAllAsTouched();
-    }
-  }
-
-  protected async signInWithGoogle() {
-    try {
-      await this.authService.signInWithGoogle();
-    } catch (err) {
-      this.toastService.error(mapAuthError(err));
-      console.error(err);
-    }
-  }
-
-  protected async signInWithMicrosoft() {
-    try {
-      await this.authService.signInWithMicrosoft();
-    } catch (err) {
-      this.toastService.error(mapAuthError(err));
-      console.error(err);
+      this.forgotPasswordForm.markAllAsTouched();
     }
   }
 }

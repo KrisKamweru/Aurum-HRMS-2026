@@ -144,11 +144,16 @@ export class ConvexClientService {
     this.setStoredVerifier(null);
 
     try {
-      const result = await this.httpClient.action('auth:signIn' as any, {
+      // Only include verifier if it exists (OAuth callback flow)
+      const payload: Record<string, any> = {
         provider,
         params,
-        verifier
-      }) as SignInResult;
+      };
+      if (verifier) {
+        payload['verifier'] = verifier;
+      }
+
+      const result = await this.httpClient.action('auth:signIn' as any, payload) as SignInResult;
 
       if (result.redirect) {
         // OAuth redirect

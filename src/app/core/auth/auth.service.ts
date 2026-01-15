@@ -89,18 +89,28 @@ export class AuthService {
 
   async signInWithGoogle() {
     // OAuth will redirect, so no need to handle success here
-    await this.convexService.signIn("google");
+    const redirectTo = window.location.origin + '/auth/login';
+    await this.convexService.signIn("google", { redirectTo });
   }
 
   async signInWithMicrosoft() {
     // OAuth will redirect, so no need to handle success here
-    await this.convexService.signIn("microsoft-entra-id");
+    const redirectTo = window.location.origin + '/auth/login';
+    await this.convexService.signIn("microsoft-entra-id", { redirectTo });
   }
 
   async logout() {
     await this.convexService.signOut();
     this.currentUser.set(null);
     this.router.navigate(['/auth/login']);
+  }
+
+  async sendPasswordResetEmail(email: string): Promise<void> {
+    // Use the password provider with reset-password flow
+    await this.convexService.signIn("password", {
+      flow: "reset",
+      email,
+    });
   }
 
   private waitForUser(): Promise<void> {

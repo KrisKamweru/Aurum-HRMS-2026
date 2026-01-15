@@ -6,6 +6,7 @@ import { UiButtonComponent } from '../../../shared/components/ui-button/ui-butto
 import { UiIconComponent } from '../../../shared/components/ui-icon/ui-icon.component';
 import { AuthService } from '../../../core/auth/auth.service';
 import { ToastService } from '../../../shared/services/toast.service';
+import { mapAuthError } from '../../../core/auth/auth-error.handler';
 
 @Component({
   selector: 'app-register',
@@ -35,8 +36,8 @@ export class RegisterComponent {
       try {
         await this.authService.register(this.registerForm.value);
         this.toastService.success('Account created successfully!');
-      } catch (err: any) {
-        const errorMessage = err.message || 'Registration failed. Please try again.';
+      } catch (err: unknown) {
+        const errorMessage = mapAuthError(err);
         this.error.set(errorMessage);
         this.toastService.error(errorMessage);
         console.error(err);
@@ -52,7 +53,7 @@ export class RegisterComponent {
     try {
       await this.authService.signInWithGoogle();
     } catch (err) {
-      this.toastService.error('Google sign-in failed. Please try again.');
+      this.toastService.error(mapAuthError(err));
       console.error(err);
     }
   }
@@ -61,7 +62,7 @@ export class RegisterComponent {
     try {
       await this.authService.signInWithMicrosoft();
     } catch (err) {
-      this.toastService.error('Microsoft sign-in failed. Please try again.');
+      this.toastService.error(mapAuthError(err));
       console.error(err);
     }
   }
