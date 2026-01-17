@@ -1,4 +1,4 @@
-import { Component, signal, inject, OnInit, OnDestroy } from '@angular/core';
+import { Component, signal, inject, OnInit, OnDestroy, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UiDataTableComponent, TableColumn } from '../../shared/components/ui-data-table/ui-data-table.component';
 import { UiButtonComponent } from '../../shared/components/ui-button/ui-button.component';
@@ -8,6 +8,7 @@ import { DynamicFormComponent } from '../../shared/components/dynamic-form/dynam
 import { FieldConfig } from '../../shared/services/form-helper.service';
 import { ConvexClientService } from '../../core/services/convex-client.service';
 import { ToastService } from '../../shared/services/toast.service';
+import { AuthService } from '../../core/auth/auth.service';
 import { api } from '../../../../convex/_generated/api';
 
 @Component({
@@ -35,8 +36,8 @@ import { api } from '../../../../convex/_generated/api';
         ></ui-data-table>
 
       <ng-template #actionsRef let-row>
-        @if (row.status === 'pending') {
-          <div class="flex gap-2 justify-end">
+        <div class="flex gap-2 justify-end">
+          @if (row.status === 'pending' && canManage()) {
             <button
               class="p-1.5 text-stone-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
               (click)="updateStatus(row, 'approved')"
@@ -51,8 +52,17 @@ import { api } from '../../../../convex/_generated/api';
             >
               <ui-icon name="x-mark" class="w-4 h-4"></ui-icon>
             </button>
-          </div>
-        }
+          }
+          @if (row.status === 'pending' && isOwnRequest(row)) {
+            <button
+              class="p-1.5 text-stone-400 hover:text-stone-600 hover:bg-stone-100 rounded-lg transition-colors"
+              (click)="updateStatus(row, 'cancelled')"
+              title="Cancel Request"
+            >
+              <ui-icon name="trash" class="w-4 h-4"></ui-icon>
+            </button>
+          }
+        </div>
       </ng-template>
 
       <ui-modal
@@ -60,7 +70,7 @@ import { api } from '../../../../convex/_generated/api';
         title="New Leave Request"
       >
         <app-dynamic-form
-          [fields]="formConfig"
+          [fields]="formConfig()"
           [initialValues]="{}"
           [loading]="submitting()"
           submitLabel="Submit Request"
@@ -75,6 +85,10 @@ import { api } from '../../../../convex/_generated/api';
 export class LeaveRequestsComponent implements OnInit, OnDestroy {
   private convexService = inject(ConvexClientService);
   private toastService = inject(ToastService);
+  private authService = inject(AuthService);
+
+  currentUser = computed(() => this.authService.getUser()());
+  canManage = this.authService.hasRole(['super_admin', 'admin', 'hr_manager', 'manager']);
 
   requests = signal<any[]>([]);
   employees = signal<any[]>([]);
@@ -115,7 +129,7 @@ export class LeaveRequestsComponent implements OnInit, OnDestroy {
     }
   ];
 
-  formConfig: FieldConfig[] = [
+  baseFormConfig: FieldConfig[] = [
     {
       name: 'employeeId',
       label: 'Employee',
@@ -139,6 +153,22 @@ export class LeaveRequestsComponent implements OnInit, OnDestroy {
     { name: 'reason', label: 'Reason', type: 'textarea', placeholder: 'Optional reason' }
   ];
 
+  formConfig = computed(() => {
+    // If user is manager/admin, show employee selection
+    // If user is regular employee, hide employee selection (or make it read-only/defaulted)
+    // For simplicity, we'll keep the dropdown for admins, but for regular users we might want to auto-fill.
+    // However, DynamicForm might not support hidden fields easily.
+    // Let's filter the config based on role.
+
+    if (this.canManage()) {
+      return this.baseFormConfig;
+    } else {
+      // For regular employees, remove the employeeId field from the form
+      // We will inject it during submission
+      return this.baseFormConfig.filter(f => f.name !== 'employeeId');
+    }
+  });
+
   ngOnInit() {
     const client = this.convexService.getClient();
 
@@ -149,10 +179,13 @@ export class LeaveRequestsComponent implements OnInit, OnDestroy {
     });
 
     // Fetch employees for the dropdown
-    this.employeesUnsubscribe = client.onUpdate(api.employees.list, {}, (data) => {
-      this.employees.set(data);
-      this.updateEmployeeOptions(data);
-    });
+    // Only fetch if we can manage, otherwise we don't need the list
+    if (this.canManage()) {
+       this.employeesUnsubscribe = client.onUpdate(api.employees.list, {}, (data) => {
+        this.employees.set(data);
+        this.updateEmployeeOptions(data);
+      });
+    }
   }
 
   ngOnDestroy() {
@@ -166,8 +199,8 @@ export class LeaveRequestsComponent implements OnInit, OnDestroy {
       value: emp._id
     }));
 
-    // Update form config with new options
-    this.formConfig = this.formConfig.map(field => {
+    // Update base config
+    this.baseFormConfig = this.baseFormConfig.map(field => {
       if (field.name === 'employeeId') {
         return { ...field, options: employeeOptions };
       }
@@ -184,8 +217,20 @@ export class LeaveRequestsComponent implements OnInit, OnDestroy {
     const client = this.convexService.getClient();
 
     try {
+      let employeeId = formData.employeeId;
+
+      // If not managing (regular employee), use own ID
+      if (!this.canManage()) {
+        const user = this.authService.getUser()();
+        if (user && user.employeeId) {
+          employeeId = user.employeeId;
+        } else {
+          throw new Error('Employee profile not found');
+        }
+      }
+
       await client.mutation(api.leave_requests.create, {
-        employeeId: formData.employeeId,
+        employeeId: employeeId,
         type: formData.type,
         startDate: formData.startDate,
         endDate: formData.endDate,
@@ -193,16 +238,22 @@ export class LeaveRequestsComponent implements OnInit, OnDestroy {
       });
       this.showModal.set(false);
       this.toastService.success('Leave request submitted successfully');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating leave request:', error);
-      this.toastService.error('Failed to submit leave request. Please try again.');
+      this.toastService.error(error.message || 'Failed to submit leave request');
     } finally {
       this.submitting.set(false);
     }
   }
 
-  async updateStatus(row: any, status: 'approved' | 'rejected') {
-    if (!confirm(`Are you sure you want to ${status} this request?`)) return;
+  isOwnRequest(row: any): boolean {
+    const user = this.currentUser();
+    return user?.employeeId === row.employeeId;
+  }
+
+  async updateStatus(row: any, status: 'approved' | 'rejected' | 'cancelled') {
+    const action = status === 'cancelled' ? 'cancel' : status;
+    if (!confirm(`Are you sure you want to ${action} this request?`)) return;
 
     try {
       const client = this.convexService.getClient();

@@ -1,5 +1,5 @@
-import { Component, Input, Output, EventEmitter, HostListener, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, Input, Output, EventEmitter, HostListener, signal, OnDestroy, inject } from '@angular/core';
+import { CommonModule, DOCUMENT } from '@angular/common';
 import { UiIconComponent } from '../ui-icon/ui-icon.component';
 
 export type ModalSize = 'sm' | 'md' | 'lg' | 'xl' | 'full';
@@ -11,40 +11,40 @@ export type ModalSize = 'sm' | 'md' | 'lg' | 'xl' | 'full';
   template: `
     @if (isOpenSignal()) {
       <div
-        class="fixed inset-0 z-50 overflow-y-auto"
+        class="modal-container"
         aria-labelledby="modal-title"
         role="dialog"
         aria-modal="true"
       >
         <!-- Backdrop -->
         <div
-          class="fixed inset-0 bg-stone-900/60 backdrop-blur-sm transition-opacity duration-300"
-          [class.animate-fade-in]="isOpenSignal()"
+          class="modal-backdrop animate-fade-in"
           aria-hidden="true"
           (click)="handleBackdropClick()"
         ></div>
 
-        <div class="flex min-h-screen items-end justify-center p-4 text-center sm:items-center sm:p-0">
+        <div class="modal-content-wrapper">
           <!-- Modal Panel -->
           <div
-            class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-2xl transition-all sm:my-8 w-full animate-modal-in"
+            class="relative transform overflow-hidden rounded-2xl bg-white dark:bg-stone-800 text-left shadow-2xl transition-all sm:my-8 w-full animate-modal-in"
             [class]="getSizeClasses()"
+            (click)="$event.stopPropagation()"
           >
             <!-- Decorative top gradient -->
-            <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#8b1e3f] via-[#a82349] to-[#8b1e3f]"></div>
+            <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-burgundy-800 via-burgundy-700 to-burgundy-800 dark:from-burgundy-600 dark:via-burgundy-500 dark:to-burgundy-600"></div>
 
             <!-- Header -->
-            <div class="bg-white px-6 pt-6 pb-4 border-b border-stone-100">
+            <div class="bg-white dark:bg-stone-800 px-6 pt-6 pb-4 border-b border-stone-100 dark:border-stone-700">
               <div class="flex items-center justify-between">
                 <h3
-                  class="text-xl font-semibold text-stone-900"
+                  class="text-xl font-semibold text-stone-900 dark:text-stone-100"
                   id="modal-title"
                 >
                   {{ title }}
                 </h3>
                 <button
                   type="button"
-                  class="rounded-lg p-2 text-stone-400 hover:text-stone-600 hover:bg-stone-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#8b1e3f] transition-all duration-200"
+                  class="rounded-lg p-2 text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-burgundy-800 transition-all duration-200"
                   (click)="closeModal()"
                 >
                   <span class="sr-only">Close</span>
@@ -54,13 +54,13 @@ export type ModalSize = 'sm' | 'md' | 'lg' | 'xl' | 'full';
             </div>
 
             <!-- Body -->
-            <div class="px-6 py-6 max-h-[60vh] overflow-y-auto">
+            <div class="px-6 py-6 max-h-[60vh] overflow-y-auto text-stone-700 dark:text-stone-300">
               <ng-content></ng-content>
             </div>
 
             <!-- Footer -->
             @if (hasFooter) {
-              <div class="bg-stone-50 px-6 py-4 border-t border-stone-100 flex flex-row-reverse gap-3">
+              <div class="bg-stone-50 dark:bg-stone-900/50 px-6 py-4 border-t border-stone-100 dark:border-stone-700 flex flex-row-reverse gap-3">
                 <ng-content select="[footer]"></ng-content>
               </div>
             }
@@ -72,6 +72,43 @@ export type ModalSize = 'sm' | 'md' | 'lg' | 'xl' | 'full';
   styles: [`
     :host {
       display: contents;
+    }
+
+    .modal-container {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background-color: rgba(28, 25, 23, 0.6);
+      backdrop-filter: blur(4px);
+    }
+
+    .modal-content-wrapper {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 1rem;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .modal-content-wrapper > * {
+      pointer-events: auto;
+    }
+
+    @media (min-width: 640px) {
+      .modal-content-wrapper {
+        align-items: center;
+        padding: 0;
+      }
     }
 
     .animate-fade-in {
@@ -99,18 +136,20 @@ export type ModalSize = 'sm' | 'md' | 'lg' | 'xl' | 'full';
     }
   `]
 })
-export class UiModalComponent {
+export class UiModalComponent implements OnDestroy {
   @Input() title = '';
   @Input() size: ModalSize = 'md';
   @Input() canDismiss = true;
   @Input() hasFooter = true;
 
+  private document = inject(DOCUMENT);
+
   @Input() set isOpen(value: boolean) {
     this.isOpenSignal.set(value);
     if (value) {
-      document.body.style.overflow = 'hidden';
+      this.document.body.style.overflow = 'hidden';
     } else {
-      document.body.style.overflow = '';
+      this.document.body.style.overflow = '';
     }
   }
 
@@ -118,6 +157,10 @@ export class UiModalComponent {
   @Output() close = new EventEmitter<void>();
 
   protected isOpenSignal = signal(false);
+
+  ngOnDestroy() {
+    this.document.body.style.overflow = '';
+  }
 
   handleBackdropClick() {
     if (this.canDismiss) {
@@ -136,7 +179,7 @@ export class UiModalComponent {
     this.isOpenSignal.set(false);
     this.isOpenChange.emit(false);
     this.close.emit();
-    document.body.style.overflow = '';
+    this.document.body.style.overflow = '';
   }
 
   getSizeClasses(): string {

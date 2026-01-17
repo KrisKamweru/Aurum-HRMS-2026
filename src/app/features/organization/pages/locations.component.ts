@@ -8,6 +8,7 @@ import { DynamicFormComponent } from '../../../shared/components/dynamic-form/dy
 import { FieldConfig } from '../../../shared/services/form-helper.service';
 import { ConvexClientService } from '../../../core/services/convex-client.service';
 import { ToastService } from '../../../shared/services/toast.service';
+import { AuthService } from '../../../core/auth/auth.service';
 import { api } from '../../../../../convex/_generated/api';
 
 @Component({
@@ -21,7 +22,7 @@ import { api } from '../../../../../convex/_generated/api';
           <h1 class="heading-accent">Locations</h1>
           <p class="mt-3 text-stone-500">Manage office locations.</p>
         </div>
-        <ui-button (onClick)="openCreateModal()">
+        <ui-button (onClick)="openCreateModal()" *ngIf="canManage()">
           <ui-icon name="plus" class="w-4 h-4 mr-2"></ui-icon>
           Add Location
         </ui-button>
@@ -31,7 +32,7 @@ import { api } from '../../../../../convex/_generated/api';
           [data]="locations()"
           [columns]="columns"
           [loading]="loading()"
-          [actionsTemplate]="actionsRef"
+          [actionsTemplate]="canManage() ? actionsRef : undefined"
         ></ui-data-table>
 
       <ng-template #actionsRef let-row>
@@ -73,6 +74,9 @@ import { api } from '../../../../../convex/_generated/api';
 export class LocationsComponent implements OnInit, OnDestroy {
   private convexService = inject(ConvexClientService);
   private toastService = inject(ToastService);
+  private authService = inject(AuthService);
+
+  canManage = this.authService.hasRole(['super_admin', 'admin', 'hr_manager']);
 
   locations = signal<any[]>([]);
   loading = signal(true);

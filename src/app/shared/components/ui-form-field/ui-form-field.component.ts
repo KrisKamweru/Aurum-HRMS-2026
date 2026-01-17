@@ -9,21 +9,21 @@ import { AbstractControl, ReactiveFormsModule } from '@angular/forms';
   template: `
     <div class="space-y-1">
       <div class="flex justify-between">
-        <label [for]="id" class="block text-sm font-semibold text-stone-700">
+        <label [for]="id" class="block text-sm font-semibold text-stone-700 dark:text-stone-300">
           {{ label }}
           @if (required) {
-            <span class="text-[#8b1e3f]">*</span>
+            <span class="text-burgundy-600 dark:text-burgundy-400">*</span>
           }
         </label>
         @if (hint) {
-          <span class="text-xs text-stone-500">{{ hint }}</span>
+          <span class="text-xs text-stone-500 dark:text-stone-400">{{ hint }}</span>
         }
       </div>
 
       <ng-content></ng-content>
 
       @if (control && invalid() && touched()) {
-        <div class="flex items-center gap-1.5 mt-1.5 text-xs text-red-600 font-medium animate-slide-down">
+        <div class="flex items-center gap-1.5 mt-1.5 text-xs text-red-600 dark:text-red-400 font-medium animate-slide-down">
            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5">
              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
            </svg>

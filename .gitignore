@@ -43,3 +43,6 @@ __screenshots__/
 Thumbs.db
 
 .env.local
+
+# Test credentials (E2E testing)
+.test-credentials

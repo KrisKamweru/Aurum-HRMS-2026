@@ -3,8 +3,19 @@ import { MainLayoutComponent } from './layouts/main-layout/main-layout.component
 import { AuthLayoutComponent } from './layouts/auth-layout/auth-layout.component';
 import { Dashboard } from './features/dashboard/dashboard.component';
 import { authGuard } from './core/auth/auth.guard';
+import { roleGuard } from './core/auth/role.guard';
 
 export const routes: Routes = [
+  {
+    path: 'pending',
+    loadComponent: () => import('./features/pending/pending.component').then(m => m.PendingComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'create-organization',
+    loadComponent: () => import('./features/pending/org-wizard.component').then(m => m.OrgWizardComponent),
+    canActivate: [authGuard]
+  },
   {
     path: '',
     component: MainLayoutComponent,
@@ -13,16 +24,45 @@ export const routes: Routes = [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: Dashboard },
       {
+        path: 'profile',
+        loadComponent: () => import('./features/profile/profile.component').then(m => m.ProfileComponent)
+      },
+      {
+        path: 'settings',
+        loadComponent: () => import('./features/profile/profile.component').then(m => m.ProfileComponent)
+      },
+      {
         path: 'employees',
-        loadComponent: () => import('./features/employees/employees.component').then(m => m.EmployeesComponent)
+        loadComponent: () => import('./features/employees/employees.component').then(m => m.EmployeesComponent),
+        canActivate: [roleGuard(['super_admin', 'admin', 'hr_manager', 'manager'])]
+      },
+      {
+        path: 'employees/:id',
+        loadComponent: () => import('./features/employees/employee-detail/employee-detail.component').then(m => m.EmployeeDetailComponent),
+         canActivate: [roleGuard(['super_admin', 'admin', 'hr_manager', 'manager'])]
       },
       {
         path: 'leave-requests',
         loadComponent: () => import('./features/leave-requests/leave-requests.component').then(m => m.LeaveRequestsComponent)
       },
       {
+        path: 'attendance',
+        loadChildren: () => import('./features/attendance/attendance.routes').then(m => m.ATTENDANCE_ROUTES)
+      },
+      {
+        path: 'core-hr',
+        loadChildren: () => import('./features/core-hr/core-hr.routes').then(m => m.CORE_HR_ROUTES),
+        canActivate: [roleGuard(['super_admin', 'admin', 'hr_manager'])]
+      },
+      {
         path: 'organization',
-        loadChildren: () => import('./features/organization/organization.routes').then(m => m.ORGANIZATION_ROUTES)
+        loadChildren: () => import('./features/organization/organization.routes').then(m => m.ORGANIZATION_ROUTES),
+        canActivate: [roleGuard(['super_admin', 'admin', 'hr_manager'])]
+      },
+      {
+        path: 'super-admin',
+        loadComponent: () => import('./features/super-admin/super-admin.component').then(m => m.SuperAdminComponent),
+        canActivate: [roleGuard(['super_admin'])]
       }
     ],
   },

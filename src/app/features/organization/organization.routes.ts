@@ -16,6 +16,10 @@ export const ORGANIZATION_ROUTES: Routes = [
       {
         path: 'locations',
         loadComponent: () => import('./pages/locations.component').then(m => m.LocationsComponent)
+      },
+      {
+        path: 'user-linking',
+        loadComponent: () => import('./pages/user-linking.component').then(m => m.UserLinkingComponent)
       }
     ]
   }

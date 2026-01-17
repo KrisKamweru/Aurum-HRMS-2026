@@ -48,6 +48,14 @@ export class AuthService {
     return this.currentUser;
   }
 
+  hasRole(allowedRoles: string[]) {
+    return computed(() => {
+      const user = this.currentUser();
+      if (!user) return false;
+      return allowedRoles.includes(user.role);
+    });
+  }
+
   async login(formData: any) {
     const { email, password } = formData;
 
@@ -126,5 +134,16 @@ export class AuthService {
       setTimeout(() => resolve(), 2000);
       checkUser();
     });
+  }
+
+  async refreshUser(): Promise<void> {
+    // Force re-fetch of user data
+    try {
+      const client = this.convexService.getClient();
+      const user = await client.query(api.users.viewer, {});
+      this.currentUser.set(user);
+    } catch (e) {
+      console.error('Error refreshing user:', e);
+    }
   }
 }

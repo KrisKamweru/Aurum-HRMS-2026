@@ -8,11 +8,16 @@
  * @module
  */
 
+import type * as attendance from "../attendance.js";
 import type * as auth from "../auth.js";
+import type * as core_hr from "../core_hr.js";
+import type * as dashboard from "../dashboard.js";
 import type * as employees from "../employees.js";
 import type * as http from "../http.js";
 import type * as leave_requests from "../leave_requests.js";
+import type * as onboarding from "../onboarding.js";
 import type * as organization from "../organization.js";
+import type * as super_admin from "../super_admin.js";
 import type * as users from "../users.js";
 
 import type {
@@ -22,11 +27,16 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  attendance: typeof attendance;
   auth: typeof auth;
+  core_hr: typeof core_hr;
+  dashboard: typeof dashboard;
   employees: typeof employees;
   http: typeof http;
   leave_requests: typeof leave_requests;
+  onboarding: typeof onboarding;
   organization: typeof organization;
+  super_admin: typeof super_admin;
   users: typeof users;
 }>;
 

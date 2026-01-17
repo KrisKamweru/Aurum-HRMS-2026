@@ -7,15 +7,23 @@ import { CommonModule } from '@angular/common';
   imports: [CommonModule],
   template: `
     <div [class]="getContainerClasses()">
+      <!-- Accent stripe (inside the card, follows rounded corners) -->
+      @if (accent) {
+        <div
+          class="absolute left-0 top-0 bottom-0 w-1 rounded-l-2xl"
+          [ngClass]="accent"
+        ></div>
+      }
+
       <!-- Header -->
       @if (title || subtitle || hasHeaderActions) {
-        <div class="px-6 py-4 border-b border-stone-100 flex items-center justify-between" [class.bg-stone-50]="variant === 'default'">
+        <div class="px-6 py-4 border-b border-stone-100 dark:border-stone-700 flex items-center justify-between" [class.bg-stone-50]="variant === 'default'" [class.dark:bg-stone-800]="variant === 'default'" [class.pl-8]="accent">
           <div>
             @if (title) {
-              <h3 class="text-lg font-bold text-stone-900">{{ title }}</h3>
+              <h3 class="text-lg font-bold text-stone-900 dark:text-stone-100">{{ title }}</h3>
             }
             @if (subtitle) {
-              <p class="text-sm text-stone-500 mt-0.5">{{ subtitle }}</p>
+              <p class="text-sm text-stone-500 dark:text-stone-400 mt-0.5">{{ subtitle }}</p>
             }
           </div>
           <div class="flex items-center gap-2">
@@ -31,7 +39,7 @@ import { CommonModule } from '@angular/common';
 
       <!-- Footer -->
       @if (hasFooter) {
-        <div class="px-6 py-4 bg-stone-50 border-t border-stone-100">
+        <div class="px-6 py-4 bg-stone-50 dark:bg-stone-800 border-t border-stone-100 dark:border-stone-700" [class.pl-8]="accent">
           <ng-content select="[footer]"></ng-content>
         </div>
       }
@@ -48,17 +56,18 @@ export class UiCardComponent {
   @Input() subtitle?: string;
   @Input() padding: 'none' | 'sm' | 'md' | 'lg' = 'md';
   @Input() variant: 'default' | 'premium' | 'glass' | 'outlined' = 'default';
+  @Input() accent?: string; // Tailwind bg class like 'bg-primary-600' or 'bg-amber-500'
   @Input() hasHeaderActions = false;
   @Input() hasFooter = false;
 
   getContainerClasses(): string {
-    const baseClasses = 'overflow-hidden h-full flex flex-col transition-all duration-300';
+    const baseClasses = 'overflow-hidden h-full flex flex-col transition-all duration-300 relative';
 
     const variants = {
-      default: 'bg-white rounded-2xl shadow-sm border border-stone-200',
-      premium: 'card-premium',
-      glass: 'card-glass',
-      outlined: 'bg-white rounded-2xl border border-stone-200'
+      default: 'bg-white dark:bg-stone-800 rounded-2xl shadow-sm border border-stone-200 dark:border-stone-700',
+      premium: 'card-premium', // Handled via CSS which now has dark mode support
+      glass: 'card-glass',     // Handled via CSS which now has dark mode support
+      outlined: 'bg-white dark:bg-stone-800 rounded-2xl border border-stone-200 dark:border-stone-700'
     };
 
     return `${baseClasses} ${variants[this.variant]}`;
@@ -71,6 +80,10 @@ export class UiCardComponent {
       md: 'p-6',
       lg: 'p-8'
     };
-    return `flex-1 ${paddings[this.padding]}`;
+
+    // Add extra left padding when accent is present
+    const accentPadding = this.accent ? 'pl-8' : '';
+
+    return `flex-1 ${paddings[this.padding]} ${accentPadding}`.trim();
   }
 }

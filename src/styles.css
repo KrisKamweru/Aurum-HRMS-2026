@@ -3,6 +3,39 @@
 
 @import "tailwindcss";
 
+@theme {
+  --color-stone-50: var(--stone-50);
+  --color-stone-100: var(--stone-100);
+  --color-stone-200: var(--stone-200);
+  --color-stone-300: var(--stone-300);
+  --color-stone-400: var(--stone-400);
+  --color-stone-500: var(--stone-500);
+  --color-stone-600: var(--stone-600);
+  --color-stone-700: var(--stone-700);
+  --color-stone-800: var(--stone-800);
+  --color-stone-900: var(--stone-900);
+
+  --color-burgundy-50: var(--burgundy-50);
+  --color-burgundy-100: var(--burgundy-100);
+  --color-burgundy-200: var(--burgundy-200);
+  --color-burgundy-300: var(--burgundy-300);
+  --color-burgundy-400: var(--burgundy-400);
+  --color-burgundy-500: var(--burgundy-500);
+  --color-burgundy-600: var(--burgundy-600);
+  --color-burgundy-700: var(--burgundy-700);
+  --color-burgundy-800: var(--burgundy-800);
+  --color-burgundy-900: var(--burgundy-900);
+  --color-burgundy-950: var(--burgundy-950);
+
+  --color-gold-50: var(--gold-50);
+  --color-gold-100: var(--gold-100);
+  --color-gold-200: var(--gold-200);
+  --color-gold-300: var(--gold-300);
+  --color-gold-400: var(--gold-400);
+  --color-gold-500: var(--gold-500);
+  --color-gold-600: var(--gold-600);
+}
+
 /* ========================================
    AURUM HRMS - Professional Design System
    Typography: Inter
@@ -98,7 +131,7 @@ body::before {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
   opacity: 0.02;
   pointer-events: none;
-  z-index: 9999;
+  z-index: 50;
 }
 
 /* Typography hierarchy */
@@ -155,8 +188,8 @@ h3 { font-size: 1.25rem; line-height: 1.3; }
 }
 
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(16px); }
-  to { opacity: 1; transform: translateY(0); }
+  0% { opacity: 0; transform: translateY(16px); }
+  100% { opacity: 1; transform: none; }
 }
 
 @keyframes fadeInDown {
@@ -609,9 +642,114 @@ textarea::placeholder {
   }
 }
 
-/* Dark mode preparation (optional) */
+/* Dark mode preparation */
 @media (prefers-color-scheme: dark) {
   :root {
-    /* Can add dark mode tokens here later */
+    /* We handle this via class strategy now, but keeping this for reference if needed */
   }
 }
+
+/* Dark Mode Tokens */
+:root.dark {
+  /* Primary - Keep burgundy but adjust for dark backgrounds if needed */
+  /* Often we want lighter/brighter accents in dark mode, but burgundy is the brand */
+  --burgundy-50: #4a0d1f; /* Inverted 950 */
+  --burgundy-100: #722038; /* Inverted 900 */
+  --burgundy-200: #8b1e3f; /* Inverted 800 */
+  --burgundy-300: #a82349; /* Inverted 700 */
+  --burgundy-400: #c92d5b; /* Inverted 600 */
+  --burgundy-500: #df4872; /* Keep close */
+  --burgundy-600: #ec7698; /* Inverted 400 - brighter for dark mode */
+  --burgundy-700: #f4a9bc; /* Inverted 300 */
+  --burgundy-800: #f9d0da; /* Inverted 200 */
+  --burgundy-900: #fce7eb; /* Inverted 100 */
+  --burgundy-950: #fdf2f4; /* Inverted 50 */
+
+  /* Neutral - Warm Stone (Inverted) */
+  --stone-50: #1c1917;  /* 900 */
+  --stone-100: #292524; /* 800 */
+  --stone-200: #44403c; /* 700 */
+  --stone-300: #57534e; /* 600 */
+  --stone-400: #78716c; /* 500 */
+  --stone-500: #a8a29e; /* 400 */
+  --stone-600: #d6d3d1; /* 300 */
+  --stone-700: #e7e5e4; /* 200 */
+  --stone-800: #f5f5f4; /* 100 */
+  --stone-900: #fafaf9; /* 50 */
+
+  /* Semantic Colors - Adjusted for dark backgrounds */
+  --success: #34d399; /* emerald-400 */
+  --warning: #fbbf24; /* amber-400 */
+  --error: #f87171;   /* red-400 */
+  --info: #60a5fa;    /* blue-400 */
+
+  /* Shadows - adjusted for dark mode */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -4px rgba(0, 0, 0, 0.3);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+
+  /* Scrollbar - Darker track */
+  ::-webkit-scrollbar-track {
+    background: var(--stone-50);
+  }
+}
+
+/* Dark mode overrides for specific components */
+:root.dark .card-premium {
+  background: var(--stone-100);
+  border-color: var(--stone-200);
+}
+
+:root.dark .card-glass {
+  background: rgba(28, 25, 23, 0.7); /* stone-900 with opacity */
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+:root.dark input,
+:root.dark select,
+:root.dark textarea {
+  background-color: var(--stone-50);
+  color: var(--stone-900);
+  border-color: var(--stone-200);
+}
+
+:root.dark .logo {
+  /* Ensure logo stays brand colored but readable */
+  background: linear-gradient(135deg, #722038, #4a0d1f);
+}
+
+:root.dark body::before {
+  /* Adjust noise for dark mode */
+  opacity: 0.05;
+  filter: invert(1);
+}
+
+:root.dark .bg-gradient-to-b.from-stone-50.to-stone-100 {
+  /* Override the main layout background gradient */
+  --tw-gradient-from: var(--stone-50);
+  --tw-gradient-to: var(--stone-100);
+  /* Tailwind handles the application via class, but variables need updating */
+}
+
+/* Specific component fixes for dark mode */
+:root.dark .nav-item:hover,
+:root.dark .nav-item-active {
+  background: linear-gradient(90deg, rgba(139, 30, 63, 0.2), transparent);
+  color: var(--burgundy-300);
+}
+
+:root.dark .nav-item:hover::before,
+:root.dark .nav-item-active::before {
+  background: var(--burgundy-400);
+}
+
+:root.dark .table-row-hover:hover {
+  background: linear-gradient(90deg, rgba(139, 30, 63, 0.1), transparent);
+}
+
+:root.dark .stat-icon-burgundy {
+  background: rgba(139, 30, 63, 0.2);
+  color: var(--burgundy-300);
+}
+

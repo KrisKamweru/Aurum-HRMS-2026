@@ -29,6 +29,17 @@ export const authGuard: CanActivateFn = async (route, state) => {
   const isLoggedIn = authService.isLoggedIn()();
 
   if (isLoggedIn) {
+    const user = authService.getUser()();
+    // If user is pending and trying to access anything other than /pending, redirect to /pending
+    if (user?.role === 'pending' && state.url !== '/pending') {
+      return router.createUrlTree(['/pending']);
+    }
+
+    // If user is NOT pending but trying to access /pending, redirect to dashboard
+    if (user?.role !== 'pending' && state.url === '/pending') {
+      return router.createUrlTree(['/dashboard']);
+    }
+
     return true;
   }
 

@@ -1,16 +1,16 @@
 <div class="min-h-screen flex bg-gradient-to-b from-stone-50 to-stone-100">
   <!-- Sidebar (Desktop) -->
-  <div class="hidden md:flex md:w-72 md:flex-col md:fixed md:inset-y-0 bg-white border-r border-stone-200 shadow-lg shadow-stone-200/50">
+  <div class="hidden md:flex md:w-72 md:flex-col md:fixed md:inset-y-0 z-30 bg-white dark:bg-stone-50 border-r border-stone-200 shadow-lg shadow-stone-200/50 dark:shadow-stone-900/20">
     <!-- Logo -->
     <div class="flex items-center gap-3 h-20 px-6 border-b border-stone-100">
-      <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-[#8b1e3f] to-[#722038] flex items-center justify-center shadow-md shadow-[#8b1e3f]/20 relative overflow-hidden logo">
+      <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-burgundy-800 to-burgundy-900 flex items-center justify-center shadow-md shadow-burgundy-800/20 relative overflow-hidden logo">
         <span class="relative text-amber-300 font-bold text-xl">A</span>
       </div>
       <div>
-        <h1 class="text-xl font-bold text-stone-900">
+        <h1 class="text-xl font-bold text-stone-900 dark:text-stone-100">
           Aurum
         </h1>
-        <p class="text-xs text-stone-500 -mt-0.5">HRMS</p>
+        <p class="text-xs text-stone-500 dark:text-stone-400 -mt-0.5">HRMS</p>
       </div>
     </div>
 
@@ -21,85 +21,130 @@
         <p class="px-3 text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-3">Main</p>
 
         <ui-nav-item route="/dashboard" [exact]="true">
-          <ui-icon icon name="dashboard" class="w-5 h-5 text-stone-400 group-hover:text-[#8b1e3f] group-[.nav-active]:text-[#8b1e3f] transition-colors"></ui-icon>
+          <ui-icon icon name="dashboard" class="w-5 h-5 text-stone-400 group-hover:text-burgundy-800 dark:group-hover:text-burgundy-300 group-[.nav-active]:text-burgundy-800 dark:group-[.nav-active]:text-burgundy-300 transition-colors"></ui-icon>
           Dashboard
         </ui-nav-item>
 
-        <ui-nav-item route="/employees">
-          <ui-icon icon name="users" class="w-5 h-5 text-stone-400 group-hover:text-[#8b1e3f] group-[.nav-active]:text-[#8b1e3f] transition-colors"></ui-icon>
-          Employees
-        </ui-nav-item>
+        @if (canManageEmployees()) {
+          <ui-nav-item route="/employees">
+            <ui-icon icon name="users" class="w-5 h-5 text-stone-400 group-hover:text-burgundy-800 dark:group-hover:text-burgundy-300 group-[.nav-active]:text-burgundy-800 dark:group-[.nav-active]:text-burgundy-300 transition-colors"></ui-icon>
+            Employees
+          </ui-nav-item>
+        }
 
         <ui-nav-item route="/leave-requests">
-          <ui-icon icon name="calendar" class="w-5 h-5 text-stone-400 group-hover:text-[#8b1e3f] group-[.nav-active]:text-[#8b1e3f] transition-colors"></ui-icon>
+          <ui-icon icon name="calendar" class="w-5 h-5 text-stone-400 group-hover:text-burgundy-800 dark:group-hover:text-burgundy-300 group-[.nav-active]:text-burgundy-800 dark:group-[.nav-active]:text-burgundy-300 transition-colors"></ui-icon>
           Leave Requests
         </ui-nav-item>
 
+        <ui-nav-item route="/attendance">
+          <ui-icon icon name="clock" class="w-5 h-5 text-stone-400 group-hover:text-burgundy-800 dark:group-hover:text-burgundy-300 group-[.nav-active]:text-burgundy-800 dark:group-[.nav-active]:text-burgundy-300 transition-colors"></ui-icon>
+          Attendance
+        </ui-nav-item>
+
         <!-- Organization section -->
-        <div class="pt-6 pb-2">
-          <p class="px-3 text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-3">Organization</p>
-        </div>
+        @if (canManageOrganization()) {
+          <div class="pt-6 pb-2">
+            <p class="px-3 text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-3">Organization</p>
+          </div>
 
-        <ui-nav-item route="/organization/departments">
-          <ui-icon icon name="building-office" class="w-5 h-5 text-stone-400 group-hover:text-[#8b1e3f] group-[.nav-active]:text-[#8b1e3f] transition-colors"></ui-icon>
-          Departments
-        </ui-nav-item>
+          <ui-nav-item route="/organization/departments">
+            <ui-icon icon name="building-office" class="w-5 h-5 text-stone-400 group-hover:text-burgundy-800 dark:group-hover:text-burgundy-300 group-[.nav-active]:text-burgundy-800 dark:group-[.nav-active]:text-burgundy-300 transition-colors"></ui-icon>
+            Departments
+          </ui-nav-item>
 
-        <ui-nav-item route="/organization/designations">
-          <ui-icon icon name="badge-check" class="w-5 h-5 text-stone-400 group-hover:text-[#8b1e3f] group-[.nav-active]:text-[#8b1e3f] transition-colors"></ui-icon>
-          Designations
-        </ui-nav-item>
+          <ui-nav-item route="/organization/designations">
+            <ui-icon icon name="badge-check" class="w-5 h-5 text-stone-400 group-hover:text-burgundy-800 dark:group-hover:text-burgundy-300 group-[.nav-active]:text-burgundy-800 dark:group-[.nav-active]:text-burgundy-300 transition-colors"></ui-icon>
+            Designations
+          </ui-nav-item>
 
-        <ui-nav-item route="/organization/locations">
-          <ui-icon icon name="map-pin" class="w-5 h-5 text-stone-400 group-hover:text-[#8b1e3f] group-[.nav-active]:text-[#8b1e3f] transition-colors"></ui-icon>
-          Locations
-        </ui-nav-item>
+          <ui-nav-item route="/organization/locations">
+            <ui-icon icon name="map-pin" class="w-5 h-5 text-stone-400 group-hover:text-burgundy-800 dark:group-hover:text-burgundy-300 group-[.nav-active]:text-burgundy-800 dark:group-[.nav-active]:text-burgundy-300 transition-colors"></ui-icon>
+            Locations
+          </ui-nav-item>
+        }
+
+        <!-- Super Admin section -->
+        @if (isSuperAdmin()) {
+          <div class="pt-6 pb-2">
+            <p class="px-3 text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-3">System</p>
+          </div>
+
+          <ui-nav-item route="/super-admin">
+            <ui-icon icon name="shield-check" class="w-5 h-5 text-stone-400 group-hover:text-burgundy-800 dark:group-hover:text-burgundy-300 group-[.nav-active]:text-burgundy-800 dark:group-[.nav-active]:text-burgundy-300 transition-colors"></ui-icon>
+            System Console
+          </ui-nav-item>
+        }
       </nav>
     </div>
 
-    <!-- User Profile -->
-    <div class="border-t border-stone-100 p-4">
-      <div class="flex items-center gap-3 p-3 rounded-xl hover:bg-stone-50 transition-colors cursor-pointer group">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#fce7eb] to-[#fdf2f4] flex items-center justify-center text-[#8b1e3f] font-semibold text-sm border border-[#f9d0da] group-hover:shadow-md transition-shadow">
+    <!-- User Profile Section -->
+    <div class="border-t border-stone-100 p-4 space-y-3">
+      <!-- Profile Card - Clickable to go to profile -->
+      <a routerLink="/profile" class="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-stone-50 to-white dark:to-stone-50 border border-stone-100 hover:border-burgundy-800/20 hover:shadow-md hover:shadow-burgundy-800/5 transition-all cursor-pointer group">
+        <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-burgundy-100 to-burgundy-50 dark:from-burgundy-900 dark:to-burgundy-950 flex items-center justify-center text-burgundy-800 dark:text-burgundy-100 font-bold text-sm border border-burgundy-200 dark:border-burgundy-800 group-hover:shadow-lg group-hover:shadow-burgundy-800/10 transition-all">
           {{ user()?.name?.charAt(0) || user()?.email?.charAt(0) || '?' }}
         </div>
         <div class="flex-1 min-w-0">
-          <p class="text-sm font-medium text-stone-800 truncate">
+          <p class="text-sm font-semibold text-stone-800 dark:text-stone-200 truncate">
             {{ user()?.name || 'User' }}
           </p>
-          <button (click)="logout()" class="text-xs text-stone-500 hover:text-[#8b1e3f] transition-colors">
-            Sign out
-          </button>
+          <p class="text-xs text-stone-500 truncate">View Profile</p>
         </div>
-        <ui-icon name="user-settings" class="w-5 h-5 text-stone-400 group-hover:text-[#8b1e3f] transition-colors"></ui-icon>
+        <ui-icon name="chevron-right" class="w-4 h-4 text-stone-300 group-hover:text-burgundy-800 dark:group-hover:text-burgundy-300 group-hover:translate-x-0.5 transition-all"></ui-icon>
+      </a>
+
+      <!-- Action Buttons -->
+      <div class="flex gap-2">
+        <button
+          (click)="toggleTheme()"
+          class="flex items-center justify-center w-10 h-10 rounded-xl border border-stone-200 bg-white dark:bg-stone-50 text-stone-600 hover:border-stone-300 hover:bg-stone-50 dark:hover:bg-stone-100 active:bg-stone-100 transition-all"
+          [title]="themeService.appliedTheme() === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'"
+        >
+          <ui-icon [name]="themeService.appliedTheme() === 'dark' ? 'sun' : 'moon'" class="w-4 h-4"></ui-icon>
+        </button>
+        <button
+          routerLink="/settings"
+          class="flex-1 flex items-center justify-center gap-2 h-10 rounded-xl border border-stone-200 bg-white dark:bg-stone-50 text-stone-600 text-sm font-medium hover:border-stone-300 hover:bg-stone-50 dark:hover:bg-stone-100 active:bg-stone-100 transition-all"
+        >
+          <ui-icon name="cog-6-tooth" class="w-4 h-4"></ui-icon>
+          Settings
+        </button>
+        <button
+          (click)="logout()"
+          class="flex-1 flex items-center justify-center gap-2 h-10 rounded-xl border border-red-100 bg-red-50/50 dark:bg-red-900/10 text-red-600 dark:text-red-400 text-sm font-medium hover:bg-red-50 dark:hover:bg-red-900/20 hover:border-red-200 active:bg-red-100 transition-all"
+        >
+          <ui-icon name="arrow-right-on-rectangle" class="w-4 h-4"></ui-icon>
+          Sign Out
+        </button>
       </div>
     </div>
   </div>
 
   <!-- Mobile header & Content -->
-  <div class="flex-1 flex flex-col md:pl-72 min-h-screen">
+  <div class="flex-1 flex flex-col md:pl-72 min-h-screen" style="transform: none; contain: none; perspective: none;">
     <!-- Global Toast Container -->
     <ui-toast></ui-toast>
 
     <!-- Mobile header -->
-    <div class="sticky top-0 z-10 flex-shrink-0 flex h-16 bg-white/80 backdrop-blur-lg shadow-sm border-b border-stone-100 md:hidden">
+    <div class="sticky top-0 z-10 flex-shrink-0 flex h-16 bg-white/80 dark:bg-stone-50/80 backdrop-blur-lg shadow-sm border-b border-stone-100 md:hidden">
       <div class="flex-1 px-4 flex justify-between items-center">
         <div class="flex items-center gap-3">
           <button
             type="button"
-            class="-ml-2 p-2 rounded-md text-stone-400 hover:text-stone-500 hover:bg-stone-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#8b1e3f]"
+            class="-ml-2 p-2 rounded-md text-stone-400 hover:text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-burgundy-800"
             (click)="toggleSidebar()"
           >
             <span class="sr-only">Open sidebar</span>
             <ui-icon name="menu" class="h-6 w-6" *ngIf="!isSidebarOpen()"></ui-icon>
             <ui-icon name="x-mark" class="h-6 w-6" *ngIf="isSidebarOpen()"></ui-icon>
           </button>
-          <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-[#8b1e3f] to-[#722038] flex items-center justify-center">
+          <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-burgundy-800 to-burgundy-900 flex items-center justify-center">
             <span class="text-amber-300 font-bold text-sm">A</span>
           </div>
-          <h1 class="text-lg font-bold text-stone-900">Aurum</h1>
+          <h1 class="text-lg font-bold text-stone-900 dark:text-stone-100">Aurum</h1>
         </div>
-        <button (click)="logout()" class="text-sm text-stone-500 hover:text-[#8b1e3f] transition-colors font-medium">
+        <button (click)="logout()" class="text-sm text-stone-500 hover:text-burgundy-800 dark:hover:text-burgundy-300 transition-colors font-medium">
           Sign out
         </button>
       </div>
@@ -115,7 +160,7 @@
         ></div>
 
         <!-- Sidebar Panel -->
-        <div class="relative flex-1 flex flex-col max-w-xs w-full bg-white transition-transform transform translate-x-0">
+        <div class="relative flex-1 flex flex-col max-w-xs w-full bg-white dark:bg-stone-50 transition-transform transform translate-x-0">
           <div class="absolute top-0 right-0 -mr-12 pt-2">
             <button
               type="button"
@@ -129,12 +174,12 @@
 
           <!-- Logo -->
           <div class="flex items-center gap-3 h-20 px-6 border-b border-stone-100">
-            <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-[#8b1e3f] to-[#722038] flex items-center justify-center shadow-md shadow-[#8b1e3f]/20 relative overflow-hidden logo">
+            <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-burgundy-800 to-burgundy-900 flex items-center justify-center shadow-md shadow-burgundy-800/20 relative overflow-hidden logo">
               <span class="relative text-amber-300 font-bold text-xl">A</span>
             </div>
             <div>
-              <h1 class="text-xl font-bold text-stone-900">Aurum</h1>
-              <p class="text-xs text-stone-500 -mt-0.5">HRMS</p>
+              <h1 class="text-xl font-bold text-stone-900 dark:text-stone-100">Aurum</h1>
+              <p class="text-xs text-stone-500 dark:text-stone-400 -mt-0.5">HRMS</p>
             </div>
           </div>
 
@@ -145,57 +190,103 @@
               <p class="px-3 text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-3">Main</p>
 
               <ui-nav-item route="/dashboard" [exact]="true" (click)="toggleSidebar()">
-                <ui-icon icon name="dashboard" class="w-5 h-5 text-stone-400 group-hover:text-[#8b1e3f] group-[.nav-active]:text-[#8b1e3f] transition-colors"></ui-icon>
+                <ui-icon icon name="dashboard" class="w-5 h-5 text-stone-400 group-hover:text-burgundy-800 dark:group-hover:text-burgundy-300 group-[.nav-active]:text-burgundy-800 dark:group-[.nav-active]:text-burgundy-300 transition-colors"></ui-icon>
                 Dashboard
               </ui-nav-item>
 
-              <ui-nav-item route="/employees" (click)="toggleSidebar()">
-                <ui-icon icon name="users" class="w-5 h-5 text-stone-400 group-hover:text-[#8b1e3f] group-[.nav-active]:text-[#8b1e3f] transition-colors"></ui-icon>
-                Employees
-              </ui-nav-item>
+              @if (canManageEmployees()) {
+                <ui-nav-item route="/employees" (click)="toggleSidebar()">
+                  <ui-icon icon name="users" class="w-5 h-5 text-stone-400 group-hover:text-burgundy-800 dark:group-hover:text-burgundy-300 group-[.nav-active]:text-burgundy-800 dark:group-[.nav-active]:text-burgundy-300 transition-colors"></ui-icon>
+                  Employees
+                </ui-nav-item>
+              }
 
               <ui-nav-item route="/leave-requests" (click)="toggleSidebar()">
-                <ui-icon icon name="calendar" class="w-5 h-5 text-stone-400 group-hover:text-[#8b1e3f] group-[.nav-active]:text-[#8b1e3f] transition-colors"></ui-icon>
+                <ui-icon icon name="calendar" class="w-5 h-5 text-stone-400 group-hover:text-burgundy-800 dark:group-hover:text-burgundy-300 group-[.nav-active]:text-burgundy-800 dark:group-[.nav-active]:text-burgundy-300 transition-colors"></ui-icon>
                 Leave Requests
               </ui-nav-item>
 
+              <ui-nav-item route="/attendance" (click)="toggleSidebar()">
+                <ui-icon icon name="clock" class="w-5 h-5 text-stone-400 group-hover:text-burgundy-800 dark:group-hover:text-burgundy-300 group-[.nav-active]:text-burgundy-800 dark:group-[.nav-active]:text-burgundy-300 transition-colors"></ui-icon>
+                Attendance
+              </ui-nav-item>
+
               <!-- Organization section -->
-              <div class="pt-6 pb-2">
-                <p class="px-3 text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-3">Organization</p>
-              </div>
+              @if (canManageOrganization()) {
+                <div class="pt-6 pb-2">
+                  <p class="px-3 text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-3">Organization</p>
+                </div>
 
-              <ui-nav-item route="/organization/departments" (click)="toggleSidebar()">
-                <ui-icon icon name="building-office" class="w-5 h-5 text-stone-400 group-hover:text-[#8b1e3f] group-[.nav-active]:text-[#8b1e3f] transition-colors"></ui-icon>
-                Departments
-              </ui-nav-item>
+                <ui-nav-item route="/organization/departments" (click)="toggleSidebar()">
+                  <ui-icon icon name="building-office" class="w-5 h-5 text-stone-400 group-hover:text-burgundy-800 dark:group-hover:text-burgundy-300 group-[.nav-active]:text-burgundy-800 dark:group-[.nav-active]:text-burgundy-300 transition-colors"></ui-icon>
+                  Departments
+                </ui-nav-item>
 
-              <ui-nav-item route="/organization/designations" (click)="toggleSidebar()">
-                <ui-icon icon name="badge-check" class="w-5 h-5 text-stone-400 group-hover:text-[#8b1e3f] group-[.nav-active]:text-[#8b1e3f] transition-colors"></ui-icon>
-                Designations
-              </ui-nav-item>
+                <ui-nav-item route="/organization/designations" (click)="toggleSidebar()">
+                  <ui-icon icon name="badge-check" class="w-5 h-5 text-stone-400 group-hover:text-burgundy-800 dark:group-hover:text-burgundy-300 group-[.nav-active]:text-burgundy-800 dark:group-[.nav-active]:text-burgundy-300 transition-colors"></ui-icon>
+                  Designations
+                </ui-nav-item>
 
-              <ui-nav-item route="/organization/locations" (click)="toggleSidebar()">
-                <ui-icon icon name="map-pin" class="w-5 h-5 text-stone-400 group-hover:text-[#8b1e3f] group-[.nav-active]:text-[#8b1e3f] transition-colors"></ui-icon>
-                Locations
-              </ui-nav-item>
+                <ui-nav-item route="/organization/locations" (click)="toggleSidebar()">
+                  <ui-icon icon name="map-pin" class="w-5 h-5 text-stone-400 group-hover:text-burgundy-800 dark:group-hover:text-burgundy-300 group-[.nav-active]:text-burgundy-800 dark:group-[.nav-active]:text-burgundy-300 transition-colors"></ui-icon>
+                  Locations
+                </ui-nav-item>
+              }
+
+              <!-- Super Admin section -->
+              @if (isSuperAdmin()) {
+                <div class="pt-6 pb-2">
+                  <p class="px-3 text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-3">System</p>
+                </div>
+
+                <ui-nav-item route="/super-admin" (click)="toggleSidebar()">
+                  <ui-icon icon name="shield-check" class="w-5 h-5 text-stone-400 group-hover:text-burgundy-800 dark:group-hover:text-burgundy-300 group-[.nav-active]:text-burgundy-800 dark:group-[.nav-active]:text-burgundy-300 transition-colors"></ui-icon>
+                  System Console
+                </ui-nav-item>
+              }
             </nav>
           </div>
 
-          <!-- User Profile -->
-          <div class="border-t border-stone-100 p-4 bg-stone-50">
-            <div class="flex items-center gap-3 p-3 rounded-xl hover:bg-stone-100 transition-colors cursor-pointer group">
-              <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#fce7eb] to-[#fdf2f4] flex items-center justify-center text-[#8b1e3f] font-semibold text-sm border border-[#f9d0da] group-hover:shadow-md transition-shadow">
+          <!-- User Profile Section (Mobile) -->
+          <div class="border-t border-stone-100 p-4 bg-stone-50 dark:bg-stone-100 space-y-3">
+            <!-- Profile Card -->
+            <a routerLink="/profile" (click)="toggleSidebar()" class="flex items-center gap-3 p-3 rounded-xl bg-white dark:bg-stone-50 border border-stone-100 hover:border-burgundy-800/20 hover:shadow-md transition-all cursor-pointer group">
+              <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-burgundy-100 to-burgundy-50 dark:from-burgundy-900 dark:to-burgundy-950 flex items-center justify-center text-burgundy-800 dark:text-burgundy-100 font-bold text-sm border border-burgundy-200 dark:border-burgundy-800 group-hover:shadow-lg group-hover:shadow-burgundy-800/10 transition-all">
                 {{ user()?.name?.charAt(0) || user()?.email?.charAt(0) || '?' }}
               </div>
               <div class="flex-1 min-w-0">
-                <p class="text-sm font-medium text-stone-800 truncate">
+                <p class="text-sm font-semibold text-stone-800 dark:text-stone-200 truncate">
                   {{ user()?.name || 'User' }}
                 </p>
-                <button (click)="logout()" class="text-xs text-stone-500 hover:text-[#8b1e3f] transition-colors">
-                  Sign out
-                </button>
+                <p class="text-xs text-stone-500 truncate">View Profile</p>
               </div>
-              <ui-icon name="user-settings" class="w-5 h-5 text-stone-400 group-hover:text-[#8b1e3f] transition-colors"></ui-icon>
+              <ui-icon name="chevron-right" class="w-4 h-4 text-stone-300 group-hover:text-burgundy-800 dark:group-hover:text-burgundy-300 group-hover:translate-x-0.5 transition-all"></ui-icon>
+            </a>
+
+            <!-- Action Buttons -->
+            <div class="flex gap-2">
+              <button
+                (click)="toggleTheme()"
+                class="flex items-center justify-center w-11 h-11 rounded-xl border border-stone-200 bg-white dark:bg-stone-50 text-stone-600 hover:border-stone-300 hover:bg-stone-100 active:bg-stone-200 transition-all"
+                [title]="themeService.appliedTheme() === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'"
+              >
+                <ui-icon [name]="themeService.appliedTheme() === 'dark' ? 'sun' : 'moon'" class="w-4 h-4"></ui-icon>
+              </button>
+              <button
+                routerLink="/settings"
+                (click)="toggleSidebar()"
+                class="flex-1 flex items-center justify-center gap-2 h-11 rounded-xl border border-stone-200 bg-white dark:bg-stone-50 text-stone-600 text-sm font-medium hover:border-stone-300 hover:bg-stone-100 active:bg-stone-200 transition-all"
+              >
+                <ui-icon name="cog-6-tooth" class="w-4 h-4"></ui-icon>
+                Settings
+              </button>
+              <button
+                (click)="logout()"
+                class="flex-1 flex items-center justify-center gap-2 h-11 rounded-xl border border-red-100 bg-red-50 dark:bg-red-900/10 text-red-600 dark:text-red-400 text-sm font-medium hover:bg-red-100 dark:hover:bg-red-900/20 hover:border-red-200 active:bg-red-200 transition-all"
+              >
+                <ui-icon name="arrow-right-on-rectangle" class="w-4 h-4"></ui-icon>
+                Sign Out
+              </button>
             </div>
           </div>
         </div>
@@ -208,9 +299,7 @@
 
     <!-- Main content -->
     <main class="flex-1 py-8 px-4 sm:px-6 lg:px-10">
-      <div class="animate-fade-in-up">
-        <router-outlet />
-      </div>
+      <router-outlet />
     </main>
   </div>
 </div>

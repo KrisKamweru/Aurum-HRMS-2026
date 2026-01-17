@@ -1,5 +1,6 @@
 import { Component, signal, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { UiDataTableComponent, TableColumn } from '../../shared/components/ui-data-table/ui-data-table.component';
 import { UiButtonComponent } from '../../shared/components/ui-button/ui-button.component';
 import { UiModalComponent } from '../../shared/components/ui-modal/ui-modal.component';
@@ -8,6 +9,7 @@ import { DynamicFormComponent } from '../../shared/components/dynamic-form/dynam
 import { FieldConfig } from '../../shared/services/form-helper.service';
 import { ConvexClientService } from '../../core/services/convex-client.service';
 import { ToastService } from '../../shared/services/toast.service';
+import { AuthService } from '../../core/auth/auth.service';
 import { api } from '../../../../convex/_generated/api';
 
 @Component({
@@ -21,7 +23,7 @@ import { api } from '../../../../convex/_generated/api';
           <h1 class="heading-accent">Employees</h1>
           <p class="mt-3 text-stone-500">Manage your workforce.</p>
         </div>
-        <ui-button (onClick)="openCreateModal()">
+        <ui-button (onClick)="openCreateModal()" *ngIf="canManage()">
           <ui-icon name="plus" class="w-4 h-4 mr-2"></ui-icon>
           Add Employee
         </ui-button>
@@ -37,19 +39,29 @@ import { api } from '../../../../convex/_generated/api';
       <ng-template #actionsRef let-row>
         <div class="flex gap-2 justify-end">
           <button
-            class="p-1.5 text-stone-400 hover:text-[#8b1e3f] hover:bg-[#fdf2f4] rounded-lg transition-colors"
-            (click)="openEditModal(row)"
-            title="Edit"
+            class="p-1.5 text-stone-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+            (click)="viewEmployee(row)"
+            title="View Details"
           >
-            <ui-icon name="pencil" class="w-4 h-4"></ui-icon>
+            <ui-icon name="eye" class="w-4 h-4"></ui-icon>
           </button>
-          <button
-            class="p-1.5 text-stone-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-            (click)="deleteEmployee(row)"
-            title="Delete"
-          >
-            <ui-icon name="trash" class="w-4 h-4"></ui-icon>
-          </button>
+
+          <ng-container *ngIf="canManage()">
+            <button
+              class="p-1.5 text-stone-400 hover:text-[#8b1e3f] hover:bg-[#fdf2f4] rounded-lg transition-colors"
+              (click)="openEditModal(row)"
+              title="Edit"
+            >
+              <ui-icon name="pencil" class="w-4 h-4"></ui-icon>
+            </button>
+            <button
+              class="p-1.5 text-stone-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+              (click)="deleteEmployee(row)"
+              title="Delete"
+            >
+              <ui-icon name="trash" class="w-4 h-4"></ui-icon>
+            </button>
+          </ng-container>
         </div>
       </ng-template>
 
@@ -73,6 +85,10 @@ import { api } from '../../../../convex/_generated/api';
 export class EmployeesComponent implements OnInit, OnDestroy {
   private convexService = inject(ConvexClientService);
   private toastService = inject(ToastService);
+  private router = inject(Router);
+  private authService = inject(AuthService);
+
+  canManage = this.authService.hasRole(['super_admin', 'admin', 'hr_manager', 'manager']);
 
   employees = signal<any[]>([]);
   loading = signal(true);
@@ -83,6 +99,9 @@ export class EmployeesComponent implements OnInit, OnDestroy {
   currentEmployee = signal<any>(null);
 
   private unsubscribe: (() => void) | null = null;
+  private departmentsUnsubscribe: (() => void) | null = null;
+  private designationsUnsubscribe: (() => void) | null = null;
+  private locationsUnsubscribe: (() => void) | null = null;
 
   columns: TableColumn[] = [
     { key: 'firstName', header: 'First Name', sortable: true },
@@ -109,8 +128,34 @@ export class EmployeesComponent implements OnInit, OnDestroy {
     { name: 'firstName', label: 'First Name', type: 'text', required: true, placeholder: 'e.g. John' },
     { name: 'lastName', label: 'Last Name', type: 'text', required: true, placeholder: 'e.g. Doe' },
     { name: 'email', label: 'Email', type: 'email', required: true, placeholder: 'e.g. john.doe@company.com' },
-    { name: 'department', label: 'Department', type: 'text', required: true, placeholder: 'e.g. Engineering' },
-    { name: 'position', label: 'Position', type: 'text', required: true, placeholder: 'e.g. Software Engineer' },
+    {
+      name: 'departmentId',
+      label: 'Department',
+      type: 'select',
+      required: true,
+      options: []
+    },
+    {
+      name: 'designationId',
+      label: 'Position/Designation',
+      type: 'select',
+      required: true,
+      options: []
+    },
+    {
+      name: 'locationId',
+      label: 'Location',
+      type: 'select',
+      required: false,
+      options: []
+    },
+    {
+      name: 'managerId',
+      label: 'Reports To',
+      type: 'select',
+      required: false,
+      options: []
+    },
     {
       name: 'status',
       label: 'Status',
@@ -122,32 +167,123 @@ export class EmployeesComponent implements OnInit, OnDestroy {
         { label: 'Terminated', value: 'terminated' }
       ]
     },
+    { name: 'phone', label: 'Phone', type: 'text', required: false, placeholder: 'e.g. +1 555-1234' },
+    { name: 'address', label: 'Address', type: 'textarea', required: false, placeholder: 'Full address' },
+    {
+      name: 'gender',
+      label: 'Gender',
+      type: 'select',
+      required: false,
+      options: [
+        { label: 'Male', value: 'Male' },
+        { label: 'Female', value: 'Female' },
+        { label: 'Other', value: 'Other' },
+        { label: 'Prefer not to say', value: 'Prefer not to say' }
+      ]
+    },
+    { name: 'dob', label: 'Date of Birth', type: 'date', required: false },
     { name: 'startDate', label: 'Start Date', type: 'date', required: true }
   ];
 
   ngOnInit() {
     const client = this.convexService.getClient();
+
+    // Subscribe to employees
     this.unsubscribe = client.onUpdate(api.employees.list, {}, (data) => {
       this.employees.set(data);
       this.loading.set(false);
+      // Update manager options whenever employees list changes
+      // If we are not currently editing, we can update globally
+      if (!this.isEditing()) {
+        this.updateManagerOptions(data);
+      }
+    });
+
+    // Subscribe to Departments
+    this.departmentsUnsubscribe = client.onUpdate(api.organization.listDepartments, {}, (data) => {
+      this.updateDepartmentOptions(data);
+    });
+
+    // Subscribe to Designations
+    this.designationsUnsubscribe = client.onUpdate(api.organization.listDesignations, {}, (data) => {
+      this.updateDesignationOptions(data);
+    });
+
+    // Subscribe to Locations
+    this.locationsUnsubscribe = client.onUpdate(api.organization.listLocations, {}, (data) => {
+      this.updateLocationOptions(data);
     });
   }
 
   ngOnDestroy() {
-    if (this.unsubscribe) {
-      this.unsubscribe();
-    }
+    if (this.unsubscribe) this.unsubscribe();
+    if (this.departmentsUnsubscribe) this.departmentsUnsubscribe();
+    if (this.designationsUnsubscribe) this.designationsUnsubscribe();
+    if (this.locationsUnsubscribe) this.locationsUnsubscribe();
+  }
+
+  updateDepartmentOptions(departments: any[]) {
+    const options = departments.map(d => ({ label: d.name, value: d._id }));
+    this.formConfig = this.formConfig.map(field => {
+      if (field.name === 'departmentId') return { ...field, options };
+      return field;
+    });
+  }
+
+  updateDesignationOptions(designations: any[]) {
+    const options = designations.map(d => ({ label: d.title, value: d._id }));
+    this.formConfig = this.formConfig.map(field => {
+      if (field.name === 'designationId') return { ...field, options };
+      return field;
+    });
+  }
+
+  updateLocationOptions(locations: any[]) {
+    const options = locations.map(l => ({ label: l.name, value: l._id }));
+    this.formConfig = this.formConfig.map(field => {
+      if (field.name === 'locationId') return { ...field, options };
+      return field;
+    });
+  }
+
+  updateManagerOptions(employees: any[]) {
+    const options = employees.map(e => ({
+      label: `${e.firstName} ${e.lastName}`,
+      value: e._id
+    }));
+    this.formConfig = this.formConfig.map(field => {
+      if (field.name === 'managerId') return { ...field, options };
+      return field;
+    });
   }
 
   openCreateModal() {
     this.isEditing.set(false);
     this.currentEmployee.set({ status: 'active', startDate: new Date().toISOString().split('T')[0] });
+
+    // Ensure manager options include everyone
+    this.updateManagerOptions(this.employees());
+
     this.showModal.set(true);
+  }
+
+  viewEmployee(row: any) {
+    this.router.navigate(['/employees', row._id]);
   }
 
   openEditModal(row: any) {
     this.isEditing.set(true);
+    // Map flattened row data back to IDs if needed, or rely on the fact that row usually contains the raw doc + enriched fields
+    // The list query returns enriched data. We need to make sure we have the IDs.
+    // The current list implementation returns: ...emp (which has departmentId, designationId), department (name), position (name)
+    // So the IDs should be present in 'row'.
     this.currentEmployee.set(row);
+
+    // Filter out self from manager options to avoid circular reporting
+    const allEmployees = this.employees();
+    const otherEmployees = allEmployees.filter(e => e._id !== row._id);
+    this.updateManagerOptions(otherEmployees);
+
     this.showModal.set(true);
   }
 
@@ -156,19 +292,28 @@ export class EmployeesComponent implements OnInit, OnDestroy {
     const client = this.convexService.getClient();
 
     try {
+      const commonData = {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        departmentId: formData.departmentId,
+        designationId: formData.designationId,
+        locationId: formData.locationId || undefined,
+        managerId: formData.managerId || undefined,
+        startDate: formData.startDate,
+        phone: formData.phone,
+        address: formData.address,
+        gender: formData.gender,
+        dob: formData.dob
+      };
+
       if (this.isEditing()) {
         const id = this.currentEmployee()._id;
         await client.mutation(api.employees.update, {
           id,
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          email: formData.email,
-          department: formData.department,
-          position: formData.position,
-          startDate: formData.startDate
+          ...commonData
         });
 
-        // Update status separately if needed, or update mutation to handle it
         if (formData.status !== this.currentEmployee().status) {
           await client.mutation(api.employees.updateStatus, {
             id,
@@ -177,13 +322,8 @@ export class EmployeesComponent implements OnInit, OnDestroy {
         }
       } else {
         await client.mutation(api.employees.create, {
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          email: formData.email,
-          department: formData.department,
-          position: formData.position,
+          ...commonData,
           status: formData.status,
-          startDate: formData.startDate
         });
       }
       this.showModal.set(false);

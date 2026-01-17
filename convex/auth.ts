@@ -9,7 +9,7 @@ const CustomPassword = Password<DataModel>({
     return {
       email: params["email"] as string,
       name: (params["name"] as string) || "User",
-      role: "employee" as const,
+      role: "pending" as const,
     };
   },
 });
@@ -23,7 +23,7 @@ export const { auth, signIn, signOut, store } = convexAuth({
           email: profile["email"] as string,
           name: profile["name"] as string,
           image: profile["picture"] as string,
-          role: "employee" as const,
+          role: "pending" as const,
         };
       },
     }),
@@ -33,7 +33,7 @@ export const { auth, signIn, signOut, store } = convexAuth({
           email: profile["email"] as string,
           name: profile["name"] as string,
           image: profile["picture"] as string,
-          role: "employee" as const,
+          role: "pending" as const,
         };
       },
     }),

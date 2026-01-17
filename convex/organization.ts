@@ -1,12 +1,37 @@
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
+import { getAuthUserId } from "@convex-dev/auth/server";
+
+// Helper to get viewer info including role
+async function getViewerInfo(ctx: any) {
+  const userId = await getAuthUserId(ctx);
+  if (!userId) throw new Error("Unauthorized");
+
+  const user = await ctx.db.get(userId);
+  if (!user || !user.orgId) throw new Error("User has no organization");
+
+  return user;
+}
+
+function isPrivileged(role: string) {
+  return ["super_admin", "admin", "hr_manager"].includes(role);
+}
 
 // --- Departments ---
 
 export const listDepartments = query({
   args: {},
   handler: async (ctx) => {
-    return await ctx.db.query("departments").collect();
+    try {
+      const user = await getViewerInfo(ctx);
+      const orgId = user.orgId!;
+      return await ctx.db
+        .query("departments")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect();
+    } catch (e) {
+      return [];
+    }
   },
 });
 
@@ -18,7 +43,14 @@ export const createDepartment = mutation({
     managerId: v.optional(v.id("employees")),
   },
   handler: async (ctx, args) => {
-    return await ctx.db.insert("departments", args);
+    const user = await getViewerInfo(ctx);
+    const orgId = user.orgId!;
+
+    if (!isPrivileged(user.role)) {
+      throw new Error("Unauthorized: Insufficient permissions");
+    }
+
+    return await ctx.db.insert("departments", { orgId, ...args });
   },
 });
 
@@ -31,6 +63,16 @@ export const updateDepartment = mutation({
     managerId: v.optional(v.id("employees")),
   },
   handler: async (ctx, args) => {
+    const user = await getViewerInfo(ctx);
+    const orgId = user.orgId!;
+
+    if (!isPrivileged(user.role)) {
+      throw new Error("Unauthorized: Insufficient permissions");
+    }
+
+    const doc = await ctx.db.get(args.id);
+    if (!doc || doc.orgId !== orgId) throw new Error("Unauthorized");
+
     const { id, ...fields } = args;
     await ctx.db.patch(id, fields);
   },
@@ -39,6 +81,16 @@ export const updateDepartment = mutation({
 export const deleteDepartment = mutation({
   args: { id: v.id("departments") },
   handler: async (ctx, args) => {
+    const user = await getViewerInfo(ctx);
+    const orgId = user.orgId!;
+
+    if (!isPrivileged(user.role)) {
+      throw new Error("Unauthorized: Insufficient permissions");
+    }
+
+    const doc = await ctx.db.get(args.id);
+    if (!doc || doc.orgId !== orgId) throw new Error("Unauthorized");
+
     await ctx.db.delete(args.id);
   },
 });
@@ -48,7 +100,16 @@ export const deleteDepartment = mutation({
 export const listDesignations = query({
   args: {},
   handler: async (ctx) => {
-    return await ctx.db.query("designations").collect();
+    try {
+      const user = await getViewerInfo(ctx);
+      const orgId = user.orgId!;
+      return await ctx.db
+        .query("designations")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect();
+    } catch (e) {
+      return [];
+    }
   },
 });
 
@@ -60,7 +121,14 @@ export const createDesignation = mutation({
     description: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    return await ctx.db.insert("designations", args);
+    const user = await getViewerInfo(ctx);
+    const orgId = user.orgId!;
+
+    if (!isPrivileged(user.role)) {
+      throw new Error("Unauthorized: Insufficient permissions");
+    }
+
+    return await ctx.db.insert("designations", { orgId, ...args });
   },
 });
 
@@ -73,6 +141,16 @@ export const updateDesignation = mutation({
     description: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    const user = await getViewerInfo(ctx);
+    const orgId = user.orgId!;
+
+    if (!isPrivileged(user.role)) {
+      throw new Error("Unauthorized: Insufficient permissions");
+    }
+
+    const doc = await ctx.db.get(args.id);
+    if (!doc || doc.orgId !== orgId) throw new Error("Unauthorized");
+
     const { id, ...fields } = args;
     await ctx.db.patch(id, fields);
   },
@@ -81,6 +159,16 @@ export const updateDesignation = mutation({
 export const deleteDesignation = mutation({
   args: { id: v.id("designations") },
   handler: async (ctx, args) => {
+    const user = await getViewerInfo(ctx);
+    const orgId = user.orgId!;
+
+    if (!isPrivileged(user.role)) {
+      throw new Error("Unauthorized: Insufficient permissions");
+    }
+
+    const doc = await ctx.db.get(args.id);
+    if (!doc || doc.orgId !== orgId) throw new Error("Unauthorized");
+
     await ctx.db.delete(args.id);
   },
 });
@@ -90,7 +178,16 @@ export const deleteDesignation = mutation({
 export const listLocations = query({
   args: {},
   handler: async (ctx) => {
-    return await ctx.db.query("locations").collect();
+    try {
+      const user = await getViewerInfo(ctx);
+      const orgId = user.orgId!;
+      return await ctx.db
+        .query("locations")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect();
+    } catch (e) {
+      return [];
+    }
   },
 });
 
@@ -102,7 +199,14 @@ export const createLocation = mutation({
     country: v.string(),
   },
   handler: async (ctx, args) => {
-    return await ctx.db.insert("locations", args);
+    const user = await getViewerInfo(ctx);
+    const orgId = user.orgId!;
+
+    if (!isPrivileged(user.role)) {
+      throw new Error("Unauthorized: Insufficient permissions");
+    }
+
+    return await ctx.db.insert("locations", { orgId, ...args });
   },
 });
 
@@ -115,6 +219,16 @@ export const updateLocation = mutation({
     country: v.string(),
   },
   handler: async (ctx, args) => {
+    const user = await getViewerInfo(ctx);
+    const orgId = user.orgId!;
+
+    if (!isPrivileged(user.role)) {
+      throw new Error("Unauthorized: Insufficient permissions");
+    }
+
+    const doc = await ctx.db.get(args.id);
+    if (!doc || doc.orgId !== orgId) throw new Error("Unauthorized");
+
     const { id, ...fields } = args;
     await ctx.db.patch(id, fields);
   },
@@ -123,6 +237,16 @@ export const updateLocation = mutation({
 export const deleteLocation = mutation({
   args: { id: v.id("locations") },
   handler: async (ctx, args) => {
+    const user = await getViewerInfo(ctx);
+    const orgId = user.orgId!;
+
+    if (!isPrivileged(user.role)) {
+      throw new Error("Unauthorized: Insufficient permissions");
+    }
+
+    const doc = await ctx.db.get(args.id);
+    if (!doc || doc.orgId !== orgId) throw new Error("Unauthorized");
+
     await ctx.db.delete(args.id);
   },
 });

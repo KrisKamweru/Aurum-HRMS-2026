@@ -1,77 +1,256 @@
 import { Component, computed, signal, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { ConvexClientService } from '../../core/services/convex-client.service';
 import { api } from '../../../../convex/_generated/api';
-import { Doc } from '../../../../convex/_generated/dataModel';
-import { UiFormFieldComponent } from '../../shared/components/ui-form-field/ui-form-field.component';
 import { UiButtonComponent } from '../../shared/components/ui-button/ui-button.component';
-import { UiDataTableComponent, TableColumn } from '../../shared/components/ui-data-table/ui-data-table.component';
-import { UiCardComponent } from '../../shared/components/ui-card/ui-card.component';
 import { UiIconComponent } from '../../shared/components/ui-icon/ui-icon.component';
-import { ToastService } from '../../shared/services/toast.service';
-
-type Employee = Doc<'employees'>;
+import { UiCardComponent } from '../../shared/components/ui-card/ui-card.component';
+import { AuthService } from '../../core/auth/auth.service';
+import { EmployeeDashboardComponent } from './employee-dashboard.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, UiFormFieldComponent, UiButtonComponent, UiDataTableComponent, UiIconComponent, UiCardComponent],
+  imports: [
+    CommonModule,
+    RouterLink,
+    UiButtonComponent,
+    UiIconComponent,
+    UiCardComponent,
+    EmployeeDashboardComponent
+  ],
   providers: [DatePipe, DecimalPipe],
-  templateUrl: './dashboard.component.html',
-  styleUrl: './dashboard.component.css',
+  template: `
+    @if (canManage()) {
+      <div class="space-y-6">
+        <!-- Header -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h1 class="heading-accent text-2xl">Admin Dashboard</h1>
+            <p class="text-stone-500 mt-1">
+              Welcome back, {{ user()?.firstName || 'User' }}! Here's what's happening today.
+            </p>
+          </div>
+          <div class="text-sm font-medium text-stone-500 bg-stone-100 px-3 py-1.5 rounded-lg flex items-center gap-2">
+             <ui-icon name="calendar" class="w-4 h-4"></ui-icon>
+             {{ today | date:'fullDate' }}
+          </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <!-- Total Employees -->
+          <ui-card accent="bg-[#8b1e3f]">
+            <div class="flex items-start justify-between">
+              <div>
+                <p class="text-sm font-medium text-stone-500">Total Employees</p>
+                <h3 class="text-3xl font-bold mt-2 text-stone-800">{{ stats()?.totalEmployees || 0 }}</h3>
+              </div>
+              <div class="p-2 bg-stone-100 rounded-lg text-[#8b1e3f]">
+                <ui-icon name="users" class="w-6 h-6"></ui-icon>
+              </div>
+            </div>
+            <div class="mt-4 text-xs text-stone-500">
+              <span class="text-green-600 font-medium">{{ stats()?.activeEmployees || 0 }} Active</span>
+            </div>
+          </ui-card>
+
+          <!-- On Leave -->
+          <ui-card accent="bg-amber-500">
+            <div class="flex items-start justify-between">
+              <div>
+                <p class="text-sm font-medium text-stone-500">On Leave</p>
+                <h3 class="text-3xl font-bold mt-2 text-stone-800">{{ stats()?.onLeave || 0 }}</h3>
+              </div>
+              <div class="p-2 bg-amber-50 rounded-lg text-amber-600">
+                <ui-icon name="calendar" class="w-6 h-6"></ui-icon>
+              </div>
+            </div>
+            <div class="mt-4 text-xs text-stone-500">
+              Current absentees
+            </div>
+          </ui-card>
+
+          <!-- Departments -->
+          <ui-card accent="bg-indigo-500">
+            <div class="flex items-start justify-between">
+              <div>
+                <p class="text-sm font-medium text-stone-500">Departments</p>
+                <h3 class="text-3xl font-bold mt-2 text-stone-800">{{ stats()?.departments || 0 }}</h3>
+              </div>
+              <div class="p-2 bg-indigo-50 rounded-lg text-indigo-600">
+                <ui-icon name="building-office" class="w-6 h-6"></ui-icon>
+              </div>
+            </div>
+            <div class="mt-4 text-xs text-stone-500">
+               Operational units
+            </div>
+          </ui-card>
+
+          <!-- Pending Actions -->
+          <ui-card accent="bg-red-500">
+            <div class="flex items-start justify-between">
+              <div>
+                <p class="text-sm font-medium text-stone-500">Pending Actions</p>
+                <h3 class="text-3xl font-bold mt-2 text-stone-800">
+                  {{ (stats()?.pendingLeaveCount || 0) + (stats()?.pendingResignationCount || 0) + (stats()?.pendingJoinRequestCount || 0) }}
+                </h3>
+              </div>
+              <div class="p-2 bg-red-50 rounded-lg text-red-600">
+                <ui-icon name="bell" class="w-6 h-6"></ui-icon>
+              </div>
+            </div>
+            <div class="mt-4 text-xs text-stone-500">
+               Requires attention
+            </div>
+          </ui-card>
+        </div>
+
+        <!-- Action Items Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+          <!-- Pending Leave Requests -->
+          <div class="card p-0 overflow-hidden">
+            <div class="p-4 border-b border-stone-100 flex items-center justify-between">
+               <h3 class="font-bold text-[#8b1e3f] flex items-center gap-2">
+                  <ui-icon name="calendar" class="w-4 h-4"></ui-icon> Pending Leave Requests
+               </h3>
+               <a routerLink="/leave-requests" class="text-xs font-medium text-stone-500 hover:text-[#8b1e3f]">View All</a>
+            </div>
+
+            <div class="divide-y divide-stone-100">
+               @for (req of dashboardData()?.pendingLeaves; track req._id) {
+                 <div class="p-4 hover:bg-stone-50 transition-colors flex items-center justify-between group">
+                    <div>
+                       <div class="font-medium text-sm text-stone-800">{{ req.employeeName }}</div>
+                       <div class="text-xs text-stone-500 mt-1 flex items-center gap-2">
+                          <span class="px-1.5 py-0.5 rounded bg-stone-200 text-stone-600 font-semibold uppercase text-[10px]">{{ req.type }}</span>
+                          <span>{{ req.startDate | date:'MMM d' }} - {{ req.endDate | date:'MMM d' }}</span>
+                       </div>
+                    </div>
+                    <a routerLink="/leave-requests" class="text-xs font-medium text-[#8b1e3f] opacity-0 group-hover:opacity-100 transition-opacity">Review</a>
+                 </div>
+               } @empty {
+                 <div class="p-8 text-center text-stone-400 italic text-sm">No pending leave requests.</div>
+               }
+            </div>
+          </div>
+
+          <!-- Pending Resignations -->
+          <div class="card p-0 overflow-hidden">
+            <div class="p-4 border-b border-stone-100 flex items-center justify-between">
+               <h3 class="font-bold text-red-600 flex items-center gap-2">
+                  <ui-icon name="user" class="w-4 h-4"></ui-icon> Pending Resignations
+               </h3>
+               <a routerLink="/employees" class="text-xs font-medium text-stone-500 hover:text-red-600">View Employees</a>
+            </div>
+
+            <div class="divide-y divide-stone-100">
+               @for (res of dashboardData()?.pendingResignations; track res._id) {
+                 <div class="p-4 hover:bg-stone-50 transition-colors flex items-center justify-between group">
+                    <div>
+                       <div class="font-medium text-sm text-stone-800">{{ res.employeeName }}</div>
+                       <div class="text-xs text-stone-500 mt-1">
+                          Last Day: {{ res.lastWorkingDay | date:'mediumDate' }}
+                       </div>
+                       <div class="text-xs text-stone-400 italic mt-0.5">"{{ res.reason | slice:0:40 }}..."</div>
+                    </div>
+                    <a [routerLink]="['/employees', res.employeeId]" class="text-xs font-medium text-[#8b1e3f] opacity-0 group-hover:opacity-100 transition-opacity">Details</a>
+                 </div>
+               } @empty {
+                 <div class="p-8 text-center text-stone-400 italic text-sm">No pending resignations.</div>
+               }
+            </div>
+          </div>
+
+          <!-- Pending User Requests -->
+          @if (stats()?.pendingJoinRequestCount > 0) {
+            <div class="card p-0 overflow-hidden">
+              <div class="p-4 border-b border-stone-100 flex items-center justify-between">
+                 <h3 class="font-bold text-emerald-600 flex items-center gap-2">
+                    <ui-icon name="user-plus" class="w-4 h-4"></ui-icon> Pending User Requests
+                    <span class="ml-2 px-2 py-0.5 text-xs bg-emerald-100 text-emerald-700 rounded-full">{{ stats()?.pendingJoinRequestCount }}</span>
+                 </h3>
+              </div>
+
+              <div class="divide-y divide-stone-100">
+                 @for (req of dashboardData()?.pendingJoinRequests; track req._id) {
+                   <div class="p-4 hover:bg-stone-50 transition-colors">
+                      <div class="flex items-start justify-between gap-4">
+                         <div class="flex items-center gap-3">
+                            <div class="h-10 w-10 rounded-full bg-stone-200 flex items-center justify-center text-stone-500 overflow-hidden flex-shrink-0">
+                              <img *ngIf="req.requesterImage" [src]="req.requesterImage" class="w-full h-full object-cover" alt="">
+                              <ui-icon *ngIf="!req.requesterImage" name="user" class="w-5 h-5"></ui-icon>
+                            </div>
+                            <div>
+                               <div class="font-medium text-sm text-stone-800">{{ req.requesterName }}</div>
+                               <div class="text-xs text-stone-500">{{ req.requesterEmail }}</div>
+                               <div class="text-xs text-stone-400 mt-1" *ngIf="req.note">"{{ req.note | slice:0:50 }}{{ req.note.length > 50 ? '...' : '' }}"</div>
+                            </div>
+                         </div>
+                         <div class="flex items-center gap-2 flex-shrink-0">
+                            <ui-button
+                              variant="ghost"
+                              size="sm"
+                              class="text-red-600 hover:bg-red-50"
+                              [loading]="processingRequestId() === req._id && processingAction() === 'reject'"
+                              (onClick)="rejectRequest(req._id)"
+                            >
+                              Reject
+                            </ui-button>
+                            <ui-button
+                              variant="primary"
+                              size="sm"
+                              [loading]="processingRequestId() === req._id && processingAction() === 'approve'"
+                              (onClick)="approveRequest(req._id)"
+                            >
+                              Approve
+                            </ui-button>
+                         </div>
+                      </div>
+                   </div>
+                 }
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    } @else {
+      <app-employee-dashboard />
+    }
+  `
 })
 export class Dashboard implements OnInit, OnDestroy {
-  private fb = inject(FormBuilder);
   private convexService = inject(ConvexClientService);
-  private toastService = inject(ToastService);
+  private authService = inject(AuthService);
 
-  // Today's date for the header
-  protected readonly today = new Date();
+  today = new Date();
+  user = computed(() => this.authService.getUser()());
 
-  // Real employee data from Convex
-  protected readonly employees = signal<Employee[]>([]);
+  canManage = this.authService.hasRole(['super_admin', 'admin', 'hr_manager', 'manager']);
+
+  dashboardData = signal<any>(null);
+  stats = computed(() => this.dashboardData()?.stats);
+  processingRequestId = signal<string | null>(null);
+  processingAction = signal<'approve' | 'reject' | null>(null);
+
   private unsubscribe: (() => void) | null = null;
 
-  // Table Configuration
-  protected readonly columns: TableColumn[] = [
-    {
-      key: 'name',
-      header: 'Name',
-      sortable: true,
-      formatter: (value, row) => `${row.firstName} ${row.lastName}`
-    },
-    { key: 'department', header: 'Department', sortable: true },
-    { key: 'position', header: 'Position', sortable: true },
-    {
-      key: 'status',
-      header: 'Status',
-      type: 'badge',
-      badgeVariant: (value) => {
-        switch (value) {
-          case 'active': return 'success';
-          case 'on-leave': return 'warning';
-          case 'terminated': return 'danger';
-          default: return 'neutral';
-        }
-      }
-    }
-  ];
-
-  protected readonly newEmployeeForm = this.fb.group({
-    firstName: ['', Validators.required],
-    lastName: ['', Validators.required],
-    email: ['', [Validators.required, Validators.email]],
-    department: ['', Validators.required],
-  });
-
-  protected isSubmitting = signal(false);
-
   ngOnInit() {
+    // Only fetch admin stats if user can manage
+    // We can't put this in effect easily without cleanup issues,
+    // but since canManage is stable for a session usually, we can check it once or assume the query will just return empty if unauthorized
+
+    // Better: use effect to subscribe/unsubscribe based on role, but for now strict check:
     const client = this.convexService.getClient();
-    this.unsubscribe = client.onUpdate(api.employees.list, {}, (employees) => {
-      this.employees.set(employees);
+
+    // We'll fetch it regardless for now, the backend handles authorization by returning empty stats
+    // But ideally we shouldn't even subscribe if not manager
+    this.unsubscribe = client.onUpdate(api.dashboard.getStats, {}, (data) => {
+      if (this.canManage()) {
+        this.dashboardData.set(data);
+      }
     });
   }
 
@@ -81,44 +260,36 @@ export class Dashboard implements OnInit, OnDestroy {
     }
   }
 
-  // Dashboard stats computed from employee data
-  protected readonly stats = computed(() => {
-    const emps = this.employees();
-    return {
-      totalEmployees: emps.length,
-      activeEmployees: emps.filter(e => e.status === 'active').length,
-      onLeave: emps.filter(e => e.status === 'on-leave').length,
-      departments: [...new Set(emps.map(e => e.department))].length,
-    };
-  });
+  async approveRequest(requestId: string) {
+    this.processingRequestId.set(requestId);
+    this.processingAction.set('approve');
+    try {
+      await this.convexService.getClient().mutation(api.onboarding.approveJoinRequest, {
+        requestId: requestId as any,
+        role: 'employee'
+      });
+    } catch (err: any) {
+      alert(err.message || 'Failed to approve request');
+    } finally {
+      this.processingRequestId.set(null);
+      this.processingAction.set(null);
+    }
+  }
 
-  protected async onQuickAdd() {
-    if (this.newEmployeeForm.valid) {
-      this.isSubmitting.set(true);
-      const formData = this.newEmployeeForm.value;
-
-      try {
-        await this.convexService.getClient().mutation(api.employees.create, {
-          firstName: formData.firstName!,
-          lastName: formData.lastName!,
-          email: formData.email!,
-          department: formData.department!,
-          position: 'New Hire', // Default position
-          status: 'active',
-          startDate: new Date().toISOString().split('T')[0],
-        });
-
-        // Reset form
-        this.newEmployeeForm.reset();
-        this.toastService.success('Employee added successfully');
-      } catch (error) {
-        console.error('Failed to create employee:', error);
-        this.toastService.error('Failed to create employee. Please try again.');
-      } finally {
-        this.isSubmitting.set(false);
-      }
-    } else {
-      this.newEmployeeForm.markAllAsTouched();
+  async rejectRequest(requestId: string) {
+    const reason = prompt('Rejection reason (optional):');
+    this.processingRequestId.set(requestId);
+    this.processingAction.set('reject');
+    try {
+      await this.convexService.getClient().mutation(api.onboarding.rejectJoinRequest, {
+        requestId: requestId as any,
+        reason: reason || undefined
+      });
+    } catch (err: any) {
+      alert(err.message || 'Failed to reject request');
+    } finally {
+      this.processingRequestId.set(null);
+      this.processingAction.set(null);
     }
   }
 }
