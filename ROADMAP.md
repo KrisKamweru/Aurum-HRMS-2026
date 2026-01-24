@@ -159,8 +159,9 @@ Aurum HRMS is a modern, comprehensive, and scalable **SaaS** Human Resource Mana
 6. ~~**User-Employee Linking**: UI at `/organization/user-linking` to connect user accounts to employee records.~~ ✅ DONE
 7. ~~**Access Control**: Foundational RBAC with route guards and backend authorization checks.~~ ✅ DONE
 8. ~~**Super Admin Dashboard**: Management of multiple organizations at `/super-admin` (create, view, suspend orgs).~~ ✅ DONE
-9. **Time and Attendance**: Manual clock-in/clock-out or timesheet entry interface.
-10. **Form Prerequisites**: Disable action buttons when prerequisites are missing, with tooltips explaining what's needed.
+9. ~~**Test Environment**: Automated seeding of test organization, profiles, and user linking (`docs/SEED_INSTRUCTIONS.md`).~~ ✅ DONE
+10. **Time and Attendance**: Manual clock-in/clock-out or timesheet entry interface.
+11. **Form Prerequisites**: Disable action buttons when prerequisites are missing, with tooltips explaining what's needed.
 
 ---
 

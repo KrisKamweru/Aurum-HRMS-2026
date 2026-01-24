@@ -30,12 +30,12 @@ type ActionType = 'promote' | 'transfer' | 'resign' | 'terminate' | 'warning' | 
       <!-- Header -->
       <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
         <div class="flex items-center gap-4">
-          <div class="w-16 h-16 rounded-full bg-stone-200 flex items-center justify-center text-2xl font-bold text-stone-500">
+          <div class="w-16 h-16 rounded-full bg-stone-200 dark:bg-stone-700 flex items-center justify-center text-2xl font-bold text-stone-500 dark:text-stone-300">
             {{ getInitials(employee()) }}
           </div>
           <div>
-            <h1 class="heading-accent text-2xl">{{ employee().firstName }} {{ employee().lastName }}</h1>
-            <p class="text-stone-500 flex items-center gap-2">
+            <h1 class="heading-accent text-2xl dark:text-stone-100">{{ employee().firstName }} {{ employee().lastName }}</h1>
+            <p class="text-stone-500 dark:text-stone-400 flex items-center gap-2">
               <ui-icon name="briefcase" class="w-4 h-4"></ui-icon>
               {{ employee().position || 'No Position' }}
             </p>
@@ -45,34 +45,40 @@ type ActionType = 'promote' | 'transfer' | 'resign' | 'terminate' | 'warning' | 
         <div class="flex flex-wrap gap-2" *ngIf="canManageEmployees()">
           <ui-button variant="outline" (onClick)="openAction('promote')">Promote</ui-button>
           <ui-button variant="outline" (onClick)="openAction('transfer')">Transfer</ui-button>
-          <ui-button variant="outline" (onClick)="openAction('warning')" class="!text-amber-600 !border-amber-200 hover:!bg-amber-50">Warning</ui-button>
-          <ui-button variant="outline" (onClick)="openAction('award')" class="!text-indigo-600 !border-indigo-200 hover:!bg-indigo-50">Award</ui-button>
-          <ui-button variant="outline" (onClick)="openAction('travel')" class="!text-sky-600 !border-sky-200 hover:!bg-sky-50">Travel</ui-button>
-          <ui-button variant="outline" (onClick)="openAction('complaint')" class="!text-rose-600 !border-rose-200 hover:!bg-rose-50">Complaint</ui-button>
-          <ui-button variant="outline" (onClick)="openAction('resign')" class="!text-orange-600 !border-orange-200 hover:!bg-orange-50">Resignation</ui-button>
-          <ui-button variant="outline" (onClick)="openAction('terminate')" class="!text-red-600 !border-red-200 hover:!bg-red-50">Terminate</ui-button>
+          <ui-button variant="outline" (onClick)="openAction('warning')" class="!text-amber-600 dark:!text-amber-400 !border-amber-200 dark:!border-amber-800 hover:!bg-amber-50 dark:hover:!bg-amber-900/20">Warning</ui-button>
+          <ui-button variant="outline" (onClick)="openAction('award')" class="!text-indigo-600 dark:!text-indigo-400 !border-indigo-200 dark:!border-indigo-800 hover:!bg-indigo-50 dark:hover:!bg-indigo-900/20">Award</ui-button>
+          <ui-button variant="outline" (onClick)="openAction('travel')" class="!text-sky-600 dark:!text-sky-400 !border-sky-200 dark:!border-sky-800 hover:!bg-sky-50 dark:hover:!bg-sky-900/20">Travel</ui-button>
+          <ui-button variant="outline" (onClick)="openAction('complaint')" class="!text-rose-600 dark:!text-rose-400 !border-rose-200 dark:!border-rose-800 hover:!bg-rose-50 dark:hover:!bg-rose-900/20">Complaint</ui-button>
+          <ui-button variant="outline" (onClick)="openAction('resign')" class="!text-orange-600 dark:!text-orange-400 !border-orange-200 dark:!border-orange-800 hover:!bg-orange-50 dark:hover:!bg-orange-900/20">Resignation</ui-button>
+          <ui-button variant="outline" (onClick)="openAction('terminate')" class="!text-red-600 dark:!text-red-400 !border-red-200 dark:!border-red-800 hover:!bg-red-50 dark:hover:!bg-red-900/20">Terminate</ui-button>
         </div>
       </div>
 
       <!-- Tabs -->
-      <div class="border-b border-stone-200">
+      <div class="border-b border-stone-200 dark:border-stone-700">
         <nav class="-mb-px flex space-x-8" aria-label="Tabs">
           <button
             [class.border-[#8b1e3f]]="activeTab() === 'overview'"
+            [class.dark:border-[#fce7eb]]="activeTab() === 'overview'"
             [class.text-[#8b1e3f]]="activeTab() === 'overview'"
+            [class.dark:text-[#fce7eb]]="activeTab() === 'overview'"
             [class.border-transparent]="activeTab() !== 'overview'"
             [class.text-stone-500]="activeTab() !== 'overview'"
-            class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm hover:text-[#8b1e3f] hover:border-stone-300 transition-colors"
+            [class.dark:text-stone-400]="activeTab() !== 'overview'"
+            class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm hover:text-[#8b1e3f] dark:hover:text-[#fce7eb] hover:border-stone-300 dark:hover:border-stone-600 transition-colors"
             (click)="activeTab.set('overview')"
           >
             Overview
           </button>
           <button
             [class.border-[#8b1e3f]]="activeTab() === 'history'"
+            [class.dark:border-[#fce7eb]]="activeTab() === 'history'"
             [class.text-[#8b1e3f]]="activeTab() === 'history'"
+            [class.dark:text-[#fce7eb]]="activeTab() === 'history'"
             [class.border-transparent]="activeTab() !== 'history'"
             [class.text-stone-500]="activeTab() !== 'history'"
-            class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm hover:text-[#8b1e3f] hover:border-stone-300 transition-colors"
+            [class.dark:text-stone-400]="activeTab() !== 'history'"
+            class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm hover:text-[#8b1e3f] dark:hover:text-[#fce7eb] hover:border-stone-300 dark:hover:border-stone-600 transition-colors"
             (click)="activeTab.set('history')"
           >
             History
@@ -86,24 +92,24 @@ type ActionType = 'promote' | 'transfer' | 'resign' | 'terminate' | 'warning' | 
         <!-- Left Column: Personal & Professional Info -->
         <div class="md:col-span-2 space-y-6">
           <!-- Professional Details card -->
-          <div class="card p-6">
-            <h3 class="font-bold text-lg mb-4 text-[#8b1e3f] border-b pb-2">Professional Details</h3>
+          <div class="bg-white dark:bg-stone-800 rounded-2xl p-6 shadow-sm border border-stone-200 dark:border-stone-700">
+            <h3 class="font-bold text-lg mb-4 text-[#8b1e3f] dark:text-[#fce7eb] border-b border-stone-100 dark:border-stone-700 pb-2">Professional Details</h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div class="info-group">
                 <label>Employee ID</label>
-                <p class="font-mono text-sm">{{ employee()._id }}</p>
+                <p class="font-mono text-sm text-stone-800 dark:text-stone-200">{{ employee()._id }}</p>
               </div>
               <div class="info-group">
                 <label>Email</label>
-                <p>{{ employee().email }}</p>
+                <p class="text-stone-800 dark:text-stone-200">{{ employee().email }}</p>
               </div>
               <div class="info-group">
                 <label>Department</label>
-                <p>{{ employee().department || '-' }}</p>
+                <p class="text-stone-800 dark:text-stone-200">{{ employee().department || '-' }}</p>
               </div>
               <div class="info-group">
                 <label>Location</label>
-                <p>{{ employee().location || '-' }}</p>
+                <p class="text-stone-800 dark:text-stone-200">{{ employee().location || '-' }}</p>
               </div>
               <div class="info-group">
                 <label>Status</label>
@@ -113,34 +119,34 @@ type ActionType = 'promote' | 'transfer' | 'resign' | 'terminate' | 'warning' | 
               </div>
               <div class="info-group">
                 <label>Start Date</label>
-                <p>{{ employee().startDate | date }}</p>
+                <p class="text-stone-800 dark:text-stone-200">{{ employee().startDate | date }}</p>
               </div>
               <div class="info-group">
                 <label>Manager</label>
-                <p>{{ employee().managerName || '-' }}</p>
+                <p class="text-stone-800 dark:text-stone-200">{{ employee().managerName || '-' }}</p>
               </div>
             </div>
           </div>
 
           <!-- Personal Details card -->
-          <div class="card p-6">
-            <h3 class="font-bold text-lg mb-4 text-[#8b1e3f] border-b pb-2">Personal Details</h3>
+          <div class="bg-white dark:bg-stone-800 rounded-2xl p-6 shadow-sm border border-stone-200 dark:border-stone-700">
+            <h3 class="font-bold text-lg mb-4 text-[#8b1e3f] dark:text-[#fce7eb] border-b border-stone-100 dark:border-stone-700 pb-2">Personal Details</h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div class="info-group">
                 <label>Phone</label>
-                <p>{{ employee().phone || '-' }}</p>
+                <p class="text-stone-800 dark:text-stone-200">{{ employee().phone || '-' }}</p>
               </div>
               <div class="info-group">
                 <label>Address</label>
-                <p>{{ employee().address || '-' }}</p>
+                <p class="text-stone-800 dark:text-stone-200">{{ employee().address || '-' }}</p>
               </div>
               <div class="info-group">
                 <label>Gender</label>
-                <p>{{ employee().gender || '-' }}</p>
+                <p class="text-stone-800 dark:text-stone-200">{{ employee().gender || '-' }}</p>
               </div>
               <div class="info-group">
                 <label>Date of Birth</label>
-                <p>{{ employee().dob ? (employee().dob | date) : '-' }}</p>
+                <p class="text-stone-800 dark:text-stone-200">{{ employee().dob ? (employee().dob | date) : '-' }}</p>
               </div>
             </div>
           </div>
@@ -148,14 +154,14 @@ type ActionType = 'promote' | 'transfer' | 'resign' | 'terminate' | 'warning' | 
 
         <!-- Right Column: History/Widgets (Placeholder for now) -->
         <div class="space-y-6">
-          <div class="card p-6 bg-stone-50">
-            <h3 class="font-bold mb-2">Quick Actions</h3>
-            <p class="text-sm text-stone-500 mb-4">Common tasks for this employee.</p>
+          <div class="bg-stone-50 dark:bg-stone-800/50 rounded-2xl p-6 border border-stone-200 dark:border-stone-700">
+            <h3 class="font-bold mb-2 text-stone-800 dark:text-stone-200">Quick Actions</h3>
+            <p class="text-sm text-stone-500 dark:text-stone-400 mb-4">Common tasks for this employee.</p>
             <div class="flex flex-col gap-2">
-              <button class="text-left p-2 hover:bg-white rounded transition text-sm flex items-center gap-2">
+              <button class="text-left p-2 hover:bg-white dark:hover:bg-stone-800 rounded transition text-sm flex items-center gap-2 text-stone-600 dark:text-stone-300">
                 <ui-icon name="document" class="w-4 h-4"></ui-icon> View Documents
               </button>
-              <button class="text-left p-2 hover:bg-white rounded transition text-sm flex items-center gap-2">
+              <button class="text-left p-2 hover:bg-white dark:hover:bg-stone-800 rounded transition text-sm flex items-center gap-2 text-stone-600 dark:text-stone-300">
                  <ui-icon name="calendar" class="w-4 h-4"></ui-icon> View Leave History
               </button>
             </div>
@@ -167,105 +173,105 @@ type ActionType = 'promote' | 'transfer' | 'resign' | 'terminate' | 'warning' | 
       <div class="space-y-6" *ngIf="activeTab() === 'history'">
 
         <!-- Promotions -->
-        <div class="card p-6">
-          <h3 class="font-bold text-lg mb-4 text-[#8b1e3f] flex items-center gap-2">
+        <div class="bg-white dark:bg-stone-800 rounded-2xl p-6 shadow-sm border border-stone-200 dark:border-stone-700">
+          <h3 class="font-bold text-lg mb-4 text-[#8b1e3f] dark:text-[#fce7eb] flex items-center gap-2">
             <ui-icon name="trending-up" class="w-5 h-5"></ui-icon> Promotions
           </h3>
-          <div *ngIf="promotions().length === 0" class="text-stone-500 italic">No promotion history.</div>
+          <div *ngIf="promotions().length === 0" class="text-stone-500 dark:text-stone-400 italic">No promotion history.</div>
           <div class="space-y-4">
-            <div *ngFor="let item of promotions()" class="border-l-2 border-[#8b1e3f] pl-4 py-1">
-              <div class="text-sm text-stone-500">{{ item.promotionDate | date }}</div>
-              <div class="font-medium">Promoted to new designation</div>
-              <div class="text-sm" *ngIf="item.remarks">"{{ item.remarks }}"</div>
-              <div class="text-xs text-stone-400 mt-1" *ngIf="item.salaryIncrement">Salary Increment: {{ item.salaryIncrement | currency }}</div>
+            <div *ngFor="let item of promotions()" class="border-l-2 border-[#8b1e3f] dark:border-[#fce7eb] pl-4 py-1">
+              <div class="text-sm text-stone-500 dark:text-stone-400">{{ item.promotionDate | date }}</div>
+              <div class="font-medium text-stone-800 dark:text-stone-200">Promoted to new designation</div>
+              <div class="text-sm text-stone-600 dark:text-stone-300" *ngIf="item.remarks">"{{ item.remarks }}"</div>
+              <div class="text-xs text-stone-400 dark:text-stone-500 mt-1" *ngIf="item.salaryIncrement">Salary Increment: {{ item.salaryIncrement | currency }}</div>
             </div>
           </div>
         </div>
 
         <!-- Transfers -->
-        <div class="card p-6">
-          <h3 class="font-bold text-lg mb-4 text-[#8b1e3f] flex items-center gap-2">
+        <div class="bg-white dark:bg-stone-800 rounded-2xl p-6 shadow-sm border border-stone-200 dark:border-stone-700">
+          <h3 class="font-bold text-lg mb-4 text-[#8b1e3f] dark:text-[#fce7eb] flex items-center gap-2">
             <ui-icon name="arrows-right-left" class="w-5 h-5"></ui-icon> Transfers
           </h3>
-          <div *ngIf="transfers().length === 0" class="text-stone-500 italic">No transfer history.</div>
+          <div *ngIf="transfers().length === 0" class="text-stone-500 dark:text-stone-400 italic">No transfer history.</div>
           <div class="space-y-4">
-            <div *ngFor="let item of transfers()" class="border-l-2 border-blue-500 pl-4 py-1">
-              <div class="text-sm text-stone-500">{{ item.transferDate | date }}</div>
-              <div class="font-medium">Transferred</div>
-              <div class="text-sm" *ngIf="item.remarks">"{{ item.remarks }}"</div>
+            <div *ngFor="let item of transfers()" class="border-l-2 border-blue-500 dark:border-blue-400 pl-4 py-1">
+              <div class="text-sm text-stone-500 dark:text-stone-400">{{ item.transferDate | date }}</div>
+              <div class="font-medium text-stone-800 dark:text-stone-200">Transferred</div>
+              <div class="text-sm text-stone-600 dark:text-stone-300" *ngIf="item.remarks">"{{ item.remarks }}"</div>
             </div>
           </div>
         </div>
 
         <!-- Resignations -->
-        <div class="card p-6" *ngIf="resignations().length > 0">
-          <h3 class="font-bold text-lg mb-4 text-red-600 flex items-center gap-2">
+        <div class="bg-white dark:bg-stone-800 rounded-2xl p-6 shadow-sm border border-stone-200 dark:border-stone-700" *ngIf="resignations().length > 0">
+          <h3 class="font-bold text-lg mb-4 text-red-600 dark:text-red-400 flex items-center gap-2">
             <ui-icon name="user" class="w-5 h-5"></ui-icon> Separation / Resignation
           </h3>
           <div class="space-y-4">
-            <div *ngFor="let item of resignations()" class="border-l-2 border-red-500 pl-4 py-1">
+            <div *ngFor="let item of resignations()" class="border-l-2 border-red-500 dark:border-red-400 pl-4 py-1">
               <div class="flex justify-between">
-                 <div class="font-medium">Resignation Submitted</div>
+                 <div class="font-medium text-stone-800 dark:text-stone-200">Resignation Submitted</div>
                  <span [class]="'badge ' + getStatusBadgeClass(item.status)">{{ item.status | titlecase }}</span>
               </div>
-              <div class="text-sm text-stone-500 mt-1">Last Working Day: {{ item.lastWorkingDay | date }}</div>
-              <div class="text-sm text-stone-600 italic mt-1">"{{ item.reason }}"</div>
+              <div class="text-sm text-stone-500 dark:text-stone-400 mt-1">Last Working Day: {{ item.lastWorkingDay | date }}</div>
+              <div class="text-sm text-stone-600 dark:text-stone-300 italic mt-1">"{{ item.reason }}"</div>
             </div>
           </div>
         </div>
 
         <!-- Warnings -->
-        <div class="card p-6">
-          <h3 class="font-bold text-lg mb-4 text-amber-600 flex items-center gap-2">
+        <div class="bg-white dark:bg-stone-800 rounded-2xl p-6 shadow-sm border border-stone-200 dark:border-stone-700">
+          <h3 class="font-bold text-lg mb-4 text-amber-600 dark:text-amber-400 flex items-center gap-2">
             <ui-icon name="exclamation-triangle" class="w-5 h-5"></ui-icon> Warnings
           </h3>
-          <div *ngIf="warnings().length === 0" class="text-stone-500 italic">No disciplinary history.</div>
+          <div *ngIf="warnings().length === 0" class="text-stone-500 dark:text-stone-400 italic">No disciplinary history.</div>
           <div class="space-y-4">
-            <div *ngFor="let item of warnings()" class="bg-amber-50 p-3 rounded-lg border border-amber-100">
+            <div *ngFor="let item of warnings()" class="bg-amber-50 dark:bg-amber-900/10 p-3 rounded-lg border border-amber-100 dark:border-amber-800/30">
               <div class="flex justify-between items-start">
-                <span class="font-bold text-amber-800">{{ item.subject }}</span>
-                <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-200 text-amber-900 uppercase">{{ item.severity }}</span>
+                <span class="font-bold text-amber-800 dark:text-amber-200">{{ item.subject }}</span>
+                <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-200 dark:bg-amber-900/40 text-amber-900 dark:text-amber-200 uppercase">{{ item.severity }}</span>
               </div>
-              <div class="text-sm text-amber-900 mt-1">{{ item.description }}</div>
-              <div class="text-xs text-amber-700 mt-2">Date: {{ item.issueDate | date }}</div>
+              <div class="text-sm text-amber-900 dark:text-amber-100 mt-1">{{ item.description }}</div>
+              <div class="text-xs text-amber-700 dark:text-amber-300 mt-2">Date: {{ item.issueDate | date }}</div>
             </div>
           </div>
         </div>
 
         <!-- Awards -->
-        <div class="card p-6">
-          <h3 class="font-bold text-lg mb-4 text-indigo-600 flex items-center gap-2">
+        <div class="bg-white dark:bg-stone-800 rounded-2xl p-6 shadow-sm border border-stone-200 dark:border-stone-700">
+          <h3 class="font-bold text-lg mb-4 text-indigo-600 dark:text-indigo-400 flex items-center gap-2">
             <ui-icon name="star" class="w-5 h-5"></ui-icon> Awards
           </h3>
-          <div *ngIf="awards().length === 0" class="text-stone-500 italic">No awards received.</div>
+          <div *ngIf="awards().length === 0" class="text-stone-500 dark:text-stone-400 italic">No awards received.</div>
           <div class="space-y-4">
-            <div *ngFor="let item of awards()" class="bg-indigo-50 p-3 rounded-lg border border-indigo-100 flex items-start gap-3">
-               <div class="p-2 bg-white rounded-full text-yellow-500 shadow-sm">
+            <div *ngFor="let item of awards()" class="bg-indigo-50 dark:bg-indigo-900/10 p-3 rounded-lg border border-indigo-100 dark:border-indigo-800/30 flex items-start gap-3">
+               <div class="p-2 bg-white dark:bg-stone-800 rounded-full text-yellow-500 dark:text-yellow-400 shadow-sm">
                  <ui-icon name="star" class="w-5 h-5"></ui-icon>
                </div>
                <div>
-                 <div class="font-bold text-indigo-900">{{ item.title }}</div>
-                 <div class="text-sm text-indigo-800">{{ item.description }}</div>
-                 <div class="text-xs text-indigo-600 mt-1">{{ item.date | date }} <span *ngIf="item.cashPrice">• {{ item.cashPrice | currency }}</span></div>
+                 <div class="font-bold text-indigo-900 dark:text-indigo-200">{{ item.title }}</div>
+                 <div class="text-sm text-indigo-800 dark:text-indigo-300">{{ item.description }}</div>
+                 <div class="text-xs text-indigo-600 dark:text-indigo-400 mt-1">{{ item.date | date }} <span *ngIf="item.cashPrice">• {{ item.cashPrice | currency }}</span></div>
                </div>
             </div>
           </div>
         </div>
 
         <!-- Travel Requests -->
-        <div class="card p-6">
-          <h3 class="font-bold text-lg mb-4 text-sky-600 flex items-center gap-2">
+        <div class="bg-white dark:bg-stone-800 rounded-2xl p-6 shadow-sm border border-stone-200 dark:border-stone-700">
+          <h3 class="font-bold text-lg mb-4 text-sky-600 dark:text-sky-400 flex items-center gap-2">
             <ui-icon name="globe-alt" class="w-5 h-5"></ui-icon> Travel History
           </h3>
-          <div *ngIf="travelRequests().length === 0" class="text-stone-500 italic">No travel history.</div>
+          <div *ngIf="travelRequests().length === 0" class="text-stone-500 dark:text-stone-400 italic">No travel history.</div>
           <div class="space-y-4">
-            <div *ngFor="let item of travelRequests()" class="bg-sky-50 p-3 rounded-lg border border-sky-100">
+            <div *ngFor="let item of travelRequests()" class="bg-sky-50 dark:bg-sky-900/10 p-3 rounded-lg border border-sky-100 dark:border-sky-800/30">
               <div class="flex justify-between items-start">
-                <span class="font-bold text-sky-900">{{ item.destination }}</span>
+                <span class="font-bold text-sky-900 dark:text-sky-200">{{ item.destination }}</span>
                 <span [class]="'badge ' + getStatusBadgeClass(item.status)">{{ item.status | titlecase }}</span>
               </div>
-              <div class="text-sm text-sky-800 mt-1">Purpose: {{ item.purpose }}</div>
-              <div class="text-xs text-sky-600 mt-2">
+              <div class="text-sm text-sky-800 dark:text-sky-300 mt-1">Purpose: {{ item.purpose }}</div>
+              <div class="text-xs text-sky-600 dark:text-sky-400 mt-2">
                 {{ item.startDate | date }} - {{ item.endDate | date }}
                 <span *ngIf="item.budget">• Budget: {{ item.budget | currency }}</span>
               </div>
@@ -274,19 +280,19 @@ type ActionType = 'promote' | 'transfer' | 'resign' | 'terminate' | 'warning' | 
         </div>
 
         <!-- Complaints -->
-        <div class="card p-6">
-          <h3 class="font-bold text-lg mb-4 text-rose-600 flex items-center gap-2">
+        <div class="bg-white dark:bg-stone-800 rounded-2xl p-6 shadow-sm border border-stone-200 dark:border-stone-700">
+          <h3 class="font-bold text-lg mb-4 text-rose-600 dark:text-rose-400 flex items-center gap-2">
             <ui-icon name="scale" class="w-5 h-5"></ui-icon> Complaints Filed
           </h3>
-          <div *ngIf="complaints().length === 0" class="text-stone-500 italic">No complaints filed.</div>
+          <div *ngIf="complaints().length === 0" class="text-stone-500 dark:text-stone-400 italic">No complaints filed.</div>
           <div class="space-y-4">
-            <div *ngFor="let item of complaints()" class="bg-rose-50 p-3 rounded-lg border border-rose-100">
+            <div *ngFor="let item of complaints()" class="bg-rose-50 dark:bg-rose-900/10 p-3 rounded-lg border border-rose-100 dark:border-rose-800/30">
               <div class="flex justify-between items-start">
-                <span class="font-bold text-rose-900">{{ item.subject }}</span>
+                <span class="font-bold text-rose-900 dark:text-rose-200">{{ item.subject }}</span>
                 <span [class]="'badge ' + getStatusBadgeClass(item.status)">{{ item.status | titlecase }}</span>
               </div>
-              <div class="text-sm text-rose-800 mt-1">{{ item.description }}</div>
-              <div class="text-xs text-rose-600 mt-2">
+              <div class="text-sm text-rose-800 dark:text-rose-300 mt-1">{{ item.description }}</div>
+              <div class="text-xs text-rose-600 dark:text-rose-400 mt-2">
                 Filed on: {{ item.date | date }}
                 <span *ngIf="item.accusedId">• Against ID: {{ item.accusedId }}</span>
               </div>
@@ -327,9 +333,15 @@ type ActionType = 'promote' | 'transfer' | 'resign' | 'terminate' | 'warning' | 
       letter-spacing: 0.05em;
       margin-bottom: 0.25rem;
     }
+    :host-context(.dark) .info-group label {
+      color: #a8a29e;
+    }
     .info-group p {
       color: #292524;
       font-weight: 500;
+    }
+    :host-context(.dark) .info-group p {
+      color: #e7e5e4;
     }
     .badge {
       display: inline-flex;
@@ -340,9 +352,16 @@ type ActionType = 'promote' | 'transfer' | 'resign' | 'terminate' | 'warning' | 
       font-weight: 500;
     }
     .badge-success { background-color: #dcfce7; color: #166534; }
+    :host-context(.dark) .badge-success { background-color: rgba(22, 101, 52, 0.2); color: #86efac; border: 1px solid rgba(22, 101, 52, 0.3); }
+
     .badge-warning { background-color: #fef9c3; color: #854d0e; }
+    :host-context(.dark) .badge-warning { background-color: rgba(133, 77, 14, 0.2); color: #fde047; border: 1px solid rgba(133, 77, 14, 0.3); }
+
     .badge-danger { background-color: #fee2e2; color: #991b1b; }
+    :host-context(.dark) .badge-danger { background-color: rgba(153, 27, 27, 0.2); color: #fca5a5; border: 1px solid rgba(153, 27, 27, 0.3); }
+
     .badge-neutral { background-color: #f3f4f6; color: #1f2937; }
+    :host-context(.dark) .badge-neutral { background-color: rgba(31, 41, 55, 0.4); color: #d1d5db; border: 1px solid rgba(75, 85, 99, 0.3); }
   `]
 })
 export class EmployeeDetailComponent implements OnInit {

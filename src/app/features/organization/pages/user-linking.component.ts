@@ -28,39 +28,39 @@ import { api } from '../../../../../convex/_generated/api';
   template: `
     <div class="space-y-6">
       <div>
-        <h1 class="heading-accent">User-Employee Linking</h1>
-        <p class="mt-3 text-stone-500">Connect user accounts to employee records for full system access.</p>
+        <h1 class="heading-accent dark:text-stone-100">User-Employee Linking</h1>
+        <p class="mt-3 text-stone-500 dark:text-stone-400">Connect user accounts to employee records for full system access.</p>
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Unlinked Users -->
         <ui-card>
           <div class="flex items-center justify-between mb-4">
-            <h2 class="font-semibold text-stone-900 flex items-center gap-2">
-              <ui-icon name="user" class="w-5 h-5 text-[#8b1e3f]"></ui-icon>
+            <h2 class="font-semibold text-stone-900 dark:text-stone-100 flex items-center gap-2">
+              <ui-icon name="user" class="w-5 h-5 text-[#8b1e3f] dark:text-[#fce7eb]"></ui-icon>
               Unlinked Users
               @if (unlinkedUsers().length > 0) {
-                <span class="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">{{ unlinkedUsers().length }}</span>
+                <span class="text-xs bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 px-2 py-0.5 rounded-full">{{ unlinkedUsers().length }}</span>
               }
             </h2>
           </div>
 
           @if (loading()) {
             <div class="space-y-3">
-              <div class="h-16 bg-stone-100 rounded-xl animate-pulse"></div>
-              <div class="h-16 bg-stone-100 rounded-xl animate-pulse"></div>
+              <div class="h-16 bg-stone-100 dark:bg-stone-800 rounded-xl animate-pulse"></div>
+              <div class="h-16 bg-stone-100 dark:bg-stone-800 rounded-xl animate-pulse"></div>
             </div>
           } @else if (unlinkedUsers().length === 0) {
-            <div class="text-center py-8 text-stone-400">
-              <ui-icon name="check-circle" class="w-8 h-8 mx-auto mb-2 text-green-500"></ui-icon>
+            <div class="text-center py-8 text-stone-400 dark:text-stone-500">
+              <ui-icon name="check-circle" class="w-8 h-8 mx-auto mb-2 text-green-500 dark:text-green-400"></ui-icon>
               <p>All users are linked to employee records</p>
             </div>
           } @else {
             <div class="space-y-3">
               @for (user of unlinkedUsers(); track user._id) {
-                <div class="p-4 rounded-xl border border-stone-200 bg-stone-50/50 flex items-center justify-between group hover:border-[#8b1e3f]/20 transition-all">
+                <div class="p-4 rounded-xl border border-stone-200 dark:border-stone-700 bg-stone-50/50 dark:bg-stone-800/30 flex items-center justify-between group hover:border-[#8b1e3f]/20 dark:hover:border-[#8b1e3f]/40 transition-all">
                   <div class="flex items-center gap-3">
-                    <div class="h-10 w-10 rounded-full bg-stone-200 flex items-center justify-center text-stone-500 overflow-hidden">
+                    <div class="h-10 w-10 rounded-full bg-stone-200 dark:bg-stone-700 flex items-center justify-center text-stone-500 dark:text-stone-400 overflow-hidden">
                       @if (user.image) {
                         <img [src]="user.image" class="w-full h-full object-cover" alt="">
                       } @else {
@@ -68,8 +68,8 @@ import { api } from '../../../../../convex/_generated/api';
                       }
                     </div>
                     <div>
-                      <div class="font-medium text-stone-900">{{ user.name }}</div>
-                      <div class="text-xs text-stone-500">{{ user.email }}</div>
+                      <div class="font-medium text-stone-900 dark:text-stone-100">{{ user.name }}</div>
+                      <div class="text-xs text-stone-500 dark:text-stone-400">{{ user.email }}</div>
                     </div>
                   </div>
                   <div class="flex items-center gap-2">
@@ -97,36 +97,36 @@ import { api } from '../../../../../convex/_generated/api';
         <!-- Unlinked Employees -->
         <ui-card>
           <div class="flex items-center justify-between mb-4">
-            <h2 class="font-semibold text-stone-900 flex items-center gap-2">
-              <ui-icon name="identification" class="w-5 h-5 text-indigo-600"></ui-icon>
+            <h2 class="font-semibold text-stone-900 dark:text-stone-100 flex items-center gap-2">
+              <ui-icon name="identification" class="w-5 h-5 text-indigo-600 dark:text-indigo-400"></ui-icon>
               Unlinked Employees
               @if (unlinkedEmployees().length > 0) {
-                <span class="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full">{{ unlinkedEmployees().length }}</span>
+                <span class="text-xs bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400 px-2 py-0.5 rounded-full">{{ unlinkedEmployees().length }}</span>
               }
             </h2>
           </div>
 
           @if (loading()) {
             <div class="space-y-3">
-              <div class="h-16 bg-stone-100 rounded-xl animate-pulse"></div>
-              <div class="h-16 bg-stone-100 rounded-xl animate-pulse"></div>
+              <div class="h-16 bg-stone-100 dark:bg-stone-800 rounded-xl animate-pulse"></div>
+              <div class="h-16 bg-stone-100 dark:bg-stone-800 rounded-xl animate-pulse"></div>
             </div>
           } @else if (unlinkedEmployees().length === 0) {
-            <div class="text-center py-8 text-stone-400">
-              <ui-icon name="check-circle" class="w-8 h-8 mx-auto mb-2 text-green-500"></ui-icon>
+            <div class="text-center py-8 text-stone-400 dark:text-stone-500">
+              <ui-icon name="check-circle" class="w-8 h-8 mx-auto mb-2 text-green-500 dark:text-green-400"></ui-icon>
               <p>All employees have linked user accounts</p>
             </div>
           } @else {
             <div class="space-y-3">
               @for (emp of unlinkedEmployees(); track emp._id) {
-                <div class="p-4 rounded-xl border border-stone-200 bg-stone-50/50 flex items-center justify-between group hover:border-indigo-200 transition-all">
+                <div class="p-4 rounded-xl border border-stone-200 dark:border-stone-700 bg-stone-50/50 dark:bg-stone-800/30 flex items-center justify-between group hover:border-indigo-200 dark:hover:border-indigo-800 transition-all">
                   <div class="flex items-center gap-3">
-                    <div class="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600">
+                    <div class="h-10 w-10 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
                       <ui-icon name="identification" class="w-5 h-5"></ui-icon>
                     </div>
                     <div>
-                      <div class="font-medium text-stone-900">{{ emp.firstName }} {{ emp.lastName }}</div>
-                      <div class="text-xs text-stone-500">{{ emp.email }}</div>
+                      <div class="font-medium text-stone-900 dark:text-stone-100">{{ emp.firstName }} {{ emp.lastName }}</div>
+                      <div class="text-xs text-stone-500 dark:text-stone-400">{{ emp.email }}</div>
                     </div>
                   </div>
                   <ui-badge [variant]="emp.status === 'active' ? 'success' : 'warning'" size="sm">
@@ -146,18 +146,18 @@ import { api } from '../../../../../convex/_generated/api';
       >
         <div class="space-y-4">
           @if (selectedUser()) {
-            <div class="p-3 bg-stone-50 rounded-xl border border-stone-200">
-              <div class="text-xs text-stone-500 mb-1">User</div>
-              <div class="font-medium text-stone-900">{{ selectedUser()?.name }}</div>
-              <div class="text-sm text-stone-500">{{ selectedUser()?.email }}</div>
+            <div class="p-3 bg-stone-50 dark:bg-stone-800/50 rounded-xl border border-stone-200 dark:border-stone-700">
+              <div class="text-xs text-stone-500 dark:text-stone-400 mb-1">User</div>
+              <div class="font-medium text-stone-900 dark:text-stone-100">{{ selectedUser()?.name }}</div>
+              <div class="text-sm text-stone-500 dark:text-stone-400">{{ selectedUser()?.email }}</div>
             </div>
           }
 
           <div>
-            <label class="block text-sm font-medium text-stone-700 mb-2">Select Employee to Link</label>
+            <label class="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">Select Employee to Link</label>
             <select
               [(ngModel)]="selectedEmployeeId"
-              class="block w-full rounded-xl border-stone-200 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-4 py-3 border bg-stone-50/50"
+              class="block w-full rounded-xl border-stone-200 dark:border-stone-700 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-4 py-3 border bg-stone-50/50 dark:bg-stone-800/50 dark:text-stone-100 focus:bg-white dark:focus:bg-stone-800"
             >
               <option value="">Select an employee...</option>
               @for (emp of unlinkedEmployees(); track emp._id) {
@@ -166,7 +166,7 @@ import { api } from '../../../../../convex/_generated/api';
             </select>
           </div>
 
-          <div class="flex justify-end gap-3 pt-4 border-t border-stone-100">
+          <div class="flex justify-end gap-3 pt-4 border-t border-stone-100 dark:border-stone-700">
             <ui-button variant="ghost" (onClick)="showLinkModal.set(false)">
               Cancel
             </ui-button>
@@ -189,10 +189,10 @@ import { api } from '../../../../../convex/_generated/api';
       >
         <form [formGroup]="createForm" (ngSubmit)="createEmployee()" class="space-y-4">
           @if (selectedUser()) {
-            <div class="p-3 bg-stone-50 rounded-xl border border-stone-200">
-              <div class="text-xs text-stone-500 mb-1">Creating employee for</div>
-              <div class="font-medium text-stone-900">{{ selectedUser()?.name }}</div>
-              <div class="text-sm text-stone-500">{{ selectedUser()?.email }}</div>
+            <div class="p-3 bg-stone-50 dark:bg-stone-800/50 rounded-xl border border-stone-200 dark:border-stone-700">
+              <div class="text-xs text-stone-500 dark:text-stone-400 mb-1">Creating employee for</div>
+              <div class="font-medium text-stone-900 dark:text-stone-100">{{ selectedUser()?.name }}</div>
+              <div class="text-sm text-stone-500 dark:text-stone-400">{{ selectedUser()?.email }}</div>
             </div>
           }
 
@@ -207,7 +207,7 @@ import { api } from '../../../../../convex/_generated/api';
                 type="text"
                 id="firstName"
                 formControlName="firstName"
-                class="block w-full rounded-xl border-stone-200 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-4 py-3 border bg-stone-50/50"
+                class="block w-full rounded-xl border-stone-200 dark:border-stone-700 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-4 py-3 border bg-stone-50/50 dark:bg-stone-800/50 dark:text-stone-100 focus:bg-white dark:focus:bg-stone-800"
               />
             </ui-form-field>
 
@@ -221,7 +221,7 @@ import { api } from '../../../../../convex/_generated/api';
                 type="text"
                 id="lastName"
                 formControlName="lastName"
-                class="block w-full rounded-xl border-stone-200 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-4 py-3 border bg-stone-50/50"
+                class="block w-full rounded-xl border-stone-200 dark:border-stone-700 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-4 py-3 border bg-stone-50/50 dark:bg-stone-800/50 dark:text-stone-100 focus:bg-white dark:focus:bg-stone-800"
               />
             </ui-form-field>
           </div>
@@ -234,7 +234,7 @@ import { api } from '../../../../../convex/_generated/api';
             <select
               id="departmentId"
               formControlName="departmentId"
-              class="block w-full rounded-xl border-stone-200 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-4 py-3 border bg-stone-50/50"
+              class="block w-full rounded-xl border-stone-200 dark:border-stone-700 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-4 py-3 border bg-stone-50/50 dark:bg-stone-800/50 dark:text-stone-100 focus:bg-white dark:focus:bg-stone-800"
             >
               <option value="">Select department (optional)</option>
               @for (dept of departments(); track dept._id) {
@@ -251,7 +251,7 @@ import { api } from '../../../../../convex/_generated/api';
             <select
               id="designationId"
               formControlName="designationId"
-              class="block w-full rounded-xl border-stone-200 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-4 py-3 border bg-stone-50/50"
+              class="block w-full rounded-xl border-stone-200 dark:border-stone-700 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-4 py-3 border bg-stone-50/50 dark:bg-stone-800/50 dark:text-stone-100 focus:bg-white dark:focus:bg-stone-800"
             >
               <option value="">Select designation (optional)</option>
               @for (desig of designations(); track desig._id) {
@@ -270,11 +270,11 @@ import { api } from '../../../../../convex/_generated/api';
               type="date"
               id="startDate"
               formControlName="startDate"
-              class="block w-full rounded-xl border-stone-200 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-4 py-3 border bg-stone-50/50"
+              class="block w-full rounded-xl border-stone-200 dark:border-stone-700 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-4 py-3 border bg-stone-50/50 dark:bg-stone-800/50 dark:text-stone-100 focus:bg-white dark:focus:bg-stone-800"
             />
           </ui-form-field>
 
-          <div class="flex justify-end gap-3 pt-4 border-t border-stone-100">
+          <div class="flex justify-end gap-3 pt-4 border-t border-stone-100 dark:border-stone-700">
             <ui-button type="button" variant="ghost" (onClick)="showCreateModal.set(false)">
               Cancel
             </ui-button>

@@ -25,7 +25,7 @@ import { UiButtonComponent } from '../ui-button/ui-button.component';
               <select
                 [id]="field.name"
                 [formControlName]="field.name"
-                class="block w-full rounded-xl border-stone-200 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-3 py-2 border transition-colors duration-200 bg-stone-50/50 focus:bg-white"
+                class="block w-full rounded-xl border-stone-200 dark:border-stone-700 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-3 py-2 border transition-colors duration-200 bg-stone-50/50 dark:bg-stone-800/50 dark:text-stone-100 focus:bg-white dark:focus:bg-stone-800"
                 [class.border-red-300]="isInvalid(field.name)"
                 [class.focus:border-red-500]="isInvalid(field.name)"
                 [class.focus:ring-red-500]="isInvalid(field.name)"
@@ -44,7 +44,7 @@ import { UiButtonComponent } from '../ui-button/ui-button.component';
                 [formControlName]="field.name"
                 [placeholder]="field.placeholder || ''"
                 rows="4"
-                class="block w-full rounded-xl border-stone-200 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-3 py-2 border transition-colors duration-200 bg-stone-50/50 focus:bg-white"
+                class="block w-full rounded-xl border-stone-200 dark:border-stone-700 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-3 py-2 border transition-colors duration-200 bg-stone-50/50 dark:bg-stone-800/50 dark:text-stone-100 focus:bg-white dark:focus:bg-stone-800"
                 [class.border-red-300]="isInvalid(field.name)"
               ></textarea>
             }
@@ -56,9 +56,9 @@ import { UiButtonComponent } from '../ui-button/ui-button.component';
                   [id]="field.name"
                   type="checkbox"
                   [formControlName]="field.name"
-                  class="h-4 w-4 rounded border-stone-200 text-[#8b1e3f] focus:ring-[#8b1e3f] transition-colors"
+                  class="h-4 w-4 rounded border-stone-200 dark:border-stone-700 text-[#8b1e3f] focus:ring-[#8b1e3f] transition-colors dark:bg-stone-800"
                 />
-                <label [for]="field.name" class="ml-2 block text-sm text-stone-900 font-medium">
+                <label [for]="field.name" class="ml-2 block text-sm text-stone-900 dark:text-stone-100 font-medium">
                   {{ field.placeholder || field.label }}
                 </label>
               </div>
@@ -71,7 +71,7 @@ import { UiButtonComponent } from '../ui-button/ui-button.component';
                 [type]="field.type"
                 [formControlName]="field.name"
                 [placeholder]="field.placeholder || ''"
-                class="block w-full rounded-xl border-stone-200 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-3 py-2 border transition-colors duration-200 bg-stone-50/50 focus:bg-white"
+                class="block w-full rounded-xl border-stone-200 dark:border-stone-700 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-3 py-2 border transition-colors duration-200 bg-stone-50/50 dark:bg-stone-800/50 dark:text-stone-100 focus:bg-white dark:focus:bg-stone-800"
                 [class.border-red-300]="isInvalid(field.name)"
               />
             }

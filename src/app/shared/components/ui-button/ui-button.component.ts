@@ -87,13 +87,15 @@ export class UiButtonComponent {
         border border-[#722038]/20
       `,
       secondary: `
-        text-[#8b1e3f]
+        text-[#8b1e3f] dark:text-[#fce7eb]
         bg-gradient-to-br from-[#fdf2f4] to-[#fce7eb]
+        dark:from-[#8b1e3f]/20 dark:to-[#722038]/20
         hover:from-[#fce7eb] hover:to-[#f9d0da]
+        dark:hover:from-[#8b1e3f]/30 dark:hover:to-[#722038]/30
         hover:shadow-md hover:shadow-[#8b1e3f]/10
         focus-visible:ring-[#8b1e3f]
         disabled:opacity-50
-        border border-[#f9d0da]
+        border border-[#f9d0da] dark:border-[#8b1e3f]/30
       `,
       danger: `
         text-white
@@ -105,21 +107,23 @@ export class UiButtonComponent {
         border border-red-700/20
       `,
       ghost: `
-        text-stone-700
+        text-stone-700 dark:text-stone-300
         bg-transparent
-        hover:bg-stone-100
-        hover:text-[#8b1e3f]
+        hover:bg-stone-100 dark:hover:bg-stone-800
+        hover:text-[#8b1e3f] dark:hover:text-[#fce7eb]
         focus-visible:ring-stone-400
         disabled:text-stone-400 disabled:hover:bg-transparent
       `,
       outline: `
-        text-stone-700
-        bg-white
-        border-2 border-stone-200
+        text-stone-700 dark:text-stone-300
+        bg-white dark:bg-transparent
+        border-2 border-stone-200 dark:border-stone-700
         hover:border-[#8b1e3f] hover:text-[#8b1e3f]
+        dark:hover:border-[#8b1e3f] dark:hover:text-[#fce7eb]
         hover:shadow-md
         focus-visible:ring-[#8b1e3f]
         disabled:border-stone-100 disabled:text-stone-400
+        dark:disabled:border-stone-800 dark:disabled:text-stone-600
       `,
       gold: `
         text-[#4a0d1f]

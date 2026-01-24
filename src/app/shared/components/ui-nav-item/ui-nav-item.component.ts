@@ -42,13 +42,13 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
     }
 
     .nav-link.nav-active {
-      background: linear-gradient(90deg, var(--burgundy-50), transparent);
-      color: var(--burgundy-800);
+      background: linear-gradient(90deg, #fdf2f4, transparent);
+      color: #8b1e3f;
     }
 
     :host-context(.dark) .nav-link.nav-active {
       background: linear-gradient(90deg, rgba(139, 30, 63, 0.2), transparent);
-      color: var(--burgundy-300);
+      color: #fce7eb;
     }
   `]
 })

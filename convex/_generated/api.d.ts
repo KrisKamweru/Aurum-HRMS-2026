@@ -17,6 +17,7 @@ import type * as http from "../http.js";
 import type * as leave_requests from "../leave_requests.js";
 import type * as onboarding from "../onboarding.js";
 import type * as organization from "../organization.js";
+import type * as seed from "../seed.js";
 import type * as super_admin from "../super_admin.js";
 import type * as users from "../users.js";
 
@@ -36,6 +37,7 @@ declare const fullApi: ApiFromModules<{
   leave_requests: typeof leave_requests;
   onboarding: typeof onboarding;
   organization: typeof organization;
+  seed: typeof seed;
   super_admin: typeof super_admin;
   users: typeof users;
 }>;

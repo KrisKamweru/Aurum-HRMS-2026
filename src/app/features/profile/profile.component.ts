@@ -31,21 +31,24 @@ import { ToastService } from '../../shared/services/toast.service';
       <!-- Page Header -->
       <div class="flex items-center justify-between">
         <div>
-          <h1 class="text-2xl font-bold text-stone-900">Employee Profile</h1>
-          <p class="text-stone-500 mt-1">Manage your personal information and account settings</p>
+          <h1 class="text-2xl font-bold text-stone-900 dark:text-stone-100">Employee Profile</h1>
+          <p class="text-stone-500 dark:text-stone-400 mt-1">Manage your personal information and account settings</p>
         </div>
       </div>
 
       <!-- Navigation Tabs -->
-      <div class="border-b border-stone-200">
+      <div class="border-b border-stone-200 dark:border-stone-700">
         <nav class="-mb-px flex space-x-8" aria-label="Tabs">
           <button
             (click)="setActiveTab('info')"
             [class.border-[#8b1e3f]]="activeTab() === 'info'"
             [class.text-[#8b1e3f]]="activeTab() === 'info'"
+            [class.dark:text-[#fce7eb]]="activeTab() === 'info'"
             [class.border-transparent]="activeTab() !== 'info'"
             [class.text-stone-500]="activeTab() !== 'info'"
+            [class.dark:text-stone-400]="activeTab() !== 'info'"
             [class.hover:text-stone-700]="activeTab() !== 'info'"
+            [class.dark:hover:text-stone-300]="activeTab() !== 'info'"
             [class.hover:border-stone-300]="activeTab() !== 'info'"
             class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2"
           >
@@ -57,13 +60,16 @@ import { ToastService } from '../../shared/services/toast.service';
             (click)="setActiveTab('settings')"
             [class.border-[#8b1e3f]]="activeTab() === 'settings'"
             [class.text-[#8b1e3f]]="activeTab() === 'settings'"
+            [class.dark:text-[#fce7eb]]="activeTab() === 'settings'"
             [class.border-transparent]="activeTab() !== 'settings'"
             [class.text-stone-500]="activeTab() !== 'settings'"
+            [class.dark:text-stone-400]="activeTab() !== 'settings'"
             [class.hover:text-stone-700]="activeTab() !== 'settings'"
+            [class.dark:hover:text-stone-300]="activeTab() !== 'settings'"
             [class.hover:border-stone-300]="activeTab() !== 'settings'"
             class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2"
           >
-            <ui-icon name="settings" class="w-4 h-4"></ui-icon>
+            <ui-icon name="cog-6-tooth" class="w-4 h-4"></ui-icon>
             Settings
           </button>
         </nav>
@@ -78,27 +84,27 @@ import { ToastService } from '../../shared/services/toast.service';
         <div class="flex flex-col items-center justify-center py-16">
           <svg class="w-32 h-32 mb-4" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
             <!-- Background Blob -->
-            <path d="M60 110C87.6142 110 110 87.6142 110 60C110 32.3858 87.6142 10 60 10C32.3858 10 10 32.3858 10 60C10 87.6142 32.3858 110 60 110Z" fill="#FEF2F2"/>
+            <path d="M60 110C87.6142 110 110 87.6142 110 60C110 32.3858 87.6142 10 60 10C32.3858 10 10 32.3858 10 60C10 87.6142 32.3858 110 60 110Z" class="fill-red-50 dark:fill-red-900/30"/>
 
             <!-- Warning Triangle -->
-            <path d="M60 35L85 80H35L60 35Z" stroke="#EF4444" stroke-width="2" stroke-linejoin="round" fill="white"/>
+            <path d="M60 35L85 80H35L60 35Z" stroke="#EF4444" stroke-width="2" stroke-linejoin="round" class="fill-white dark:fill-stone-800"/>
 
             <!-- Exclamation Mark -->
             <path d="M60 50V65" stroke="#EF4444" stroke-width="2" stroke-linecap="round"/>
             <circle cx="60" cy="72" r="1.5" fill="#EF4444"/>
 
             <!-- Decorative Elements -->
-            <path d="M90 30L95 25" stroke="#FECACA" stroke-width="2" stroke-linecap="round"/>
-            <path d="M25 30L30 35" stroke="#FECACA" stroke-width="2" stroke-linecap="round"/>
-            <circle cx="20" cy="60" r="2" fill="#FECACA"/>
-            <circle cx="100" cy="60" r="3" fill="#FECACA"/>
+            <path d="M90 30L95 25" class="stroke-red-200 dark:stroke-red-800" stroke-width="2" stroke-linecap="round"/>
+            <path d="M25 30L30 35" class="stroke-red-200 dark:stroke-red-800" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="20" cy="60" r="2" class="fill-red-200 dark:fill-red-800"/>
+            <circle cx="100" cy="60" r="3" class="fill-red-200 dark:fill-red-800"/>
           </svg>
 
-          <h3 class="text-lg font-bold text-red-800 mb-2">Unable to Load Profile</h3>
-          <p class="text-red-600 text-center max-w-sm mb-4">
+          <h3 class="text-lg font-bold text-red-800 dark:text-red-200 mb-2">Unable to Load Profile</h3>
+          <p class="text-red-600 dark:text-red-400 text-center max-w-sm mb-4">
             We encountered an issue while retrieving your profile data. This might be a temporary connectivity problem.
           </p>
-          <ui-button variant="outline" size="sm" (onClick)="profileResource.reload()" class="border-red-200 text-red-700 hover:bg-red-50">
+          <ui-button variant="outline" size="sm" (onClick)="profileResource.reload()" class="border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20">
             <ui-icon name="arrow-path" class="w-4 h-4 mr-2"></ui-icon>
             Try Again
           </ui-button>
@@ -115,45 +121,45 @@ import { ToastService } from '../../shared/services/toast.service';
               <div class="lg:col-span-1 space-y-6">
                 <ui-card class="h-full">
                   <div class="flex flex-col items-center text-center p-6">
-                    <div class="w-32 h-32 rounded-full bg-stone-100 flex items-center justify-center mb-4 overflow-hidden border-4 border-white shadow-md">
-                      @if (profile.user?.image) {
+                    <div class="w-32 h-32 rounded-full bg-stone-100 dark:bg-stone-700 flex items-center justify-center mb-4 overflow-hidden border-4 border-white dark:border-stone-600 shadow-md">
+                      @if (profile.user && profile.user.image) {
                         <img [src]="profile.user.image" alt="Profile" class="w-full h-full object-cover">
                       } @else {
-                        <span class="text-4xl font-bold text-stone-300">
+                        <span class="text-4xl font-bold text-stone-300 dark:text-stone-500">
                           {{ getInitials(profile.firstName, profile.lastName) }}
                         </span>
                       }
                     </div>
 
-                    <h2 class="text-xl font-bold text-stone-900">{{ profile.firstName }} {{ profile.lastName }}</h2>
-                    <p class="text-stone-500">{{ profile.position || 'No Designation' }}</p>
+                    <h2 class="text-xl font-bold text-stone-900 dark:text-stone-100">{{ profile.firstName }} {{ profile.lastName }}</h2>
+                    <p class="text-stone-500 dark:text-stone-400">{{ profile.position || 'No Designation' }}</p>
 
                     <div class="mt-4 flex flex-wrap justify-center gap-2">
-                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#8b1e3f]/10 text-[#8b1e3f]">
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#8b1e3f]/10 dark:bg-[#8b1e3f]/20 text-[#8b1e3f] dark:text-[#fce7eb]">
                         {{ profile.department || 'No Department' }}
                       </span>
-                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-stone-100 text-stone-800">
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-stone-100 dark:bg-stone-700 text-stone-800 dark:text-stone-200">
                         {{ profile.location || 'Remote' }}
                       </span>
                     </div>
 
-                    <div class="w-full mt-6 pt-6 border-t border-stone-100 space-y-4">
+                    <div class="w-full mt-6 pt-6 border-t border-stone-100 dark:border-stone-700 space-y-4">
                       <div class="flex justify-between items-center text-sm">
-                        <span class="text-stone-500">Employee ID</span>
-                        <span class="font-mono font-medium text-stone-900">{{ formatId(profile._id) }}</span>
+                        <span class="text-stone-500 dark:text-stone-400">Employee ID</span>
+                        <span class="font-mono font-medium text-stone-900 dark:text-stone-100">{{ formatId(profile._id) }}</span>
                       </div>
                       <div class="flex justify-between items-center text-sm">
-                        <span class="text-stone-500">Joined</span>
-                        <span class="font-medium text-stone-900">{{ profile.startDate | date:'mediumDate' }}</span>
+                        <span class="text-stone-500 dark:text-stone-400">Joined</span>
+                        <span class="font-medium text-stone-900 dark:text-stone-100">{{ profile.startDate | date:'mediumDate' }}</span>
                       </div>
                       <div class="flex justify-between items-center text-sm">
-                        <span class="text-stone-500">Tenure</span>
-                        <span class="font-medium text-stone-900">{{ profile.tenure }}</span>
+                        <span class="text-stone-500 dark:text-stone-400">Tenure</span>
+                        <span class="font-medium text-stone-900 dark:text-stone-100">{{ profile.tenure }}</span>
                       </div>
                       @if (profile.managerName) {
                         <div class="flex justify-between items-center text-sm">
-                          <span class="text-stone-500">Reports To</span>
-                          <span class="font-medium text-stone-900">{{ profile.managerName }}</span>
+                          <span class="text-stone-500 dark:text-stone-400">Reports To</span>
+                          <span class="font-medium text-stone-900 dark:text-stone-100">{{ profile.managerName }}</span>
                         </div>
                       }
                     </div>
@@ -178,24 +184,24 @@ import { ToastService } from '../../shared/services/toast.service';
                     <div class="space-y-6">
                       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                          <p class="text-sm font-medium text-stone-500">Email Address</p>
-                          <p class="mt-1 text-base text-stone-900">{{ profile.email }}</p>
+                          <p class="text-sm font-medium text-stone-500 dark:text-stone-400">Email Address</p>
+                          <p class="mt-1 text-base text-stone-900 dark:text-stone-100">{{ profile.email }}</p>
                         </div>
                         <div>
-                          <p class="text-sm font-medium text-stone-500">Phone Number</p>
-                          <p class="mt-1 text-base text-stone-900">{{ profile.phone || 'Not set' }}</p>
+                          <p class="text-sm font-medium text-stone-500 dark:text-stone-400">Phone Number</p>
+                          <p class="mt-1 text-base text-stone-900 dark:text-stone-100">{{ profile.phone || 'Not set' }}</p>
                         </div>
                         <div>
-                          <p class="text-sm font-medium text-stone-500">Date of Birth</p>
-                          <p class="mt-1 text-base text-stone-900">{{ (profile.dob | date:'mediumDate') || 'Not set' }}</p>
+                          <p class="text-sm font-medium text-stone-500 dark:text-stone-400">Date of Birth</p>
+                          <p class="mt-1 text-base text-stone-900 dark:text-stone-100">{{ (profile.dob | date:'mediumDate') || 'Not set' }}</p>
                         </div>
                         <div>
-                          <p class="text-sm font-medium text-stone-500">Gender</p>
-                          <p class="mt-1 text-base text-stone-900 capitalize">{{ profile.gender || 'Not set' }}</p>
+                          <p class="text-sm font-medium text-stone-500 dark:text-stone-400">Gender</p>
+                          <p class="mt-1 text-base text-stone-900 dark:text-stone-100 capitalize">{{ profile.gender || 'Not set' }}</p>
                         </div>
                         <div class="md:col-span-2">
-                          <p class="text-sm font-medium text-stone-500">Address</p>
-                          <p class="mt-1 text-base text-stone-900">{{ profile.address || 'Not set' }}</p>
+                          <p class="text-sm font-medium text-stone-500 dark:text-stone-400">Address</p>
+                          <p class="mt-1 text-base text-stone-900 dark:text-stone-100">{{ profile.address || 'Not set' }}</p>
                         </div>
                       </div>
                     </div>
@@ -207,18 +213,18 @@ import { ToastService } from '../../shared/services/toast.service';
                         <div class="md:col-span-2">
                            <ui-form-field label="Email Address" hint="Contact HR to change your email">
                              <input type="email" [value]="profile.email" disabled
-                               class="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-lg text-stone-500 cursor-not-allowed">
+                               class="w-full px-3 py-2 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-700 rounded-lg text-stone-500 dark:text-stone-400 cursor-not-allowed">
                            </ui-form-field>
                         </div>
 
                         <ui-form-field label="Phone Number" [control]="editForm.get('phone')">
                           <input type="tel" formControlName="phone"
-                            class="w-full px-3 py-2 bg-white border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b1e3f]/20 focus:border-[#8b1e3f] transition-all">
+                            class="w-full px-3 py-2 bg-white dark:bg-stone-800 border border-stone-300 dark:border-stone-600 rounded-lg text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-[#8b1e3f]/20 focus:border-[#8b1e3f] transition-all">
                         </ui-form-field>
 
                         <ui-form-field label="Gender" [control]="editForm.get('gender')">
                           <select formControlName="gender"
-                            class="w-full px-3 py-2 bg-white border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b1e3f]/20 focus:border-[#8b1e3f] transition-all appearance-none">
+                            class="w-full px-3 py-2 bg-white dark:bg-stone-800 border border-stone-300 dark:border-stone-600 rounded-lg text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-[#8b1e3f]/20 focus:border-[#8b1e3f] transition-all appearance-none">
                             <option value="">Select Gender</option>
                             <option value="male">Male</option>
                             <option value="female">Female</option>
@@ -229,18 +235,18 @@ import { ToastService } from '../../shared/services/toast.service';
 
                         <ui-form-field label="Date of Birth" [control]="editForm.get('dob')">
                           <input type="date" formControlName="dob"
-                            class="w-full px-3 py-2 bg-white border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b1e3f]/20 focus:border-[#8b1e3f] transition-all">
+                            class="w-full px-3 py-2 bg-white dark:bg-stone-800 border border-stone-300 dark:border-stone-600 rounded-lg text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-[#8b1e3f]/20 focus:border-[#8b1e3f] transition-all">
                         </ui-form-field>
 
                         <div class="md:col-span-2">
                           <ui-form-field label="Address" [control]="editForm.get('address')">
                             <textarea formControlName="address" rows="3"
-                              class="w-full px-3 py-2 bg-white border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b1e3f]/20 focus:border-[#8b1e3f] transition-all"></textarea>
+                              class="w-full px-3 py-2 bg-white dark:bg-stone-800 border border-stone-300 dark:border-stone-600 rounded-lg text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-[#8b1e3f]/20 focus:border-[#8b1e3f] transition-all"></textarea>
                           </ui-form-field>
                         </div>
                       </div>
 
-                      <div class="flex items-center justify-end gap-3 pt-4 border-t border-stone-100">
+                      <div class="flex items-center justify-end gap-3 pt-4 border-t border-stone-100 dark:border-stone-700">
                         <ui-button variant="ghost" (onClick)="cancelEdit()">Cancel</ui-button>
                         <ui-button type="submit" [loading]="isSaving()" [disabled]="editForm.invalid || isSaving()">
                           Save Changes
@@ -258,36 +264,36 @@ import { ToastService } from '../../shared/services/toast.service';
                 <svg class="w-40 h-40 mb-6" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <defs>
                     <linearGradient id="settings-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stop-color="#8b1e3f" stop-opacity="0.1"/>
-                      <stop offset="100%" stop-color="#b8956b" stop-opacity="0.1"/>
+                      <stop offset="0%" stop-color="#8b1e3f" stop-opacity="0.15"/>
+                      <stop offset="100%" stop-color="#b8956b" stop-opacity="0.15"/>
                     </linearGradient>
                   </defs>
 
                   <!-- Background Gear -->
-                  <circle cx="80" cy="80" r="60" stroke="#e7e5e4" stroke-width="1" stroke-dasharray="8 8"/>
+                  <circle cx="80" cy="80" r="60" class="stroke-stone-200 dark:stroke-stone-700" stroke-width="1" stroke-dasharray="8 8"/>
 
                   <!-- Main Gear -->
-                  <path d="M80 50L84 40H76L80 50ZM110 80L120 76V84L110 80ZM80 110L76 120H84L80 110ZM50 80L40 84V76L50 80Z" fill="#d6d3d1"/>
-                  <circle cx="80" cy="80" r="30" fill="url(#settings-grad)" stroke="#d6d3d1" stroke-width="2"/>
-                  <circle cx="80" cy="80" r="12" fill="white" stroke="#8b1e3f" stroke-width="2"/>
+                  <path d="M80 50L84 40H76L80 50ZM110 80L120 76V84L110 80ZM80 110L76 120H84L80 110ZM50 80L40 84V76L50 80Z" class="fill-stone-300 dark:fill-stone-600"/>
+                  <circle cx="80" cy="80" r="30" fill="url(#settings-grad)" class="stroke-stone-300 dark:stroke-stone-600" stroke-width="2"/>
+                  <circle cx="80" cy="80" r="12" class="fill-white dark:fill-stone-800 stroke-[#8b1e3f]" stroke-width="2"/>
 
                   <!-- Floating Elements -->
-                  <circle cx="110" cy="50" r="8" stroke="#b8956b" stroke-width="1.5" fill="white"/>
+                  <circle cx="110" cy="50" r="8" stroke="#b8956b" stroke-width="1.5" class="fill-white dark:fill-stone-800"/>
                   <path d="M107 50L113 50" stroke="#b8956b" stroke-width="1.5"/>
                   <path d="M110 47L110 53" stroke="#b8956b" stroke-width="1.5"/>
 
-                  <rect x="40" y="100" width="16" height="12" rx="2" stroke="#8b1e3f" stroke-width="1.5" fill="white"/>
+                  <rect x="40" y="100" width="16" height="12" rx="2" stroke="#8b1e3f" stroke-width="1.5" class="fill-white dark:fill-stone-800"/>
                   <path d="M48 100V98" stroke="#8b1e3f" stroke-width="1.5"/>
                 </svg>
 
-                <h3 class="text-xl font-bold text-stone-800 mb-2">Settings Coming Soon</h3>
-                <p class="text-stone-500 max-w-sm leading-relaxed">
+                <h3 class="text-xl font-bold text-stone-800 dark:text-stone-100 mb-2">Settings Coming Soon</h3>
+                <p class="text-stone-500 dark:text-stone-400 max-w-sm leading-relaxed">
                   We're crafting a new settings experience to give you more control over your profile, notifications, and security preferences.
                 </p>
                 <div class="mt-6 flex gap-2">
-                  <span class="px-3 py-1 bg-stone-100 text-stone-600 rounded-full text-xs font-medium border border-stone-200">Notifications</span>
-                  <span class="px-3 py-1 bg-stone-100 text-stone-600 rounded-full text-xs font-medium border border-stone-200">Security</span>
-                  <span class="px-3 py-1 bg-stone-100 text-stone-600 rounded-full text-xs font-medium border border-stone-200">Appearance</span>
+                  <span class="px-3 py-1 bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-300 rounded-full text-xs font-medium border border-stone-200 dark:border-stone-600">Notifications</span>
+                  <span class="px-3 py-1 bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-300 rounded-full text-xs font-medium border border-stone-200 dark:border-stone-600">Security</span>
+                  <span class="px-3 py-1 bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-300 rounded-full text-xs font-medium border border-stone-200 dark:border-stone-600">Appearance</span>
                 </div>
               </div>
             </ui-card>
@@ -304,20 +310,20 @@ import { ToastService } from '../../shared/services/toast.service';
               </defs>
 
               <!-- Background elements -->
-              <circle cx="80" cy="80" r="70" stroke="#f5f5f4" stroke-width="1"/>
-              <circle cx="80" cy="80" r="55" stroke="#e7e5e4" stroke-width="1" stroke-dasharray="4 4"/>
+              <circle cx="80" cy="80" r="70" class="stroke-stone-100 dark:stroke-stone-800" stroke-width="1"/>
+              <circle cx="80" cy="80" r="55" class="stroke-stone-200 dark:stroke-stone-700" stroke-width="1" stroke-dasharray="4 4"/>
 
               <!-- File/Profile Document Shape -->
-              <path d="M60 40H90L110 60V110C110 115.523 105.523 120 100 120H60C54.4772 120 50 115.523 50 110V50C50 44.4772 54.4772 40 60 40Z" fill="white" stroke="#d6d3d1" stroke-width="1.5"/>
-              <path d="M90 40V60H110" stroke="#d6d3d1" stroke-width="1.5" stroke-linejoin="round"/>
+              <path d="M60 40H90L110 60V110C110 115.523 105.523 120 100 120H60C54.4772 120 50 115.523 50 110V50C50 44.4772 54.4772 40 60 40Z" class="fill-white dark:fill-stone-800 stroke-stone-300 dark:stroke-stone-600" stroke-width="1.5"/>
+              <path d="M90 40V60H110" class="stroke-stone-300 dark:stroke-stone-600" stroke-width="1.5" stroke-linejoin="round"/>
 
               <!-- Lines on doc -->
-              <rect x="62" y="55" width="20" height="20" rx="10" fill="#f5f5f4"/>
-              <line x1="65" y1="85" x2="95" y2="85" stroke="#e7e5e4" stroke-width="2" stroke-linecap="round"/>
-              <line x1="65" y1="95" x2="90" y2="95" stroke="#e7e5e4" stroke-width="2" stroke-linecap="round"/>
+              <rect x="62" y="55" width="20" height="20" rx="10" class="fill-stone-100 dark:fill-stone-700"/>
+              <line x1="65" y1="85" x2="95" y2="85" class="stroke-stone-200 dark:stroke-stone-600" stroke-width="2" stroke-linecap="round"/>
+              <line x1="65" y1="95" x2="90" y2="95" class="stroke-stone-200 dark:stroke-stone-600" stroke-width="2" stroke-linecap="round"/>
 
               <!-- Magnifying Glass Search -->
-              <circle cx="105" cy="105" r="22" fill="white" stroke="url(#profile-gradient)" stroke-width="2.5"/>
+              <circle cx="105" cy="105" r="22" class="fill-white dark:fill-stone-800" stroke="url(#profile-gradient)" stroke-width="2.5"/>
               <path d="M120 120L135 135" stroke="url(#profile-gradient)" stroke-width="4" stroke-linecap="round"/>
 
               <!-- Question mark inside glass -->
@@ -325,8 +331,8 @@ import { ToastService } from '../../shared/services/toast.service';
               <circle cx="105" cy="115" r="2" fill="#8b1e3f"/>
             </svg>
 
-            <h2 class="text-xl font-bold text-stone-800 mb-2">Profile Not Found</h2>
-            <p class="text-stone-500 max-w-sm text-center mb-8">
+            <h2 class="text-xl font-bold text-stone-800 dark:text-stone-100 mb-2">Profile Not Found</h2>
+            <p class="text-stone-500 dark:text-stone-400 max-w-sm text-center mb-8">
               We couldn't locate the employee profile you're looking for. It may have been removed or you might not have permission to view it.
             </p>
 

@@ -35,11 +35,11 @@ import { Toast, ToastService } from '../../services/toast.service';
                 }
               </div>
               <div class="ml-3 w-0 flex-1 pt-0.5">
-                <p class="text-sm font-medium text-stone-900">{{ toast.message }}</p>
+                <p class="text-sm font-medium text-stone-900 dark:text-stone-100">{{ toast.message }}</p>
               </div>
               <div class="ml-4 flex-shrink-0 flex">
                 <button
-                  class="bg-white rounded-md inline-flex text-stone-400 hover:text-stone-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#8b1e3f]"
+                  class="bg-white dark:bg-stone-800 rounded-md inline-flex text-stone-400 hover:text-stone-500 dark:hover:text-stone-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#8b1e3f] dark:focus:ring-offset-stone-800"
                   (click)="toastService.remove(toast.id)"
                 >
                   <span class="sr-only">Close</span>
@@ -68,6 +68,6 @@ export class UiToastComponent {
   toastService = inject(ToastService);
 
   getToastClasses(toast: Toast): string {
-    return 'bg-white'; // Can add conditional borders if desired
+    return 'bg-white dark:bg-stone-800 dark:border dark:border-stone-700'; // Can add conditional borders if desired
   }
 }

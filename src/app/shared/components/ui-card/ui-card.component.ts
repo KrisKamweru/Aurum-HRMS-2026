@@ -65,8 +65,8 @@ export class UiCardComponent {
 
     const variants = {
       default: 'bg-white dark:bg-stone-800 rounded-2xl shadow-sm border border-stone-200 dark:border-stone-700',
-      premium: 'card-premium', // Handled via CSS which now has dark mode support
-      glass: 'card-glass',     // Handled via CSS which now has dark mode support
+      premium: 'card-premium dark:bg-stone-800 dark:border-stone-700', // Ensure premium also respects dark bg base
+      glass: 'card-glass dark:bg-stone-800/80 dark:border-stone-700/50',     // Ensure glass respects dark bg base
       outlined: 'bg-white dark:bg-stone-800 rounded-2xl border border-stone-200 dark:border-stone-700'
     };
 

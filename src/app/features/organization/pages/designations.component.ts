@@ -19,8 +19,8 @@ import { api } from '../../../../../convex/_generated/api';
     <div class="space-y-6">
       <div class="flex items-center justify-between">
         <div>
-          <h1 class="heading-accent">Designations</h1>
-          <p class="mt-3 text-stone-500">Manage employee designations and levels.</p>
+          <h1 class="heading-accent dark:text-stone-100">Designations</h1>
+          <p class="mt-3 text-stone-500 dark:text-stone-400">Manage employee designations and levels.</p>
         </div>
         <ui-button (onClick)="openCreateModal()" *ngIf="canManage()">
           <ui-icon name="plus" class="w-4 h-4 mr-2"></ui-icon>
@@ -38,14 +38,14 @@ import { api } from '../../../../../convex/_generated/api';
       <ng-template #actionsRef let-row>
         <div class="flex gap-2 justify-end">
           <button
-            class="p-1.5 text-stone-400 hover:text-[#8b1e3f] hover:bg-[#fdf2f4] rounded-lg transition-colors"
+            class="p-1.5 text-stone-400 hover:text-[#8b1e3f] hover:bg-[#fdf2f4] dark:hover:text-[#fce7eb] dark:hover:bg-[#8b1e3f]/20 rounded-lg transition-colors"
             (click)="openEditModal(row)"
             title="Edit"
           >
             <ui-icon name="pencil" class="w-4 h-4"></ui-icon>
           </button>
           <button
-            class="p-1.5 text-stone-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+            class="p-1.5 text-stone-400 hover:text-red-600 hover:bg-red-50 dark:hover:text-red-400 dark:hover:bg-red-900/20 rounded-lg transition-colors"
             (click)="deleteDesignation(row)"
             title="Delete"
           >

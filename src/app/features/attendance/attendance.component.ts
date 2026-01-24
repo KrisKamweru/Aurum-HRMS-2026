@@ -1,11 +1,14 @@
 import { Component, computed, effect, inject, OnDestroy, signal, resource } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { UiCardComponent } from '../../shared/components/ui-card/ui-card.component';
 import { UiIconComponent } from '../../shared/components/ui-icon/ui-icon.component';
+import { UiButtonComponent } from '../../shared/components/ui-button/ui-button.component';
 import { UiBadgeComponent, BadgeVariant } from '../../shared/components/ui-badge/ui-badge.component';
 import { UiDataTableComponent, TableColumn } from '../../shared/components/ui-data-table/ui-data-table.component';
 import { ConvexClientService } from '../../core/services/convex-client.service';
 import { ToastService } from '../../shared/services/toast.service';
+import { AuthService } from '../../core/auth/auth.service';
 import { api } from '../../../../convex/_generated/api';
 
 interface AttendanceSummary {
@@ -21,8 +24,10 @@ interface AttendanceSummary {
   standalone: true,
   imports: [
     CommonModule,
+    RouterLink,
     UiCardComponent,
     UiIconComponent,
+    UiButtonComponent,
     UiBadgeComponent,
     UiDataTableComponent
   ],
@@ -32,12 +37,22 @@ interface AttendanceSummary {
       <!-- Header -->
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 class="text-2xl font-bold text-stone-800">Time & Attendance</h1>
-          <p class="text-stone-500 mt-1">Track your work hours and attendance history</p>
+          <h1 class="text-2xl font-bold text-stone-800 dark:text-stone-100">Time & Attendance</h1>
+          <p class="text-stone-500 dark:text-stone-400 mt-1">Track your work hours and attendance history</p>
         </div>
-        <div class="text-right">
-          <div class="text-3xl font-mono font-bold text-[#8b1e3f]">{{ currentTime() | date:'mediumTime' }}</div>
-          <div class="text-sm text-stone-500">{{ currentTime() | date:'fullDate' }}</div>
+
+        <div class="flex items-center gap-4">
+          @if (canManage()) {
+            <ui-button variant="outline" routerLink="team">
+              <ui-icon name="users" class="w-4 h-4 mr-2"></ui-icon>
+              Team View
+            </ui-button>
+          }
+
+          <div class="text-right pl-4 border-l border-stone-200 dark:border-stone-700">
+            <div class="text-3xl font-mono font-bold text-[#8b1e3f] dark:text-[#fce7eb]">{{ currentTime() | date:'mediumTime' }}</div>
+            <div class="text-sm text-stone-500 dark:text-stone-400">{{ currentTime() | date:'fullDate' }}</div>
+          </div>
         </div>
       </div>
 
@@ -45,19 +60,19 @@ interface AttendanceSummary {
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Clock In/Out Widget -->
         <ui-card class="lg:col-span-2 relative overflow-hidden">
-          <div class="absolute top-0 right-0 p-32 bg-[#8b1e3f]/5 rounded-full -mr-16 -mt-16 blur-3xl pointer-events-none"></div>
+          <div class="absolute top-0 right-0 p-32 bg-[#8b1e3f]/5 dark:bg-[#8b1e3f]/10 rounded-full -mr-16 -mt-16 blur-3xl pointer-events-none"></div>
 
           <div class="relative z-10 flex flex-col items-center justify-center py-8 text-center h-full">
             <div class="mb-6">
               <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium"
                 [ngClass]="{
-                  'bg-stone-100 text-stone-600': attendanceState() === 'not-clocked-in',
-                  'bg-green-100 text-green-700': attendanceState() === 'working',
-                  'bg-blue-100 text-blue-700': attendanceState() === 'clocked-out'
+                  'bg-stone-100 text-stone-600 dark:bg-stone-700 dark:text-stone-300': attendanceState() === 'not-clocked-in',
+                  'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400': attendanceState() === 'working',
+                  'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400': attendanceState() === 'clocked-out'
                 }">
                 <div class="w-2 h-2 rounded-full"
                   [ngClass]="{
-                    'bg-stone-400': attendanceState() === 'not-clocked-in',
+                    'bg-stone-400 dark:bg-stone-500': attendanceState() === 'not-clocked-in',
                     'bg-green-500 animate-pulse': attendanceState() === 'working',
                     'bg-blue-500': attendanceState() === 'clocked-out'
                   }"></div>
@@ -67,18 +82,18 @@ interface AttendanceSummary {
 
             <div class="mb-8">
               @if (attendanceState() === 'working') {
-                <div class="text-5xl font-mono font-bold text-stone-800 mb-2">
+                <div class="text-5xl font-mono font-bold text-stone-800 dark:text-stone-100 mb-2">
                   {{ activeDuration() }}
                 </div>
-                <p class="text-stone-500">Duration worked today</p>
+                <p class="text-stone-500 dark:text-stone-400">Duration worked today</p>
               } @else if (attendanceState() === 'clocked-out') {
-                <div class="text-5xl font-mono font-bold text-stone-800 mb-2">
+                <div class="text-5xl font-mono font-bold text-stone-800 dark:text-stone-100 mb-2">
                   {{ formatDuration(todayStatusResource.value()?.workMinutes || 0) }}
                 </div>
-                <p class="text-stone-500">Total hours worked today</p>
+                <p class="text-stone-500 dark:text-stone-400">Total hours worked today</p>
               } @else {
-                <div class="text-5xl font-mono font-bold text-stone-800 mb-2">--:--:--</div>
-                <p class="text-stone-500">Ready to start your day</p>
+                <div class="text-5xl font-mono font-bold text-stone-800 dark:text-stone-100 mb-2">--:--:--</div>
+                <p class="text-stone-500 dark:text-stone-400">Ready to start your day</p>
               }
             </div>
 
@@ -100,9 +115,9 @@ interface AttendanceSummary {
                   Clock Out
                 </button>
               } @else {
-                <div class="text-center p-4 bg-stone-50 rounded-xl border border-stone-100">
-                  <p class="text-stone-600 font-medium">You have completed your work day.</p>
-                  <p class="text-xs text-stone-400 mt-1">See you tomorrow!</p>
+                <div class="text-center p-4 bg-stone-50 dark:bg-stone-800/50 rounded-xl border border-stone-100 dark:border-stone-700">
+                  <p class="text-stone-600 dark:text-stone-300 font-medium">You have completed your work day.</p>
+                  <p class="text-xs text-stone-400 dark:text-stone-500 mt-1">See you tomorrow!</p>
                 </div>
               }
             </div>
@@ -112,36 +127,36 @@ interface AttendanceSummary {
         <!-- Today's Summary -->
         <div class="space-y-6">
           <ui-card class="h-full">
-            <h3 class="font-bold text-stone-800 mb-4 flex items-center gap-2">
-              <ui-icon name="calendar" class="w-5 h-5 text-[#8b1e3f]"></ui-icon>
+            <h3 class="font-bold text-stone-800 dark:text-stone-100 mb-4 flex items-center gap-2">
+              <ui-icon name="calendar" class="w-5 h-5 text-[#8b1e3f] dark:text-[#fce7eb]"></ui-icon>
               Today's Summary
             </h3>
 
             <div class="space-y-4">
-              <div class="flex justify-between items-center py-3 border-b border-stone-100">
-                <span class="text-stone-500 text-sm">Clock In</span>
-                <span class="font-mono font-medium text-stone-800">
+              <div class="flex justify-between items-center py-3 border-b border-stone-100 dark:border-stone-700">
+                <span class="text-stone-500 dark:text-stone-400 text-sm">Clock In</span>
+                <span class="font-mono font-medium text-stone-800 dark:text-stone-200">
                   {{ (todayStatusResource.value()?.clockIn | date:'shortTime') || '--:--' }}
                 </span>
               </div>
 
-              <div class="flex justify-between items-center py-3 border-b border-stone-100">
-                <span class="text-stone-500 text-sm">Clock Out</span>
-                <span class="font-mono font-medium text-stone-800">
+              <div class="flex justify-between items-center py-3 border-b border-stone-100 dark:border-stone-700">
+                <span class="text-stone-500 dark:text-stone-400 text-sm">Clock Out</span>
+                <span class="font-mono font-medium text-stone-800 dark:text-stone-200">
                   {{ (todayStatusResource.value()?.clockOut | date:'shortTime') || 'Working...' }}
                 </span>
               </div>
 
-              <div class="flex justify-between items-center py-3 border-b border-stone-100">
-                <span class="text-stone-500 text-sm">Break Time</span>
-                <span class="font-mono font-medium text-stone-800">
+              <div class="flex justify-between items-center py-3 border-b border-stone-100 dark:border-stone-700">
+                <span class="text-stone-500 dark:text-stone-400 text-sm">Break Time</span>
+                <span class="font-mono font-medium text-stone-800 dark:text-stone-200">
                   {{ todayStatusResource.value()?.breakMinutes || 0 }} min
                 </span>
               </div>
 
               <div class="pt-2">
                 <div class="flex justify-between items-center mb-2">
-                  <span class="text-xs text-stone-500 uppercase tracking-wider font-semibold">Status</span>
+                  <span class="text-xs text-stone-500 dark:text-stone-400 uppercase tracking-wider font-semibold">Status</span>
                   <ui-badge [variant]="getBadgeVariant(todayStatusResource.value()?.status)">
                     {{ todayStatusResource.value()?.status || 'Pending' }}
                   </ui-badge>
@@ -156,33 +171,33 @@ interface AttendanceSummary {
       <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
         <!-- Monthly Stats -->
         <ui-card class="lg:col-span-1">
-          <h3 class="font-bold text-stone-800 mb-4 flex items-center gap-2">
-            <ui-icon name="chart-bar" class="w-5 h-5 text-[#8b1e3f]"></ui-icon>
+          <h3 class="font-bold text-stone-800 dark:text-stone-100 mb-4 flex items-center gap-2">
+            <ui-icon name="chart-bar" class="w-5 h-5 text-[#8b1e3f] dark:text-[#fce7eb]"></ui-icon>
             {{ currentMonthName() }} Stats
           </h3>
 
           <div class="space-y-4">
-            <div class="bg-[#fdf2f4] rounded-xl p-4 border border-[#f9d0da]">
-              <p class="text-xs text-[#8b1e3f] font-semibold uppercase tracking-wider mb-1">Present Days</p>
-              <p class="text-2xl font-bold text-[#8b1e3f]">{{ summaryResource.value()?.presentDays || 0 }}</p>
+            <div class="bg-[#fdf2f4] dark:bg-[#8b1e3f]/20 rounded-xl p-4 border border-[#f9d0da] dark:border-[#8b1e3f]/30">
+              <p class="text-xs text-[#8b1e3f] dark:text-[#fce7eb] font-semibold uppercase tracking-wider mb-1">Present Days</p>
+              <p class="text-2xl font-bold text-[#8b1e3f] dark:text-[#fce7eb]">{{ summaryResource.value()?.presentDays || 0 }}</p>
             </div>
 
             <div class="grid grid-cols-2 gap-4">
-              <div class="bg-stone-50 rounded-xl p-3 border border-stone-100">
-                <p class="text-xs text-stone-500 font-semibold mb-1">Late</p>
-                <p class="text-lg font-bold text-stone-700">{{ summaryResource.value()?.lateDays || 0 }}</p>
+              <div class="bg-stone-50 dark:bg-stone-800/50 rounded-xl p-3 border border-stone-100 dark:border-stone-700">
+                <p class="text-xs text-stone-500 dark:text-stone-400 font-semibold mb-1">Late</p>
+                <p class="text-lg font-bold text-stone-700 dark:text-stone-200">{{ summaryResource.value()?.lateDays || 0 }}</p>
               </div>
-              <div class="bg-stone-50 rounded-xl p-3 border border-stone-100">
-                <p class="text-xs text-stone-500 font-semibold mb-1">Absent</p>
-                <p class="text-lg font-bold text-stone-700">{{ summaryResource.value()?.absentDays || 0 }}</p>
+              <div class="bg-stone-50 dark:bg-stone-800/50 rounded-xl p-3 border border-stone-100 dark:border-stone-700">
+                <p class="text-xs text-stone-500 dark:text-stone-400 font-semibold mb-1">Absent</p>
+                <p class="text-lg font-bold text-stone-700 dark:text-stone-200">{{ summaryResource.value()?.absentDays || 0 }}</p>
               </div>
             </div>
 
-            <div class="bg-white rounded-xl p-4 border border-stone-200 shadow-sm">
+            <div class="bg-white dark:bg-stone-800 rounded-xl p-4 border border-stone-200 dark:border-stone-700 shadow-sm">
               <div class="flex justify-between items-center mb-1">
-                <p class="text-xs text-stone-500 font-semibold uppercase">Avg Work Hours</p>
+                <p class="text-xs text-stone-500 dark:text-stone-400 font-semibold uppercase">Avg Work Hours</p>
               </div>
-              <p class="text-xl font-bold text-stone-800">
+              <p class="text-xl font-bold text-stone-800 dark:text-stone-100">
                 {{ formatDuration(summaryResource.value()?.avgWorkMinutes || 0) }} / day
               </p>
             </div>
@@ -198,7 +213,7 @@ interface AttendanceSummary {
             [pageSize]="pageSize"
             [page]="currentPage()"
             [pagination]="true"
-            [totalItems]="historyResource.value()?.length || 0"
+            [totalItems]="historyResource.value().length || 0"
             (pageChange)="onPageChange($event)"
             (sortChange)="onSortChange($event)">
           </ui-data-table>
@@ -211,6 +226,9 @@ export class AttendanceComponent implements OnDestroy {
   private convex = inject(ConvexClientService);
   private toast = inject(ToastService);
   private datePipe = inject(DatePipe);
+  private authService = inject(AuthService);
+
+  canManage = this.authService.hasRole(['super_admin', 'admin', 'hr_manager', 'manager']);
 
   // Time state
   currentTime = signal(new Date());

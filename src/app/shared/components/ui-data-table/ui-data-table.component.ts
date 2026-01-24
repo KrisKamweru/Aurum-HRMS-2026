@@ -91,7 +91,7 @@ export interface SortEvent {
             } @else {
               @for (row of data; track trackByFn(row); let i = $index) {
                 <tr
-                  class="hover:bg-gradient-to-r hover:from-burgundy-50 hover:to-transparent dark:hover:from-burgundy-900/10 dark:hover:to-transparent transition-all duration-200 cursor-pointer group"
+                  class="hover:bg-gradient-to-r hover:from-burgundy-50 hover:to-transparent dark:hover:from-burgundy-900/20 dark:hover:to-transparent transition-all duration-200 cursor-pointer group"
                   [class.animate-fade-in-up]="true"
                   [style.animation-delay.ms]="i * 30"
                   (click)="rowClick.emit(row)"
