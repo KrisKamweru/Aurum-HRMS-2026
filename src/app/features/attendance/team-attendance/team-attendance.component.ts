@@ -91,7 +91,7 @@ import { api } from '../../../../../convex/_generated/api';
       </div>
 
       <!-- Team Table -->
-      <ui-card class="overflow-hidden">
+      <ui-card class="overflow-hidden w-full max-w-full">
         <ui-data-table
           [data]="tableData()"
           [columns]="columns"
@@ -102,7 +102,16 @@ import { api } from '../../../../../convex/_generated/api';
           [totalItems]="tableData().length"
           (pageChange)="currentPage.set($event)"
           [actionsTemplate]="actionTemplate"
+          [cellTemplates]="{ 'name': employeeTemplate }"
         >
+          <!-- Employee Column Template -->
+          <ng-template #employeeTemplate let-row>
+            <div>
+              <div class="font-medium text-stone-800 dark:text-stone-100">{{ row.name }}</div>
+              <div class="text-xs text-stone-500">{{ row.email }}</div>
+            </div>
+          </ng-template>
+
           <!-- Custom Action Template -->
           <ng-template #actionTemplate let-row>
             <ui-button variant="ghost" size="sm" (onClick)="openEditModal(row)">
@@ -191,11 +200,7 @@ export class TeamAttendanceComponent {
     {
       key: 'name',
       header: 'Employee',
-      sortable: true,
-      formatter: (val: any, row: any) => {
-        return `<div class="font-medium text-stone-800 dark:text-stone-100">${val}</div>
-                <div class="text-xs text-stone-500">${row.email}</div>`;
-      }
+      sortable: true
     },
     {
       key: 'clockIn',

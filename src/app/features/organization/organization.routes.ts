@@ -20,6 +20,10 @@ export const ORGANIZATION_ROUTES: Routes = [
       {
         path: 'user-linking',
         loadComponent: () => import('./pages/user-linking.component').then(m => m.UserLinkingComponent)
+      },
+      {
+        path: 'chart',
+        loadComponent: () => import('./pages/org-chart/org-chart.component').then(m => m.OrgChartComponent)
       }
     ]
   }

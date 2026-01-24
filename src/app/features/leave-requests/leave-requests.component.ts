@@ -209,6 +209,13 @@ export class LeaveRequestsComponent implements OnInit, OnDestroy {
   }
 
   openCreateModal() {
+    if (!this.canManage()) {
+      const user = this.authService.getUser()();
+      if (!user?.employeeId) {
+        this.toastService.error('Your account is not linked to an employee profile. Please contact HR.');
+        return;
+      }
+    }
     this.showModal.set(true);
   }
 

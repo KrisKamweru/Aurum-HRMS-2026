@@ -91,6 +91,8 @@ export class EmployeesComponent implements OnInit, OnDestroy {
   canManage = this.authService.hasRole(['super_admin', 'admin', 'hr_manager', 'manager']);
 
   employees = signal<any[]>([]);
+  departments = signal<any[]>([]);
+  designations = signal<any[]>([]);
   loading = signal(true);
   submitting = signal(false);
 
@@ -201,11 +203,13 @@ export class EmployeesComponent implements OnInit, OnDestroy {
 
     // Subscribe to Departments
     this.departmentsUnsubscribe = client.onUpdate(api.organization.listDepartments, {}, (data) => {
+      this.departments.set(data);
       this.updateDepartmentOptions(data);
     });
 
     // Subscribe to Designations
     this.designationsUnsubscribe = client.onUpdate(api.organization.listDesignations, {}, (data) => {
+      this.designations.set(data);
       this.updateDesignationOptions(data);
     });
 
@@ -258,6 +262,15 @@ export class EmployeesComponent implements OnInit, OnDestroy {
   }
 
   openCreateModal() {
+    if (this.departments().length === 0) {
+      this.toastService.error('Please create at least one Department first.');
+      return;
+    }
+    if (this.designations().length === 0) {
+      this.toastService.error('Please create at least one Designation first.');
+      return;
+    }
+
     this.isEditing.set(false);
     this.currentEmployee.set({ status: 'active', startDate: new Date().toISOString().split('T')[0] });
 

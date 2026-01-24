@@ -308,6 +308,56 @@ export const updateMyProfile = mutation({
   },
 });
 
+export const getOrgChart = query({
+  args: {},
+  handler: async (ctx) => {
+    const user = await getViewerInfo(ctx);
+    const orgId = user.orgId!;
+
+    // Permission check: Admins, HR, Managers
+    const allowedRoles = ["super_admin", "admin", "hr_manager", "manager"];
+    if (!allowedRoles.includes(user.role as any)) {
+      throw new Error("Unauthorized");
+    }
+
+    const employees = await ctx.db
+      .query("employees")
+      .withIndex("by_org", (q) => q.eq("orgId", orgId))
+      .collect();
+
+    const designations = await ctx.db
+      .query("designations")
+      .withIndex("by_org", (q) => q.eq("orgId", orgId))
+      .collect();
+
+    const desMap = new Map(designations.map((d) => [d._id, d.title]));
+
+    // Build Tree
+    const empMap = new Map();
+    employees.forEach((emp) => {
+      empMap.set(emp._id, {
+        ...emp,
+        designationName: emp.designationId ? desMap.get(emp.designationId) : 'N/A',
+        directReports: []
+      });
+    });
+
+    const rootNodes: any[] = [];
+
+    // Second pass to link parents and children
+    for (const node of empMap.values()) {
+      if (node.managerId && empMap.has(node.managerId)) {
+        const manager = empMap.get(node.managerId);
+        manager.directReports.push(node);
+      } else {
+        rootNodes.push(node);
+      }
+    }
+
+    return rootNodes;
+  },
+});
+
 // Get current user's employee profile
 export const getMyProfile = query({
   args: {},

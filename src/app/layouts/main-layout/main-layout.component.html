@@ -62,6 +62,11 @@
             <ui-icon icon name="map-pin" class="w-5 h-5 text-stone-400 group-hover:text-burgundy-800 dark:group-hover:text-burgundy-300 group-[.nav-active]:text-burgundy-800 dark:group-[.nav-active]:text-burgundy-300 transition-colors"></ui-icon>
             Locations
           </ui-nav-item>
+
+          <ui-nav-item route="/organization/chart">
+            <ui-icon icon name="users" class="w-5 h-5 text-stone-400 group-hover:text-burgundy-800 dark:group-hover:text-burgundy-300 group-[.nav-active]:text-burgundy-800 dark:group-[.nav-active]:text-burgundy-300 transition-colors"></ui-icon>
+            Chain of Command
+          </ui-nav-item>
         }
 
         <!-- Super Admin section -->
@@ -230,6 +235,11 @@
                 <ui-nav-item route="/organization/locations" (click)="toggleSidebar()">
                   <ui-icon icon name="map-pin" class="w-5 h-5 text-stone-400 group-hover:text-burgundy-800 dark:group-hover:text-burgundy-300 group-[.nav-active]:text-burgundy-800 dark:group-[.nav-active]:text-burgundy-300 transition-colors"></ui-icon>
                   Locations
+                </ui-nav-item>
+
+                <ui-nav-item route="/organization/chart" (click)="toggleSidebar()">
+                  <ui-icon icon name="users" class="w-5 h-5 text-stone-400 group-hover:text-burgundy-800 dark:group-hover:text-burgundy-300 group-[.nav-active]:text-burgundy-800 dark:group-[.nav-active]:text-burgundy-300 transition-colors"></ui-icon>
+                  Chain of Command
                 </ui-nav-item>
               }
 
