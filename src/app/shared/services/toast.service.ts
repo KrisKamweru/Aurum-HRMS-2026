@@ -7,6 +7,10 @@ export interface Toast {
   message: string;
   type: ToastType;
   duration?: number;
+  action?: {
+    label: string;
+    link: any[]; // Router link array
+  };
 }
 
 @Injectable({
@@ -18,9 +22,9 @@ export class ToastService {
   // Public readonly signal for components to consume
   readonly toasts = this.toastsSignal.asReadonly();
 
-  show(message: string, type: ToastType = 'info', duration = 3000) {
+  show(message: string, type: ToastType = 'info', duration = 3000, action?: { label: string, link: any[] }) {
     const id = crypto.randomUUID();
-    const toast: Toast = { id, message, type, duration };
+    const toast: Toast = { id, message, type, duration, action };
 
     this.toastsSignal.update(toasts => [...toasts, toast]);
 
@@ -31,20 +35,20 @@ export class ToastService {
     }
   }
 
-  success(message: string, duration = 3000) {
-    this.show(message, 'success', duration);
+  success(message: string, duration = 3000, action?: { label: string, link: any[] }) {
+    this.show(message, 'success', duration, action);
   }
 
-  error(message: string, duration = 5000) {
-    this.show(message, 'error', duration);
+  error(message: string, duration = 5000, action?: { label: string, link: any[] }) {
+    this.show(message, 'error', duration, action);
   }
 
-  info(message: string, duration = 3000) {
-    this.show(message, 'info', duration);
+  info(message: string, duration = 3000, action?: { label: string, link: any[] }) {
+    this.show(message, 'info', duration, action);
   }
 
-  warning(message: string, duration = 4000) {
-    this.show(message, 'warning', duration);
+  warning(message: string, duration = 4000, action?: { label: string, link: any[] }) {
+    this.show(message, 'warning', duration, action);
   }
 
   remove(id: string) {

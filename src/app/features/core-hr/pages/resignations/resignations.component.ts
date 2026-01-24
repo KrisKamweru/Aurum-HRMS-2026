@@ -28,7 +28,12 @@ import { api } from '../../../../../../convex/_generated/api';
           <h1 class="heading-accent">Resignations</h1>
           <p class="mt-3 text-stone-500">Manage employee resignations and exit process.</p>
         </div>
-        <ui-button (onClick)="openCreateModal()">
+        <ui-button
+          (onClick)="openCreateModal()"
+          [prerequisitesMet]="employees().length > 0"
+          prerequisiteMessage="You need to add employees before you can submit a resignation."
+          [prerequisiteAction]="{ label: 'Add Employee', link: ['/employees'] }"
+        >
           <ui-icon name="file-minus" class="w-4 h-4 mr-2"></ui-icon>
           Submit Resignation
         </ui-button>

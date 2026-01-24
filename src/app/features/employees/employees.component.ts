@@ -23,7 +23,13 @@ import { api } from '../../../../convex/_generated/api';
           <h1 class="heading-accent dark:text-stone-100">Employees</h1>
           <p class="mt-3 text-stone-500 dark:text-stone-400">Manage your workforce.</p>
         </div>
-        <ui-button (onClick)="openCreateModal()" *ngIf="canManage()">
+        <ui-button
+          (onClick)="openCreateModal()"
+          *ngIf="canManage()"
+          [prerequisitesMet]="departments().length > 0 && designations().length > 0"
+          prerequisiteMessage="You need to create Departments and Designations before adding employees."
+          [prerequisiteAction]="{ label: 'Go to Organization', link: ['/organization'] }"
+        >
           <ui-icon name="plus" class="w-4 h-4 mr-2"></ui-icon>
           Add Employee
         </ui-button>
@@ -262,15 +268,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
   }
 
   openCreateModal() {
-    if (this.departments().length === 0) {
-      this.toastService.error('Please create at least one Department first.');
-      return;
-    }
-    if (this.designations().length === 0) {
-      this.toastService.error('Please create at least one Designation first.');
-      return;
-    }
-
+    // Prerequisites handled by ui-button prerequisitesMet
     this.isEditing.set(false);
     this.currentEmployee.set({ status: 'active', startDate: new Date().toISOString().split('T')[0] });
 

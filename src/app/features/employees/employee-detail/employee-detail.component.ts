@@ -12,6 +12,12 @@ import { ToastService } from '../../../shared/services/toast.service';
 import { Id } from '../../../../../convex/_generated/dataModel';
 import { AuthService } from '../../../core/auth/auth.service';
 
+// Sub-components
+import { ProfilePersonalComponent } from './components/profile-personal.component';
+import { ProfileFinancialComponent } from './components/profile-financial.component';
+import { ProfileEducationComponent } from './components/profile-education.component';
+import { ProfileDocumentsComponent } from './components/profile-documents.component';
+
 type ActionType = 'promote' | 'transfer' | 'resign' | 'terminate' | 'warning' | 'award' | 'complaint' | 'travel' | null;
 
 @Component({
@@ -23,7 +29,11 @@ type ActionType = 'promote' | 'transfer' | 'resign' | 'terminate' | 'warning' | 
     UiButtonComponent,
     UiIconComponent,
     UiModalComponent,
-    DynamicFormComponent
+    DynamicFormComponent,
+    ProfilePersonalComponent,
+    ProfileFinancialComponent,
+    ProfileEducationComponent,
+    ProfileDocumentsComponent
   ],
   template: `
     <div class="space-y-6" *ngIf="employee(); else loadingTpl">
@@ -55,33 +65,21 @@ type ActionType = 'promote' | 'transfer' | 'resign' | 'terminate' | 'warning' | 
       </div>
 
       <!-- Tabs -->
-      <div class="border-b border-stone-200 dark:border-stone-700">
-        <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+      <div class="border-b border-stone-200 dark:border-stone-700 overflow-x-auto">
+        <nav class="-mb-px flex space-x-6" aria-label="Tabs">
           <button
-            [class.border-[#8b1e3f]]="activeTab() === 'overview'"
-            [class.dark:border-[#fce7eb]]="activeTab() === 'overview'"
-            [class.text-[#8b1e3f]]="activeTab() === 'overview'"
-            [class.dark:text-[#fce7eb]]="activeTab() === 'overview'"
-            [class.border-transparent]="activeTab() !== 'overview'"
-            [class.text-stone-500]="activeTab() !== 'overview'"
-            [class.dark:text-stone-400]="activeTab() !== 'overview'"
-            class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm hover:text-[#8b1e3f] dark:hover:text-[#fce7eb] hover:border-stone-300 dark:hover:border-stone-600 transition-colors"
-            (click)="activeTab.set('overview')"
+            *ngFor="let tab of tabs"
+            [class.border-[#8b1e3f]]="activeTab() === tab"
+            [class.dark:border-[#fce7eb]]="activeTab() === tab"
+            [class.text-[#8b1e3f]]="activeTab() === tab"
+            [class.dark:text-[#fce7eb]]="activeTab() === tab"
+            [class.border-transparent]="activeTab() !== tab"
+            [class.text-stone-500]="activeTab() !== tab"
+            [class.dark:text-stone-400]="activeTab() !== tab"
+            class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm hover:text-[#8b1e3f] dark:hover:text-[#fce7eb] transition-colors capitalize"
+            (click)="activeTab.set(tab)"
           >
-            Overview
-          </button>
-          <button
-            [class.border-[#8b1e3f]]="activeTab() === 'history'"
-            [class.dark:border-[#fce7eb]]="activeTab() === 'history'"
-            [class.text-[#8b1e3f]]="activeTab() === 'history'"
-            [class.dark:text-[#fce7eb]]="activeTab() === 'history'"
-            [class.border-transparent]="activeTab() !== 'history'"
-            [class.text-stone-500]="activeTab() !== 'history'"
-            [class.dark:text-stone-400]="activeTab() !== 'history'"
-            class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm hover:text-[#8b1e3f] dark:hover:text-[#fce7eb] hover:border-stone-300 dark:hover:border-stone-600 transition-colors"
-            (click)="activeTab.set('history')"
-          >
-            History
+            {{ tab }}
           </button>
         </nav>
       </div>
@@ -152,22 +150,57 @@ type ActionType = 'promote' | 'transfer' | 'resign' | 'terminate' | 'warning' | 
           </div>
         </div>
 
-        <!-- Right Column: History/Widgets (Placeholder for now) -->
+        <!-- Right Column: Quick Actions -->
         <div class="space-y-6">
           <div class="bg-stone-50 dark:bg-stone-800/50 rounded-2xl p-6 border border-stone-200 dark:border-stone-700">
             <h3 class="font-bold mb-2 text-stone-800 dark:text-stone-200">Quick Actions</h3>
             <p class="text-sm text-stone-500 dark:text-stone-400 mb-4">Common tasks for this employee.</p>
             <div class="flex flex-col gap-2">
-              <button class="text-left p-2 hover:bg-white dark:hover:bg-stone-800 rounded transition text-sm flex items-center gap-2 text-stone-600 dark:text-stone-300">
+              <button (click)="activeTab.set('documents')" class="text-left p-2 hover:bg-white dark:hover:bg-stone-800 rounded transition text-sm flex items-center gap-2 text-stone-600 dark:text-stone-300">
                 <ui-icon name="document" class="w-4 h-4"></ui-icon> View Documents
               </button>
-              <button class="text-left p-2 hover:bg-white dark:hover:bg-stone-800 rounded transition text-sm flex items-center gap-2 text-stone-600 dark:text-stone-300">
-                 <ui-icon name="calendar" class="w-4 h-4"></ui-icon> View Leave History
+              <button (click)="activeTab.set('history')" class="text-left p-2 hover:bg-white dark:hover:bg-stone-800 rounded transition text-sm flex items-center gap-2 text-stone-600 dark:text-stone-300">
+                 <ui-icon name="clock" class="w-4 h-4"></ui-icon> View History
               </button>
             </div>
           </div>
         </div>
       </div>
+
+      <!-- Extended Tabs Content -->
+      <app-profile-personal
+        *ngIf="activeTab() === 'personal'"
+        [contacts]="emergencyContacts()"
+        [loading]="contactsLoading()"
+        (save)="saveContact($event)"
+        (delete)="deleteContact($event)"
+      ></app-profile-personal>
+
+      <app-profile-financial
+        *ngIf="activeTab() === 'financial'"
+        [statutory]="statutoryInfo()"
+        [banking]="bankingDetails()"
+        [loading]="bankingLoading()"
+        (saveStatutory)="saveStatutory($event)"
+        (saveBank)="saveBank($event)"
+        (deleteBank)="deleteBank($event)"
+      ></app-profile-financial>
+
+      <app-profile-education
+        *ngIf="activeTab() === 'education'"
+        [education]="education()"
+        [loading]="educationLoading()"
+        (save)="saveEducation($event)"
+        (delete)="deleteEducation($event)"
+      ></app-profile-education>
+
+      <app-profile-documents
+        *ngIf="activeTab() === 'documents'"
+        [documents]="documents()"
+        [loading]="documentsLoading()"
+        (save)="saveDocument($event)"
+        (delete)="deleteDocument($event)"
+      ></app-profile-documents>
 
       <!-- History Tab -->
       <div class="space-y-6" *ngIf="activeTab() === 'history'">
@@ -392,8 +425,22 @@ export class EmployeeDetailComponent implements OnInit {
   travelRequests = signal<any[]>([]);
   complaints = signal<any[]>([]);
 
+  // Extended Profile Data
+  emergencyContacts = signal<any[]>([]);
+  bankingDetails = signal<any[]>([]);
+  statutoryInfo = signal<any>(null);
+  education = signal<any[]>([]);
+  documents = signal<any[]>([]);
+
+  // Sub-component loading states
+  contactsLoading = signal(false);
+  bankingLoading = signal(false);
+  educationLoading = signal(false);
+  documentsLoading = signal(false);
+
   // UI State
-  activeTab = signal<'overview' | 'history'>('overview');
+  activeTab = signal<'overview' | 'personal' | 'financial' | 'education' | 'documents' | 'history'>('overview');
+  tabs: ('overview' | 'personal' | 'financial' | 'education' | 'documents' | 'history')[] = ['overview', 'personal', 'financial', 'education', 'documents', 'history'];
 
   // Modal State
   showActionModal = signal(false);
@@ -515,6 +562,176 @@ export class EmployeeDetailComponent implements OnInit {
     client.onUpdate(api.core_hr.getAwards, { employeeId: id }, (data) => this.awards.set(data));
     client.onUpdate(api.core_hr.getTravelRequests, { employeeId: id }, (data) => this.travelRequests.set(data));
     client.onUpdate(api.core_hr.getComplaints, { employeeId: id }, (data) => this.complaints.set(data));
+
+    // Load Extended Details
+    client.onUpdate(api.employee_details.listEmergencyContacts, { employeeId: id }, (data) => this.emergencyContacts.set(data));
+    client.onUpdate(api.employee_details.listBankingDetails, { employeeId: id }, (data) => this.bankingDetails.set(data));
+    client.onUpdate(api.employee_details.getStatutoryInfo, { employeeId: id }, (data) => this.statutoryInfo.set(data));
+    client.onUpdate(api.employee_details.listEducation, { employeeId: id }, (data) => this.education.set(data));
+    client.onUpdate(api.employee_details.listDocuments, { employeeId: id }, (data) => this.documents.set(data));
+  }
+
+  // --- Extended Profile Handlers ---
+
+  async saveContact(data: any) {
+    if (!this.employeeId()) return;
+    this.contactsLoading.set(true);
+    try {
+      const client = this.convex.getClient();
+      if (data.id) {
+        await client.mutation(api.employee_details.updateEmergencyContact, {
+          id: data.id,
+          employeeId: this.employeeId()!,
+          updates: { ...data, id: undefined }
+        });
+      } else {
+        await client.mutation(api.employee_details.addEmergencyContact, {
+          employeeId: this.employeeId()!,
+          ...data
+        });
+      }
+      this.toast.success('Emergency contact saved');
+    } catch (err: any) {
+      this.toast.error(err.message || 'Failed to save contact');
+    } finally {
+      this.contactsLoading.set(false);
+    }
+  }
+
+  async deleteContact(id: string) {
+    if (!confirm('Are you sure you want to delete this contact?')) return;
+    try {
+      await this.convex.getClient().mutation(api.employee_details.deleteEmergencyContact, {
+        id: id as any,
+        employeeId: this.employeeId()!
+      });
+      this.toast.success('Contact deleted');
+    } catch (err: any) {
+      this.toast.error(err.message || 'Failed to delete');
+    }
+  }
+
+  async saveStatutory(data: any) {
+    if (!this.employeeId()) return;
+    this.bankingLoading.set(true); // Share loading state or create new one
+    try {
+      await this.convex.getClient().mutation(api.employee_details.upsertStatutoryInfo, {
+        employeeId: this.employeeId()!,
+        ...data
+      });
+      this.toast.success('Statutory info updated');
+    } catch (err: any) {
+      this.toast.error(err.message || 'Failed to update');
+    } finally {
+      this.bankingLoading.set(false);
+    }
+  }
+
+  async saveBank(data: any) {
+    if (!this.employeeId()) return;
+    this.bankingLoading.set(true);
+    try {
+      const client = this.convex.getClient();
+      if (data.id) {
+        await client.mutation(api.employee_details.updateBankingDetail, {
+          id: data.id,
+          employeeId: this.employeeId()!,
+          updates: { ...data, id: undefined }
+        });
+      } else {
+        await client.mutation(api.employee_details.addBankingDetail, {
+          employeeId: this.employeeId()!,
+          ...data
+        });
+      }
+      this.toast.success('Banking details saved');
+    } catch (err: any) {
+      this.toast.error(err.message || 'Failed to save banking details');
+    } finally {
+      this.bankingLoading.set(false);
+    }
+  }
+
+  async deleteBank(id: string) {
+    if (!confirm('Delete this bank account?')) return;
+    try {
+      await this.convex.getClient().mutation(api.employee_details.deleteBankingDetail, {
+        id: id as any,
+        employeeId: this.employeeId()!
+      });
+      this.toast.success('Bank account deleted');
+    } catch (err: any) {
+      this.toast.error(err.message || 'Failed to delete');
+    }
+  }
+
+  async saveEducation(data: any) {
+    if (!this.employeeId()) return;
+    this.educationLoading.set(true);
+    try {
+      const client = this.convex.getClient();
+      if (data.id) {
+        await client.mutation(api.employee_details.updateEducation, {
+          id: data.id,
+          employeeId: this.employeeId()!,
+          updates: { ...data, id: undefined }
+        });
+      } else {
+        await client.mutation(api.employee_details.addEducation, {
+          employeeId: this.employeeId()!,
+          ...data
+        });
+      }
+      this.toast.success('Education history saved');
+    } catch (err: any) {
+      this.toast.error(err.message || 'Failed to save');
+    } finally {
+      this.educationLoading.set(false);
+    }
+  }
+
+  async deleteEducation(id: string) {
+    if (!confirm('Remove this education record?')) return;
+    try {
+      await this.convex.getClient().mutation(api.employee_details.deleteEducation, {
+        id: id as any,
+        employeeId: this.employeeId()!
+      });
+      this.toast.success('Record deleted');
+    } catch (err: any) {
+      this.toast.error(err.message || 'Failed to delete');
+    }
+  }
+
+  async saveDocument(data: any) {
+    if (!this.employeeId()) return;
+    this.documentsLoading.set(true);
+    try {
+      // In a real implementation, we would handle the file upload here first
+      // For now we just save the metadata as per the mock in the child component
+      await this.convex.getClient().mutation(api.employee_details.addDocument, {
+        employeeId: this.employeeId()!,
+        ...data
+      });
+      this.toast.success('Document uploaded');
+    } catch (err: any) {
+      this.toast.error(err.message || 'Failed to upload');
+    } finally {
+      this.documentsLoading.set(false);
+    }
+  }
+
+  async deleteDocument(id: string) {
+    if (!confirm('Delete this document?')) return;
+    try {
+      await this.convex.getClient().mutation(api.employee_details.deleteDocument, {
+        id: id as any,
+        employeeId: this.employeeId()!
+      });
+      this.toast.success('Document deleted');
+    } catch (err: any) {
+      this.toast.error(err.message || 'Failed to delete');
+    }
   }
 
   loadOrganizationData() {

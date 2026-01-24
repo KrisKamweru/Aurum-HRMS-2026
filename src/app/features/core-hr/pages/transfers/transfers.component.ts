@@ -30,7 +30,12 @@ import { api } from '../../../../../../convex/_generated/api';
           <h1 class="heading-accent">Transfers</h1>
           <p class="mt-3 text-stone-500">Manage employee department and location transfers.</p>
         </div>
-        <ui-button (onClick)="openCreateModal()">
+        <ui-button
+          (onClick)="openCreateModal()"
+          [prerequisitesMet]="departments().length > 1"
+          prerequisiteMessage="You need at least 2 Departments to perform a transfer."
+          [prerequisiteAction]="{ label: 'Manage Departments', link: ['/organization/departments'] }"
+        >
           <ui-icon name="arrow-right-left" class="w-4 h-4 mr-2"></ui-icon>
           Transfer Employee
         </ui-button>

@@ -12,6 +12,7 @@ import type * as attendance from "../attendance.js";
 import type * as auth from "../auth.js";
 import type * as core_hr from "../core_hr.js";
 import type * as dashboard from "../dashboard.js";
+import type * as employee_details from "../employee_details.js";
 import type * as employees from "../employees.js";
 import type * as http from "../http.js";
 import type * as leave_requests from "../leave_requests.js";
@@ -32,6 +33,7 @@ declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   core_hr: typeof core_hr;
   dashboard: typeof dashboard;
+  employee_details: typeof employee_details;
   employees: typeof employees;
   http: typeof http;
   leave_requests: typeof leave_requests;

@@ -292,7 +292,7 @@ export class AttendanceComponent implements OnDestroy {
 
     const start = new Date(status.clockIn).getTime();
     const now = this.currentTime().getTime();
-    const diffMs = now - start;
+    const diffMs = Math.max(0, now - start);
     const totalSeconds = Math.floor(diffMs / 1000);
 
     const hours = Math.floor(totalSeconds / 3600);

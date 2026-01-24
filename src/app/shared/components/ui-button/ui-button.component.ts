@@ -1,5 +1,6 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ToastService } from '../../services/toast.service';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost' | 'outline' | 'gold';
 export type ButtonSize = 'sm' | 'md' | 'lg';
@@ -13,7 +14,7 @@ export type ButtonSize = 'sm' | 'md' | 'lg';
       [type]="type"
       [disabled]="disabled || loading"
       [class]="getClasses()"
-      (click)="onClick.emit($event)"
+      (click)="handleClick($event)"
     >
       <!-- Shimmer effect on hover for primary -->
       <div class="absolute inset-0 shimmer-effect opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -50,6 +51,8 @@ export type ButtonSize = 'sm' | 'md' | 'lg';
   `]
 })
 export class UiButtonComponent {
+  private toastService = inject(ToastService);
+
   @Input() variant: ButtonVariant = 'primary';
   @Input() size: ButtonSize = 'md';
   @Input() type: 'button' | 'submit' | 'reset' = 'button';
@@ -58,7 +61,26 @@ export class UiButtonComponent {
   @Input() fullWidth = false;
   @Input() customClass = '';
 
+  // Prerequisite inputs
+  @Input() prerequisitesMet = true;
+  @Input() prerequisiteMessage = 'Action unavailable due to missing prerequisites.';
+  @Input() prerequisiteAction?: { label: string, link: any[] };
+
   @Output() onClick = new EventEmitter<MouseEvent>();
+
+  handleClick(event: MouseEvent) {
+    if (!this.prerequisitesMet && !this.disabled && !this.loading) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      this.toastService.warning(
+        this.prerequisiteMessage,
+        5000,
+        this.prerequisiteAction
+      );
+      return;
+    }
+    this.onClick.emit(event);
+  }
 
   getClasses(): string {
     const baseClasses = `
@@ -137,8 +159,13 @@ export class UiButtonComponent {
     };
 
     const widthClass = this.fullWidth ? 'w-full' : '';
-    const stateClasses = this.disabled || this.loading
-      ? 'cursor-not-allowed'
+
+    // If prerequisites are not met (and not explicitly disabled), show as disabled style but with not-allowed cursor
+    // This invites the user to click it to see why (via logic in handleClick)
+    const isDisabledStyle = this.disabled || this.loading || !this.prerequisitesMet;
+
+    const stateClasses = isDisabledStyle
+      ? 'opacity-50 cursor-not-allowed'
       : 'cursor-pointer';
 
     return `

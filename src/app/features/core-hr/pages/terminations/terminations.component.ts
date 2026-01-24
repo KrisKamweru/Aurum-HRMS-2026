@@ -28,7 +28,13 @@ import { api } from '../../../../../../convex/_generated/api';
           <h1 class="heading-accent">Terminations</h1>
           <p class="mt-3 text-stone-500">Manage employee terminations and offboarding.</p>
         </div>
-        <ui-button (onClick)="openCreateModal()" variant="danger">
+        <ui-button
+          (onClick)="openCreateModal()"
+          variant="danger"
+          [prerequisitesMet]="employees().length > 0"
+          prerequisiteMessage="You need to add employees before you can terminate one."
+          [prerequisiteAction]="{ label: 'Add Employee', link: ['/employees'] }"
+        >
           <ui-icon name="user-x" class="w-4 h-4 mr-2"></ui-icon>
           Terminate Employee
         </ui-button>

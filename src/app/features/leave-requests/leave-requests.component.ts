@@ -22,7 +22,11 @@ import { api } from '../../../../convex/_generated/api';
           <h1 class="heading-accent">Leave Requests</h1>
           <p class="mt-3 text-stone-500">Manage employee leave applications.</p>
         </div>
-        <ui-button (onClick)="openCreateModal()">
+        <ui-button
+          (onClick)="openCreateModal()"
+          [prerequisitesMet]="canManage() || !!currentUser()?.employeeId"
+          prerequisiteMessage="Your account is not linked to an employee profile. Please contact HR."
+        >
           <ui-icon name="plus" class="w-4 h-4 mr-2"></ui-icon>
           New Request
         </ui-button>

@@ -30,7 +30,12 @@ import { api } from '../../../../../../convex/_generated/api';
           <h1 class="heading-accent">Promotions</h1>
           <p class="mt-3 text-stone-500">Manage employee promotions and role changes.</p>
         </div>
-        <ui-button (onClick)="openCreateModal()">
+        <ui-button
+          (onClick)="openCreateModal()"
+          [prerequisitesMet]="designations().length > 1"
+          prerequisiteMessage="You need at least 2 Designations to promote an employee."
+          [prerequisiteAction]="{ label: 'Manage Designations', link: ['/organization/designations'] }"
+        >
           <ui-icon name="plus" class="w-4 h-4 mr-2"></ui-icon>
           Promote Employee
         </ui-button>

@@ -99,7 +99,7 @@ import { ToastService } from '../../shared/services/toast.service';
             <ui-icon name="calendar" class="w-5 h-5 text-stone-400 dark:text-stone-500"></ui-icon>
             Leave Balance
           </h2>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
             <!-- Vacation -->
             <ui-card accent="bg-sky-500">
               <div class="flex justify-between items-start mb-4">

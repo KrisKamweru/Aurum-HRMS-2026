@@ -1,11 +1,12 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { Toast, ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'ui-toast',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   template: `
     <div class="fixed top-4 right-4 z-50 flex flex-col gap-2 w-full max-w-sm pointer-events-none">
       @for (toast of toastService.toasts(); track toast.id) {
@@ -36,6 +37,17 @@ import { Toast, ToastService } from '../../services/toast.service';
               </div>
               <div class="ml-3 w-0 flex-1 pt-0.5">
                 <p class="text-sm font-medium text-stone-900 dark:text-stone-100">{{ toast.message }}</p>
+                @if (toast.action) {
+                  <div class="mt-2">
+                    <a
+                      [routerLink]="toast.action.link"
+                      (click)="toastService.remove(toast.id)"
+                      class="text-sm font-medium text-primary-600 hover:text-primary-500 focus:outline-none focus:underline"
+                    >
+                      {{ toast.action.label }} →
+                    </a>
+                  </div>
+                }
               </div>
               <div class="ml-4 flex-shrink-0 flex">
                 <button
