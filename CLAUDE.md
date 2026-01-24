@@ -9,7 +9,7 @@
 - **Framework**: Angular 21 (Standalone Components, Signals)
 - **Backend**: Convex (Real-time database, Auth, Server Functions)
 - **Styling**: Tailwind CSS v4
-- **Testing**: Playwright (E2E), Karma/Jasmine (Unit)
+- **Testing**: Playwright (E2E), Vitest (Unit)
 
 ## Development Commands
 - `npm start`: Run Angular dev server (http://localhost:4200)
@@ -37,6 +37,10 @@
 
 ### Data Access (Convex)
 - **Service**: `ConvexClientService` (core/services/convex-client.service.ts).
+- **Architecture**:
+  - `ConvexClientService` is the singleton wrapper managing the raw `ConvexClient`, auth tokens, and connection state.
+  - Components inject `ConvexClientService` and use `getClient()` to access the Convex instance.
+  - Specialized services (like `AuthService`) wrap specific logic but rely on `ConvexClientService` for transport.
 - **Queries**: Use `client.onUpdate(api.module.func, ...)` for real-time subscriptions in `ngOnInit`.
 - **Mutations**: Use `await client.mutation(api.module.func, ...)` for actions.
 - **Multi-tenancy**: All backend queries MUST filter by `orgId` (retrieved via `getViewerInfo`).
@@ -80,11 +84,15 @@
 
 ### E2E Testing (Playwright)
 - **Credentials**: See `.test-credentials` (local only).
+- **Tool Selection**:
+  - **Snapshots**: Use `browser_snapshot` for inspecting the DOM and getting accessibility refs.
+  - **Screenshots**: Use `browser_take_screenshot` when verifying visual layout, colors, alignment, or contrast.
 - **Workflow**:
   1. Navigate: `browser_navigate`
   2. Inspect: `browser_snapshot` (preferred over screenshots for finding refs)
   3. Interact: `browser_click`, `browser_type` using snapshot refs.
   4. Verify: Check UI state updates.
+- **Rule**: Never start a new feature before the current one is user-reviewed, unless explicitly instructed.
 
 ### Database Seeding
 - **Command**: `npx convex run seed:seedTestOrganization`

@@ -7,6 +7,7 @@ Aurum HRMS is a modern, comprehensive, and scalable **SaaS** Human Resource Mana
 - **Frontend**: Angular 21 (Standalone Components, Signals, Control Flow)
 - **Backend/Database**: Convex (Real-time database, Server functions, Auth)
 - **Styling**: Tailwind CSS
+- **Testing**: Vitest (Unit), Playwright (E2E)
 - **State Management**: Signals + Convex Reactivity
 - **Multi-tenancy**: Native support via Convex schema organization (by `organizationId`)
 
