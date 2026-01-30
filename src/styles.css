@@ -4,7 +4,7 @@
 @import "tailwindcss";
 
 /* Enable class-based dark mode (Tailwind v4) */
-@variant dark (&:where(.dark, .dark *));
+/* @variant dark (&:where(.dark, .dark *)); - Built-in in v4 */
 
 @theme {
   --color-stone-50: var(--stone-50);
@@ -743,5 +743,26 @@ textarea::placeholder {
 :root.dark ::selection {
   background: #8b1e3f;
   color: #fce7eb;
+}
+
+/* Fix browser autofill colors in Dark Mode */
+:root.dark input:-webkit-autofill,
+:root.dark input:-webkit-autofill:hover,
+:root.dark input:-webkit-autofill:focus,
+:root.dark input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px #1c1917 inset !important;
+  -webkit-text-fill-color: #fafaf9 !important;
+  caret-color: #fafaf9;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Optional: Fix for Light Mode to ensure consistency */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  /* Matching the bg-stone-50 color */
+  -webkit-box-shadow: 0 0 0 30px #fafaf9 inset !important;
+  -webkit-text-fill-color: #292524 !important;
 }
 

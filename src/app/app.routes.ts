@@ -29,7 +29,15 @@ export const routes: Routes = [
       },
       {
         path: 'settings',
-        loadComponent: () => import('./features/profile/profile.component').then(m => m.ProfileComponent)
+        loadChildren: () => import('./features/settings/settings.routes').then(m => m.SETTINGS_ROUTES)
+      },
+      {
+        path: 'recruitment',
+        loadChildren: () => import('./features/recruitment/recruitment.routes').then(m => m.RECRUITMENT_ROUTES)
+      },
+      {
+        path: 'training',
+        loadChildren: () => import('./features/training/training.routes').then(m => m.TRAINING_ROUTES)
       },
       {
         path: 'employees',
@@ -58,6 +66,11 @@ export const routes: Routes = [
         path: 'organization',
         loadChildren: () => import('./features/organization/organization.routes').then(m => m.ORGANIZATION_ROUTES),
         canActivate: [roleGuard(['super_admin', 'admin', 'hr_manager'])]
+      },
+      {
+        path: 'payroll',
+        loadChildren: () => import('./features/payroll/payroll.routes').then(m => m.PAYROLL_ROUTES)
+        // Guard handled in child routes to allow employees to view slips
       },
       {
         path: 'super-admin',

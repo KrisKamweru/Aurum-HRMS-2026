@@ -187,7 +187,8 @@ export class ManualEntryModalComponent {
       if (!timeStr) return undefined;
       // timeStr is HH:MM
       const [hours, minutes] = timeStr.split(':').map(Number);
-      const d = new Date(dateStr);
+      // Construct date in local time to avoid UTC day shift issues
+      const d = new Date(dateStr + 'T00:00:00');
       d.setHours(hours, minutes, 0, 0);
       return d.toISOString();
     };

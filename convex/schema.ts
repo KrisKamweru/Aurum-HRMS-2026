@@ -449,4 +449,275 @@ export default defineSchema({
   })
     .index("by_org", ["orgId"])
     .index("by_employee", ["employeeId"]),
+
+  // --- Maker-Checker / Audit System ---
+
+  payroll_runs: defineTable({
+    orgId: v.id("organizations"),
+    month: v.number(), // 1-12
+    year: v.number(),
+    status: v.union(v.literal("draft"), v.literal("processing"), v.literal("completed")),
+    totalNetPay: v.optional(v.number()),
+    totalGrossPay: v.optional(v.number()),
+    employeeCount: v.optional(v.number()),
+    runDate: v.string(),
+    processedBy: v.optional(v.id("users")),
+  }).index("by_org", ["orgId"]).index("by_org_period", ["orgId", "year", "month"]),
+
+  salary_slips: defineTable({
+    orgId: v.id("organizations"),
+    runId: v.id("payroll_runs"),
+    employeeId: v.id("employees"),
+
+    // Snapshots of the employee state at the time of run
+    employeeName: v.string(),
+    designation: v.optional(v.string()),
+    department: v.optional(v.string()),
+    joinDate: v.string(),
+
+    // Financials
+    basicSalary: v.number(),
+    grossSalary: v.number(),
+    netSalary: v.number(),
+
+    // Breakdown
+    earnings: v.any(), // Array of { name, amount, type }
+    deductions: v.any(), // Array of { name, amount, type }
+    employerContributions: v.optional(v.any()), // Array of { name, amount, type }
+
+    generatedAt: v.string(),
+  }).index("by_run", ["runId"]).index("by_employee", ["employeeId"]),
+
+  change_requests: defineTable({
+    orgId: v.id("organizations"),
+
+    // The "Maker" (Who initiated the request)
+    requesterUserId: v.id("users"),
+
+    // Target Resource
+    targetTable: v.string(), // e.g., "employees", "employee_banking"
+    targetId: v.optional(v.string()), // The ID of the record being modified (optional for 'create' ops)
+
+    // The Operation
+    operation: v.union(
+      v.literal("create"),
+      v.literal("update"),
+      v.literal("delete")
+    ),
+
+    // Data Snapshots
+    newData: v.optional(v.any()), // The proposed state
+    oldData: v.optional(v.any()), // The state at time of request (for diffing)
+
+    // Context
+    reason: v.optional(v.string()), // Justification for the change
+
+    // The "Checker" Workflow
+    status: v.union(
+      v.literal("pending"),
+      v.literal("approved"),
+      v.literal("rejected"),
+      v.literal("cancelled")
+    ),
+
+    // Timestamps & Processing
+    createdAt: v.string(),
+    updatedAt: v.string(),
+
+    approverUserId: v.optional(v.id("users")), // The Checker who finalized it
+    rejectionReason: v.optional(v.string()),
+  })
+  .index("by_org_status", ["orgId", "status"])
+  .index("by_target", ["orgId", "targetTable", "targetId"])
+  .index("by_requester", ["orgId", "requesterUserId"]),
+
+  // --- Notifications ---
+
+  notifications: defineTable({
+    orgId: v.id("organizations"),
+    userId: v.id("users"), // Recipient
+    title: v.string(),
+    message: v.string(),
+    type: v.union(
+      v.literal("info"),
+      v.literal("success"),
+      v.literal("warning"),
+      v.literal("error")
+    ),
+    link: v.optional(v.string()), // URL to navigate to
+    isRead: v.boolean(),
+    createdAt: v.string(),
+    relatedId: v.optional(v.string()), // ID of related entity (e.g., leaveRequestId)
+    relatedTable: v.optional(v.string()), // Table name of related entity
+  })
+  .index("by_user_read", ["userId", "isRead"])
+  .index("by_user_date", ["userId", "createdAt"]),
+
+  // --- Settings & Configuration ---
+
+  organization_settings: defineTable({
+    orgId: v.id("organizations"),
+    currency: v.string(), // Default currency (e.g., "USD", "KES")
+    timezone: v.string(), // e.g., "Africa/Nairobi"
+    dateFormat: v.string(), // e.g., "DD/MM/YYYY"
+    workDays: v.array(v.number()), // [1, 2, 3, 4, 5] for Mon-Fri
+    updatedAt: v.string(),
+    updatedBy: v.id("users"),
+  }).index("by_org", ["orgId"]),
+
+  leave_policies: defineTable({
+    orgId: v.id("organizations"),
+    name: v.string(), // e.g., "Standard Vacation", "Sick Leave"
+    code: v.string(), // e.g., "AL", "SL" (must be unique per org)
+    type: v.union(
+        v.literal("vacation"),
+        v.literal("sick"),
+        v.literal("personal"),
+        v.literal("maternity"),
+        v.literal("paternity"),
+        v.literal("other") // Allow custom types mapped to 'other' for now, or expand union
+    ),
+    daysPerYear: v.number(), // Entitlement
+    accrualFrequency: v.union(v.literal("annual"), v.literal("monthly")),
+    carryOverDays: v.optional(v.number()), // Max days to carry over
+    description: v.optional(v.string()),
+    isActive: v.boolean(),
+  }).index("by_org", ["orgId"]),
+
+  // --- Tax & Statutory Configuration ---
+
+  tax_regions: defineTable({
+    code: v.string(), // "KE", "US", "UK", etc.
+    name: v.string(), // "Kenya", "United States", etc.
+    currency: v.string(), // "KES", "USD", etc.
+    isActive: v.boolean(),
+    personalRelief: v.optional(v.number()), // Monthly personal relief amount
+    updatedAt: v.string(),
+  }).index("by_code", ["code"]),
+
+  tax_rules: defineTable({
+    regionCode: v.string(), // Foreign key to tax_regions.code
+    name: v.string(), // "PAYE", "NSSF Tier I", "NHIF", "Housing Levy"
+    code: v.string(), // "PAYE", "NSSF_T1", "NHIF", "HOUSING_LEVY"
+    type: v.union(
+      v.literal("progressive_bracket"), // PAYE style
+      v.literal("percentage"), // Simple percentage
+      v.literal("tiered_fixed"), // NHIF style (band → fixed amount)
+      v.literal("capped_percentage") // NSSF style (% up to cap)
+    ),
+    // For percentage/capped_percentage types
+    rate: v.optional(v.number()), // e.g., 0.06 for 6%
+    cap: v.optional(v.number()), // Max contribution
+    // For bracket-based types, store as JSON array
+    brackets: v.optional(v.any()), // Array of {min, max, rate, fixedAmount}
+    // Calculation base
+    appliesTo: v.union(
+      v.literal("gross"),
+      v.literal("basic"),
+      v.literal("taxable") // After other deductions
+    ),
+    isEmployeeContribution: v.boolean(),
+    isEmployerContribution: v.optional(v.boolean()),
+    isActive: v.boolean(),
+    order: v.number(), // Processing order
+    effectiveFrom: v.string(),
+    effectiveTo: v.optional(v.string()),
+  }).index("by_region", ["regionCode"]).index("by_region_active", ["regionCode", "isActive"]),
+
+  // --- Recruitment (ATS) ---
+
+  jobs: defineTable({
+    orgId: v.id("organizations"),
+    title: v.string(),
+    description: v.string(),
+    departmentId: v.optional(v.id("departments")),
+    locationId: v.optional(v.id("locations")),
+    employmentType: v.union(
+      v.literal("full_time"),
+      v.literal("part_time"),
+      v.literal("contract"),
+      v.literal("intern"),
+      v.literal("temporary")
+    ),
+    status: v.union(v.literal("draft"), v.literal("open"), v.literal("closed")),
+    closingDate: v.optional(v.string()),
+    salaryRange: v.optional(v.string()), // e.g. "50k-70k"
+    createdBy: v.id("users"),
+    createdAt: v.string(),
+  }).index("by_org_status", ["orgId", "status"]),
+
+  candidates: defineTable({
+    orgId: v.id("organizations"),
+    firstName: v.string(),
+    lastName: v.string(),
+    email: v.string(),
+    phone: v.optional(v.string()),
+    resumeId: v.optional(v.id("_storage")),
+    source: v.optional(v.string()),
+    createdAt: v.string(),
+  }).index("by_org_email", ["orgId", "email"]),
+
+  applications: defineTable({
+    orgId: v.id("organizations"),
+    jobId: v.id("jobs"),
+    candidateId: v.id("candidates"),
+    status: v.union(
+      v.literal("new"),
+      v.literal("screening"),
+      v.literal("interview"),
+      v.literal("offer"),
+      v.literal("hired"),
+      v.literal("rejected")
+    ),
+    appliedAt: v.string(),
+    rating: v.optional(v.number()), // 1-5
+    notes: v.optional(v.string()),
+  })
+  .index("by_job", ["jobId"])
+  .index("by_candidate", ["candidateId"])
+  .index("by_org_status", ["orgId", "status"]),
+
+  // --- Training & Development ---
+
+  training_courses: defineTable({
+    orgId: v.id("organizations"),
+    title: v.string(),
+    description: v.string(),
+    instructor: v.optional(v.string()),
+    startDate: v.string(),
+    endDate: v.string(),
+    type: v.union(
+      v.literal("workshop"),
+      v.literal("seminar"),
+      v.literal("online"),
+      v.literal("other")
+    ),
+    status: v.union(
+      v.literal("upcoming"),
+      v.literal("in_progress"),
+      v.literal("completed"),
+      v.literal("cancelled")
+    ),
+    capacity: v.optional(v.number()),
+    createdBy: v.id("users"),
+  }).index("by_org_status", ["orgId", "status"]),
+
+  training_enrollments: defineTable({
+    orgId: v.id("organizations"),
+    courseId: v.id("training_courses"),
+    employeeId: v.id("employees"),
+    status: v.union(
+      v.literal("enrolled"),
+      v.literal("completed"),
+      v.literal("dropped"),
+      v.literal("failed")
+    ),
+    progress: v.optional(v.number()), // 0-100
+    enrollmentDate: v.string(),
+    completionDate: v.optional(v.string()),
+    certificateId: v.optional(v.id("_storage")),
+  })
+  .index("by_course", ["courseId"])
+  .index("by_employee", ["employeeId"])
+  .index("by_employee_course", ["employeeId", "courseId"]),
 });

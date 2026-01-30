@@ -46,3 +46,7 @@ Thumbs.db
 
 # Test credentials (E2E testing)
 .test-credentials
+
+# Playwright test artifacts
+/playwright-report
+/test-results

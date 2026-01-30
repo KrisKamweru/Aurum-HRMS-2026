@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { createNotification } from "./notifications";
 
 // Helper to check privileges
 function isPrivileged(role: string) {
@@ -199,6 +200,17 @@ export const approveJoinRequest = mutation({
             orgId: admin.orgId,
             role: args.role ?? "employee"
         });
+
+        // 3. Notify User
+        await createNotification(ctx, {
+            userId: request.userId,
+            title: "Join Request Approved",
+            message: `Your request to join ${admin.name || 'the organization'} has been approved. Welcome aboard!`,
+            type: "success",
+            relatedId: args.requestId,
+            relatedTable: "org_join_requests",
+            link: "/dashboard"
+        });
     }
 });
 
@@ -230,6 +242,16 @@ export const rejectJoinRequest = mutation({
             processedAt: new Date().toISOString(),
             processedBy: adminId,
             rejectionReason: args.reason
+        });
+
+        // Notify User
+        await createNotification(ctx, {
+            userId: request.userId,
+            title: "Join Request Rejected",
+            message: `Your request to join the organization was rejected.${args.reason ? ` Reason: ${args.reason}` : ''}`,
+            type: "error",
+            relatedId: args.requestId,
+            relatedTable: "org_join_requests"
         });
     }
 });

@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { createNotification } from "./notifications";
 
 // --- Helpers ---
 
@@ -87,6 +88,23 @@ export const createPromotion = mutation({
       designationId: args.toDesignationId,
     });
 
+    // 3. Notify Employee
+    const targetEmployee = await ctx.db.get(args.employeeId);
+    // Find user associated with employee
+    const targetUser = await ctx.db.query("users").withIndex("by_org", q => q.eq("orgId", orgId)).filter(q => q.eq(q.field("employeeId"), args.employeeId)).first();
+
+    if (targetUser) {
+        await createNotification(ctx, {
+            userId: targetUser._id,
+            title: "Promotion!",
+            message: `Congratulations! You have been promoted.`,
+            type: "success",
+            relatedId: promotionId,
+            relatedTable: "promotions",
+            link: "/profile"
+        });
+    }
+
     return promotionId;
   },
 });
@@ -146,7 +164,7 @@ export const createTransfer = mutation({
       throw new Error("Unauthorized: Insufficient permissions");
     }
 
-    await ctx.db.insert("transfers", {
+    const transferId = await ctx.db.insert("transfers", {
       orgId,
       ...args,
     });
@@ -156,6 +174,20 @@ export const createTransfer = mutation({
       departmentId: args.toDepartmentId,
       locationId: args.toLocationId, // updates location if provided, or keeps old one if logic requires (here we assume strict update if passed)
     });
+
+    // Notify Employee
+    const targetUser = await ctx.db.query("users").withIndex("by_org", q => q.eq("orgId", orgId)).filter(q => q.eq(q.field("employeeId"), args.employeeId)).first();
+    if (targetUser) {
+        await createNotification(ctx, {
+            userId: targetUser._id,
+            title: "Department Transfer",
+            message: `You have been transferred to a new department/location.`,
+            type: "info",
+            relatedId: transferId,
+            relatedTable: "transfers",
+            link: "/profile"
+        });
+    }
   },
 });
 
@@ -178,11 +210,25 @@ export const submitResignation = mutation({
       throw new Error("Unauthorized: Can only submit resignation for self");
     }
 
-    return await ctx.db.insert("resignations", {
+    const resId = await ctx.db.insert("resignations", {
       orgId,
       ...args,
       status: "pending",
     });
+
+    // Notify Admins
+    // TODO: Ideally find all admins in org and notify them. For MVP, maybe not critical or can do later.
+    // Let's notify user it was submitted
+    await createNotification(ctx, {
+        userId: user._id,
+        title: "Resignation Submitted",
+        message: "Your resignation has been submitted for review.",
+        type: "info",
+        relatedId: resId,
+        relatedTable: "resignations"
+    });
+
+    return resId;
   },
 });
 
@@ -207,8 +253,19 @@ export const updateResignationStatus = mutation({
 
     await ctx.db.patch(args.resignationId, { status: args.status });
 
-    // If approved, verify if we should auto-terminate employee or wait for date?
-    // For now, just update status.
+    // Notify Employee
+    const targetUser = await ctx.db.query("users").withIndex("by_org", q => q.eq("orgId", orgId)).filter(q => q.eq(q.field("employeeId"), resignation.employeeId)).first();
+    if (targetUser) {
+        await createNotification(ctx, {
+            userId: targetUser._id,
+            title: `Resignation ${args.status === 'approved' ? 'Accepted' : 'Rejected'}`,
+            message: `Your resignation request has been ${args.status}.`,
+            type: args.status === 'approved' ? 'info' : 'warning',
+            relatedId: args.resignationId,
+            relatedTable: "resignations",
+            link: "/profile"
+        });
+    }
   },
 });
 
@@ -264,10 +321,26 @@ export const issueWarning = mutation({
       throw new Error("Unauthorized: Insufficient permissions");
     }
 
-    return await ctx.db.insert("warnings", {
+    const warningId = await ctx.db.insert("warnings", {
       orgId,
       ...args,
     });
+
+    // Notify Employee
+    const targetUser = await ctx.db.query("users").withIndex("by_org", q => q.eq("orgId", orgId)).filter(q => q.eq(q.field("employeeId"), args.employeeId)).first();
+    if (targetUser) {
+        await createNotification(ctx, {
+            userId: targetUser._id,
+            title: "Warning Issued",
+            message: `You have received a warning: ${args.subject}`,
+            type: "warning",
+            relatedId: warningId,
+            relatedTable: "warnings",
+            link: "/profile"
+        });
+    }
+
+    return warningId;
   },
 });
 
@@ -323,10 +396,26 @@ export const giveAward = mutation({
       throw new Error("Unauthorized: Insufficient permissions");
     }
 
-    return await ctx.db.insert("awards", {
+    const awardId = await ctx.db.insert("awards", {
       orgId,
       ...args,
     });
+
+    // Notify Employee
+    const targetUser = await ctx.db.query("users").withIndex("by_org", q => q.eq("orgId", orgId)).filter(q => q.eq(q.field("employeeId"), args.employeeId)).first();
+    if (targetUser) {
+        await createNotification(ctx, {
+            userId: targetUser._id,
+            title: "You Received an Award!",
+            message: `Congratulations! You have been awarded: ${args.title}`,
+            type: "success",
+            relatedId: awardId,
+            relatedTable: "awards",
+            link: "/profile"
+        });
+    }
+
+    return awardId;
   },
 });
 

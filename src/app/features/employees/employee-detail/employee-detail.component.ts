@@ -38,35 +38,57 @@ type ActionType = 'promote' | 'transfer' | 'resign' | 'terminate' | 'warning' | 
   template: `
     <div class="space-y-6" *ngIf="employee(); else loadingTpl">
       <!-- Header -->
-      <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+      <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
         <div class="flex items-center gap-4">
-          <div class="w-16 h-16 rounded-full bg-stone-200 dark:bg-stone-700 flex items-center justify-center text-2xl font-bold text-stone-500 dark:text-stone-300">
+          <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-stone-200 dark:bg-stone-700 flex items-center justify-center text-2xl sm:text-3xl font-bold text-stone-500 dark:text-stone-300 flex-shrink-0">
             {{ getInitials(employee()) }}
           </div>
           <div>
-            <h1 class="heading-accent text-2xl dark:text-stone-100">{{ employee().firstName }} {{ employee().lastName }}</h1>
-            <p class="text-stone-500 dark:text-stone-400 flex items-center gap-2">
+            <h1 class="heading-accent text-2xl sm:text-3xl dark:text-stone-100">{{ employee().firstName }} {{ employee().lastName }}</h1>
+            <p class="text-stone-500 dark:text-stone-400 flex items-center gap-2 mt-1">
               <ui-icon name="briefcase" class="w-4 h-4"></ui-icon>
               {{ employee().position || 'No Position' }}
             </p>
           </div>
         </div>
 
-        <div class="flex flex-wrap gap-2" *ngIf="canManageEmployees()">
-          <ui-button variant="outline" (onClick)="openAction('promote')">Promote</ui-button>
-          <ui-button variant="outline" (onClick)="openAction('transfer')">Transfer</ui-button>
-          <ui-button variant="outline" (onClick)="openAction('warning')" class="!text-amber-600 dark:!text-amber-400 !border-amber-200 dark:!border-amber-800 hover:!bg-amber-50 dark:hover:!bg-amber-900/20">Warning</ui-button>
-          <ui-button variant="outline" (onClick)="openAction('award')" class="!text-indigo-600 dark:!text-indigo-400 !border-indigo-200 dark:!border-indigo-800 hover:!bg-indigo-50 dark:hover:!bg-indigo-900/20">Award</ui-button>
-          <ui-button variant="outline" (onClick)="openAction('travel')" class="!text-sky-600 dark:!text-sky-400 !border-sky-200 dark:!border-sky-800 hover:!bg-sky-50 dark:hover:!bg-sky-900/20">Travel</ui-button>
-          <ui-button variant="outline" (onClick)="openAction('complaint')" class="!text-rose-600 dark:!text-rose-400 !border-rose-200 dark:!border-rose-800 hover:!bg-rose-50 dark:hover:!bg-rose-900/20">Complaint</ui-button>
-          <ui-button variant="outline" (onClick)="openAction('resign')" class="!text-orange-600 dark:!text-orange-400 !border-orange-200 dark:!border-orange-800 hover:!bg-orange-50 dark:hover:!bg-orange-900/20">Resignation</ui-button>
-          <ui-button variant="outline" (onClick)="openAction('terminate')" class="!text-red-600 dark:!text-red-400 !border-red-200 dark:!border-red-800 hover:!bg-red-50 dark:hover:!bg-red-900/20">Terminate</ui-button>
+        <div class="flex flex-wrap gap-2 w-full md:w-auto md:justify-end" *ngIf="canManageEmployees()">
+          <ui-button
+            variant="outline"
+            size="sm"
+            (onClick)="openAction('promote')"
+            [prerequisitesMet]="designations().length > 1"
+            prerequisiteMessage="You need multiple designations defined to promote an employee."
+            [prerequisiteAction]="{ label: 'Manage Designations', link: ['/organization/designations'] }"
+          >
+            Promote
+          </ui-button>
+
+          <ui-button
+            variant="outline"
+            size="sm"
+            (onClick)="openAction('transfer')"
+            [prerequisitesMet]="departments().length > 1"
+            prerequisiteMessage="You need multiple departments defined to transfer an employee."
+            [prerequisiteAction]="{ label: 'Manage Departments', link: ['/organization/departments'] }"
+          >
+            Transfer
+          </ui-button>
+
+          <ui-button variant="outline" size="sm" (onClick)="openAction('warning')" class="!text-amber-600 dark:!text-amber-400 !border-amber-200 dark:!border-amber-800 hover:!bg-amber-50 dark:hover:!bg-amber-900/20">Warning</ui-button>
+          <ui-button variant="outline" size="sm" (onClick)="openAction('award')" class="!text-indigo-600 dark:!text-indigo-400 !border-indigo-200 dark:!border-indigo-800 hover:!bg-indigo-50 dark:hover:!bg-indigo-900/20">Award</ui-button>
+
+          <!-- More Actions Dropdown (Simulated with wrap for now) -->
+          <ui-button variant="outline" size="sm" (onClick)="openAction('travel')" class="!text-sky-600 dark:!text-sky-400 !border-sky-200 dark:!border-sky-800 hover:!bg-sky-50 dark:hover:!bg-sky-900/20">Travel</ui-button>
+          <ui-button variant="outline" size="sm" (onClick)="openAction('complaint')" class="!text-rose-600 dark:!text-rose-400 !border-rose-200 dark:!border-rose-800 hover:!bg-rose-50 dark:hover:!bg-rose-900/20">Complaint</ui-button>
+          <ui-button variant="outline" size="sm" (onClick)="openAction('resign')" class="!text-orange-600 dark:!text-orange-400 !border-orange-200 dark:!border-orange-800 hover:!bg-orange-50 dark:hover:!bg-orange-900/20">Resignation</ui-button>
+          <ui-button variant="outline" size="sm" (onClick)="openAction('terminate')" class="!text-red-600 dark:!text-red-400 !border-red-200 dark:!border-red-800 hover:!bg-red-50 dark:hover:!bg-red-900/20">Terminate</ui-button>
         </div>
       </div>
 
       <!-- Tabs -->
-      <div class="border-b border-stone-200 dark:border-stone-700 overflow-x-auto">
-        <nav class="-mb-px flex space-x-6" aria-label="Tabs">
+      <div class="border-b border-stone-200 dark:border-stone-700 -mx-4 px-4 sm:mx-0 sm:px-0">
+        <nav class="-mb-px flex space-x-6 overflow-x-auto no-scrollbar pb-1 sm:pb-0" aria-label="Tabs">
           <button
             *ngFor="let tab of tabs"
             [class.border-[#8b1e3f]]="activeTab() === tab"
@@ -76,7 +98,7 @@ type ActionType = 'promote' | 'transfer' | 'resign' | 'terminate' | 'warning' | 
             [class.border-transparent]="activeTab() !== tab"
             [class.text-stone-500]="activeTab() !== tab"
             [class.dark:text-stone-400]="activeTab() !== tab"
-            class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm hover:text-[#8b1e3f] dark:hover:text-[#fce7eb] transition-colors capitalize"
+            class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm hover:text-[#8b1e3f] dark:hover:text-[#fce7eb] transition-colors capitalize flex-shrink-0"
             (click)="activeTab.set(tab)"
           >
             {{ tab }}
@@ -159,6 +181,9 @@ type ActionType = 'promote' | 'transfer' | 'resign' | 'terminate' | 'warning' | 
               <button (click)="activeTab.set('documents')" class="text-left p-2 hover:bg-white dark:hover:bg-stone-800 rounded transition text-sm flex items-center gap-2 text-stone-600 dark:text-stone-300">
                 <ui-icon name="document" class="w-4 h-4"></ui-icon> View Documents
               </button>
+              <button (click)="activeTab.set('payroll')" class="text-left p-2 hover:bg-white dark:hover:bg-stone-800 rounded transition text-sm flex items-center gap-2 text-stone-600 dark:text-stone-300">
+                <ui-icon name="banknotes" class="w-4 h-4"></ui-icon> View Payslips
+              </button>
               <button (click)="activeTab.set('history')" class="text-left p-2 hover:bg-white dark:hover:bg-stone-800 rounded transition text-sm flex items-center gap-2 text-stone-600 dark:text-stone-300">
                  <ui-icon name="clock" class="w-4 h-4"></ui-icon> View History
               </button>
@@ -180,10 +205,15 @@ type ActionType = 'promote' | 'transfer' | 'resign' | 'terminate' | 'warning' | 
         *ngIf="activeTab() === 'financial'"
         [statutory]="statutoryInfo()"
         [banking]="bankingDetails()"
+        [adjustments]="adjustments()"
         [loading]="bankingLoading()"
+        [adjustmentsLoading]="adjustmentsLoading()"
         (saveStatutory)="saveStatutory($event)"
         (saveBank)="saveBank($event)"
         (deleteBank)="deleteBank($event)"
+        (addCredit)="addCredit($event)"
+        (addDebit)="addDebit($event)"
+        (toggleAdjustment)="toggleAdjustment($event)"
       ></app-profile-financial>
 
       <app-profile-education
@@ -201,6 +231,55 @@ type ActionType = 'promote' | 'transfer' | 'resign' | 'terminate' | 'warning' | 
         (save)="saveDocument($event)"
         (delete)="deleteDocument($event)"
       ></app-profile-documents>
+
+      <!-- Payroll Tab -->
+      <div class="space-y-6" *ngIf="activeTab() === 'payroll'">
+        <div class="bg-white dark:bg-stone-800 rounded-2xl p-6 shadow-sm border border-stone-200 dark:border-stone-700">
+          <h3 class="font-bold text-lg mb-4 text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
+            <ui-icon name="banknotes" class="w-5 h-5"></ui-icon> Payslips
+          </h3>
+
+          <div *ngIf="payslips().length === 0" class="text-stone-500 dark:text-stone-400 italic text-center py-8">
+            No payslips generated yet.
+          </div>
+
+          <div *ngIf="payslips().length > 0" class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-stone-200 dark:divide-stone-700">
+              <thead class="bg-stone-50 dark:bg-stone-900/50">
+                <tr>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-stone-500 dark:text-stone-400 uppercase tracking-wider">Month</th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-stone-500 dark:text-stone-400 uppercase tracking-wider">Generated On</th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-stone-500 dark:text-stone-400 uppercase tracking-wider">Gross</th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-stone-500 dark:text-stone-400 uppercase tracking-wider">Net Pay</th>
+                  <th scope="col" class="relative px-6 py-3"><span class="sr-only">Actions</span></th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-stone-200 dark:divide-stone-700">
+                <tr *ngFor="let slip of payslips()" class="hover:bg-stone-50 dark:hover:bg-stone-800/50 transition-colors">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-stone-900 dark:text-white">
+                    {{ getMonthName(slip.month) }} {{ slip.year }}
+                    <span *ngIf="slip.status !== 'completed'" class="ml-2 text-xs bg-stone-100 text-stone-600 px-2 py-0.5 rounded-full dark:bg-stone-700 dark:text-stone-300">
+                      {{ slip.status | titlecase }}
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-stone-500 dark:text-stone-400">
+                    {{ slip.generatedAt | date }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-stone-500 dark:text-stone-400">
+                    {{ slip.grossSalary | currency }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-burgundy-700 dark:text-burgundy-300">
+                    {{ slip.netSalary | currency }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <a [routerLink]="['/payroll/slip', slip._id]" class="text-burgundy-600 dark:text-burgundy-400 hover:text-burgundy-900 dark:hover:text-burgundy-300">View</a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
 
       <!-- History Tab -->
       <div class="space-y-6" *ngIf="activeTab() === 'history'">
@@ -431,16 +510,20 @@ export class EmployeeDetailComponent implements OnInit {
   statutoryInfo = signal<any>(null);
   education = signal<any[]>([]);
   documents = signal<any[]>([]);
+  payslips = signal<any[]>([]);
+  adjustments = signal<{ credits: any[], debits: any[] }>({ credits: [], debits: [] });
 
   // Sub-component loading states
   contactsLoading = signal(false);
   bankingLoading = signal(false);
+  adjustmentsLoading = signal(false);
   educationLoading = signal(false);
   documentsLoading = signal(false);
 
   // UI State
-  activeTab = signal<'overview' | 'personal' | 'financial' | 'education' | 'documents' | 'history'>('overview');
-  tabs: ('overview' | 'personal' | 'financial' | 'education' | 'documents' | 'history')[] = ['overview', 'personal', 'financial', 'education', 'documents', 'history'];
+  activeTab = signal<'overview' | 'personal' | 'financial' | 'education' | 'documents' | 'history' | 'payroll'>('overview');
+  tabs: ('overview' | 'personal' | 'financial' | 'education' | 'documents' | 'history' | 'payroll')[] = ['overview', 'personal', 'financial', 'education', 'documents', 'history', 'payroll'];
+
 
   // Modal State
   showActionModal = signal(false);
@@ -569,6 +652,8 @@ export class EmployeeDetailComponent implements OnInit {
     client.onUpdate(api.employee_details.getStatutoryInfo, { employeeId: id }, (data) => this.statutoryInfo.set(data));
     client.onUpdate(api.employee_details.listEducation, { employeeId: id }, (data) => this.education.set(data));
     client.onUpdate(api.employee_details.listDocuments, { employeeId: id }, (data) => this.documents.set(data));
+    client.onUpdate(api.payroll.getEmployeePayslips, { employeeId: id }, (data) => this.payslips.set(data));
+    client.onUpdate(api.payroll.getEmployeeAdjustments, { employeeId: id }, (data) => this.adjustments.set(data));
   }
 
   // --- Extended Profile Handlers ---
@@ -665,6 +750,49 @@ export class EmployeeDetailComponent implements OnInit {
     }
   }
 
+  async addCredit(data: any) {
+    if (!this.employeeId()) return;
+    this.adjustmentsLoading.set(true);
+    try {
+      await this.convex.getClient().mutation(api.payroll.addCredit, {
+        employeeId: this.employeeId()!,
+        ...data,
+        amount: Number(data.amount)
+      });
+      this.toast.success('Allowance added');
+    } catch (err: any) {
+      this.toast.error(err.message || 'Failed to add allowance');
+    } finally {
+      this.adjustmentsLoading.set(false);
+    }
+  }
+
+  async addDebit(data: any) {
+    if (!this.employeeId()) return;
+    this.adjustmentsLoading.set(true);
+    try {
+      await this.convex.getClient().mutation(api.payroll.addDebit, {
+        employeeId: this.employeeId()!,
+        ...data,
+        amount: Number(data.amount)
+      });
+      this.toast.success('Deduction added');
+    } catch (err: any) {
+      this.toast.error(err.message || 'Failed to add deduction');
+    } finally {
+      this.adjustmentsLoading.set(false);
+    }
+  }
+
+  async toggleAdjustment(data: { id: string, type: 'credit' | 'debit', isActive: boolean }) {
+    try {
+      await this.convex.getClient().mutation(api.payroll.toggleAdjustmentStatus, data);
+      this.toast.success('Status updated');
+    } catch (err: any) {
+      this.toast.error('Failed to update status');
+    }
+  }
+
   async saveEducation(data: any) {
     if (!this.employeeId()) return;
     this.educationLoading.set(true);
@@ -750,6 +878,11 @@ export class EmployeeDetailComponent implements OnInit {
   getInitials(emp: any): string {
     if (!emp) return '';
     return (emp.firstName[0] + emp.lastName[0]).toUpperCase();
+  }
+
+  getMonthName(month: number): string {
+    if (!month) return '';
+    return new Date(2000, month - 1, 1).toLocaleString('default', { month: 'long' });
   }
 
   getStatusBadgeClass(status: string): string {

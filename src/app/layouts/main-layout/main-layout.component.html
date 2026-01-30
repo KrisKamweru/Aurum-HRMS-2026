@@ -42,6 +42,13 @@
           Attendance
         </ui-nav-item>
 
+        @if (canViewPayroll()) {
+          <ui-nav-item route="/payroll">
+            <ui-icon icon name="banknotes" class="w-5 h-5 text-stone-400 group-hover:text-burgundy-800 dark:group-hover:text-burgundy-300 group-[.nav-active]:text-burgundy-800 dark:group-[.nav-active]:text-burgundy-300 transition-colors"></ui-icon>
+            Payroll
+          </ui-nav-item>
+        }
+
         <!-- Organization section -->
         @if (canManageOrganization()) {
           <div class="pt-6 pb-2">
@@ -149,9 +156,48 @@
           </div>
           <h1 class="text-lg font-bold text-stone-900 dark:text-stone-100">Aurum</h1>
         </div>
-        <button (click)="logout()" class="text-sm text-stone-500 hover:text-burgundy-800 dark:hover:text-burgundy-300 transition-colors font-medium">
-          Sign out
-        </button>
+
+        <div class="flex items-center gap-2">
+          <!-- Mobile Notification Bell -->
+          <div class="relative">
+            <button
+              class="relative p-2 text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 transition-colors rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800 focus:outline-none"
+              (click)="notificationService.togglePanel()"
+            >
+              <ui-icon name="bell" class="w-6 h-6"></ui-icon>
+              @if (notificationService.unreadCount() > 0) {
+                <span class="absolute top-1.5 right-1.5 block h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-white dark:ring-stone-900"></span>
+              }
+            </button>
+            <app-notifications-panel></app-notifications-panel>
+          </div>
+
+          <button (click)="logout()" class="text-sm text-stone-500 hover:text-burgundy-800 dark:hover:text-burgundy-300 transition-colors font-medium">
+            Sign out
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Desktop Header (Notifications & Utilities) -->
+    <div class="hidden md:flex h-16 items-center justify-end px-4 sm:px-6 lg:px-10 border-b border-stone-100 dark:border-stone-800 bg-white/50 dark:bg-stone-900/50 backdrop-blur-sm sticky top-0 z-20">
+      <div class="flex items-center gap-4">
+        <!-- Desktop Notification Bell -->
+        <div class="relative">
+          <button
+            class="relative p-2 text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 transition-colors rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-primary-500"
+            (click)="notificationService.togglePanel()"
+          >
+            <span class="sr-only">View notifications</span>
+            <ui-icon name="bell" class="w-6 h-6"></ui-icon>
+
+            @if (notificationService.unreadCount() > 0) {
+              <span class="absolute top-1.5 right-1.5 block h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-white dark:ring-stone-900"></span>
+            }
+          </button>
+
+          <app-notifications-panel></app-notifications-panel>
+        </div>
       </div>
     </div>
 
@@ -214,6 +260,18 @@
               <ui-nav-item route="/attendance" (click)="toggleSidebar()">
                 <ui-icon icon name="clock" class="w-5 h-5 text-stone-400 group-hover:text-burgundy-800 dark:group-hover:text-burgundy-300 group-[.nav-active]:text-burgundy-800 dark:group-[.nav-active]:text-burgundy-300 transition-colors"></ui-icon>
                 Attendance
+              </ui-nav-item>
+
+              @if (canViewPayroll()) {
+                <ui-nav-item route="/payroll" (click)="toggleSidebar()">
+                  <ui-icon icon name="banknotes" class="w-5 h-5 text-stone-400 group-hover:text-burgundy-800 dark:group-hover:text-burgundy-300 group-[.nav-active]:text-burgundy-800 dark:group-[.nav-active]:text-burgundy-300 transition-colors"></ui-icon>
+                  Payroll
+                </ui-nav-item>
+              }
+
+              <ui-nav-item route="/training" (click)="toggleSidebar()">
+                <ui-icon icon name="academic-cap" class="w-5 h-5 text-stone-400 group-hover:text-burgundy-800 dark:group-hover:text-burgundy-300 group-[.nav-active]:text-burgundy-800 dark:group-[.nav-active]:text-burgundy-300 transition-colors"></ui-icon>
+                Training
               </ui-nav-item>
 
               <!-- Organization section -->

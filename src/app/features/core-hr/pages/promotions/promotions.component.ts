@@ -32,8 +32,8 @@ import { api } from '../../../../../../convex/_generated/api';
         </div>
         <ui-button
           (onClick)="openCreateModal()"
-          [prerequisitesMet]="designations().length > 1"
-          prerequisiteMessage="You need at least 2 Designations to promote an employee."
+          [prerequisitesMet]="designations().length > 1 && employees().length > 0"
+          prerequisiteMessage="You need employees and at least 2 Designations to promote an employee."
           [prerequisiteAction]="{ label: 'Manage Designations', link: ['/organization/designations'] }"
         >
           <ui-icon name="plus" class="w-4 h-4 mr-2"></ui-icon>

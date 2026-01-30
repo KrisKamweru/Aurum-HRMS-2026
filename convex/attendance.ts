@@ -152,7 +152,10 @@ export const getTeamAttendance = query({
 
     // Filter for Managers (only their reports)
     let relevantEmployees = allEmployees;
-    if (user.role === "manager" && user.employeeId) {
+    if (user.role === "manager") {
+        if (!user.employeeId) {
+             return []; // Manager without employee profile cannot see any team members
+        }
         relevantEmployees = allEmployees.filter(e => e.managerId === user.employeeId);
         // Also include the manager themselves? Usually yes.
         // relevantEmployees.push(allEmployees.find(e => e._id === user.employeeId)!);

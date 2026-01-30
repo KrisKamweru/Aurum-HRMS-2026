@@ -127,7 +127,31 @@ export interface SortEvent {
 
       <!-- Pagination -->
       @if (pagination && data.length > 0) {
-        <div class="bg-stone-50 dark:bg-stone-900/50 px-6 py-4 flex items-center justify-between border-t border-stone-200 dark:border-stone-700">
+        <div class="bg-stone-50 dark:bg-stone-900/50 px-4 sm:px-6 py-4 flex items-center justify-between border-t border-stone-200 dark:border-stone-700">
+          <!-- Mobile Pagination controls -->
+          <div class="flex flex-1 justify-between items-center sm:hidden">
+            <ui-button
+              variant="outline"
+              size="sm"
+              [disabled]="page === 1"
+              (onClick)="onPageChange(page - 1)"
+            >
+              Previous
+            </ui-button>
+            <span class="text-xs font-medium text-stone-600 dark:text-stone-400">
+              Page {{ page }}
+            </span>
+            <ui-button
+              variant="outline"
+              size="sm"
+              [disabled]="page * pageSize >= totalItems"
+              (onClick)="onPageChange(page + 1)"
+            >
+              Next
+            </ui-button>
+          </div>
+
+          <!-- Desktop Pagination controls -->
           <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
             <div>
               <p class="text-sm text-stone-600 dark:text-stone-400">

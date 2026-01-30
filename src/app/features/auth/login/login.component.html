@@ -26,7 +26,7 @@
         type="email"
         id="email"
         formControlName="email"
-        class="block w-full rounded-xl border-stone-200 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] text-sm px-4 py-3 border bg-stone-50/50 focus:bg-white transition-colors duration-200 placeholder:text-stone-400"
+        class="block w-full rounded-xl border-stone-200 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] text-base sm:text-sm px-4 py-3 border bg-stone-50/50 focus:bg-white transition-colors duration-200 placeholder:text-stone-400"
         [class.border-red-300]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
         placeholder="you@company.com"
       />
@@ -37,7 +37,7 @@
         type="password"
         id="password"
         formControlName="password"
-        class="block w-full rounded-xl border-stone-200 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] text-sm px-4 py-3 border bg-stone-50/50 focus:bg-white transition-colors duration-200 placeholder:text-stone-400"
+        class="block w-full rounded-xl border-stone-200 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] text-base sm:text-sm px-4 py-3 border bg-stone-50/50 focus:bg-white transition-colors duration-200 placeholder:text-stone-400"
         [class.border-red-300]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
         placeholder="Enter your password"
       />

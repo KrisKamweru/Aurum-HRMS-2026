@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { createNotification } from "./notifications";
 
 // Helper to get viewer info including role and employeeId
 async function getViewerInfo(ctx: any) {
@@ -90,11 +91,84 @@ export const create = mutation({
       throw new Error("Unauthorized: Can only submit leave requests for yourself");
     }
 
+    // --- Validate Balance ---
+
+    // 1. Get Policy for this type
+    const policy = await ctx.db
+        .query("leave_policies")
+        .withIndex("by_org", q => q.eq("orgId", orgId))
+        .filter(q => q.eq(q.field("type"), args.type))
+        .first();
+
+    // If policy exists, validate balance
+    if (policy && policy.isActive) {
+        // Calculate requested days if not provided
+        let requestedDays = args.days;
+        if (!requestedDays) {
+            const start = new Date(args.startDate);
+            const end = new Date(args.endDate);
+            const diffTime = Math.abs(end.getTime() - start.getTime());
+            requestedDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+        }
+
+        // Get used days this year
+        const now = new Date();
+        const startOfYear = `${now.getFullYear()}-01-01`;
+        const endOfYear = `${now.getFullYear()}-12-31`;
+
+        const existingRequests = await ctx.db
+            .query("leave_requests")
+            .withIndex("by_employee", q => q.eq("employeeId", args.employeeId))
+            .collect();
+
+        const usedDays = existingRequests
+            .filter(r =>
+                r.type === args.type &&
+                r.status === 'approved' &&
+                r.startDate >= startOfYear
+            )
+            .reduce((sum, r) => sum + (r.days || 0), 0);
+
+        const pendingDays = existingRequests
+            .filter(r =>
+                r.type === args.type &&
+                r.status === 'pending' &&
+                r.startDate >= startOfYear
+            )
+            .reduce((sum, r) => sum + (r.days || 0), 0);
+
+        // Check entitlement
+        const entitlement = policy.daysPerYear;
+        // Logic: Entitlement - Used - Pending - Requested >= 0
+        // Or strictly: Used + Pending + Requested <= Entitlement?
+        // Usually we block if (Used + Requested > Entitlement). Pending is tricky, often it blocks too.
+
+        if (usedDays + pendingDays + requestedDays > entitlement) {
+            throw new Error(`Insufficient leave balance. Entitlement: ${entitlement}, Used: ${usedDays}, Pending: ${pendingDays}, Requested: ${requestedDays}`);
+        }
+
+        // Ensure days is saved
+        args.days = requestedDays;
+    }
+
     const requestId = await ctx.db.insert("leave_requests", {
       orgId,
       ...args,
       status: "pending",
     });
+
+    // Notify user of successful submission (if self)
+    if (isSelf) {
+       await createNotification(ctx, {
+           userId: user._id,
+           title: "Leave Request Submitted",
+           message: `Your ${args.type} leave request has been submitted for approval.`,
+           type: "info",
+           relatedId: requestId,
+           relatedTable: "leave_requests"
+       });
+    }
+
     return requestId;
   },
 });
@@ -137,5 +211,39 @@ export const updateStatus = mutation({
       status: args.status,
       rejectionReason: args.rejectionReason
     });
+
+    // Notify Employee
+    const targetUser = await ctx.db.query("users").withIndex("by_org", q => q.eq("orgId", orgId)).filter(q => q.eq(q.field("employeeId"), request.employeeId)).first();
+
+    if (targetUser) {
+        let title = "";
+        let message = "";
+        let type: "info" | "success" | "warning" | "error" = "info";
+
+        if (args.status === "approved") {
+            title = "Leave Request Approved";
+            message = "Your leave request has been approved.";
+            type = "success";
+        } else if (args.status === "rejected") {
+            title = "Leave Request Rejected";
+            message = `Your leave request was rejected. ${args.rejectionReason ? `Reason: ${args.rejectionReason}` : ''}`;
+            type = "error";
+        } else if (args.status === "cancelled") {
+            title = "Leave Request Cancelled";
+            message = "Your leave request has been cancelled.";
+            type = "warning";
+        }
+
+        await createNotification(ctx, {
+            userId: targetUser._id,
+            title,
+            message,
+            type,
+            relatedId: args.id,
+            relatedTable: "leave_requests",
+            link: "/leave-requests"
+        });
+    }
   },
 });
+

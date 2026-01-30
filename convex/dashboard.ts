@@ -157,14 +157,34 @@ export const getEmployeeStats = query({
         return { hasEmployeeProfile: false, user };
       }
 
-      // 1. Leave Balances (Hardcoded entitlements for MVP)
-      const entitlements = {
+      // 1. Leave Balances (Dynamic from Policies)
+      const policies = await ctx.db
+        .query("leave_policies")
+        .withIndex("by_org", (q) => q.eq("orgId", user.orgId!))
+        .filter((q) => q.eq(q.field("isActive"), true))
+        .collect();
+
+      // Default entitlements if no policies defined
+      const defaultEntitlements: Record<string, number> = {
         vacation: 15,
         sick: 10,
         personal: 5,
         maternity: 90,
         paternity: 14
       };
+
+      const entitlements: Record<string, number> = { ...defaultEntitlements };
+
+      // Override with actual policies if they exist
+      if (policies.length > 0) {
+        // Reset defaults first if we want strict policy adherence?
+        // Or just override. Let's override matching types.
+        // If policies exist, we should probably assume they cover what's needed.
+        // But to avoid breaking UI that expects keys, let's keep defaults and overwrite.
+        for (const p of policies) {
+            entitlements[p.type] = p.daysPerYear;
+        }
+      }
 
       const leaveRequests = await ctx.db
         .query("leave_requests")
@@ -251,6 +271,27 @@ export const getEmployeeStats = query({
         .order("desc")
         .take(3);
 
+      // 4. Latest Payslip
+      const latestPayslip = await ctx.db
+        .query("salary_slips")
+        .withIndex("by_employee", (q) => q.eq("employeeId", employee._id))
+        .order("desc")
+        .first();
+
+      let enrichedPayslip = null;
+      if (latestPayslip) {
+        // Ensure the run is completed (though generally slips are only created/finalized in completed runs,
+        // unless we allow viewing drafts. Let's verify run status just in case.)
+        const run = await ctx.db.get(latestPayslip.runId);
+        if (run && run.status === "completed") {
+            enrichedPayslip = {
+                ...latestPayslip,
+                month: run.month,
+                year: run.year
+            };
+        }
+      }
+
       // Enrich employee data
       let designationName = "";
       if (employee.designationId) {
@@ -296,18 +337,18 @@ export const getEmployeeStats = query({
           tenureDays: diffDays
         },
         leaveBalance: {
-          vacation: { entitled: entitlements.vacation, taken: usage["vacation"], remaining: Math.max(0, entitlements.vacation - usage["vacation"]) },
-          sick: { entitled: entitlements.sick, taken: usage["sick"], remaining: Math.max(0, entitlements.sick - usage["sick"]) },
-          personal: { entitled: entitlements.personal, taken: usage["personal"], remaining: Math.max(0, entitlements.personal - usage["personal"]) }
+          vacation: { entitled: entitlements['vacation'], taken: usage["vacation"], remaining: Math.max(0, entitlements['vacation'] - usage["vacation"]) },
+          sick: { entitled: entitlements['sick'], taken: usage["sick"], remaining: Math.max(0, entitlements['sick'] - usage["sick"]) },
+          personal: { entitled: entitlements['personal'], taken: usage["personal"], remaining: Math.max(0, entitlements['personal'] - usage["personal"]) }
         },
         pendingRequests,
         upcomingLeave,
         recentRequests,
         teammatesOnLeave,
         recentAwards: awards,
-        recentWarnings: warnings
+        recentWarnings: warnings,
+        latestPayslip: enrichedPayslip
       };
-
     } catch (e) {
       console.error("Error in getEmployeeStats:", e);
       return { hasEmployeeProfile: false };

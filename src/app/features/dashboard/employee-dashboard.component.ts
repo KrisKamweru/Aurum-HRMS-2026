@@ -72,7 +72,7 @@ import { ToastService } from '../../shared/services/toast.service';
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h1 class="heading-accent text-2xl dark:text-white">Welcome back, {{ data()?.employee?.firstName }}!</h1>
-            <p class="text-stone-500 dark:text-stone-400 mt-1 flex items-center gap-2">
+            <p class="text-stone-500 dark:text-stone-400 mt-1 flex flex-wrap items-center gap-2 text-sm">
               <span>{{ data()?.employee?.designationName || 'Employee' }}</span>
               <span class="w-1 h-1 rounded-full bg-stone-300 dark:bg-stone-600"></span>
               <span>{{ data()?.employee?.departmentName || 'General' }}</span>
@@ -81,12 +81,12 @@ import { ToastService } from '../../shared/services/toast.service';
             </p>
           </div>
 
-          <div class="flex gap-2">
-            <div class="text-right hidden md:block mr-4">
+          <div class="flex items-center gap-4">
+            <div class="text-right hidden md:block">
               <div class="text-sm font-bold text-stone-700 dark:text-stone-200">{{ today | date:'EEEE' }}</div>
               <div class="text-xs text-stone-500 dark:text-stone-400">{{ today | date:'longDate' }}</div>
             </div>
-            <ui-button variant="primary" routerLink="/leave-requests">
+            <ui-button variant="primary" routerLink="/leave-requests" class="w-full md:w-auto justify-center">
               <ui-icon name="plus" class="w-4 h-4 mr-2"></ui-icon>
               Request Leave
             </ui-button>
@@ -99,7 +99,7 @@ import { ToastService } from '../../shared/services/toast.service';
             <ui-icon name="calendar" class="w-5 h-5 text-stone-400 dark:text-stone-500"></ui-icon>
             Leave Balance
           </h2>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-8">
             <!-- Vacation -->
             <ui-card accent="bg-sky-500">
               <div class="flex justify-between items-start mb-4">
@@ -355,10 +355,26 @@ import { ToastService } from '../../shared/services/toast.service';
                   <span class="text-sm font-medium text-stone-700 dark:text-stone-300 group-hover:text-primary-700 dark:group-hover:text-primary-400">View My Profile</span>
                   <ui-icon name="chevron-right" class="w-4 h-4 text-stone-400 dark:text-stone-500 group-hover:text-primary-500 dark:group-hover:text-primary-400"></ui-icon>
                 </button>
-                <button class="w-full text-left px-4 py-3 rounded-lg border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800/50 cursor-not-allowed opacity-60 flex items-center justify-between">
-                  <span class="text-sm font-medium text-stone-500 dark:text-stone-400">View Payslip</span>
-                  <ui-icon name="lock-closed" class="w-4 h-4 text-stone-400 dark:text-stone-500"></ui-icon>
-                </button>
+
+                @if (data()?.latestPayslip) {
+                  <button [routerLink]="['/payroll/slip', data()?.latestPayslip._id]" class="w-full text-left px-4 py-3 rounded-lg border border-stone-200 dark:border-stone-700 hover:border-emerald-500 dark:hover:border-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-900/10 transition-all flex items-center justify-between group">
+                    <div class="flex items-center gap-3">
+                      <div class="p-1.5 bg-emerald-100 dark:bg-emerald-900/30 rounded text-emerald-600 dark:text-emerald-400">
+                        <ui-icon name="banknotes" class="w-4 h-4"></ui-icon>
+                      </div>
+                      <div>
+                        <span class="text-sm font-medium text-stone-700 dark:text-stone-300 block">Latest Payslip</span>
+                        <span class="text-xs text-stone-500 dark:text-stone-400">{{ getMonthName(data()?.latestPayslip.month) }} {{ data()?.latestPayslip.year }}</span>
+                      </div>
+                    </div>
+                    <ui-icon name="chevron-right" class="w-4 h-4 text-stone-400 dark:text-stone-500 group-hover:text-emerald-500 dark:group-hover:text-emerald-400"></ui-icon>
+                  </button>
+                } @else {
+                  <button class="w-full text-left px-4 py-3 rounded-lg border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800/50 cursor-not-allowed opacity-60 flex items-center justify-between">
+                    <span class="text-sm font-medium text-stone-500 dark:text-stone-400">View Payslip</span>
+                    <ui-icon name="lock-closed" class="w-4 h-4 text-stone-400 dark:text-stone-500"></ui-icon>
+                  </button>
+                }
               </div>
             </ui-card>
 
@@ -528,5 +544,9 @@ export class EmployeeDashboardComponent implements OnInit, OnDestroy {
       case 'cancelled': return 'bg-stone-50 text-stone-600';
       default: return 'bg-stone-50 text-stone-600';
     }
+  }
+
+  getMonthName(month: number): string {
+    return new Date(2000, month - 1, 1).toLocaleString('default', { month: 'long' });
   }
 }

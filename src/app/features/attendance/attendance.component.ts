@@ -67,12 +67,14 @@ interface AttendanceSummary {
               <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium"
                 [ngClass]="{
                   'bg-stone-100 text-stone-600 dark:bg-stone-700 dark:text-stone-300': attendanceState() === 'not-clocked-in',
+                  'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400': attendanceState() === 'unlinked',
                   'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400': attendanceState() === 'working',
                   'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400': attendanceState() === 'clocked-out'
                 }">
                 <div class="w-2 h-2 rounded-full"
                   [ngClass]="{
                     'bg-stone-400 dark:bg-stone-500': attendanceState() === 'not-clocked-in',
+                    'bg-amber-500': attendanceState() === 'unlinked',
                     'bg-green-500 animate-pulse': attendanceState() === 'working',
                     'bg-blue-500': attendanceState() === 'clocked-out'
                   }"></div>
@@ -91,6 +93,13 @@ interface AttendanceSummary {
                   {{ formatDuration(todayStatusResource.value()?.workMinutes || 0) }}
                 </div>
                 <p class="text-stone-500 dark:text-stone-400">Total hours worked today</p>
+              } @else if (attendanceState() === 'unlinked') {
+                <div class="text-amber-600 dark:text-amber-400 mb-2">
+                  <ui-icon name="exclamation-circle" class="w-12 h-12 mx-auto mb-2"></ui-icon>
+                </div>
+                <p class="text-stone-500 dark:text-stone-400 max-w-xs mx-auto">
+                  Your account is not linked to an employee profile. Please contact HR to enable time tracking.
+                </p>
               } @else {
                 <div class="text-5xl font-mono font-bold text-stone-800 dark:text-stone-100 mb-2">--:--:--</div>
                 <p class="text-stone-500 dark:text-stone-400">Ready to start your day</p>
@@ -268,8 +277,11 @@ export class AttendanceComponent implements OnDestroy {
     reload: () => this.loadHistory()
   };
 
+  user = this.authService.getUser();
+
   // Derived State
   attendanceState = computed(() => {
+    if (!this.user()?.employeeId) return 'unlinked';
     const status = this.todayStatusResource.value();
     if (!status) return 'not-clocked-in';
     if (status.clockOut) return 'clocked-out';
@@ -278,6 +290,7 @@ export class AttendanceComponent implements OnDestroy {
 
   attendanceStateLabel = computed(() => {
     switch (this.attendanceState()) {
+      case 'unlinked': return 'Account Not Linked';
       case 'not-clocked-in': return 'Not Clocked In';
       case 'working': return 'Currently Working';
       case 'clocked-out': return 'Clocked Out';

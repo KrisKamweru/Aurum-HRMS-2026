@@ -7,11 +7,21 @@ import { ThemeService } from '../../core/services/theme.service';
 import { UiNavItemComponent } from '../../shared/components/ui-nav-item/ui-nav-item.component';
 import { UiIconComponent } from '../../shared/components/ui-icon/ui-icon.component';
 import { UiToastComponent } from '../../shared/components/ui-toast/ui-toast.component';
+import { NotificationService } from '../../core/services/notification.service';
+import { NotificationsPanelComponent } from '../../shared/components/notifications-panel/notifications-panel.component';
 
 @Component({
   selector: 'app-main-layout',
   standalone: true,
-  imports: [RouterOutlet, CommonModule, UiNavItemComponent, UiIconComponent, UiToastComponent, RouterLink],
+  imports: [
+    RouterOutlet,
+    CommonModule,
+    UiNavItemComponent,
+    UiIconComponent,
+    UiToastComponent,
+    RouterLink,
+    NotificationsPanelComponent
+  ],
   templateUrl: './main-layout.component.html',
 })
 export class MainLayoutComponent {
@@ -20,6 +30,7 @@ export class MainLayoutComponent {
   private authService = inject(AuthService);
   private toastService = inject(ToastService);
   protected themeService = inject(ThemeService);
+  protected notificationService = inject(NotificationService);
 
   // Use the user from AuthService directly
   protected user = computed(() => this.authService.getUser()());
@@ -27,6 +38,7 @@ export class MainLayoutComponent {
   // Role-based permissions
   protected canManageEmployees = this.authService.hasRole(['super_admin', 'admin', 'hr_manager', 'manager']);
   protected canManageOrganization = this.authService.hasRole(['super_admin', 'admin', 'hr_manager']);
+  protected canViewPayroll = this.authService.hasRole(['super_admin', 'admin', 'hr_manager']);
   protected isSuperAdmin = this.authService.hasRole(['super_admin']);
 
   toggleSidebar() {
