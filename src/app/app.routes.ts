@@ -73,6 +73,11 @@ export const routes: Routes = [
         // Guard handled in child routes to allow employees to view slips
       },
       {
+        path: 'reports',
+        loadChildren: () => import('./features/reports/reports.routes').then(m => m.REPORTS_ROUTES),
+        canActivate: [roleGuard(['super_admin', 'admin', 'hr_manager'])]
+      },
+      {
         path: 'super-admin',
         loadComponent: () => import('./features/super-admin/super-admin.component').then(m => m.SuperAdminComponent),
         canActivate: [roleGuard(['super_admin'])]

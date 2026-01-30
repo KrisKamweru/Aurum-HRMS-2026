@@ -47,6 +47,11 @@
             <ui-icon icon name="banknotes" class="w-5 h-5 text-stone-400 group-hover:text-burgundy-800 dark:group-hover:text-burgundy-300 group-[.nav-active]:text-burgundy-800 dark:group-[.nav-active]:text-burgundy-300 transition-colors"></ui-icon>
             Payroll
           </ui-nav-item>
+
+          <ui-nav-item route="/reports">
+            <ui-icon icon name="chart-bar" class="w-5 h-5 text-stone-400 group-hover:text-burgundy-800 dark:group-hover:text-burgundy-300 group-[.nav-active]:text-burgundy-800 dark:group-[.nav-active]:text-burgundy-300 transition-colors"></ui-icon>
+            Reports
+          </ui-nav-item>
         }
 
         <!-- Organization section -->
@@ -266,6 +271,11 @@
                 <ui-nav-item route="/payroll" (click)="toggleSidebar()">
                   <ui-icon icon name="banknotes" class="w-5 h-5 text-stone-400 group-hover:text-burgundy-800 dark:group-hover:text-burgundy-300 group-[.nav-active]:text-burgundy-800 dark:group-[.nav-active]:text-burgundy-300 transition-colors"></ui-icon>
                   Payroll
+                </ui-nav-item>
+
+                <ui-nav-item route="/reports" (click)="toggleSidebar()">
+                  <ui-icon icon name="chart-bar" class="w-5 h-5 text-stone-400 group-hover:text-burgundy-800 dark:group-hover:text-burgundy-300 group-[.nav-active]:text-burgundy-800 dark:group-[.nav-active]:text-burgundy-300 transition-colors"></ui-icon>
+                  Reports
                 </ui-nav-item>
               }
 

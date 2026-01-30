@@ -21,6 +21,7 @@ import type * as onboarding from "../onboarding.js";
 import type * as organization from "../organization.js";
 import type * as payroll from "../payroll.js";
 import type * as recruitment from "../recruitment.js";
+import type * as reports from "../reports.js";
 import type * as seed from "../seed.js";
 import type * as seed_tax from "../seed_tax.js";
 import type * as settings from "../settings.js";
@@ -49,6 +50,7 @@ declare const fullApi: ApiFromModules<{
   organization: typeof organization;
   payroll: typeof payroll;
   recruitment: typeof recruitment;
+  reports: typeof reports;
   seed: typeof seed;
   seed_tax: typeof seed_tax;
   settings: typeof settings;
