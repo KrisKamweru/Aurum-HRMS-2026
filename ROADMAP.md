@@ -19,7 +19,8 @@ Aurum HRMS is a modern, comprehensive, and scalable **SaaS** Human Resource Mana
 - ✅ **Lifecycle Events**: Promotions, Transfers, Awards, Warnings, Complaints, Resignations, Terminations, Travel.
 - ✅ **Leave Management**: Full workflow with balances and accruals.
 - ✅ **Time & Attendance**: Manual clock-in/out, team view, manual entry/correction.
-- ✅ **Payroll**: Semi-automatic processing, salary slip generation, credits/debits.
+- ✅ **Payroll**: Semi-automatic processing, salary slip generation, credits/debits, Kenya tax rules.
+- ✅ **Tax Configuration**: Extensible region-based tax system (Kenya 2024 active).
 - ✅ **Recruitment (ATS)**: Job postings, candidate pipeline, applications.
 - ✅ **Training**: Course catalog, enrollments, completion tracking.
 - ✅ **Settings**: Organization settings, leave policies.
@@ -62,8 +63,9 @@ Aurum HRMS is a modern, comprehensive, and scalable **SaaS** Human Resource Mana
 
 #### 5. Payroll (Semi-Automatic) ✅ DONE
 - **Processing**: Interface for HR to manually input variable pay/deductions.
-- **Calculation**: Basic logic for Gross-to-Net (including basic Tax rules).
-- **Output**: PDF Payslip generation and download.
+- **Calculation**: Config-driven tax engine with Kenya 2024 rules (PAYE, NSSF, NHIF, Housing Levy).
+- **Tax System**: Extensible architecture supporting multiple regions via database configuration.
+- **Output**: Salary slip generation with earnings, deductions, and employer contributions.
 
 #### 6. Basic Reports ⏳ PENDING
 - **Scope**: Simple list views and exportable CSVs for Attendance logs and Payroll history.
@@ -158,17 +160,26 @@ Aurum HRMS is a modern, comprehensive, and scalable **SaaS** Human Resource Mana
 1. **Basic Reports (MVP Final Item)**
    - Implementation of CSV exports for Attendance and Payroll.
    - Simple list views for critical data.
-2. **System Polish & Bug Fixes**
+2. **Payslip PDF Export**
+   - Generate downloadable/printable PDF payslips.
+3. **Tax Configuration UI**
+   - Admin interface to view/edit tax rules without database access.
+4. **System Polish & Bug Fixes**
    - Review all forms for consistency with "Form Prerequisites" system.
    - Ensure Dark Mode is consistent across all new modules.
    - E2E Test coverage for new Recruitment and Training modules.
 
 ### ✅ Recently Completed
-1. **Time and Attendance**: Manual clock-in/clock-out and timesheet entry.
-2. **Payroll Foundation**: Salary structures, payslip generation, and run management.
-3. **Form Prerequisites**: System to block actions when dependencies are missing.
-4. **Recruitment & Training**: Full modules delivered ahead of schedule.
-5. **Notifications**: System-wide alert infrastructure.
+1. **Tax Configuration System**: Extensible, config-driven tax calculation engine.
+   - Kenya 2024 tax rules (PAYE, NSSF, NHIF, Housing Levy) seeded.
+   - Supports progressive brackets, capped percentages, tiered fixed amounts.
+   - Tracks employee vs employer contributions separately.
+2. **Time and Attendance**: Manual clock-in/clock-out and timesheet entry.
+3. **Payroll Foundation**: Salary structures, payslip generation, and run management.
+4. **Form Prerequisites**: System to block actions when dependencies are missing.
+5. **Recruitment & Training**: Full modules delivered ahead of schedule.
+6. **Notifications**: System-wide alert infrastructure.
+7. **Security Hardening**: Cross-org validation on all sensitive queries/mutations.
 
 ---
 
