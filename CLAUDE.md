@@ -110,3 +110,4 @@
   - Good: "Fix attendance clock negative duration bug"
   - Bad: "Updated attendance.component.ts to use Math.max(0, diff)"
 - **Scope**: Keep changes focused on the requested task.
+- **Co-authors**: Do **not** use `Co-authored-by` footers in commit messages for this repo. Commits must not contain them.
