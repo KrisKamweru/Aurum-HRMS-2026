@@ -158,6 +158,16 @@ Aurum HRMS is a modern, comprehensive, and scalable **SaaS** Human Resource Mana
 ## Current Sprint & Immediate Priorities
 
 ### 🎯 Primary Focus
+1. **Design System Overhaul (App-wide UI Redesign)**
+   - Completely redesign all user-facing Angular templates and Tailwind classes to strictly follow `SHOWCASE-6-DESIGN.md` and the Design 6 visual language.
+   - Treat this as a full visual/UX overhaul: preserve existing behavior and business logic, rework templates and styling only, and avoid broad `.ts` refactors unless required to support the new UI or accessibility.
+   - Update shared layout and design primitives (`main-layout`, `auth-layout`, `ui-button`, `ui-card`, `ui-modal`, `ui-data-table`, `ui-form-field`, `ui-badge`, navigation, etc.) so they become canonical, reusable implementations of the design system.
+   - Remove all legacy visual artifacts (old color tokens, shadows, bespoke CSS, and component styles) so that only the new design system patterns remain across templates and global styles.
+   - Carefully audit UX for every screen (flows, empty states, loading states, errors, responsive behavior) to ensure the new design both looks premium and remains functionally equivalent to the current app.
+   - Evolve the forms system to support responsive, multi-column layouts that are not constrained to modal width (usable in full-page, drawer, and modal contexts), while preserving existing validation and business logic.
+   - Introduce a shared stepper/wizard pattern for long or complex forms so that large field sets can be broken into clear steps, with progress indication and per-step validation, without losing any existing capabilities.
+
+### ⏭ Secondary Focus (after design overhaul)
 1. **Basic Reports (MVP Final Item)**
    - Implementation of CSV exports for Attendance and Payroll.
    - Simple list views for critical data.
