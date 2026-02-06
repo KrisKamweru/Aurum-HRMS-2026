@@ -53,3 +53,7 @@ Thumbs.db
 
 # Internal design docs
 SHOWCASE-6-DESIGN.md
+
+# Local tooling
+.claude/
+.playwright-mcp/
