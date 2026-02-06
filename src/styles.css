@@ -1,6 +1,4 @@
-/* Google Fonts Import - Clean Professional Sans-Serif */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
 /* Enable class-based dark mode (Tailwind v4) */
@@ -88,8 +86,8 @@
   --info: #2563eb;
 
   /* Typography - Clean Sans-Serif */
-  --font-display: 'Inter', system-ui, sans-serif;
-  --font-body: 'Inter', system-ui, sans-serif;
+  --font-display: 'Outfit', system-ui, sans-serif;
+  --font-body: 'Outfit', system-ui, sans-serif;
 
   /* Shadows with burgundy warmth */
   --shadow-sm: 0 1px 2px 0 rgba(139, 30, 63, 0.05);

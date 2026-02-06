@@ -10,6 +10,7 @@ Aurum HRMS is a modern, comprehensive, and scalable **SaaS** Human Resource Mana
 - **Testing**: Vitest (Unit), Playwright (E2E)
 - **State Management**: Signals + Convex Reactivity
 - **Multi-tenancy**: Native support via Convex schema organization (by `organizationId`)
+- **Design System**: See `SHOWCASE-6-DESIGN.md` for the canonical visual language and Tailwind component patterns.
 
 ## Current Status
 **Completed Modules:**

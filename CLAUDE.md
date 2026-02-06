@@ -75,6 +75,10 @@
   - Text: `text-stone-800 dark:text-stone-100`
   - Borders: `border-stone-200 dark:border-stone-700`
 
+### Design System
+- **Reference**: `SHOWCASE-6-DESIGN.md` is the canonical visual design + Tailwind system for the entire app.
+- **Usage**: New components and screens MUST follow its color, typography, spacing, and component patterns.
+
 ### Icons
 - **System**: SVG assets in `src/assets/icons/`.
 - **Usage**: `<ui-icon name="icon-name"></ui-icon>`.
