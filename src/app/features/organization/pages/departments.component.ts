@@ -20,8 +20,8 @@ import { Id } from '../../../../../convex/_generated/dataModel';
     <div class="space-y-6">
       <div class="flex items-center justify-between">
         <div>
-          <h1 class="heading-accent dark:text-stone-100">Departments</h1>
-          <p class="mt-3 text-stone-500 dark:text-stone-400">Manage organizational departments.</p>
+          <h1 class="text-3xl font-bold text-stone-900 dark:text-white tracking-tight">Departments</h1>
+          <p class="mt-2 text-[15px] text-stone-600 dark:text-stone-400">Manage organizational departments.</p>
         </div>
         <ui-button (onClick)="openCreateModal()" *ngIf="canManage()">
           <ui-icon name="plus" class="w-4 h-4 mr-2"></ui-icon>
@@ -39,7 +39,7 @@ import { Id } from '../../../../../convex/_generated/dataModel';
       <ng-template #actionsRef let-row>
         <div class="flex gap-2 justify-end">
           <button
-            class="p-1.5 text-stone-400 hover:text-[#8b1e3f] hover:bg-[#fdf2f4] dark:hover:text-[#fce7eb] dark:hover:bg-[#8b1e3f]/20 rounded-lg transition-colors"
+            class="p-1.5 text-stone-400 hover:text-burgundy-700 hover:bg-burgundy-50 dark:hover:text-burgundy-300 dark:hover:bg-burgundy-700/12 rounded-lg transition-colors"
             (click)="openEditModal(row)"
             title="Edit"
           >

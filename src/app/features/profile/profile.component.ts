@@ -31,26 +31,28 @@ import { ToastService } from '../../shared/services/toast.service';
       <!-- Page Header -->
       <div class="flex items-center justify-between">
         <div>
-          <h1 class="text-2xl font-bold text-stone-900 dark:text-stone-100">Employee Profile</h1>
-          <p class="text-stone-500 dark:text-stone-400 mt-1">Manage your personal information and account settings</p>
+          <h1 class="text-3xl font-bold text-stone-900 dark:text-white tracking-tight">Employee Profile</h1>
+          <p class="text-[15px] text-stone-600 dark:text-stone-400 mt-2">Manage your personal information and account settings</p>
         </div>
       </div>
 
       <!-- Navigation Tabs -->
-      <div class="border-b border-stone-200 dark:border-stone-700">
+      <div class="border-b border-stone-200 dark:border-white/8">
         <nav class="-mb-px flex space-x-8" aria-label="Tabs">
           <button
             (click)="setActiveTab('info')"
-            [class.border-[#8b1e3f]]="activeTab() === 'info'"
-            [class.text-[#8b1e3f]]="activeTab() === 'info'"
-            [class.dark:text-[#fce7eb]]="activeTab() === 'info'"
+            [class.border-burgundy-700]="activeTab() === 'info'"
+            [class.text-burgundy-700]="activeTab() === 'info'"
+            [class.dark:text-burgundy-300]="activeTab() === 'info'"
+            [class.dark:border-burgundy-300]="activeTab() === 'info'"
             [class.border-transparent]="activeTab() !== 'info'"
             [class.text-stone-500]="activeTab() !== 'info'"
             [class.dark:text-stone-400]="activeTab() !== 'info'"
             [class.hover:text-stone-700]="activeTab() !== 'info'"
             [class.dark:hover:text-stone-300]="activeTab() !== 'info'"
             [class.hover:border-stone-300]="activeTab() !== 'info'"
-            class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2"
+            [class.dark:hover:border-stone-600]="activeTab() !== 'info'"
+            class="whitespace-nowrap py-4 px-1 border-b-2 font-semibold text-sm flex items-center gap-2 transition-colors"
           >
             <ui-icon name="user" class="w-4 h-4"></ui-icon>
             My Info
@@ -58,16 +60,18 @@ import { ToastService } from '../../shared/services/toast.service';
 
           <button
             (click)="setActiveTab('settings')"
-            [class.border-[#8b1e3f]]="activeTab() === 'settings'"
-            [class.text-[#8b1e3f]]="activeTab() === 'settings'"
-            [class.dark:text-[#fce7eb]]="activeTab() === 'settings'"
+            [class.border-burgundy-700]="activeTab() === 'settings'"
+            [class.text-burgundy-700]="activeTab() === 'settings'"
+            [class.dark:text-burgundy-300]="activeTab() === 'settings'"
+            [class.dark:border-burgundy-300]="activeTab() === 'settings'"
             [class.border-transparent]="activeTab() !== 'settings'"
             [class.text-stone-500]="activeTab() !== 'settings'"
             [class.dark:text-stone-400]="activeTab() !== 'settings'"
             [class.hover:text-stone-700]="activeTab() !== 'settings'"
             [class.dark:hover:text-stone-300]="activeTab() !== 'settings'"
             [class.hover:border-stone-300]="activeTab() !== 'settings'"
-            class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2"
+            [class.dark:hover:border-stone-600]="activeTab() !== 'settings'"
+            class="whitespace-nowrap py-4 px-1 border-b-2 font-semibold text-sm flex items-center gap-2 transition-colors"
           >
             <ui-icon name="cog-6-tooth" class="w-4 h-4"></ui-icon>
             Settings
@@ -78,7 +82,7 @@ import { ToastService } from '../../shared/services/toast.service';
       <!-- Content Area -->
       @if (profileResource.isLoading()) {
         <div class="flex justify-center py-12">
-          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#8b1e3f]"></div>
+          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-burgundy-700"></div>
         </div>
       } @else if (profileResource.error()) {
         <div class="flex flex-col items-center justify-center py-16">
@@ -135,15 +139,15 @@ import { ToastService } from '../../shared/services/toast.service';
                     <p class="text-stone-500 dark:text-stone-400">{{ profile.position || 'No Designation' }}</p>
 
                     <div class="mt-4 flex flex-wrap justify-center gap-2">
-                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#8b1e3f]/10 dark:bg-[#8b1e3f]/20 text-[#8b1e3f] dark:text-[#fce7eb]">
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-burgundy-50 dark:bg-burgundy-700/12 text-burgundy-700 dark:text-burgundy-300">
                         {{ profile.department || 'No Department' }}
                       </span>
-                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-stone-100 dark:bg-stone-700 text-stone-800 dark:text-stone-200">
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-stone-100 dark:bg-stone-700 text-stone-800 dark:text-stone-200">
                         {{ profile.location || 'Remote' }}
                       </span>
                     </div>
 
-                    <div class="w-full mt-6 pt-6 border-t border-stone-100 dark:border-stone-700 space-y-4">
+                    <div class="w-full mt-6 pt-6 border-t border-stone-100 dark:border-white/5 space-y-4">
                       <div class="flex justify-between items-center text-sm">
                         <span class="text-stone-500 dark:text-stone-400">Employee ID</span>
                         <span class="font-mono font-medium text-stone-900 dark:text-stone-100">{{ formatId(profile._id) }}</span>
@@ -213,18 +217,30 @@ import { ToastService } from '../../shared/services/toast.service';
                         <div class="md:col-span-2">
                            <ui-form-field label="Email Address" hint="Contact HR to change your email">
                              <input type="email" [value]="profile.email" disabled
-                               class="w-full px-3 py-2 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-700 rounded-lg text-stone-500 dark:text-stone-400 cursor-not-allowed">
+                               class="w-full px-4 py-2.5 rounded-lg text-sm
+                                      bg-stone-50 border border-stone-200
+                                      dark:bg-stone-800 dark:border-stone-700
+                                      text-stone-500 dark:text-stone-400 cursor-not-allowed">
                            </ui-form-field>
                         </div>
 
                         <ui-form-field label="Phone Number" [control]="editForm.get('phone')">
                           <input type="tel" formControlName="phone"
-                            class="w-full px-3 py-2 bg-white dark:bg-stone-800 border border-stone-300 dark:border-stone-600 rounded-lg text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-[#8b1e3f]/20 focus:border-[#8b1e3f] transition-all">
+                            class="w-full px-4 py-2.5 rounded-lg text-sm
+                                   bg-white border border-stone-200
+                                   dark:bg-white/5 dark:border-white/8 dark:text-white
+                                   placeholder:text-stone-400 dark:placeholder:text-stone-500
+                                   focus:border-burgundy-700 focus:ring-2 focus:ring-burgundy-700/20
+                                   transition-all">
                         </ui-form-field>
 
                         <ui-form-field label="Gender" [control]="editForm.get('gender')">
                           <select formControlName="gender"
-                            class="w-full px-3 py-2 bg-white dark:bg-stone-800 border border-stone-300 dark:border-stone-600 rounded-lg text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-[#8b1e3f]/20 focus:border-[#8b1e3f] transition-all appearance-none">
+                            class="w-full px-4 py-2.5 rounded-lg text-sm
+                                   bg-white border border-stone-200
+                                   dark:bg-white/5 dark:border-white/8 dark:text-white
+                                   focus:border-burgundy-700 focus:ring-2 focus:ring-burgundy-700/20
+                                   transition-all appearance-none">
                             <option value="">Select Gender</option>
                             <option value="male">Male</option>
                             <option value="female">Female</option>
@@ -235,18 +251,27 @@ import { ToastService } from '../../shared/services/toast.service';
 
                         <ui-form-field label="Date of Birth" [control]="editForm.get('dob')">
                           <input type="date" formControlName="dob"
-                            class="w-full px-3 py-2 bg-white dark:bg-stone-800 border border-stone-300 dark:border-stone-600 rounded-lg text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-[#8b1e3f]/20 focus:border-[#8b1e3f] transition-all">
+                            class="w-full px-4 py-2.5 rounded-lg text-sm
+                                   bg-white border border-stone-200
+                                   dark:bg-white/5 dark:border-white/8 dark:text-white
+                                   focus:border-burgundy-700 focus:ring-2 focus:ring-burgundy-700/20
+                                   transition-all">
                         </ui-form-field>
 
                         <div class="md:col-span-2">
                           <ui-form-field label="Address" [control]="editForm.get('address')">
                             <textarea formControlName="address" rows="3"
-                              class="w-full px-3 py-2 bg-white dark:bg-stone-800 border border-stone-300 dark:border-stone-600 rounded-lg text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-[#8b1e3f]/20 focus:border-[#8b1e3f] transition-all"></textarea>
+                              class="w-full px-4 py-2.5 rounded-lg text-sm
+                                     bg-white border border-stone-200
+                                     dark:bg-white/5 dark:border-white/8 dark:text-white
+                                     placeholder:text-stone-400 dark:placeholder:text-stone-500
+                                     focus:border-burgundy-700 focus:ring-2 focus:ring-burgundy-700/20
+                                     transition-all"></textarea>
                           </ui-form-field>
                         </div>
                       </div>
 
-                      <div class="flex items-center justify-end gap-3 pt-4 border-t border-stone-100 dark:border-stone-700">
+                      <div class="flex items-center justify-end gap-3 pt-4 border-t border-stone-100 dark:border-white/5">
                         <ui-button variant="ghost" (onClick)="cancelEdit()">Cancel</ui-button>
                         <ui-button type="submit" [loading]="isSaving()" [disabled]="editForm.invalid || isSaving()">
                           Save Changes

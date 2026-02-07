@@ -10,8 +10,8 @@ import { UiIconComponent } from '../../shared/components/ui-icon/ui-icon.compone
   template: `
     <div class="flex h-full flex-col">
       <div class="mb-8">
-        <h1 class="text-2xl font-bold text-gray-900">Core HR</h1>
-        <p class="text-gray-500">Manage employee lifecycle events and records</p>
+        <h1 class="text-2xl font-semibold text-stone-900 dark:text-white tracking-tight">Core HR</h1>
+        <p class="text-stone-500 dark:text-stone-400">Manage employee lifecycle events and records</p>
       </div>
 
       <div class="flex flex-1 gap-8">

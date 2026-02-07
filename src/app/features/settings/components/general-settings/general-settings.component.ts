@@ -20,55 +20,66 @@ import { api } from '../../../../../../convex/_generated/api';
     <div class="space-y-6">
       <div class="flex items-center justify-between">
         <div>
-          <h2 class="text-lg font-bold text-stone-900 dark:text-white">General Settings</h2>
-          <p class="text-stone-500 dark:text-stone-400 text-sm">Configure global settings for your organization.</p>
+          <h2 class="text-xl font-bold text-stone-900 dark:text-white">General Settings</h2>
+          <p class="text-[13px] text-stone-600 dark:text-stone-400 mt-1">Configure global settings for your organization.</p>
         </div>
         <ui-button (onClick)="saveSettings()" [loading]="saving()">
           Save Changes
         </ui-button>
       </div>
 
-      <ui-card>
+      <div class="bg-white border border-stone-200 rounded-2xl shadow-sm p-6
+                  dark:bg-white/5 dark:border-white/8 dark:backdrop-blur-xl dark:shadow-none">
         <form [formGroup]="form" class="space-y-6">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Currency -->
-            <div class="space-y-1">
-              <label class="block text-sm font-medium text-stone-700 dark:text-stone-300">Default Currency</label>
+            <div class="space-y-1.5">
+              <label class="block text-[13px] font-medium text-stone-700 dark:text-stone-300">Default Currency</label>
               <select
                 formControlName="currency"
-                class="block w-full rounded-xl border-stone-200 dark:border-stone-700 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] bg-stone-50/50 dark:bg-stone-800/50 dark:text-stone-100"
+                class="block w-full px-4 py-2.5 rounded-lg text-sm
+                       bg-white border border-stone-200
+                       dark:bg-white/5 dark:border-white/8 dark:text-white
+                       focus:border-burgundy-700 focus:ring-2 focus:ring-burgundy-700/20
+                       transition-all"
               >
                 <option value="USD">USD ($)</option>
                 <option value="EUR">EUR (€)</option>
                 <option value="GBP">GBP (£)</option>
                 <option value="KES">KES (KSh)</option>
                 <option value="INR">INR (₹)</option>
-                <!-- Add more as needed -->
               </select>
-              <p class="text-xs text-stone-500">Used for payroll and expense calculations.</p>
+              <p class="text-xs text-stone-500 dark:text-stone-400">Used for payroll and expense calculations.</p>
             </div>
 
             <!-- Timezone -->
-            <div class="space-y-1">
-              <label class="block text-sm font-medium text-stone-700 dark:text-stone-300">Timezone</label>
+            <div class="space-y-1.5">
+              <label class="block text-[13px] font-medium text-stone-700 dark:text-stone-300">Timezone</label>
               <select
                 formControlName="timezone"
-                class="block w-full rounded-xl border-stone-200 dark:border-stone-700 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] bg-stone-50/50 dark:bg-stone-800/50 dark:text-stone-100"
+                class="block w-full px-4 py-2.5 rounded-lg text-sm
+                       bg-white border border-stone-200
+                       dark:bg-white/5 dark:border-white/8 dark:text-white
+                       focus:border-burgundy-700 focus:ring-2 focus:ring-burgundy-700/20
+                       transition-all"
               >
                 <option value="UTC">UTC</option>
                 <option value="Africa/Nairobi">Africa/Nairobi</option>
                 <option value="America/New_York">America/New_York</option>
                 <option value="Europe/London">Europe/London</option>
-                <!-- Add more as needed or use a library -->
               </select>
             </div>
 
             <!-- Date Format -->
-            <div class="space-y-1">
-              <label class="block text-sm font-medium text-stone-700 dark:text-stone-300">Date Format</label>
+            <div class="space-y-1.5">
+              <label class="block text-[13px] font-medium text-stone-700 dark:text-stone-300">Date Format</label>
               <select
                 formControlName="dateFormat"
-                class="block w-full rounded-xl border-stone-200 dark:border-stone-700 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] bg-stone-50/50 dark:bg-stone-800/50 dark:text-stone-100"
+                class="block w-full px-4 py-2.5 rounded-lg text-sm
+                       bg-white border border-stone-200
+                       dark:bg-white/5 dark:border-white/8 dark:text-white
+                       focus:border-burgundy-700 focus:ring-2 focus:ring-burgundy-700/20
+                       transition-all"
               >
                 <option value="MM/DD/YYYY">MM/DD/YYYY</option>
                 <option value="DD/MM/YYYY">DD/MM/YYYY</option>
@@ -77,25 +88,32 @@ import { api } from '../../../../../../convex/_generated/api';
             </div>
           </div>
 
-          <div class="border-t border-stone-100 dark:border-stone-700 pt-6">
-            <h3 class="text-sm font-bold text-stone-900 dark:text-stone-100 mb-4">Work Week</h3>
-            <div class="flex flex-wrap gap-4">
+          <div class="border-t border-stone-100 dark:border-white/5 pt-6">
+            <h3 class="text-sm font-semibold text-stone-900 dark:text-white uppercase tracking-wide mb-4">Work Week</h3>
+            <div class="flex flex-wrap gap-3">
               @for (day of daysOfWeek; track day.value) {
-                <label class="flex items-center gap-2 cursor-pointer p-3 rounded-lg border border-stone-200 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors" [class.bg-stone-50]="isWorkDay(day.value)" [class.dark:bg-stone-800]="isWorkDay(day.value)">
+                <label class="flex items-center gap-2 cursor-pointer px-4 py-2.5 rounded-lg border
+                              hover:bg-stone-50 dark:hover:bg-white/5 transition-colors"
+                       [class.bg-burgundy-50]="isWorkDay(day.value)"
+                       [class.dark:bg-burgundy-700/12]="isWorkDay(day.value)"
+                       [class.border-burgundy-200]="isWorkDay(day.value)"
+                       [class.dark:border-burgundy-700/20]="isWorkDay(day.value)"
+                       [class.border-stone-200]="!isWorkDay(day.value)"
+                       [class.dark:border-white/8]="!isWorkDay(day.value)">
                   <input
                     type="checkbox"
                     [checked]="isWorkDay(day.value)"
                     (change)="toggleWorkDay(day.value)"
-                    class="rounded text-[#8b1e3f] focus:ring-[#8b1e3f] border-stone-300 dark:border-stone-600 dark:bg-stone-700"
+                    class="rounded text-burgundy-700 focus:ring-burgundy-700 border-stone-300 dark:border-stone-600"
                   />
                   <span class="text-sm font-medium text-stone-700 dark:text-stone-300">{{ day.label }}</span>
                 </label>
               }
             </div>
-            <p class="text-xs text-stone-500 mt-2">Select the standard working days for your organization.</p>
+            <p class="text-xs text-stone-500 dark:text-stone-400 mt-3">Select the standard working days for your organization.</p>
           </div>
         </form>
-      </ui-card>
+      </div>
     </div>
   `
 })

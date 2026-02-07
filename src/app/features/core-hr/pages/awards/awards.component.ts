@@ -25,8 +25,8 @@ import { api } from '../../../../../../convex/_generated/api';
     <div class="space-y-6">
       <div class="flex items-center justify-between">
         <div>
-          <h1 class="heading-accent">Awards</h1>
-          <p class="mt-3 text-stone-500">Recognize and reward employee achievements.</p>
+          <h1 class="text-3xl font-bold text-stone-900 dark:text-white tracking-tight">Awards</h1>
+          <p class="mt-2 text-[15px] text-stone-600 dark:text-stone-400">Recognize and reward employee achievements.</p>
         </div>
         <ui-button
           (onClick)="openCreateModal()"

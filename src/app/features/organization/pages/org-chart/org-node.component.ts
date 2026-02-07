@@ -10,7 +10,7 @@ import { UiAvatarComponent } from '../../../../shared/components/ui-avatar/ui-av
     <div class="flex flex-col items-center">
       <div class="relative group z-10">
         <!-- Node Card -->
-        <div class="bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl p-4 shadow-sm hover:shadow-md hover:border-[#8b1e3f] dark:hover:border-[#8b1e3f] transition-all w-64 text-center relative z-10">
+        <div class="bg-white dark:bg-white/5 dark:backdrop-blur-xl border border-stone-200 dark:border-white/8 rounded-xl p-4 shadow-sm hover:shadow-md hover:border-burgundy-700 dark:hover:border-burgundy-700 transition-all w-64 text-center relative z-10">
           <div class="flex flex-col items-center">
             <ui-avatar
               [src]="node.image"

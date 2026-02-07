@@ -30,8 +30,8 @@ import { api } from '../../../../convex/_generated/api';
       <!-- Header -->
       <div class="flex items-center justify-between">
         <div>
-          <h1 class="heading-accent text-2xl">Super Admin Dashboard</h1>
-          <p class="mt-1 text-stone-500">Manage all organizations and system-wide settings</p>
+          <h1 class="text-3xl font-bold text-stone-900 dark:text-white tracking-tight">Super Admin Dashboard</h1>
+          <p class="mt-2 text-[15px] text-stone-600 dark:text-stone-400">Manage all organizations and system-wide settings</p>
         </div>
         <ui-button (onClick)="openCreateModal()">
           <ui-icon name="plus" class="w-4 h-4 mr-2"></ui-icon>
@@ -40,137 +40,143 @@ import { api } from '../../../../convex/_generated/api';
       </div>
 
       <!-- Stats Grid -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <ui-card accent="bg-[#8b1e3f]">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-burgundy-50 border border-burgundy-200 rounded-2xl p-5
+                    dark:bg-burgundy-700/12 dark:border-burgundy-700/20 dark:backdrop-blur-xl">
           <div class="flex items-start justify-between">
             <div>
-              <p class="text-sm font-medium text-stone-500">Organizations</p>
-              <h3 class="text-2xl font-bold mt-1 text-stone-800">{{ stats()?.totalOrganizations || 0 }}</h3>
+              <p class="text-[13px] font-medium text-burgundy-600 dark:text-burgundy-300 tracking-wide uppercase">Organizations</p>
+              <h3 class="text-2xl font-bold text-burgundy-700 dark:text-burgundy-300 mt-1">{{ stats()?.totalOrganizations || 0 }}</h3>
             </div>
-            <div class="p-2 bg-stone-100 rounded-lg text-[#8b1e3f]">
+            <div class="p-2 bg-burgundy-100 dark:bg-burgundy-700/25 rounded-lg text-burgundy-700 dark:text-burgundy-300">
               <ui-icon name="building-office-2" class="w-5 h-5"></ui-icon>
             </div>
           </div>
-          <div class="mt-3 text-xs text-stone-500">
-            <span class="text-green-600">{{ stats()?.activeOrganizations || 0 }} active</span>
+          <div class="mt-3 text-xs text-burgundy-600 dark:text-burgundy-400">
+            <span class="font-medium">{{ stats()?.activeOrganizations || 0 }} active</span>
             <span class="mx-1">·</span>
-            <span class="text-amber-600">{{ stats()?.suspendedOrganizations || 0 }} suspended</span>
+            <span>{{ stats()?.suspendedOrganizations || 0 }} suspended</span>
           </div>
-        </ui-card>
+        </div>
 
-        <ui-card accent="bg-indigo-500">
+        <div class="bg-white border border-stone-200 rounded-2xl shadow-sm p-5
+                    dark:bg-white/5 dark:border-white/8 dark:backdrop-blur-xl dark:shadow-none">
           <div class="flex items-start justify-between">
             <div>
-              <p class="text-sm font-medium text-stone-500">Total Users</p>
-              <h3 class="text-2xl font-bold mt-1 text-stone-800">{{ stats()?.totalUsers || 0 }}</h3>
+              <p class="text-[13px] font-medium text-stone-500 dark:text-stone-400 tracking-wide uppercase">Total Users</p>
+              <h3 class="text-2xl font-bold text-stone-900 dark:text-white mt-1">{{ stats()?.totalUsers || 0 }}</h3>
             </div>
-            <div class="p-2 bg-indigo-50 rounded-lg text-indigo-600">
+            <div class="p-2 bg-indigo-50 dark:bg-indigo-500/10 rounded-lg text-indigo-600 dark:text-indigo-400">
               <ui-icon name="users" class="w-5 h-5"></ui-icon>
             </div>
           </div>
-          <div class="mt-3 text-xs text-stone-500">
-            <span class="text-green-600">{{ stats()?.activeUsers || 0 }} active</span>
+          <div class="mt-3 text-xs text-stone-500 dark:text-stone-400">
+            <span class="text-green-600 dark:text-green-400">{{ stats()?.activeUsers || 0 }} active</span>
             <span class="mx-1">·</span>
-            <span class="text-amber-600">{{ stats()?.pendingUsers || 0 }} pending</span>
+            <span class="text-amber-600 dark:text-amber-400">{{ stats()?.pendingUsers || 0 }} pending</span>
           </div>
-        </ui-card>
+        </div>
 
-        <ui-card accent="bg-emerald-500">
+        <div class="bg-white border border-stone-200 rounded-2xl shadow-sm p-5
+                    dark:bg-white/5 dark:border-white/8 dark:backdrop-blur-xl dark:shadow-none">
           <div class="flex items-start justify-between">
             <div>
-              <p class="text-sm font-medium text-stone-500">Total Employees</p>
-              <h3 class="text-2xl font-bold mt-1 text-stone-800">{{ stats()?.totalEmployees || 0 }}</h3>
+              <p class="text-[13px] font-medium text-stone-500 dark:text-stone-400 tracking-wide uppercase">Total Employees</p>
+              <h3 class="text-2xl font-bold text-stone-900 dark:text-white mt-1">{{ stats()?.totalEmployees || 0 }}</h3>
             </div>
-            <div class="p-2 bg-emerald-50 rounded-lg text-emerald-600">
+            <div class="p-2 bg-emerald-50 dark:bg-emerald-500/10 rounded-lg text-emerald-600 dark:text-emerald-400">
               <ui-icon name="identification" class="w-5 h-5"></ui-icon>
             </div>
           </div>
-          <div class="mt-3 text-xs text-stone-500">
+          <div class="mt-3 text-xs text-stone-500 dark:text-stone-400">
             Across all organizations
           </div>
-        </ui-card>
+        </div>
 
-        <ui-card accent="bg-amber-500">
+        <div class="bg-white border border-stone-200 rounded-2xl shadow-sm p-5
+                    dark:bg-white/5 dark:border-white/8 dark:backdrop-blur-xl dark:shadow-none">
           <div class="flex items-start justify-between">
             <div>
-              <p class="text-sm font-medium text-stone-500">Pending Users</p>
-              <h3 class="text-2xl font-bold mt-1 text-stone-800">{{ stats()?.pendingUsers || 0 }}</h3>
+              <p class="text-[13px] font-medium text-stone-500 dark:text-stone-400 tracking-wide uppercase">Pending Users</p>
+              <h3 class="text-2xl font-bold text-stone-900 dark:text-white mt-1">{{ stats()?.pendingUsers || 0 }}</h3>
             </div>
-            <div class="p-2 bg-amber-50 rounded-lg text-amber-600">
+            <div class="p-2 bg-amber-50 dark:bg-amber-500/10 rounded-lg text-amber-600 dark:text-amber-400">
               <ui-icon name="clock" class="w-5 h-5"></ui-icon>
             </div>
           </div>
-          <div class="mt-3 text-xs text-stone-500">
+          <div class="mt-3 text-xs text-stone-500 dark:text-stone-400">
             Awaiting organization assignment
           </div>
-        </ui-card>
+        </div>
       </div>
 
       <!-- Organizations Table -->
-      <ui-card>
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="font-semibold text-stone-900">All Organizations</h2>
+      <div class="bg-white border border-stone-200 rounded-2xl shadow-sm
+                  dark:bg-white/5 dark:border-white/8 dark:backdrop-blur-xl dark:shadow-none">
+        <div class="p-6 border-b border-stone-200 dark:border-white/5">
+          <h2 class="text-lg font-semibold text-stone-900 dark:text-white">All Organizations</h2>
         </div>
 
         @if (loading()) {
-          <div class="space-y-3">
-            <div class="h-16 bg-stone-100 rounded-xl animate-pulse"></div>
-            <div class="h-16 bg-stone-100 rounded-xl animate-pulse"></div>
-            <div class="h-16 bg-stone-100 rounded-xl animate-pulse"></div>
+          <div class="p-6 space-y-3">
+            <div class="h-16 bg-stone-100 dark:bg-white/5 rounded-xl animate-pulse"></div>
+            <div class="h-16 bg-stone-100 dark:bg-white/5 rounded-xl animate-pulse"></div>
+            <div class="h-16 bg-stone-100 dark:bg-white/5 rounded-xl animate-pulse"></div>
           </div>
         } @else if (organizations().length === 0) {
-          <div class="text-center py-12 text-stone-400">
+          <div class="p-12 text-center text-stone-400 dark:text-stone-500">
             <ui-icon name="building-office-2" class="w-12 h-12 mx-auto mb-3"></ui-icon>
-            <p class="font-medium">No organizations yet</p>
+            <p class="font-semibold">No organizations yet</p>
             <p class="text-sm mt-1">Create your first organization to get started</p>
           </div>
         } @else {
           <div class="overflow-x-auto">
             <table class="w-full">
               <thead>
-                <tr class="border-b border-stone-200">
-                  <th class="text-left py-3 px-4 text-xs font-medium text-stone-500 uppercase tracking-wider">Organization</th>
-                  <th class="text-left py-3 px-4 text-xs font-medium text-stone-500 uppercase tracking-wider">Status</th>
-                  <th class="text-left py-3 px-4 text-xs font-medium text-stone-500 uppercase tracking-wider">Plan</th>
-                  <th class="text-center py-3 px-4 text-xs font-medium text-stone-500 uppercase tracking-wider">Users</th>
-                  <th class="text-center py-3 px-4 text-xs font-medium text-stone-500 uppercase tracking-wider">Employees</th>
-                  <th class="text-center py-3 px-4 text-xs font-medium text-stone-500 uppercase tracking-wider">Pending</th>
-                  <th class="text-right py-3 px-4 text-xs font-medium text-stone-500 uppercase tracking-wider">Actions</th>
+                <tr class="border-b border-stone-200 dark:border-white/5">
+                  <th class="text-left py-3 px-6 text-xs font-semibold text-stone-400 dark:text-stone-500 uppercase tracking-wide">Organization</th>
+                  <th class="text-left py-3 px-6 text-xs font-semibold text-stone-400 dark:text-stone-500 uppercase tracking-wide">Status</th>
+                  <th class="text-left py-3 px-6 text-xs font-semibold text-stone-400 dark:text-stone-500 uppercase tracking-wide">Plan</th>
+                  <th class="text-center py-3 px-6 text-xs font-semibold text-stone-400 dark:text-stone-500 uppercase tracking-wide">Users</th>
+                  <th class="text-center py-3 px-6 text-xs font-semibold text-stone-400 dark:text-stone-500 uppercase tracking-wide">Employees</th>
+                  <th class="text-center py-3 px-6 text-xs font-semibold text-stone-400 dark:text-stone-500 uppercase tracking-wide">Pending</th>
+                  <th class="text-right py-3 px-6 text-xs font-semibold text-stone-400 dark:text-stone-500 uppercase tracking-wide">Actions</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-stone-100">
+              <tbody>
                 @for (org of organizations(); track org._id) {
-                  <tr class="hover:bg-stone-50 transition-colors">
-                    <td class="py-4 px-4">
-                      <div class="font-medium text-stone-900">{{ org.name }}</div>
+                  <tr class="border-b border-stone-50 dark:border-white/[0.03]
+                             hover:bg-burgundy-50/50 dark:hover:bg-burgundy-700/[0.06] transition-colors">
+                    <td class="py-4 px-6">
+                      <div class="font-semibold text-stone-900 dark:text-white">{{ org.name }}</div>
                       @if (org.domain) {
-                        <div class="text-xs text-stone-500">{{ org.domain }}</div>
+                        <div class="text-xs text-stone-500 dark:text-stone-400">{{ org.domain }}</div>
                       }
                     </td>
-                    <td class="py-4 px-4">
+                    <td class="py-4 px-6">
                       <ui-badge [variant]="org.status === 'active' ? 'success' : 'warning'" size="sm">
                         {{ org.status | titlecase }}
                       </ui-badge>
                     </td>
-                    <td class="py-4 px-4">
-                      <span class="text-sm text-stone-600 capitalize">{{ org.subscriptionPlan }}</span>
+                    <td class="py-4 px-6">
+                      <span class="text-sm text-stone-600 dark:text-stone-300 capitalize">{{ org.subscriptionPlan }}</span>
                     </td>
-                    <td class="py-4 px-4 text-center">
-                      <span class="text-sm font-medium text-stone-900">{{ org.userCount }}</span>
+                    <td class="py-4 px-6 text-center">
+                      <span class="text-sm font-semibold text-stone-900 dark:text-white">{{ org.userCount }}</span>
                     </td>
-                    <td class="py-4 px-4 text-center">
-                      <span class="text-sm font-medium text-stone-900">{{ org.employeeCount }}</span>
+                    <td class="py-4 px-6 text-center">
+                      <span class="text-sm font-semibold text-stone-900 dark:text-white">{{ org.employeeCount }}</span>
                     </td>
-                    <td class="py-4 px-4 text-center">
+                    <td class="py-4 px-6 text-center">
                       @if (org.pendingRequestCount > 0) {
-                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-amber-100 text-amber-700 text-xs font-medium">
+                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 text-xs font-semibold">
                           {{ org.pendingRequestCount }}
                         </span>
                       } @else {
-                        <span class="text-stone-400">-</span>
+                        <span class="text-stone-400 dark:text-stone-500">-</span>
                       }
                     </td>
-                    <td class="py-4 px-4 text-right">
+                    <td class="py-4 px-6 text-right">
                       <div class="flex items-center justify-end gap-2">
                         <ui-button
                           variant="ghost"
@@ -183,7 +189,7 @@ import { api } from '../../../../convex/_generated/api';
                           <ui-button
                             variant="ghost"
                             size="sm"
-                            class="text-amber-600 hover:text-amber-700"
+                            class="text-amber-600 hover:text-amber-700 dark:text-amber-400 dark:hover:text-amber-300"
                             [loading]="processingOrgId() === org._id"
                             (onClick)="suspendOrg(org._id)"
                           >
@@ -193,7 +199,7 @@ import { api } from '../../../../convex/_generated/api';
                           <ui-button
                             variant="ghost"
                             size="sm"
-                            class="text-green-600 hover:text-green-700"
+                            class="text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300"
                             [loading]="processingOrgId() === org._id"
                             (onClick)="activateOrg(org._id)"
                           >
@@ -208,7 +214,7 @@ import { api } from '../../../../convex/_generated/api';
             </table>
           </div>
         }
-      </ui-card>
+      </div>
 
       <!-- Create/Edit Modal -->
       <ui-modal
@@ -227,7 +233,12 @@ import { api } from '../../../../convex/_generated/api';
               id="name"
               formControlName="name"
               placeholder="e.g., Acme Corporation"
-              class="block w-full rounded-xl border-stone-200 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-4 py-3 border bg-stone-50/50"
+              class="block w-full px-4 py-2.5 rounded-lg text-sm
+                     bg-white border border-stone-200
+                     dark:bg-white/5 dark:border-white/8 dark:text-white
+                     placeholder:text-stone-400 dark:placeholder:text-stone-500
+                     focus:border-burgundy-700 focus:ring-2 focus:ring-burgundy-700/20
+                     transition-all"
             />
           </ui-form-field>
 
@@ -244,7 +255,12 @@ import { api } from '../../../../convex/_generated/api';
                 id="domain"
                 formControlName="domain"
                 placeholder="e.g., acme.com"
-                class="block w-full rounded-xl border-stone-200 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-4 py-3 border bg-stone-50/50"
+                class="block w-full px-4 py-2.5 rounded-lg text-sm
+                       bg-white border border-stone-200
+                       dark:bg-white/5 dark:border-white/8 dark:text-white
+                       placeholder:text-stone-400 dark:placeholder:text-stone-500
+                       focus:border-burgundy-700 focus:ring-2 focus:ring-burgundy-700/20
+                       transition-all"
               />
             </div>
           </ui-form-field>
@@ -258,7 +274,11 @@ import { api } from '../../../../convex/_generated/api';
             <select
               id="subscriptionPlan"
               formControlName="subscriptionPlan"
-              class="block w-full rounded-xl border-stone-200 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-4 py-3 border bg-stone-50/50"
+              class="block w-full px-4 py-2.5 rounded-lg text-sm
+                     bg-white border border-stone-200
+                     dark:bg-white/5 dark:border-white/8 dark:text-white
+                     focus:border-burgundy-700 focus:ring-2 focus:ring-burgundy-700/20
+                     transition-all"
             >
               <option value="free">Free</option>
               <option value="pro">Pro</option>
@@ -266,7 +286,7 @@ import { api } from '../../../../convex/_generated/api';
             </select>
           </ui-form-field>
 
-          <div class="flex justify-end gap-3 pt-4 border-t border-stone-100">
+          <div class="flex justify-end gap-3 pt-4 border-t border-stone-100 dark:border-white/5">
             <ui-button type="button" variant="ghost" (onClick)="showModal.set(false)">
               Cancel
             </ui-button>

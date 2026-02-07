@@ -27,8 +27,8 @@ import { api } from '../../../../../../convex/_generated/api';
     <div class="space-y-6">
       <div class="flex items-center justify-between">
         <div>
-          <h1 class="heading-accent">Transfers</h1>
-          <p class="mt-3 text-stone-500">Manage employee department and location transfers.</p>
+          <h1 class="text-3xl font-bold text-stone-900 dark:text-white tracking-tight">Transfers</h1>
+          <p class="mt-2 text-[15px] text-stone-600 dark:text-stone-400">Manage employee department and location transfers.</p>
         </div>
         <ui-button
           (onClick)="openCreateModal()"
@@ -63,7 +63,7 @@ import { api } from '../../../../../../convex/_generated/api';
             <select
               id="employeeId"
               formControlName="employeeId"
-              class="block w-full rounded-xl border-stone-200 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-3 py-2 border bg-stone-50/50"
+              class="block w-full rounded-xl border-stone-200 dark:border-white/8 shadow-sm focus:border-burgundy-700 focus:ring-burgundy-700 sm:text-sm px-3 py-2 border bg-stone-50/50 dark:bg-white/5"
               (change)="onEmployeeChange()"
             >
               <option value="">Select Employee</option>
@@ -74,15 +74,15 @@ import { api } from '../../../../../../convex/_generated/api';
           </ui-form-field>
 
           @if (selectedEmployee()) {
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-3 bg-stone-50 rounded-lg border border-stone-200 text-sm">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-3 bg-stone-50 dark:bg-white/5 rounded-lg border border-stone-200 dark:border-white/8 text-sm">
               <div>
-                <span class="text-stone-500 block">Current Department</span>
-                <span class="font-medium text-stone-900">{{ selectedEmployee()?.department || 'N/A' }}</span>
+                <span class="text-stone-500 dark:text-stone-400 block">Current Department</span>
+                <span class="font-medium text-stone-900 dark:text-white">{{ selectedEmployee()?.department || 'N/A' }}</span>
                 <input type="hidden" formControlName="fromDepartmentId">
               </div>
               <div>
-                <span class="text-stone-500 block">Current Location</span>
-                <span class="font-medium text-stone-900">{{ selectedEmployee()?.location || 'N/A' }}</span>
+                <span class="text-stone-500 dark:text-stone-400 block">Current Location</span>
+                <span class="font-medium text-stone-900 dark:text-white">{{ selectedEmployee()?.location || 'N/A' }}</span>
                 <input type="hidden" formControlName="fromLocationId">
               </div>
             </div>
@@ -99,7 +99,7 @@ import { api } from '../../../../../../convex/_generated/api';
               <select
                 id="toDepartmentId"
                 formControlName="toDepartmentId"
-                class="block w-full rounded-xl border-stone-200 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-3 py-2 border bg-stone-50/50"
+                class="block w-full rounded-xl border-stone-200 dark:border-white/8 shadow-sm focus:border-burgundy-700 focus:ring-burgundy-700 sm:text-sm px-3 py-2 border bg-stone-50/50 dark:bg-white/5"
               >
                 <option value="">Select Department</option>
                 @for (dept of departments(); track dept._id) {
@@ -118,7 +118,7 @@ import { api } from '../../../../../../convex/_generated/api';
               <select
                 id="toLocationId"
                 formControlName="toLocationId"
-                class="block w-full rounded-xl border-stone-200 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-3 py-2 border bg-stone-50/50"
+                class="block w-full rounded-xl border-stone-200 dark:border-white/8 shadow-sm focus:border-burgundy-700 focus:ring-burgundy-700 sm:text-sm px-3 py-2 border bg-stone-50/50 dark:bg-white/5"
               >
                 <option value="">Select Location</option>
                 @for (loc of locations(); track loc._id) {
@@ -139,7 +139,7 @@ import { api } from '../../../../../../convex/_generated/api';
               type="date"
               id="transferDate"
               formControlName="transferDate"
-              class="block w-full rounded-xl border-stone-200 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-3 py-2 border bg-stone-50/50"
+              class="block w-full rounded-xl border-stone-200 dark:border-white/8 shadow-sm focus:border-burgundy-700 focus:ring-burgundy-700 sm:text-sm px-3 py-2 border bg-stone-50/50 dark:bg-white/5"
             />
           </ui-form-field>
 
@@ -153,11 +153,11 @@ import { api } from '../../../../../../convex/_generated/api';
               id="remarks"
               formControlName="remarks"
               rows="3"
-              class="block w-full rounded-xl border-stone-200 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-3 py-2 border bg-stone-50/50"
+              class="block w-full rounded-xl border-stone-200 dark:border-white/8 shadow-sm focus:border-burgundy-700 focus:ring-burgundy-700 sm:text-sm px-3 py-2 border bg-stone-50/50 dark:bg-white/5"
             ></textarea>
           </ui-form-field>
 
-          <div class="flex justify-end gap-3 pt-4 border-t border-stone-100">
+          <div class="flex justify-end gap-3 pt-4 border-t border-stone-100 dark:border-white/8">
             <ui-button
               type="button"
               variant="ghost"

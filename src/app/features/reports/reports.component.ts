@@ -12,8 +12,8 @@ import { REPORT_DEFINITIONS, ReportDefinition } from './models/report-definition
     <div class="space-y-8">
       <!-- Header -->
       <div>
-        <h1 class="text-3xl font-bold text-stone-900 dark:text-stone-100">Reports</h1>
-        <p class="mt-2 text-stone-600 dark:text-stone-400">
+        <h1 class="text-3xl font-bold text-stone-900 dark:text-white tracking-tight">Reports</h1>
+        <p class="mt-2 text-[15px] text-stone-600 dark:text-stone-400">
           Generate and export reports for attendance, payroll, and tax data
         </p>
       </div>
@@ -25,14 +25,17 @@ import { REPORT_DEFINITIONS, ReportDefinition } from './models/report-definition
             [routerLink]="report.route"
             class="group block"
           >
-            <div class="h-full bg-white dark:bg-stone-800 rounded-2xl border border-stone-200 dark:border-stone-700 p-6 hover:border-burgundy-300 dark:hover:border-burgundy-700 hover:shadow-lg hover:shadow-burgundy-100/50 dark:hover:shadow-burgundy-900/20 transition-all duration-200">
+            <div class="h-full bg-white border border-stone-200 rounded-2xl shadow-sm p-6
+                        dark:bg-white/5 dark:border-white/8 dark:backdrop-blur-xl dark:shadow-none
+                        hover:border-burgundy-700 dark:hover:border-burgundy-700/50
+                        hover:-translate-y-0.5 hover:shadow-md transition-all duration-200">
               <!-- Icon -->
-              <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-burgundy-100 to-burgundy-50 dark:from-burgundy-900/50 dark:to-burgundy-950/50 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-200">
+              <div class="w-12 h-12 rounded-xl bg-burgundy-50 dark:bg-burgundy-700/12 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-200">
                 <ui-icon [name]="report.icon" class="w-6 h-6 text-burgundy-700 dark:text-burgundy-300"></ui-icon>
               </div>
 
               <!-- Content -->
-              <h3 class="text-lg font-semibold text-stone-900 dark:text-stone-100 mb-2 group-hover:text-burgundy-800 dark:group-hover:text-burgundy-300 transition-colors">
+              <h3 class="text-lg font-semibold text-stone-900 dark:text-white mb-2 group-hover:text-burgundy-700 dark:group-hover:text-burgundy-300 transition-colors">
                 {{ report.name }}
               </h3>
               <p class="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
@@ -42,7 +45,7 @@ import { REPORT_DEFINITIONS, ReportDefinition } from './models/report-definition
               <!-- Category Badge -->
               <div class="mt-4 flex items-center gap-2">
                 <span
-                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold"
                   [ngClass]="getCategoryClasses(report.category)"
                 >
                   {{ getCategoryLabel(report.category) }}
@@ -54,7 +57,7 @@ import { REPORT_DEFINITIONS, ReportDefinition } from './models/report-definition
 
               <!-- Arrow indicator -->
               <div class="mt-4 flex items-center text-burgundy-700 dark:text-burgundy-400 opacity-0 group-hover:opacity-100 transition-opacity">
-                <span class="text-sm font-medium">View Report</span>
+                <span class="text-sm font-semibold">View Report</span>
                 <ui-icon name="arrow-right" class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform"></ui-icon>
               </div>
             </div>
@@ -65,13 +68,14 @@ import { REPORT_DEFINITIONS, ReportDefinition } from './models/report-definition
       <!-- Future Reports Section -->
       <div class="mt-12">
         <h2 class="text-lg font-semibold text-stone-700 dark:text-stone-300 mb-4">Coming Soon</h2>
-        <div class="bg-stone-50 dark:bg-stone-800/50 rounded-2xl border border-dashed border-stone-300 dark:border-stone-700 p-6">
+        <div class="bg-stone-50 border border-dashed border-stone-300 rounded-2xl p-6
+                    dark:bg-white/5 dark:border-white/8 dark:backdrop-blur-xl">
           <div class="flex items-center gap-4">
-            <div class="w-10 h-10 rounded-lg bg-stone-200 dark:bg-stone-700 flex items-center justify-center">
+            <div class="w-10 h-10 rounded-lg bg-stone-200 dark:bg-white/5 flex items-center justify-center">
               <ui-icon name="sparkles" class="w-5 h-5 text-stone-400 dark:text-stone-500"></ui-icon>
             </div>
             <div>
-              <p class="text-sm font-medium text-stone-700 dark:text-stone-300">Custom Report Builder</p>
+              <p class="text-sm font-semibold text-stone-700 dark:text-stone-300">Custom Report Builder</p>
               <p class="text-xs text-stone-500 dark:text-stone-400">Create custom reports, ITAX exports, and scheduled report delivery</p>
             </div>
           </div>

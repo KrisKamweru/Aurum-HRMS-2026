@@ -13,7 +13,7 @@ import { UiCardComponent } from '../../../../shared/components/ui-card/ui-card.c
     <div class="space-y-6">
       <div class="flex items-center justify-between">
         <div>
-          <h1 class="heading-accent dark:text-stone-100">Chain of Command</h1>
+          <h1 class="text-2xl font-semibold text-stone-900 dark:text-white tracking-tight">Chain of Command</h1>
           <p class="mt-3 text-stone-500 dark:text-stone-400">Visual hierarchy of the organization structure.</p>
         </div>
         <div class="text-sm text-stone-500 dark:text-stone-400 italic">
@@ -21,10 +21,10 @@ import { UiCardComponent } from '../../../../shared/components/ui-card/ui-card.c
         </div>
       </div>
 
-      <ui-card class="overflow-hidden min-h-[600px] bg-stone-50/50 dark:bg-stone-900/50 flex items-center justify-center p-8">
+      <ui-card class="overflow-hidden min-h-[600px] bg-stone-50/50 dark:bg-white/5 dark:backdrop-blur-xl flex items-center justify-center p-8">
         @if (loading()) {
           <div class="flex flex-col items-center gap-3">
-            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#8b1e3f]"></div>
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-burgundy-700"></div>
             <p class="text-stone-500">Loading hierarchy...</p>
           </div>
         } @else if (data().length === 0) {
