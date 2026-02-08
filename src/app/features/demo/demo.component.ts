@@ -31,6 +31,9 @@ import { UiToastComponent } from '../../shared/components/ui-toast/ui-toast.comp
           <a routerLink="/demo/modals" routerLinkActive="bg-rose-50 text-rose-700" class="block px-4 py-2 rounded-md text-gray-700 hover:bg-gray-50 hover:text-rose-700 font-medium transition-colors">
             Modals & Feedback
           </a>
+          <a routerLink="/demo/date-picker" routerLinkActive="bg-rose-50 text-rose-700" class="block px-4 py-2 rounded-md text-gray-700 hover:bg-gray-50 hover:text-rose-700 font-medium transition-colors">
+            Date Range Picker
+          </a>
           <div class="pt-4 mt-4 border-t border-gray-200">
             <a routerLink="/dashboard" class="block px-4 py-2 rounded-md text-gray-500 hover:bg-gray-50 hover:text-gray-900 font-medium transition-colors">
               ← Back to App

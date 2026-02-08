@@ -1,0 +1,182 @@
+{
+  "summary": {
+    "generatedAt": "2026-02-08T21:26:19.165Z",
+    "total": 19,
+    "passed": 19,
+    "failed": 0
+  },
+  "checks": [
+    {
+      "role": "super_admin",
+      "area": "route",
+      "check": "employee_detail_reachability",
+      "expected": true,
+      "actual": true,
+      "pass": true,
+      "detail": "/employees/k5757svk6tb26z2r65safesgf17zcj8x"
+    },
+    {
+      "role": "super_admin",
+      "area": "compensation",
+      "check": "edit_button_visible",
+      "expected": true,
+      "actual": true,
+      "pass": true,
+      "detail": "compensation tab opened"
+    },
+    {
+      "role": "super_admin",
+      "area": "financial",
+      "check": "statutory_edit_visible",
+      "expected": true,
+      "actual": true,
+      "pass": true,
+      "detail": "financial tab opened"
+    },
+    {
+      "role": "super_admin",
+      "area": "financial",
+      "check": "banking_add_visible",
+      "expected": true,
+      "actual": true,
+      "pass": true,
+      "detail": "financial tab opened"
+    },
+    {
+      "role": "super_admin",
+      "area": "financial",
+      "check": "allowance_add_visible",
+      "expected": true,
+      "actual": true,
+      "pass": true,
+      "detail": "financial tab opened"
+    },
+    {
+      "role": "super_admin",
+      "area": "financial",
+      "check": "deduction_add_visible",
+      "expected": true,
+      "actual": true,
+      "pass": true,
+      "detail": "financial tab opened"
+    },
+    {
+      "role": "admin",
+      "area": "route",
+      "check": "employee_detail_reachability",
+      "expected": true,
+      "actual": true,
+      "pass": true,
+      "detail": "/employees/k5757svk6tb26z2r65safesgf17zcj8x"
+    },
+    {
+      "role": "admin",
+      "area": "compensation",
+      "check": "edit_button_visible",
+      "expected": true,
+      "actual": true,
+      "pass": true,
+      "detail": "compensation tab opened"
+    },
+    {
+      "role": "admin",
+      "area": "financial",
+      "check": "statutory_edit_visible",
+      "expected": true,
+      "actual": true,
+      "pass": true,
+      "detail": "financial tab opened"
+    },
+    {
+      "role": "admin",
+      "area": "financial",
+      "check": "banking_add_visible",
+      "expected": true,
+      "actual": true,
+      "pass": true,
+      "detail": "financial tab opened"
+    },
+    {
+      "role": "admin",
+      "area": "financial",
+      "check": "allowance_add_visible",
+      "expected": true,
+      "actual": true,
+      "pass": true,
+      "detail": "financial tab opened"
+    },
+    {
+      "role": "admin",
+      "area": "financial",
+      "check": "deduction_add_visible",
+      "expected": true,
+      "actual": true,
+      "pass": true,
+      "detail": "financial tab opened"
+    },
+    {
+      "role": "manager",
+      "area": "route",
+      "check": "employee_detail_reachability",
+      "expected": true,
+      "actual": true,
+      "pass": true,
+      "detail": "/employees/k5757svk6tb26z2r65safesgf17zcj8x"
+    },
+    {
+      "role": "manager",
+      "area": "compensation",
+      "check": "edit_button_visible",
+      "expected": false,
+      "actual": false,
+      "pass": true,
+      "detail": "compensation tab opened"
+    },
+    {
+      "role": "manager",
+      "area": "financial",
+      "check": "statutory_edit_visible",
+      "expected": false,
+      "actual": false,
+      "pass": true,
+      "detail": "financial tab opened"
+    },
+    {
+      "role": "manager",
+      "area": "financial",
+      "check": "banking_add_visible",
+      "expected": false,
+      "actual": false,
+      "pass": true,
+      "detail": "financial tab opened"
+    },
+    {
+      "role": "manager",
+      "area": "financial",
+      "check": "allowance_add_visible",
+      "expected": false,
+      "actual": false,
+      "pass": true,
+      "detail": "financial tab opened"
+    },
+    {
+      "role": "manager",
+      "area": "financial",
+      "check": "deduction_add_visible",
+      "expected": false,
+      "actual": false,
+      "pass": true,
+      "detail": "financial tab opened"
+    },
+    {
+      "role": "employee",
+      "area": "route",
+      "check": "employee_detail_reachability",
+      "expected": false,
+      "actual": false,
+      "pass": true,
+      "detail": "/dashboard"
+    }
+  ],
+  "failed": []
+}

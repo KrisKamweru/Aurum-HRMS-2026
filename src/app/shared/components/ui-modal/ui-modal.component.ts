@@ -26,7 +26,7 @@ export type ModalSize = 'sm' | 'md' | 'lg' | 'xl' | 'full';
         <div class="modal-content-wrapper">
           <!-- Modal Panel -->
           <div
-            class="relative transform overflow-hidden rounded-2xl bg-white dark:bg-stone-800 text-left shadow-2xl transition-all sm:my-8 w-full animate-modal-in"
+            class="relative transform overflow-hidden rounded-xl bg-white dark:bg-white/5 dark:backdrop-blur-xl dark:border dark:border-white/8 text-left shadow-2xl transition-all sm:my-8 w-full animate-modal-in"
             [class]="getSizeClasses()"
             (click)="$event.stopPropagation()"
           >
@@ -34,7 +34,7 @@ export type ModalSize = 'sm' | 'md' | 'lg' | 'xl' | 'full';
             <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-burgundy-800 via-burgundy-700 to-burgundy-800 dark:from-burgundy-600 dark:via-burgundy-500 dark:to-burgundy-600"></div>
 
             <!-- Header -->
-            <div class="bg-white dark:bg-stone-800 px-4 sm:px-6 pt-5 sm:pt-6 pb-4 border-b border-stone-100 dark:border-stone-700">
+            <div class="bg-white dark:bg-white/5 px-4 sm:px-6 pt-5 sm:pt-6 pb-4 border-b border-stone-100 dark:border-white/5">
               <div class="flex items-center justify-between">
                 <h3
                   class="text-lg sm:text-xl font-semibold text-stone-900 dark:text-stone-100"
@@ -44,7 +44,7 @@ export type ModalSize = 'sm' | 'md' | 'lg' | 'xl' | 'full';
                 </h3>
                 <button
                   type="button"
-                  class="rounded-lg p-2 text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-burgundy-800 transition-all duration-200"
+                  class="rounded-lg p-2 text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 hover:bg-stone-100 dark:hover:bg-white/8 focus:outline-none focus-visible:ring-2 focus-visible:ring-burgundy-500 transition-all duration-200"
                   (click)="closeModal()"
                 >
                   <span class="sr-only">Close</span>
@@ -60,7 +60,7 @@ export type ModalSize = 'sm' | 'md' | 'lg' | 'xl' | 'full';
 
             <!-- Footer -->
             @if (hasFooter) {
-              <div class="bg-stone-50 dark:bg-stone-900/50 px-4 sm:px-6 py-3 sm:py-4 border-t border-stone-100 dark:border-stone-700 flex flex-row-reverse gap-3">
+              <div class="bg-stone-50 dark:bg-white/5 px-4 sm:px-6 py-3 sm:py-4 border-t border-stone-100 dark:border-white/5 flex flex-row-reverse gap-3">
                 <ng-content select="[footer]"></ng-content>
               </div>
             }

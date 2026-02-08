@@ -6,8 +6,11 @@ import { UiDataTableComponent, TableColumn } from '../../../../shared/components
 import { UiModalComponent } from '../../../../shared/components/ui-modal/ui-modal.component';
 import { DynamicFormComponent } from '../../../../shared/components/dynamic-form/dynamic-form.component';
 import { FieldConfig } from '../../../../shared/services/form-helper.service';
+import { UiGridComponent } from '../../../../shared/components/ui-grid/ui-grid.component';
+import { UiGridTileComponent } from '../../../../shared/components/ui-grid/ui-grid-tile.component';
 import { ConvexClientService } from '../../../../core/services/convex-client.service';
 import { ToastService } from '../../../../shared/services/toast.service';
+import { ConfirmDialogService } from '../../../../shared/services/confirm-dialog.service';
 import { api } from '../../../../../../convex/_generated/api';
 
 @Component({
@@ -19,7 +22,9 @@ import { api } from '../../../../../../convex/_generated/api';
     UiIconComponent,
     UiDataTableComponent,
     UiModalComponent,
-    DynamicFormComponent
+    DynamicFormComponent,
+    UiGridComponent,
+    UiGridTileComponent
   ],
   template: `
     <div class="space-y-6">
@@ -40,12 +45,21 @@ import { api } from '../../../../../../convex/_generated/api';
         </div>
       </div>
 
-      <ui-data-table
-        [data]="policies()"
-        [columns]="columns"
-        [loading]="loading()"
-        [actionsTemplate]="actionsRef"
-      ></ui-data-table>
+      <div class="dash-frame">
+        <ui-grid [columns]="'1fr'" [gap]="'0px'">
+          <ui-grid-tile title="Leave Policies" variant="compact">
+            <div class="tile-body">
+              <ui-data-table
+                [data]="policies()"
+                [columns]="columns"
+                [loading]="loading()"
+                [actionsTemplate]="actionsRef"
+                headerVariant="neutral"
+              ></ui-data-table>
+            </div>
+          </ui-grid-tile>
+        </ui-grid>
+      </div>
 
       <ng-template #actionsRef let-row>
         <div class="flex gap-2 justify-end">
@@ -87,6 +101,7 @@ import { api } from '../../../../../../convex/_generated/api';
 export class LeavePolicyListComponent implements OnInit {
   private convex = inject(ConvexClientService);
   private toast = inject(ToastService);
+  private confirmDialog = inject(ConfirmDialogService);
 
   policies = signal<any[]>([]);
   loading = signal(true);
@@ -200,7 +215,16 @@ export class LeavePolicyListComponent implements OnInit {
   }
 
   async deletePolicy(row: any) {
-    if (!confirm(`Delete policy "${row.name}"?`)) return;
+    const confirmed = await this.confirmDialog.confirm({
+      title: 'Delete Leave Policy',
+      message: `Are you sure you want to delete the policy "${row.name}"? This action cannot be undone.`,
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      variant: 'danger'
+    });
+
+    if (!confirmed) return;
+
     try {
       await this.convex.getClient().mutation(api.settings.deleteLeavePolicy, { id: row._id });
       this.toast.success('Policy deleted');
@@ -210,7 +234,16 @@ export class LeavePolicyListComponent implements OnInit {
   }
 
   async seedDefaults() {
-    if (!confirm('This will create default leave policies if they don\'t exist. Continue?')) return;
+    const confirmed = await this.confirmDialog.confirm({
+      title: 'Reset to Default Policies',
+      message: 'This will create default leave policies if they don\'t exist. Do you want to continue?',
+      confirmText: 'Reset',
+      cancelText: 'Cancel',
+      variant: 'warning'
+    });
+
+    if (!confirmed) return;
+
     this.seeding.set(true);
     try {
       await this.convex.getClient().mutation(api.settings.seedDefaultPolicies, {});

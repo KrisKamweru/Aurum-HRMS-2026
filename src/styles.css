@@ -2,7 +2,7 @@
 @import "tailwindcss";
 
 /* Enable class-based dark mode (Tailwind v4) */
-/* @variant dark (&:where(.dark, .dark *)); - Built-in in v4 */
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
   --color-stone-50: var(--stone-50);
@@ -43,20 +43,27 @@
    Theme: Burgundy & Gold with Warm Stone neutrals
    ======================================== */
 
-/* Design Tokens */
+/* Design Tokens — Design Six "Dark Precision"
+   Anchor color: burgundy-700 = #861821 */
 :root {
-  /* Primary - Burgundy/Wine */
-  --burgundy-50: #fdf2f4;
-  --burgundy-100: #fce7eb;
-  --burgundy-200: #f9d0da;
-  --burgundy-300: #f4a9bc;
-  --burgundy-400: #ec7698;
-  --burgundy-500: #df4872;
-  --burgundy-600: #c92d5b;
-  --burgundy-700: #a82349;
-  --burgundy-800: #8b1e3f;
-  --burgundy-900: #722038;
-  --burgundy-950: #4a0d1f;
+  /* Primary - Burgundy (rebuilt around #861821) */
+  --burgundy-50: #fef2f3;
+  --burgundy-100: #fce7ea;
+  --burgundy-200: #f9ced6;
+  --burgundy-300: #f4a3b4;
+  --burgundy-400: #ec6e8a;
+  --burgundy-500: #df4168;
+  --burgundy-600: #c92a52;
+  --burgundy-700: #861821;
+  --burgundy-800: #741530;
+  --burgundy-900: #631530;
+  --burgundy-950: #380816;
+
+  /* Glass tokens (for dark mode surfaces) */
+  --glass: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-hover: rgba(255, 255, 255, 0.08);
+  --glass-highlight: rgba(134, 24, 33, 0.12);
 
   /* Accent - Gold (honoring "Aurum") */
   --gold-50: #fffbeb;
@@ -109,6 +116,30 @@
   --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-bounce: 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Neutral surfaces */
+  --surface-header: #eeedf0;
+}
+
+/* Light-mode contrast + saturation boost */
+:root:not(.dark) {
+  /* Neutral grays with a subtle burgundy lean */
+  --stone-50: #f8f7f8;
+  --stone-100: #f1eff1;
+  --stone-200: #e3e0e4;
+  --stone-300: #d1ced3;
+  --stone-400: #b0adb3;
+  --stone-500: #7b777d;
+  --stone-600: #565158;
+  --stone-700: #434046;
+  --stone-800: #2a272c;
+  --stone-900: #1c191e;
+
+  /* Slightly richer accents */
+  --burgundy-500: #e23861;
+  --burgundy-600: #c11d4a;
+  --gold-500: #f59a00;
+  --gold-600: #d36f00;
 }
 
 /* Base Styles */
@@ -119,9 +150,38 @@ html {
 }
 
 body {
-  background: linear-gradient(180deg, var(--stone-50) 0%, var(--stone-100) 100%);
+  background: #f6f6f8;
   color: var(--stone-800);
   min-height: 100vh;
+}
+
+/* Main layout background treatment */
+.app-shell {
+  position: relative;
+  background:
+    radial-gradient(1100px 520px at 15% -10%, rgba(134,24,33,0.045), transparent 60%),
+    radial-gradient(900px 500px at 100% 0%, rgba(134,24,33,0.03), transparent 60%),
+    linear-gradient(180deg, #f4f5f8 0%, #f7f7f9 45%, #eceef2 100%);
+}
+
+/* Unified grid frame defaults */
+.dash-frame {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid #e7e5e4;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+}
+
+.dark .dash-frame {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: none;
+}
+
+.tile-body {
+  padding: 1.5rem;
 }
 
 /* Subtle noise texture overlay */
@@ -324,6 +384,12 @@ h3 { font-size: 1.25rem; line-height: 1.3; }
   backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.5);
   border-radius: var(--radius-xl);
+}
+
+:root.dark .card-glass {
+  background: var(--glass);
+  backdrop-filter: blur(18px);
+  border-color: var(--glass-border);
 }
 
 /* Burgundy gradient backgrounds */
@@ -697,7 +763,7 @@ textarea::placeholder {
 }
 
 :root.dark body {
-  background: linear-gradient(180deg, #1c1917 0%, #0c0a09 100%);
+  background: #0b0b0b;
   color: #e7e5e4; /* stone-200 */
 }
 

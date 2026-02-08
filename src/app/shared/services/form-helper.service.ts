@@ -13,6 +13,11 @@ export interface FieldConfig {
   placeholder?: string;
   hint?: string;
   disabled?: boolean;
+
+  // Layout properties
+  columns?: 1 | 2 | 3;        // Number of columns for this field's row (default: 1)
+  colspan?: number;           // How many columns this field spans (for full-width in multi-column)
+  section?: string;           // Section name - fields with same section grouped under a header
 }
 
 @Injectable({

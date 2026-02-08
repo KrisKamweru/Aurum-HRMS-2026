@@ -1,212 +1,217 @@
 import { Component, input, output, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { UiCardComponent } from '../../../../shared/components/ui-card/ui-card.component';
 import { UiButtonComponent } from '../../../../shared/components/ui-button/ui-button.component';
 import { UiIconComponent } from '../../../../shared/components/ui-icon/ui-icon.component';
 import { UiModalComponent } from '../../../../shared/components/ui-modal/ui-modal.component';
 import { DynamicFormComponent } from '../../../../shared/components/dynamic-form/dynamic-form.component';
 import { FieldConfig } from '../../../../shared/services/form-helper.service';
+import { UiGridComponent } from '../../../../shared/components/ui-grid/ui-grid.component';
+import { UiGridTileComponent } from '../../../../shared/components/ui-grid/ui-grid-tile.component';
 
 @Component({
   selector: 'app-profile-financial',
   standalone: true,
   imports: [
     CommonModule,
-    UiCardComponent,
     UiButtonComponent,
     UiIconComponent,
     UiModalComponent,
-    DynamicFormComponent
+    DynamicFormComponent,
+    UiGridComponent,
+    UiGridTileComponent
   ],
   template: `
-    <div class="space-y-6">
-      <!-- Statutory Info -->
-      <ui-card>
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-lg font-bold text-stone-800 dark:text-stone-100 flex items-center gap-2">
-            <ui-icon name="scale" class="w-5 h-5 text-indigo-500"></ui-icon>
-            Statutory Information
-          </h3>
-          <ui-button size="sm" variant="ghost" (onClick)="openStatutoryModal()">
-            <ui-icon name="pencil" class="w-4 h-4 mr-1"></ui-icon> Edit
-          </ui-button>
-        </div>
+    <div class="space-y-4 sm:space-y-6">
+      <div class="dash-frame">
+        <ui-grid [columns]="'1fr 1fr'" [gap]="'0px'">
+          <ui-grid-tile title="Statutory Information" variant="compact" divider="bottom" style="grid-column: 1 / -1;">
+            @if (canEditFinancialData()) {
+              <ui-button size="sm" variant="ghost" tile-actions (onClick)="openStatutoryModal()">
+                <ui-icon name="pencil" class="w-4 h-4 mr-1"></ui-icon> Edit
+              </ui-button>
+            }
 
-        @if (statutory()) {
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div class="p-3 bg-stone-50 dark:bg-stone-900/50 rounded-lg">
-              <div class="text-xs text-stone-500 dark:text-stone-400 uppercase font-semibold mb-1">Country</div>
-              <div class="font-medium text-stone-900 dark:text-stone-100">{{ statutory().country || '-' }}</div>
-            </div>
-            <div class="p-3 bg-stone-50 dark:bg-stone-900/50 rounded-lg">
-              <div class="text-xs text-stone-500 dark:text-stone-400 uppercase font-semibold mb-1">Tax ID (PIN/SSN)</div>
-              <div class="font-medium text-stone-900 dark:text-stone-100 font-mono">{{ statutory().taxId || '-' }}</div>
-            </div>
-            <div class="p-3 bg-stone-50 dark:bg-stone-900/50 rounded-lg">
-              <div class="text-xs text-stone-500 dark:text-stone-400 uppercase font-semibold mb-1">National ID</div>
-              <div class="font-medium text-stone-900 dark:text-stone-100 font-mono">{{ statutory().nationalId || '-' }}</div>
-            </div>
-            <div class="p-3 bg-stone-50 dark:bg-stone-900/50 rounded-lg">
-              <div class="text-xs text-stone-500 dark:text-stone-400 uppercase font-semibold mb-1">Social Security / NSSF</div>
-              <div class="font-medium text-stone-900 dark:text-stone-100 font-mono">{{ statutory().socialSecurityId || '-' }}</div>
-            </div>
-            <div class="p-3 bg-stone-50 dark:bg-stone-900/50 rounded-lg">
-              <div class="text-xs text-stone-500 dark:text-stone-400 uppercase font-semibold mb-1">Health Insurance / NHIF</div>
-              <div class="font-medium text-stone-900 dark:text-stone-100 font-mono">{{ statutory().healthInsuranceId || '-' }}</div>
-            </div>
-          </div>
-        } @else {
-          <div class="text-stone-500 dark:text-stone-400 italic text-sm text-center py-4">
-            Statutory information not set.
-          </div>
-        }
-      </ui-card>
-
-      <!-- Banking Details -->
-      <ui-card>
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-lg font-bold text-stone-800 dark:text-stone-100 flex items-center gap-2">
-            <ui-icon name="credit-card" class="w-5 h-5 text-emerald-500"></ui-icon>
-            Banking Details
-          </h3>
-          <ui-button size="sm" variant="ghost" (onClick)="openBankModal()">
-            <ui-icon name="plus" class="w-4 h-4 mr-1"></ui-icon> Add
-          </ui-button>
-        </div>
-
-        @if (banking().length === 0) {
-          <div class="text-stone-500 dark:text-stone-400 italic text-sm text-center py-4">
-            No bank accounts listed.
-          </div>
-        } @else {
-          <div class="space-y-3">
-            @for (bank of banking(); track bank._id) {
-              <div class="p-4 rounded-xl border border-stone-200 dark:border-stone-700 bg-stone-50/50 dark:bg-stone-800/30 flex justify-between items-center group">
-                <div class="flex items-center gap-4">
-                  <div class="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-                    <ui-icon name="building-library" class="w-5 h-5"></ui-icon>
+            <div class="tile-body">
+              @if (statutory()) {
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div class="p-3 bg-stone-50 dark:bg-white/5 rounded-lg">
+                    <div class="text-xs text-stone-500 dark:text-stone-400 uppercase font-semibold mb-1">Country</div>
+                    <div class="font-medium text-stone-900 dark:text-stone-100">{{ statutory().country || '-' }}</div>
                   </div>
-                  <div>
-                    <div class="flex items-center gap-2">
-                      <span class="font-bold text-stone-800 dark:text-stone-100">{{ bank.bankName }}</span>
-                      @if (bank.isPrimary) {
-                        <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">Primary</span>
+                  <div class="p-3 bg-stone-50 dark:bg-white/5 rounded-lg">
+                    <div class="text-xs text-stone-500 dark:text-stone-400 uppercase font-semibold mb-1">Tax ID (PIN/SSN)</div>
+                    <div class="font-medium text-stone-900 dark:text-stone-100 font-mono">{{ statutory().taxId || '-' }}</div>
+                  </div>
+                  <div class="p-3 bg-stone-50 dark:bg-white/5 rounded-lg">
+                    <div class="text-xs text-stone-500 dark:text-stone-400 uppercase font-semibold mb-1">National ID</div>
+                    <div class="font-medium text-stone-900 dark:text-stone-100 font-mono">{{ statutory().nationalId || '-' }}</div>
+                  </div>
+                  <div class="p-3 bg-stone-50 dark:bg-white/5 rounded-lg">
+                    <div class="text-xs text-stone-500 dark:text-stone-400 uppercase font-semibold mb-1">Social Security / NSSF</div>
+                    <div class="font-medium text-stone-900 dark:text-stone-100 font-mono">{{ statutory().socialSecurityId || '-' }}</div>
+                  </div>
+                  <div class="p-3 bg-stone-50 dark:bg-white/5 rounded-lg">
+                    <div class="text-xs text-stone-500 dark:text-stone-400 uppercase font-semibold mb-1">Health Insurance / NHIF</div>
+                    <div class="font-medium text-stone-900 dark:text-stone-100 font-mono">{{ statutory().healthInsuranceId || '-' }}</div>
+                  </div>
+                </div>
+              } @else {
+                <div class="text-stone-500 dark:text-stone-400 italic text-sm text-center py-4">
+                  Statutory information not set.
+                </div>
+              }
+            </div>
+          </ui-grid-tile>
+
+          <ui-grid-tile title="Banking Details" variant="compact" divider="bottom" style="grid-column: 1 / -1;">
+            @if (canEditFinancialData()) {
+              <ui-button size="sm" variant="ghost" tile-actions (onClick)="openBankModal()">
+                <ui-icon name="plus" class="w-4 h-4 mr-1"></ui-icon> Add
+              </ui-button>
+            }
+
+            <div class="tile-body">
+              @if (banking().length === 0) {
+                <div class="text-stone-500 dark:text-stone-400 italic text-sm text-center py-4">
+                  No bank accounts listed.
+                </div>
+              } @else {
+                <div class="space-y-3">
+                  @for (bank of banking(); track bank._id) {
+                    <div class="p-4 rounded-xl border border-stone-200 dark:border-white/8 bg-stone-50/50 dark:bg-white/5 flex justify-between items-center group">
+                      <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                          <ui-icon name="building-library" class="w-5 h-5"></ui-icon>
+                        </div>
+                        <div>
+                          <div class="flex items-center gap-2">
+                            <span class="font-bold text-stone-800 dark:text-stone-100">{{ bank.bankName }}</span>
+                            @if (bank.isPrimary) {
+                              <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">Primary</span>
+                            }
+                          </div>
+                          <div class="text-sm text-stone-600 dark:text-stone-400 font-mono mt-0.5">
+                            {{ bank.accountNumber }} • {{ bank.bankBranch || 'Main Branch' }}
+                          </div>
+                        </div>
+                      </div>
+
+                      @if (canEditFinancialData()) {
+                        <div class="opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
+                          <button (click)="editBank(bank)" class="p-1.5 text-stone-400 hover:text-stone-600 dark:hover:text-stone-300">
+                            <ui-icon name="pencil" class="w-4 h-4"></ui-icon>
+                          </button>
+                          <button (click)="deleteBank.emit(bank._id)" class="p-1.5 text-stone-400 hover:text-red-600">
+                            <ui-icon name="trash" class="w-4 h-4"></ui-icon>
+                          </button>
+                        </div>
                       }
                     </div>
-                    <div class="text-sm text-stone-600 dark:text-stone-400 font-mono mt-0.5">
-                      {{ bank.accountNumber }} • {{ bank.bankBranch || 'Main Branch' }}
-                    </div>
-                  </div>
+                  }
                 </div>
-
-                <div class="opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
-                  <button (click)="editBank(bank)" class="p-1.5 text-stone-400 hover:text-stone-600 dark:hover:text-stone-300">
-                    <ui-icon name="pencil" class="w-4 h-4"></ui-icon>
-                  </button>
-                  <button (click)="deleteBank.emit(bank._id)" class="p-1.5 text-stone-400 hover:text-red-600">
-                    <ui-icon name="trash" class="w-4 h-4"></ui-icon>
-                  </button>
-                </div>
-              </div>
-            }
-          </div>
-        }
-      </ui-card>
-
-      <!-- Payroll Adjustments (Credits & Debits) -->
-      @if (adjustments()) {
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <!-- Allowances / Credits -->
-          <ui-card>
-            <div class="flex items-center justify-between mb-4">
-              <h3 class="text-lg font-bold text-stone-800 dark:text-stone-100 flex items-center gap-2">
-                <ui-icon name="arrow-up" class="w-5 h-5 text-green-500"></ui-icon>
-                Allowances
-              </h3>
-              <ui-button size="sm" variant="ghost" (onClick)="openCreditModal()">
-                <ui-icon name="plus" class="w-4 h-4 mr-1"></ui-icon> Add
-              </ui-button>
+              }
             </div>
+          </ui-grid-tile>
 
-            @if (adjustments()!.credits.length === 0) {
-              <div class="text-stone-500 dark:text-stone-400 italic text-sm text-center py-4">
-                No active allowances.
-              </div>
-            } @else {
-              <div class="space-y-3">
-                @for (item of adjustments()!.credits; track item._id) {
-                  <div class="flex items-center justify-between p-3 rounded-lg bg-stone-50 dark:bg-stone-900/30 border border-stone-100 dark:border-stone-800">
-                    <div>
-                      <div class="font-medium text-stone-900 dark:text-stone-100">{{ item.name }}</div>
-                      <div class="text-xs text-stone-500 dark:text-stone-400">{{ item.itemType | titlecase }}</div>
-                    </div>
-                    <div class="flex items-center gap-3">
-                      <span class="font-bold text-green-600 dark:text-green-400">+{{ item.amount | currency }}</span>
-                      <button
-                        (click)="toggleAdjustment.emit({ id: item._id, type: 'credit', isActive: !item.isActive })"
-                        class="text-xs px-2 py-1 rounded border transition-colors"
-                        [class.bg-green-100]="item.isActive"
-                        [class.text-green-700]="item.isActive"
-                        [class.border-green-200]="item.isActive"
-                        [class.bg-stone-100]="!item.isActive"
-                        [class.text-stone-500]="!item.isActive"
-                        [class.border-stone-200]="!item.isActive"
-                      >
-                        {{ item.isActive ? 'Active' : 'Paused' }}
-                      </button>
-                    </div>
+          @if (adjustments()) {
+            <ui-grid-tile title="Allowances" variant="compact" divider="right">
+              @if (canEditFinancialData()) {
+                <ui-button size="sm" variant="ghost" tile-actions (onClick)="openCreditModal()">
+                  <ui-icon name="plus" class="w-4 h-4 mr-1"></ui-icon> Add
+                </ui-button>
+              }
+
+              <div class="tile-body">
+                @if (adjustments()!.credits.length === 0) {
+                  <div class="text-stone-500 dark:text-stone-400 italic text-sm text-center py-4">
+                    No active allowances.
+                  </div>
+                } @else {
+                  <div class="space-y-3">
+                    @for (item of adjustments()!.credits; track item._id) {
+                      <div class="flex items-center justify-between p-3 rounded-lg bg-stone-50 dark:bg-white/5 border border-stone-100 dark:border-white/8">
+                        <div>
+                          <div class="font-medium text-stone-900 dark:text-stone-100">{{ item.name }}</div>
+                          <div class="text-xs text-stone-500 dark:text-stone-400">{{ item.itemType | titlecase }}</div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                          <span class="font-bold text-green-600 dark:text-green-400">+{{ item.amount | currency }}</span>
+                          @if (canEditFinancialData()) {
+                            <button
+                              (click)="toggleAdjustment.emit({ id: item._id, type: 'credit', isActive: !item.isActive })"
+                              class="text-xs px-2 py-1 rounded border transition-colors"
+                              [class.bg-green-100]="item.isActive"
+                              [class.text-green-700]="item.isActive"
+                              [class.border-green-200]="item.isActive"
+                              [class.bg-stone-100]="!item.isActive"
+                              [class.text-stone-500]="!item.isActive"
+                              [class.border-stone-200]="!item.isActive"
+                            >
+                              {{ item.isActive ? 'Active' : 'Paused' }}
+                            </button>
+                          } @else {
+                            <span class="text-xs px-2 py-1 rounded border bg-stone-100 text-stone-600 border-stone-200 dark:bg-stone-700/40 dark:text-stone-300 dark:border-stone-600/40">
+                              {{ item.isActive ? 'Active' : 'Paused' }}
+                            </span>
+                          }
+                        </div>
+                      </div>
+                    }
                   </div>
                 }
               </div>
-            }
-          </ui-card>
+            </ui-grid-tile>
 
-          <!-- Deductions / Debits -->
-          <ui-card>
-            <div class="flex items-center justify-between mb-4">
-              <h3 class="text-lg font-bold text-stone-800 dark:text-stone-100 flex items-center gap-2">
-                <ui-icon name="arrow-down" class="w-5 h-5 text-red-500"></ui-icon>
-                Deductions
-              </h3>
-              <ui-button size="sm" variant="ghost" (onClick)="openDebitModal()">
-                <ui-icon name="plus" class="w-4 h-4 mr-1"></ui-icon> Add
-              </ui-button>
-            </div>
+            <ui-grid-tile title="Deductions" variant="compact">
+              @if (canEditFinancialData()) {
+                <ui-button size="sm" variant="ghost" tile-actions (onClick)="openDebitModal()">
+                  <ui-icon name="plus" class="w-4 h-4 mr-1"></ui-icon> Add
+                </ui-button>
+              }
 
-            @if (adjustments()!.debits.length === 0) {
-              <div class="text-stone-500 dark:text-stone-400 italic text-sm text-center py-4">
-                No active deductions.
-              </div>
-            } @else {
-              <div class="space-y-3">
-                @for (item of adjustments()!.debits; track item._id) {
-                  <div class="flex items-center justify-between p-3 rounded-lg bg-stone-50 dark:bg-stone-900/30 border border-stone-100 dark:border-stone-800">
-                    <div>
-                      <div class="font-medium text-stone-900 dark:text-stone-100">{{ item.name }}</div>
-                      <div class="text-xs text-stone-500 dark:text-stone-400">{{ item.itemType | titlecase }}</div>
-                    </div>
-                    <div class="flex items-center gap-3">
-                      <span class="font-bold text-red-600 dark:text-red-400">-{{ item.amount | currency }}</span>
-                      <button
-                        (click)="toggleAdjustment.emit({ id: item._id, type: 'debit', isActive: !item.isActive })"
-                        class="text-xs px-2 py-1 rounded border transition-colors"
-                        [class.bg-green-100]="item.isActive"
-                        [class.text-green-700]="item.isActive"
-                        [class.border-green-200]="item.isActive"
-                        [class.bg-stone-100]="!item.isActive"
-                        [class.text-stone-500]="!item.isActive"
-                        [class.border-stone-200]="!item.isActive"
-                      >
-                        {{ item.isActive ? 'Active' : 'Paused' }}
-                      </button>
-                    </div>
+              <div class="tile-body">
+                @if (adjustments()!.debits.length === 0) {
+                  <div class="text-stone-500 dark:text-stone-400 italic text-sm text-center py-4">
+                    No active deductions.
+                  </div>
+                } @else {
+                  <div class="space-y-3">
+                    @for (item of adjustments()!.debits; track item._id) {
+                      <div class="flex items-center justify-between p-3 rounded-lg bg-stone-50 dark:bg-white/5 border border-stone-100 dark:border-white/8">
+                        <div>
+                          <div class="font-medium text-stone-900 dark:text-stone-100">{{ item.name }}</div>
+                          <div class="text-xs text-stone-500 dark:text-stone-400">{{ item.itemType | titlecase }}</div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                          <span class="font-bold text-red-600 dark:text-red-400">-{{ item.amount | currency }}</span>
+                          @if (canEditFinancialData()) {
+                            <button
+                              (click)="toggleAdjustment.emit({ id: item._id, type: 'debit', isActive: !item.isActive })"
+                              class="text-xs px-2 py-1 rounded border transition-colors"
+                              [class.bg-green-100]="item.isActive"
+                              [class.text-green-700]="item.isActive"
+                              [class.border-green-200]="item.isActive"
+                              [class.bg-stone-100]="!item.isActive"
+                              [class.text-stone-500]="!item.isActive"
+                              [class.border-stone-200]="!item.isActive"
+                            >
+                              {{ item.isActive ? 'Active' : 'Paused' }}
+                            </button>
+                          } @else {
+                            <span class="text-xs px-2 py-1 rounded border bg-stone-100 text-stone-600 border-stone-200 dark:bg-stone-700/40 dark:text-stone-300 dark:border-stone-600/40">
+                              {{ item.isActive ? 'Active' : 'Paused' }}
+                            </span>
+                          }
+                        </div>
+                      </div>
+                    }
                   </div>
                 }
               </div>
-            }
-          </ui-card>
-        </div>
-      }
+            </ui-grid-tile>
+          }
+        </ui-grid>
+      </div>
     </div>
 
     <!-- Statutory Modal -->
@@ -278,6 +283,7 @@ export class ProfileFinancialComponent {
   adjustments = input<{ credits: any[], debits: any[] } | null>(null);
   loading = input(false);
   adjustmentsLoading = input(false);
+  canEditFinancialData = input(false);
 
   saveStatutory = output<any>();
   saveBank = output<any>();
@@ -358,25 +364,30 @@ export class ProfileFinancialComponent {
   ];
 
   openStatutoryModal() {
+    if (!this.canEditFinancialData()) return;
     this.showStatutoryModal.set(true);
   }
 
   onStatutorySubmit(data: any) {
+    if (!this.canEditFinancialData()) return;
     this.saveStatutory.emit(data);
     this.showStatutoryModal.set(false);
   }
 
   openBankModal() {
+    if (!this.canEditFinancialData()) return;
     this.editingBank.set(null);
     this.showBankModal.set(true);
   }
 
   editBank(bank: any) {
+    if (!this.canEditFinancialData()) return;
     this.editingBank.set(bank);
     this.showBankModal.set(true);
   }
 
   onBankSubmit(data: any) {
+    if (!this.canEditFinancialData()) return;
     if (this.editingBank()) {
       this.saveBank.emit({ id: this.editingBank()._id, ...data });
     } else {
@@ -386,19 +397,23 @@ export class ProfileFinancialComponent {
   }
 
   openCreditModal() {
+    if (!this.canEditFinancialData()) return;
     this.showCreditModal.set(true);
   }
 
   onCreditSubmit(data: any) {
+    if (!this.canEditFinancialData()) return;
     this.addCredit.emit(data);
     this.showCreditModal.set(false);
   }
 
   openDebitModal() {
+    if (!this.canEditFinancialData()) return;
     this.showDebitModal.set(true);
   }
 
   onDebitSubmit(data: any) {
+    if (!this.canEditFinancialData()) return;
     this.addDebit.emit(data);
     this.showDebitModal.set(false);
   }

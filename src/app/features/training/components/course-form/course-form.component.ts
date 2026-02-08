@@ -2,13 +2,14 @@ import { Component, signal, inject, OnInit, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { UiButtonComponent } from '../../../../shared/components/ui-button/ui-button.component';
-import { UiCardComponent } from '../../../../shared/components/ui-card/ui-card.component';
 import { DynamicFormComponent } from '../../../../shared/components/dynamic-form/dynamic-form.component';
 import { FieldConfig } from '../../../../shared/services/form-helper.service';
 import { ConvexClientService } from '../../../../core/services/convex-client.service';
 import { ToastService } from '../../../../shared/services/toast.service';
 import { api } from '../../../../../../convex/_generated/api';
 import { Id } from '../../../../../../convex/_generated/dataModel';
+import { UiGridComponent } from '../../../../shared/components/ui-grid/ui-grid.component';
+import { UiGridTileComponent } from '../../../../shared/components/ui-grid/ui-grid-tile.component';
 
 @Component({
   selector: 'app-course-form',
@@ -17,8 +18,9 @@ import { Id } from '../../../../../../convex/_generated/dataModel';
     CommonModule,
     RouterModule,
     UiButtonComponent,
-    UiCardComponent,
-    DynamicFormComponent
+    DynamicFormComponent,
+    UiGridComponent,
+    UiGridTileComponent
   ],
   template: `
     <div class="max-w-3xl mx-auto space-y-6">
@@ -34,22 +36,28 @@ import { Id } from '../../../../../../convex/_generated/dataModel';
         </ui-button>
       </div>
 
-      <ui-card>
-        @if (loading()) {
-          <div class="flex justify-center py-12">
-            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
-          </div>
-        } @else {
-          <app-dynamic-form
-            [fields]="formConfig"
-            [initialValues]="initialValues()"
-            [loading]="submitting()"
-            [submitLabel]="isEditing() ? 'Update Course' : 'Create Course'"
-            (formSubmit)="onSubmit($event)"
-            [showCancel]="false"
-          ></app-dynamic-form>
-        }
-      </ui-card>
+      <div class="dash-frame">
+        <ui-grid [columns]="'1fr'" [gap]="'0px'">
+          <ui-grid-tile title="Course Details" variant="compact">
+            <div class="tile-body">
+              @if (loading()) {
+                <div class="flex justify-center py-12">
+                  <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+                </div>
+              } @else {
+                <app-dynamic-form
+                  [fields]="formConfig"
+                  [initialValues]="initialValues()"
+                  [loading]="submitting()"
+                  [submitLabel]="isEditing() ? 'Update Course' : 'Create Course'"
+                  (formSubmit)="onSubmit($event)"
+                  [showCancel]="false"
+                ></app-dynamic-form>
+              }
+            </div>
+          </ui-grid-tile>
+        </ui-grid>
+      </div>
     </div>
   `
 })

@@ -11,11 +11,10 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
       [routerLink]="route"
       routerLinkActive="nav-active"
       [routerLinkActiveOptions]="{ exact: exact }"
-      class="nav-link group flex items-center gap-3 px-4 py-2.5 text-sm font-medium rounded-xl text-stone-600 dark:text-stone-400 hover:text-burgundy-800 dark:hover:text-burgundy-300 hover:bg-burgundy-50 dark:hover:bg-white/5 transition-all duration-200 mb-1 relative overflow-hidden"
+      class="nav-link group flex items-center gap-3 px-4 py-2.5 text-sm font-medium rounded-r-lg text-stone-600 dark:text-stone-400 hover:text-burgundy-800 dark:hover:text-burgundy-300 hover:bg-burgundy-50 dark:hover:bg-white/5 transition-all duration-200 mb-1 relative overflow-hidden"
     >
-      <!-- Active indicator bar with gold accent -->
       <span class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-0 rounded-r-full transition-all duration-300 ease-out group-[.nav-active]:h-6 overflow-hidden">
-        <span class="absolute inset-0 bg-gradient-to-b from-gold-400 via-burgundy-700 to-burgundy-800"></span>
+        <span class="absolute inset-0 bg-gradient-to-b from-gold-400 via-burgundy-700 to-burgundy-700"></span>
       </span>
 
       <!-- Icon slot -->
@@ -42,13 +41,13 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
     }
 
     .nav-link.nav-active {
-      background: linear-gradient(90deg, #fdf2f4, transparent);
-      color: #8b1e3f;
+      background: linear-gradient(90deg, rgba(134, 24, 33, 0.08), transparent);
+      color: #861821;
     }
 
     :host-context(.dark) .nav-link.nav-active {
-      background: linear-gradient(90deg, rgba(139, 30, 63, 0.2), transparent);
-      color: #fce7eb;
+      background: linear-gradient(90deg, rgba(134, 24, 33, 0.15), transparent);
+      color: #f4a3b4;
     }
   `]
 })

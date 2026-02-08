@@ -27,7 +27,7 @@ import { api } from '../../../../../../convex/_generated/api';
     >
       <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4">
         <!-- Date Display (Read-only) -->
-        <div class="bg-stone-50 dark:bg-stone-800 p-3 rounded-lg border border-stone-200 dark:border-stone-700 flex justify-between items-center">
+        <div class="bg-stone-50 dark:bg-white/5 p-3 rounded-lg border border-stone-200 dark:border-white/8 flex justify-between items-center">
           <div>
             <div class="text-xs text-stone-500 dark:text-stone-400 font-semibold uppercase">Date</div>
             <div class="text-stone-800 dark:text-stone-100 font-medium">{{ date() | date:'fullDate' }}</div>
@@ -44,7 +44,7 @@ import { api } from '../../../../../../convex/_generated/api';
             <input
               type="time"
               formControlName="clockIn"
-              class="w-full px-3 py-2 border border-stone-300 dark:border-stone-600 rounded-lg bg-white dark:bg-stone-800 text-stone-800 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-[#8b1e3f] focus:border-transparent transition-all"
+              class="w-full px-3 py-2 border border-stone-300 dark:border-white/8 rounded-lg bg-white dark:bg-white/5 text-stone-800 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-burgundy-700 focus:border-transparent transition-all"
             />
           </ui-form-field>
 
@@ -53,7 +53,7 @@ import { api } from '../../../../../../convex/_generated/api';
             <input
               type="time"
               formControlName="clockOut"
-              class="w-full px-3 py-2 border border-stone-300 dark:border-stone-600 rounded-lg bg-white dark:bg-stone-800 text-stone-800 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-[#8b1e3f] focus:border-transparent transition-all"
+              class="w-full px-3 py-2 border border-stone-300 dark:border-white/8 rounded-lg bg-white dark:bg-white/5 text-stone-800 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-burgundy-700 focus:border-transparent transition-all"
             />
           </ui-form-field>
         </div>
@@ -63,7 +63,7 @@ import { api } from '../../../../../../convex/_generated/api';
           <ui-form-field label="Status" [error]="getErrorMessage('status')">
             <select
               formControlName="status"
-              class="w-full px-3 py-2 border border-stone-300 dark:border-stone-600 rounded-lg bg-white dark:bg-stone-800 text-stone-800 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-[#8b1e3f] focus:border-transparent transition-all"
+              class="w-full px-3 py-2 border border-stone-300 dark:border-white/8 rounded-lg bg-white dark:bg-white/5 text-stone-800 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-burgundy-700 focus:border-transparent transition-all"
             >
               <option value="present">Present</option>
               <option value="late">Late</option>
@@ -80,7 +80,7 @@ import { api } from '../../../../../../convex/_generated/api';
               type="number"
               formControlName="breakMinutes"
               min="0"
-              class="w-full px-3 py-2 border border-stone-300 dark:border-stone-600 rounded-lg bg-white dark:bg-stone-800 text-stone-800 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-[#8b1e3f] focus:border-transparent transition-all"
+              class="w-full px-3 py-2 border border-stone-300 dark:border-white/8 rounded-lg bg-white dark:bg-white/5 text-stone-800 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-burgundy-700 focus:border-transparent transition-all"
             />
           </ui-form-field>
         </div>
@@ -90,7 +90,7 @@ import { api } from '../../../../../../convex/_generated/api';
           <textarea
             formControlName="notes"
             rows="3"
-            class="w-full px-3 py-2 border border-stone-300 dark:border-stone-600 rounded-lg bg-white dark:bg-stone-800 text-stone-800 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-[#8b1e3f] focus:border-transparent transition-all"
+            class="w-full px-3 py-2 border border-stone-300 dark:border-white/8 rounded-lg bg-white dark:bg-white/5 text-stone-800 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-burgundy-700 focus:border-transparent transition-all"
             placeholder="Reason for manual entry or correction..."
           ></textarea>
         </ui-form-field>

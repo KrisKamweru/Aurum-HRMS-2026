@@ -4,11 +4,13 @@ import { RouterLink } from '@angular/router';
 import { resource } from '@angular/core';
 import { AuthService } from '../../core/auth/auth.service';
 import { ConvexClientService } from '../../core/services/convex-client.service';
-import { UiCardComponent } from '../../shared/components/ui-card/ui-card.component';
 import { UiButtonComponent } from '../../shared/components/ui-button/ui-button.component';
 import { UiBadgeComponent } from '../../shared/components/ui-badge/ui-badge.component';
 import { UiIconComponent } from '../../shared/components/ui-icon/ui-icon.component';
+import { UiGridComponent } from '../../shared/components/ui-grid/ui-grid.component';
+import { UiGridTileComponent } from '../../shared/components/ui-grid/ui-grid-tile.component';
 import { OrgBrowserDialogComponent } from './org-browser-dialog.component';
+import { ConfirmDialogService } from '../../shared/services/confirm-dialog.service';
 import { api } from '../../../../convex/_generated/api';
 
 @Component({
@@ -17,10 +19,11 @@ import { api } from '../../../../convex/_generated/api';
   imports: [
     CommonModule,
     RouterLink,
-    UiCardComponent,
     UiButtonComponent,
     UiBadgeComponent,
     UiIconComponent,
+    UiGridComponent,
+    UiGridTileComponent,
     OrgBrowserDialogComponent
   ],
   template: `
@@ -36,123 +39,127 @@ import { api } from '../../../../convex/_generated/api';
         </div>
 
         <!-- Main Card -->
-        <ui-card variant="premium" padding="lg">
-          <div class="space-y-8">
-            <!-- User Info -->
-            <div class="flex items-center gap-4 p-4 rounded-xl bg-stone-50 border border-stone-100">
-              <div class="h-12 w-12 rounded-full bg-stone-200 flex items-center justify-center text-xl text-stone-500 overflow-hidden">
-                @if (user()?.image) {
-                  <img [src]="user()?.image" class="w-full h-full object-cover" alt="Profile">
-                } @else {
-                  <ui-icon name="user" class="w-6 h-6"></ui-icon>
-                }
-              </div>
-              <div class="flex-1">
-                <h3 class="font-semibold text-stone-900">{{ user()?.name }}</h3>
-                <p class="text-sm text-stone-500">{{ user()?.email }}</p>
-              </div>
-              <ui-button variant="ghost" size="sm" (onClick)="logout()">
-                Sign Out
-              </ui-button>
-            </div>
-
-            <!-- Join Requests -->
-            <div>
-              <div class="flex items-center justify-between mb-4">
-                <h3 class="font-semibold text-stone-900">Your Requests</h3>
-                <ui-button variant="secondary" size="sm" (onClick)="showBrowser.set(true)">
-                  <ui-icon name="plus" class="w-4 h-4 mr-1"></ui-icon>
-                  Join Organization
-                </ui-button>
-              </div>
-
-              @if (requestsResource.isLoading()) {
-                <div class="space-y-3">
-                  <div class="h-16 bg-stone-100 rounded-xl animate-pulse"></div>
-                  <div class="h-16 bg-stone-100 rounded-xl animate-pulse"></div>
-                </div>
-              } @else if (requestsResource.error()) {
-                <div class="p-4 rounded-xl bg-red-50 text-red-600 text-sm">
-                  Failed to load requests
-                </div>
-              } @else {
-                @let requests = requestsResource.value();
-
-                @if (!requests || requests.length === 0) {
-                  <div class="text-center py-8 border-2 border-dashed border-stone-200 rounded-xl bg-stone-50/50">
-                    <ui-icon name="building-office-2" class="w-8 h-8 mx-auto text-stone-400 mb-2"></ui-icon>
-                    <p class="text-stone-500 font-medium">No active requests</p>
-                    <p class="text-sm text-stone-400">Search for your organization to request access</p>
+        <div class="dash-frame">
+          <ui-grid [columns]="'1fr'" [gap]="'0px'">
+            <ui-grid-tile title="Organization Access" variant="compact">
+              <div class="tile-body space-y-8">
+                <!-- User Info -->
+                <div class="flex items-center gap-4 p-4 rounded-xl bg-stone-50 border border-stone-100">
+                  <div class="h-12 w-12 rounded-full bg-stone-200 flex items-center justify-center text-xl text-stone-500 overflow-hidden">
+                    @if (user()?.image) {
+                      <img [src]="user()?.image" class="w-full h-full object-cover" alt="Profile">
+                    } @else {
+                      <ui-icon name="user" class="w-6 h-6"></ui-icon>
+                    }
                   </div>
-                } @else {
-                  <div class="space-y-3">
-                    @for (req of requests; track req._id) {
-                      <div class="p-4 rounded-xl border border-stone-200 bg-white flex items-center justify-between group hover:border-[#8b1e3f]/20 transition-all">
-                        <div>
-                          <h4 class="font-semibold text-stone-900">{{ req.orgName }}</h4>
-                          <div class="flex items-center gap-2 mt-1">
-                            <ui-badge [variant]="getStatusVariant(req.status)" size="sm">
-                              {{ req.status | titlecase }}
-                            </ui-badge>
-                            <span class="text-xs text-stone-400">
-                              Requested {{ req.requestedAt | date:'mediumDate' }}
-                            </span>
-                          </div>
-                        </div>
+                  <div class="flex-1">
+                    <h3 class="font-semibold text-stone-900">{{ user()?.name }}</h3>
+                    <p class="text-sm text-stone-500">{{ user()?.email }}</p>
+                  </div>
+                  <ui-button variant="ghost" size="sm" (onClick)="logout()">
+                    Sign Out
+                  </ui-button>
+                </div>
 
-                        @if (req.status === 'pending') {
-                          <ui-button
-                            variant="ghost"
-                            size="sm"
-                            class="text-red-600 hover:text-red-700 hover:bg-red-50"
-                            [loading]="cancellingId() === req._id"
-                            (onClick)="cancelRequest(req._id)"
-                          >
-                            Cancel
-                          </ui-button>
+                <!-- Join Requests -->
+                <div>
+                  <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-semibold text-stone-900">Your Requests</h3>
+                    <ui-button variant="secondary" size="sm" (onClick)="showBrowser.set(true)">
+                      <ui-icon name="plus" class="w-4 h-4 mr-1"></ui-icon>
+                      Join Organization
+                    </ui-button>
+                  </div>
+
+                  @if (requestsResource.isLoading()) {
+                    <div class="space-y-3">
+                      <div class="h-16 bg-stone-100 rounded-xl animate-pulse"></div>
+                      <div class="h-16 bg-stone-100 rounded-xl animate-pulse"></div>
+                    </div>
+                  } @else if (requestsResource.error()) {
+                    <div class="p-4 rounded-xl bg-red-50 text-red-600 text-sm">
+                      Failed to load requests
+                    </div>
+                  } @else {
+                    @let requests = requestsResource.value();
+
+                    @if (!requests || requests.length === 0) {
+                      <div class="text-center py-8 border-2 border-dashed border-stone-200 rounded-xl bg-stone-50/50">
+                        <ui-icon name="building-office-2" class="w-8 h-8 mx-auto text-stone-400 mb-2"></ui-icon>
+                        <p class="text-stone-500 font-medium">No active requests</p>
+                        <p class="text-sm text-stone-400">Search for your organization to request access</p>
+                      </div>
+                    } @else {
+                      <div class="space-y-3">
+                        @for (req of requests; track req._id) {
+                          <div class="p-4 rounded-xl border border-stone-200 bg-white flex items-center justify-between group hover:border-[#8b1e3f]/20 transition-all">
+                            <div>
+                              <h4 class="font-semibold text-stone-900">{{ req.orgName }}</h4>
+                              <div class="flex items-center gap-2 mt-1">
+                                <ui-badge [variant]="getStatusVariant(req.status)" size="sm">
+                                  {{ req.status | titlecase }}
+                                </ui-badge>
+                                <span class="text-xs text-stone-400">
+                                  Requested {{ req.requestedAt | date:'mediumDate' }}
+                                </span>
+                              </div>
+                            </div>
+
+                            @if (req.status === 'pending') {
+                              <ui-button
+                                variant="ghost"
+                                size="sm"
+                                class="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                [loading]="cancellingId() === req._id"
+                                (onClick)="cancelRequest(req._id)"
+                              >
+                                Cancel
+                              </ui-button>
+                            }
+                          </div>
                         }
                       </div>
                     }
-                  </div>
-                }
-              }
-            </div>
-
-            <!-- Matching Orgs (Suggestions) -->
-            @if (matchingOrgsResource.value()?.length) {
-              <div class="pt-6 border-t border-stone-100">
-                <h3 class="font-semibold text-stone-900 mb-4">Suggested for You</h3>
-                <div class="grid gap-3">
-                  @for (org of matchingOrgsResource.value(); track org._id) {
-                    <div class="p-4 rounded-xl bg-gradient-to-r from-[#fdf2f4] to-white border border-[#fce7eb] flex items-center justify-between">
-                      <div>
-                        <h4 class="font-semibold text-stone-900">{{ org.name }}</h4>
-                        <p class="text-xs text-[#8b1e3f]">Matches your email domain</p>
-                      </div>
-                      <ui-button variant="primary" size="sm" (onClick)="openBrowserWithOrg(org)">
-                        Join
-                      </ui-button>
-                    </div>
                   }
                 </div>
-              </div>
-            }
 
-            <!-- Create New Organization -->
-            <div class="pt-6 border-t border-stone-100">
-              <div class="text-center">
-                <p class="text-sm text-stone-500 mb-3">Or, if you're setting up a new company:</p>
-                <a
-                  routerLink="/create-organization"
-                  class="inline-flex items-center gap-2 px-4 py-2 rounded-xl border-2 border-dashed border-[#8b1e3f]/30 text-[#8b1e3f] hover:bg-[#fdf2f4] hover:border-[#8b1e3f]/50 transition-all font-medium text-sm"
-                >
-                  <ui-icon name="building-office-2" class="w-5 h-5"></ui-icon>
-                  Create New Organization
-                </a>
+                <!-- Matching Orgs (Suggestions) -->
+                @if (matchingOrgsResource.value()?.length) {
+                  <div class="pt-6 border-t border-stone-100">
+                    <h3 class="font-semibold text-stone-900 mb-4">Suggested for You</h3>
+                    <div class="grid gap-3">
+                      @for (org of matchingOrgsResource.value(); track org._id) {
+                        <div class="p-4 rounded-xl bg-gradient-to-r from-[#fdf2f4] to-white border border-[#fce7eb] flex items-center justify-between">
+                          <div>
+                            <h4 class="font-semibold text-stone-900">{{ org.name }}</h4>
+                            <p class="text-xs text-[#8b1e3f]">Matches your email domain</p>
+                          </div>
+                          <ui-button variant="primary" size="sm" (onClick)="openBrowserWithOrg(org)">
+                            Join
+                          </ui-button>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                }
+
+                <!-- Create New Organization -->
+                <div class="pt-6 border-t border-stone-100">
+                  <div class="text-center">
+                    <p class="text-sm text-stone-500 mb-3">Or, if you're setting up a new company:</p>
+                    <a
+                      routerLink="/create-organization"
+                      class="inline-flex items-center gap-2 px-4 py-2 rounded-xl border-2 border-dashed border-[#8b1e3f]/30 text-[#8b1e3f] hover:bg-[#fdf2f4] hover:border-[#8b1e3f]/50 transition-all font-medium text-sm"
+                    >
+                      <ui-icon name="building-office-2" class="w-5 h-5"></ui-icon>
+                      Create New Organization
+                    </a>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        </ui-card>
+            </ui-grid-tile>
+          </ui-grid>
+        </div>
       </div>
     </div>
 
@@ -171,6 +178,7 @@ import { api } from '../../../../convex/_generated/api';
 export class PendingComponent {
   private authService = inject(AuthService);
   private convex = inject(ConvexClientService);
+  private confirmDialog = inject(ConfirmDialogService);
 
   user = this.authService.getUser();
   showBrowser = signal(false);
@@ -203,7 +211,15 @@ export class PendingComponent {
   }
 
   async cancelRequest(id: string) {
-    if (!confirm('Are you sure you want to cancel this request?')) return;
+    const confirmed = await this.confirmDialog.confirm({
+      title: 'Cancel Join Request',
+      message: 'Are you sure you want to cancel this request? You can submit a new request anytime.',
+      confirmText: 'Cancel Request',
+      cancelText: 'Go Back',
+      variant: 'warning'
+    });
+
+    if (!confirmed) return;
 
     this.cancellingId.set(id);
     try {

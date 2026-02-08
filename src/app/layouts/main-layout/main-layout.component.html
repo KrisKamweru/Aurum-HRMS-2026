@@ -1,10 +1,10 @@
-<div class="min-h-screen flex bg-gradient-to-b from-stone-50 to-stone-100 dark:from-stone-900 dark:to-[#0c0a09]">
+<div class="app-shell min-h-screen flex bg-transparent dark:bg-[#0b0b0b]">
   <!-- Sidebar (Desktop) -->
-  <div class="hidden md:flex md:w-72 md:flex-col md:fixed md:inset-y-0 z-30 bg-white dark:bg-stone-900 border-r border-stone-200 dark:border-stone-800 shadow-lg shadow-stone-200/50 dark:shadow-none">
+  <div class="hidden md:flex md:w-72 md:flex-col md:fixed md:inset-y-0 z-30 bg-white dark:bg-white/5 border-r border-stone-200 dark:border-white/8 shadow-lg shadow-stone-200/50 dark:shadow-none dark:backdrop-blur-xl">
     <!-- Logo -->
-    <div class="flex items-center gap-3 h-20 px-6 border-b border-stone-100 dark:border-stone-800">
-      <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-burgundy-800 to-burgundy-900 flex items-center justify-center shadow-md shadow-burgundy-800/20 relative overflow-hidden logo">
-        <span class="relative text-amber-300 font-bold text-xl">A</span>
+    <div class="flex items-center gap-3 h-16 px-6 border-b border-stone-100 dark:border-white/8">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-burgundy-800 to-burgundy-900 flex items-center justify-center shadow-md shadow-burgundy-800/20 relative overflow-hidden logo">
+        <span class="relative text-amber-300 font-bold text-lg">A</span>
       </div>
       <div>
         <h1 class="text-xl font-bold text-stone-900 dark:text-stone-100">
@@ -79,6 +79,11 @@
             <ui-icon icon name="users" class="w-5 h-5 text-stone-400 group-hover:text-burgundy-800 dark:group-hover:text-burgundy-300 group-[.nav-active]:text-burgundy-800 dark:group-[.nav-active]:text-burgundy-300 transition-colors"></ui-icon>
             Chain of Command
           </ui-nav-item>
+
+          <ui-nav-item route="/organization/settings">
+            <ui-icon icon name="cog-6-tooth" class="w-5 h-5 text-stone-400 group-hover:text-burgundy-800 dark:group-hover:text-burgundy-300 group-[.nav-active]:text-burgundy-800 dark:group-[.nav-active]:text-burgundy-300 transition-colors"></ui-icon>
+            Org Settings
+          </ui-nav-item>
         }
 
         <!-- Super Admin section -->
@@ -96,33 +101,33 @@
     </div>
 
     <!-- User Profile Section -->
-    <div class="border-t border-stone-100 dark:border-stone-800 p-4 space-y-3">
+    <div class="border-t border-stone-100 dark:border-white/8 p-4 space-y-3">
       <!-- Profile Card - Clickable to go to profile -->
-      <a routerLink="/profile" class="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-stone-50 to-white dark:from-stone-800 dark:to-stone-800/50 border border-stone-100 dark:border-stone-700 hover:border-burgundy-800/20 dark:hover:border-burgundy-500/30 hover:shadow-md hover:shadow-burgundy-800/5 transition-all cursor-pointer group">
-        <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-burgundy-100 to-burgundy-50 dark:from-burgundy-900 dark:to-burgundy-950 flex items-center justify-center text-burgundy-800 dark:text-burgundy-100 font-bold text-sm border border-burgundy-200 dark:border-burgundy-800 group-hover:shadow-lg group-hover:shadow-burgundy-800/10 transition-all">
+      <a routerLink="/profile" class="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-burgundy-900 to-burgundy-950 border border-burgundy-800/50 hover:border-burgundy-700/50 hover:shadow-lg hover:shadow-burgundy-900/20 transition-all cursor-pointer group">
+        <div class="w-10 h-10 rounded-lg bg-burgundy-800 flex items-center justify-center text-white font-bold text-sm">
           {{ user()?.name?.charAt(0) || user()?.email?.charAt(0) || '?' }}
         </div>
         <div class="flex-1 min-w-0">
-          <p class="text-sm font-semibold text-stone-800 dark:text-stone-200 truncate">
+          <p class="text-sm font-semibold text-white truncate">
             {{ user()?.name || 'User' }}
           </p>
-          <p class="text-xs text-stone-500 dark:text-stone-400 truncate">View Profile</p>
+          <p class="text-xs text-burgundy-300 truncate">View Profile</p>
         </div>
-        <ui-icon name="chevron-right" class="w-4 h-4 text-stone-300 dark:text-stone-600 group-hover:text-burgundy-800 dark:group-hover:text-burgundy-300 group-hover:translate-x-0.5 transition-all"></ui-icon>
+        <ui-icon name="chevron-right" class="w-4 h-4 text-burgundy-400 group-hover:text-burgundy-200 group-hover:translate-x-0.5 transition-all"></ui-icon>
       </a>
 
       <!-- Action Buttons -->
       <div class="flex gap-2">
         <button
           (click)="toggleTheme()"
-          class="flex items-center justify-center w-10 h-10 rounded-xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-600 dark:text-stone-400 hover:border-stone-300 dark:hover:border-stone-600 hover:bg-stone-50 dark:hover:bg-stone-700 active:bg-stone-100 dark:active:bg-stone-600 transition-all"
+          class="flex items-center justify-center w-10 h-10 rounded-[10px] border border-stone-200 dark:border-white/8 bg-white dark:bg-white/5 text-stone-600 dark:text-stone-400 hover:border-stone-300 dark:hover:border-white/10 hover:bg-stone-50 dark:hover:bg-white/8 active:bg-stone-100 transition-all"
           [title]="themeService.appliedTheme() === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'"
         >
           <ui-icon [name]="themeService.appliedTheme() === 'dark' ? 'sun' : 'moon'" class="w-4 h-4"></ui-icon>
         </button>
         <button
           routerLink="/settings"
-          class="flex-1 flex items-center justify-center gap-2 h-10 rounded-xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-600 dark:text-stone-400 text-sm font-medium hover:border-stone-300 dark:hover:border-stone-600 hover:bg-stone-50 dark:hover:bg-stone-700 active:bg-stone-100 dark:active:bg-stone-600 transition-all"
+          class="flex-1 flex items-center justify-center gap-2 h-10 rounded-[10px] border border-stone-200 dark:border-white/8 bg-white dark:bg-white/5 text-stone-600 dark:text-stone-400 text-sm font-medium hover:border-stone-300 dark:hover:border-white/10 hover:bg-stone-50 dark:hover:bg-white/8 active:bg-stone-100 transition-all"
         >
           <ui-icon name="cog-6-tooth" class="w-4 h-4"></ui-icon>
           Settings
@@ -144,17 +149,20 @@
     <ui-toast></ui-toast>
 
     <!-- Mobile header -->
-    <div class="sticky top-0 z-10 flex-shrink-0 flex h-16 bg-white/80 dark:bg-stone-900/80 backdrop-blur-lg shadow-sm border-b border-stone-100 dark:border-stone-800 md:hidden">
+    <div class="sticky top-0 z-10 flex-shrink-0 flex h-16 bg-white/80 dark:bg-stone-900/80 backdrop-blur-lg shadow-sm border-b border-stone-100 dark:border-white/8 md:hidden">
       <div class="flex-1 px-4 flex justify-between items-center">
         <div class="flex items-center gap-3">
           <button
             type="button"
-            class="-ml-2 p-2 rounded-md text-stone-400 hover:text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-burgundy-800"
+            class="-ml-2 p-2 rounded-md text-stone-400 hover:text-stone-500 hover:bg-stone-100 dark:hover:bg-white/5 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-burgundy-800"
             (click)="toggleSidebar()"
           >
             <span class="sr-only">Open sidebar</span>
-            <ui-icon name="menu" class="h-6 w-6" *ngIf="!isSidebarOpen()"></ui-icon>
-            <ui-icon name="x-mark" class="h-6 w-6" *ngIf="isSidebarOpen()"></ui-icon>
+            @if (!isSidebarOpen()) {
+              <ui-icon name="menu" class="h-6 w-6"></ui-icon>
+            } @else {
+              <ui-icon name="x-mark" class="h-6 w-6"></ui-icon>
+            }
           </button>
           <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-burgundy-800 to-burgundy-900 flex items-center justify-center">
             <span class="text-amber-300 font-bold text-sm">A</span>
@@ -166,7 +174,7 @@
           <!-- Mobile Notification Bell -->
           <div class="relative">
             <button
-              class="relative p-2 text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 transition-colors rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800 focus:outline-none"
+              class="relative p-2 text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 transition-colors rounded-lg hover:bg-stone-100 dark:hover:bg-white/5 focus:outline-none"
               (click)="notificationService.togglePanel()"
             >
               <ui-icon name="bell" class="w-6 h-6"></ui-icon>
@@ -185,12 +193,12 @@
     </div>
 
     <!-- Desktop Header (Notifications & Utilities) -->
-    <div class="hidden md:flex h-16 items-center justify-end px-4 sm:px-6 lg:px-10 border-b border-stone-100 dark:border-stone-800 bg-white/50 dark:bg-stone-900/50 backdrop-blur-sm sticky top-0 z-20">
+    <div class="hidden md:flex h-16 items-center justify-end px-4 sm:px-6 lg:px-10 bg-transparent sticky top-0 z-20">
       <div class="flex items-center gap-4">
         <!-- Desktop Notification Bell -->
         <div class="relative">
           <button
-            class="relative p-2 text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 transition-colors rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-primary-500"
+            class="relative p-2 text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 transition-colors rounded-lg hover:bg-stone-100 dark:hover:bg-white/5 focus:outline-none focus:ring-2 focus:ring-burgundy-500"
             (click)="notificationService.togglePanel()"
           >
             <span class="sr-only">View notifications</span>
@@ -229,7 +237,7 @@
           </div>
 
           <!-- Logo -->
-          <div class="flex items-center gap-3 h-20 px-6 border-b border-stone-100 dark:border-stone-800">
+          <div class="flex items-center gap-3 h-20 px-6 border-b border-stone-100 dark:border-white/8">
             <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-burgundy-800 to-burgundy-900 flex items-center justify-center shadow-md shadow-burgundy-800/20 relative overflow-hidden logo">
               <span class="relative text-amber-300 font-bold text-xl">A</span>
             </div>
@@ -309,6 +317,11 @@
                   <ui-icon icon name="users" class="w-5 h-5 text-stone-400 group-hover:text-burgundy-800 dark:group-hover:text-burgundy-300 group-[.nav-active]:text-burgundy-800 dark:group-[.nav-active]:text-burgundy-300 transition-colors"></ui-icon>
                   Chain of Command
                 </ui-nav-item>
+
+                <ui-nav-item route="/organization/settings" (click)="toggleSidebar()">
+                  <ui-icon icon name="cog-6-tooth" class="w-5 h-5 text-stone-400 group-hover:text-burgundy-800 dark:group-hover:text-burgundy-300 group-[.nav-active]:text-burgundy-800 dark:group-[.nav-active]:text-burgundy-300 transition-colors"></ui-icon>
+                  Org Settings
+                </ui-nav-item>
               }
 
               <!-- Super Admin section -->
@@ -326,9 +339,9 @@
           </div>
 
           <!-- User Profile Section (Mobile) -->
-          <div class="border-t border-stone-100 dark:border-stone-800 p-4 bg-stone-50 dark:bg-stone-900 space-y-3">
+          <div class="border-t border-stone-100 dark:border-white/8 p-4 bg-stone-50 dark:bg-stone-900 space-y-3">
             <!-- Profile Card -->
-            <a routerLink="/profile" (click)="toggleSidebar()" class="flex items-center gap-3 p-3 rounded-xl bg-white dark:bg-stone-800 border border-stone-100 dark:border-stone-700 hover:border-burgundy-800/20 hover:shadow-md transition-all cursor-pointer group">
+            <a routerLink="/profile" (click)="toggleSidebar()" class="flex items-center gap-3 p-3 rounded-xl bg-white dark:bg-stone-800 border border-stone-100 dark:border-white/8 hover:border-burgundy-800/20 hover:shadow-md transition-all cursor-pointer group">
               <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-burgundy-100 to-burgundy-50 dark:from-burgundy-900 dark:to-burgundy-950 flex items-center justify-center text-burgundy-800 dark:text-burgundy-100 font-bold text-sm border border-burgundy-200 dark:border-burgundy-800 group-hover:shadow-lg group-hover:shadow-burgundy-800/10 transition-all">
                 {{ user()?.name?.charAt(0) || user()?.email?.charAt(0) || '?' }}
               </div>
@@ -345,7 +358,7 @@
             <div class="flex gap-2">
               <button
                 (click)="toggleTheme()"
-                class="flex items-center justify-center w-11 h-11 rounded-xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-600 dark:text-stone-400 hover:border-stone-300 dark:hover:border-stone-600 hover:bg-stone-100 dark:hover:bg-stone-700 active:bg-stone-200 transition-all"
+                class="flex items-center justify-center w-11 h-11 rounded-xl border border-stone-200 dark:border-white/8 bg-white dark:bg-stone-800 text-stone-600 dark:text-stone-400 hover:border-stone-300 dark:hover:border-white/8 hover:bg-stone-100 dark:hover:bg-white/5 active:bg-stone-200 transition-all"
                 [title]="themeService.appliedTheme() === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'"
               >
                 <ui-icon [name]="themeService.appliedTheme() === 'dark' ? 'sun' : 'moon'" class="w-4 h-4"></ui-icon>
@@ -353,7 +366,7 @@
               <button
                 routerLink="/settings"
                 (click)="toggleSidebar()"
-                class="flex-1 flex items-center justify-center gap-2 h-11 rounded-xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-600 dark:text-stone-400 text-sm font-medium hover:border-stone-300 dark:hover:border-stone-600 hover:bg-stone-100 dark:hover:bg-stone-700 active:bg-stone-200 transition-all"
+                class="flex-1 flex items-center justify-center gap-2 h-11 rounded-xl border border-stone-200 dark:border-white/8 bg-white dark:bg-stone-800 text-stone-600 dark:text-stone-400 text-sm font-medium hover:border-stone-300 dark:hover:border-white/8 hover:bg-stone-100 dark:hover:bg-white/5 active:bg-stone-200 transition-all"
               >
                 <ui-icon name="cog-6-tooth" class="w-4 h-4"></ui-icon>
                 Settings

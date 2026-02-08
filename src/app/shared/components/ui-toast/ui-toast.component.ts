@@ -42,7 +42,7 @@ import { Toast, ToastService } from '../../services/toast.service';
                     <a
                       [routerLink]="toast.action.link"
                       (click)="toastService.remove(toast.id)"
-                      class="text-sm font-medium text-primary-600 hover:text-primary-500 focus:outline-none focus:underline"
+                      class="text-sm font-medium text-burgundy-700 dark:text-burgundy-300 hover:text-burgundy-600 dark:hover:text-burgundy-400 focus:outline-none focus:underline"
                     >
                       {{ toast.action.label }} →
                     </a>
@@ -51,7 +51,7 @@ import { Toast, ToastService } from '../../services/toast.service';
               </div>
               <div class="ml-4 flex-shrink-0 flex">
                 <button
-                  class="bg-white dark:bg-stone-800 rounded-md inline-flex text-stone-400 hover:text-stone-500 dark:hover:text-stone-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#8b1e3f] dark:focus:ring-offset-stone-800"
+                  class="bg-white dark:bg-transparent rounded-md inline-flex text-stone-400 hover:text-stone-500 dark:hover:text-stone-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-burgundy-500 dark:focus:ring-offset-stone-800"
                   (click)="toastService.remove(toast.id)"
                 >
                   <span class="sr-only">Close</span>
@@ -80,6 +80,6 @@ export class UiToastComponent {
   toastService = inject(ToastService);
 
   getToastClasses(toast: Toast): string {
-    return 'bg-white dark:bg-stone-800 dark:border dark:border-stone-700'; // Can add conditional borders if desired
+    return 'bg-white dark:bg-white/5 dark:border dark:border-white/8 dark:backdrop-blur-xl'; // Glass morphism styling
   }
 }

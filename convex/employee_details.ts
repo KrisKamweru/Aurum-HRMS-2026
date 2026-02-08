@@ -19,26 +19,32 @@ async function checkAccess(ctx: QueryCtx, targetEmployeeId: Id<"employees">) {
   const user = await getViewerInfo(ctx);
   const orgId = user.orgId!;
 
-  // Admin/HR/Manager can view
-  const isPrivileged = ["super_admin", "admin", "hr_manager", "manager"].includes(user.role as any);
+  // Organization-level admins can view all employee records in their org.
+  const isOrgAdmin = ["super_admin", "admin", "hr_manager"].includes(user.role as any);
 
   // Employee can view their own
   const isOwnProfile = user.employeeId === targetEmployeeId;
 
-  // Manager can view their direct reports (basic check, could be recursive)
-  let isManager = false;
+  // Manager can only view direct reports.
+  let isManagerOfTarget = false;
   if (user.role === "manager" && user.employeeId) {
     const target = await ctx.db.get(targetEmployeeId);
     if (target && target.managerId === user.employeeId) {
-      isManager = true;
+      isManagerOfTarget = true;
     }
   }
 
-  if (!isPrivileged && !isOwnProfile && !isManager) {
+  if (!isOrgAdmin && !isOwnProfile && !isManagerOfTarget) {
     throw new Error("Unauthorized access to employee data");
   }
 
-  return { user, orgId, isPrivileged, isOwnProfile };
+  return { user, orgId, isOrgAdmin, isOwnProfile, isManagerOfTarget };
+}
+
+function assertCanWriteEmployeeData(access: { isOrgAdmin: boolean }) {
+  if (!access.isOrgAdmin) {
+    throw new Error("Unauthorized: Only organization admins can modify employee data");
+  }
 }
 
 // ===========================================
@@ -68,7 +74,9 @@ export const addEmergencyContact = mutation({
     isPrimary: v.boolean(),
   },
   handler: async (ctx, args) => {
-    const { user, orgId } = await checkAccess(ctx, args.employeeId);
+    const access = await checkAccess(ctx, args.employeeId);
+    assertCanWriteEmployeeData(access);
+    const { user, orgId } = access;
 
     // If setting as primary, unset others
     if (args.isPrimary) {
@@ -105,7 +113,8 @@ export const updateEmergencyContact = mutation({
     }),
   },
   handler: async (ctx, args) => {
-    await checkAccess(ctx, args.employeeId);
+    const access = await checkAccess(ctx, args.employeeId);
+    assertCanWriteEmployeeData(access);
 
     if (args.updates.isPrimary) {
       const existing = await ctx.db
@@ -131,7 +140,8 @@ export const deleteEmergencyContact = mutation({
     employeeId: v.id("employees")
   },
   handler: async (ctx, args) => {
-    await checkAccess(ctx, args.employeeId);
+    const access = await checkAccess(ctx, args.employeeId);
+    assertCanWriteEmployeeData(access);
     await ctx.db.delete(args.id);
   },
 });
@@ -163,7 +173,9 @@ export const addBankingDetail = mutation({
     isPrimary: v.boolean(),
   },
   handler: async (ctx, args) => {
-    const { orgId } = await checkAccess(ctx, args.employeeId);
+    const access = await checkAccess(ctx, args.employeeId);
+    assertCanWriteEmployeeData(access);
+    const { orgId } = access;
 
     if (args.isPrimary) {
       const existing = await ctx.db
@@ -199,7 +211,8 @@ export const updateBankingDetail = mutation({
     }),
   },
   handler: async (ctx, args) => {
-    await checkAccess(ctx, args.employeeId);
+    const access = await checkAccess(ctx, args.employeeId);
+    assertCanWriteEmployeeData(access);
 
     if (args.updates.isPrimary) {
       const existing = await ctx.db
@@ -225,7 +238,8 @@ export const deleteBankingDetail = mutation({
     employeeId: v.id("employees")
   },
   handler: async (ctx, args) => {
-    await checkAccess(ctx, args.employeeId);
+    const access = await checkAccess(ctx, args.employeeId);
+    assertCanWriteEmployeeData(access);
     await ctx.db.delete(args.id);
   },
 });
@@ -256,7 +270,9 @@ export const addEducation = mutation({
     grade: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const { orgId } = await checkAccess(ctx, args.employeeId);
+    const access = await checkAccess(ctx, args.employeeId);
+    assertCanWriteEmployeeData(access);
+    const { orgId } = access;
     return await ctx.db.insert("employee_education", {
       orgId,
       ...args
@@ -278,7 +294,8 @@ export const updateEducation = mutation({
     }),
   },
   handler: async (ctx, args) => {
-    await checkAccess(ctx, args.employeeId);
+    const access = await checkAccess(ctx, args.employeeId);
+    assertCanWriteEmployeeData(access);
     await ctx.db.patch(args.id, args.updates);
   },
 });
@@ -289,7 +306,8 @@ export const deleteEducation = mutation({
     employeeId: v.id("employees")
   },
   handler: async (ctx, args) => {
-    await checkAccess(ctx, args.employeeId);
+    const access = await checkAccess(ctx, args.employeeId);
+    assertCanWriteEmployeeData(access);
     await ctx.db.delete(args.id);
   },
 });
@@ -320,7 +338,9 @@ export const upsertStatutoryInfo = mutation({
     additionalIds: v.optional(v.any()),
   },
   handler: async (ctx, args) => {
-    const { orgId } = await checkAccess(ctx, args.employeeId);
+    const access = await checkAccess(ctx, args.employeeId);
+    assertCanWriteEmployeeData(access);
+    const { orgId } = access;
 
     const existing = await ctx.db
       .query("employee_statutory")
@@ -389,7 +409,9 @@ export const addDocument = mutation({
     expiryDate: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const { user, orgId } = await checkAccess(ctx, args.employeeId);
+    const access = await checkAccess(ctx, args.employeeId);
+    assertCanWriteEmployeeData(access);
+    const { user, orgId } = access;
 
     return await ctx.db.insert("employee_documents", {
       orgId,
@@ -410,7 +432,8 @@ export const deleteDocument = mutation({
     employeeId: v.id("employees")
   },
   handler: async (ctx, args) => {
-    await checkAccess(ctx, args.employeeId);
+    const access = await checkAccess(ctx, args.employeeId);
+    assertCanWriteEmployeeData(access);
 
     const doc = await ctx.db.get(args.id);
     if (!doc) throw new Error("Document not found");
@@ -424,5 +447,9 @@ export const deleteDocument = mutation({
 
 // Generate upload URL for documents
 export const generateUploadUrl = mutation(async (ctx) => {
+  const user = await getViewerInfo(ctx);
+  if (!["super_admin", "admin", "hr_manager"].includes(user.role as any)) {
+    throw new Error("Unauthorized: Only organization admins can upload employee documents");
+  }
   return await ctx.storage.generateUploadUrl();
 });

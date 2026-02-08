@@ -2,11 +2,12 @@ import { Component, inject, signal, OnInit, OnDestroy, computed } from '@angular
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UiButtonComponent } from '../../../shared/components/ui-button/ui-button.component';
-import { UiCardComponent } from '../../../shared/components/ui-card/ui-card.component';
 import { UiIconComponent } from '../../../shared/components/ui-icon/ui-icon.component';
 import { UiModalComponent } from '../../../shared/components/ui-modal/ui-modal.component';
 import { UiFormFieldComponent } from '../../../shared/components/ui-form-field/ui-form-field.component';
 import { UiBadgeComponent } from '../../../shared/components/ui-badge/ui-badge.component';
+import { UiGridComponent } from '../../../shared/components/ui-grid/ui-grid.component';
+import { UiGridTileComponent } from '../../../shared/components/ui-grid/ui-grid-tile.component';
 import { ConvexClientService } from '../../../core/services/convex-client.service';
 import { ToastService } from '../../../shared/services/toast.service';
 import { api } from '../../../../../convex/_generated/api';
@@ -19,11 +20,12 @@ import { api } from '../../../../../convex/_generated/api';
     FormsModule,
     ReactiveFormsModule,
     UiButtonComponent,
-    UiCardComponent,
     UiIconComponent,
     UiModalComponent,
     UiFormFieldComponent,
-    UiBadgeComponent
+    UiBadgeComponent,
+    UiGridComponent,
+    UiGridTileComponent
   ],
   template: `
     <div class="space-y-6">
@@ -32,111 +34,103 @@ import { api } from '../../../../../convex/_generated/api';
         <p class="mt-2 text-[15px] text-stone-600 dark:text-stone-400">Connect user accounts to employee records for full system access.</p>
       </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-        <!-- Unlinked Users -->
-        <ui-card>
-          <div class="flex items-center justify-between mb-4">
-            <h2 class="font-semibold text-stone-900 dark:text-stone-100 flex items-center gap-2">
-              <ui-icon name="user" class="w-5 h-5 text-burgundy-700 dark:text-burgundy-200"></ui-icon>
-              Unlinked Users
-              @if (unlinkedUsers().length > 0) {
-                <span class="text-xs bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 px-2 py-0.5 rounded-full">{{ unlinkedUsers().length }}</span>
-              }
-            </h2>
-          </div>
-
-          @if (loading()) {
-            <div class="space-y-3">
-              <div class="h-16 bg-stone-100 dark:bg-white/5 rounded-xl animate-pulse"></div>
-              <div class="h-16 bg-stone-100 dark:bg-white/5 rounded-xl animate-pulse"></div>
-            </div>
-          } @else if (unlinkedUsers().length === 0) {
-            <div class="text-center py-8 text-stone-400 dark:text-stone-500">
-              <ui-icon name="check-circle" class="w-8 h-8 mx-auto mb-2 text-green-500 dark:text-green-400"></ui-icon>
-              <p>All users are linked to employee records</p>
-            </div>
-          } @else {
-            <div class="space-y-3">
-              @for (user of unlinkedUsers(); track user._id) {
-                <div class="p-4 rounded-xl border border-stone-200 dark:border-white/8 bg-stone-50/50 dark:bg-white/5 dark:backdrop-blur-xl flex items-center justify-between group hover:border-burgundy-700/20 dark:hover:border-burgundy-700/40 transition-all">
-                  <div class="flex items-center gap-3">
-                    <div class="h-10 w-10 rounded-full bg-stone-200 dark:bg-stone-700 flex items-center justify-center text-stone-500 dark:text-stone-400 overflow-hidden">
-                      @if (user.image) {
-                        <img [src]="user.image" class="w-full h-full object-cover" alt="">
-                      } @else {
-                        <ui-icon name="user" class="w-5 h-5"></ui-icon>
-                      }
+      <div class="dash-frame">
+        <ui-grid [columns]="'1fr 1fr'" [gap]="'0px'">
+          <!-- Unlinked Users -->
+          <ui-grid-tile title="Unlinked Users" variant="compact" divider="right">
+            @if (unlinkedUsers().length > 0) {
+              <span tile-actions class="text-xs bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 px-2 py-0.5 rounded-full">{{ unlinkedUsers().length }}</span>
+            }
+            <div class="tile-body">
+              @if (loading()) {
+                <div class="space-y-3">
+                  <div class="h-16 bg-stone-100 dark:bg-white/5 rounded-xl animate-pulse"></div>
+                  <div class="h-16 bg-stone-100 dark:bg-white/5 rounded-xl animate-pulse"></div>
+                </div>
+              } @else if (unlinkedUsers().length === 0) {
+                <div class="text-center py-8 text-stone-400 dark:text-stone-500">
+                  <ui-icon name="check-circle" class="w-8 h-8 mx-auto mb-2 text-green-500 dark:text-green-400"></ui-icon>
+                  <p>All users are linked to employee records</p>
+                </div>
+              } @else {
+                <div class="space-y-3">
+                  @for (user of unlinkedUsers(); track user._id) {
+                    <div class="p-4 rounded-xl border border-stone-200 dark:border-white/8 bg-stone-50/50 dark:bg-white/5 dark:backdrop-blur-xl flex items-center justify-between group hover:border-burgundy-700/20 dark:hover:border-burgundy-700/40 transition-all">
+                      <div class="flex items-center gap-3">
+                        <div class="h-10 w-10 rounded-full bg-stone-200 dark:bg-stone-700 flex items-center justify-center text-stone-500 dark:text-stone-400 overflow-hidden">
+                          @if (user.image) {
+                            <img [src]="user.image" class="w-full h-full object-cover" alt="">
+                          } @else {
+                            <ui-icon name="user" class="w-5 h-5"></ui-icon>
+                          }
+                        </div>
+                        <div>
+                          <div class="font-medium text-stone-900 dark:text-stone-100">{{ user.name }}</div>
+                          <div class="text-xs text-stone-500 dark:text-stone-400">{{ user.email }}</div>
+                        </div>
+                      </div>
+                      <div class="flex items-center gap-2">
+                        <ui-button
+                          variant="secondary"
+                          size="sm"
+                          (onClick)="openLinkModal(user)"
+                        >
+                          Link
+                        </ui-button>
+                        <ui-button
+                          variant="primary"
+                          size="sm"
+                          (onClick)="openCreateModal(user)"
+                        >
+                          Create Employee
+                        </ui-button>
+                      </div>
                     </div>
-                    <div>
-                      <div class="font-medium text-stone-900 dark:text-stone-100">{{ user.name }}</div>
-                      <div class="text-xs text-stone-500 dark:text-stone-400">{{ user.email }}</div>
-                    </div>
-                  </div>
-                  <div class="flex items-center gap-2">
-                    <ui-button
-                      variant="secondary"
-                      size="sm"
-                      (onClick)="openLinkModal(user)"
-                    >
-                      Link
-                    </ui-button>
-                    <ui-button
-                      variant="primary"
-                      size="sm"
-                      (onClick)="openCreateModal(user)"
-                    >
-                      Create Employee
-                    </ui-button>
-                  </div>
+                  }
                 </div>
               }
             </div>
-          }
-        </ui-card>
+          </ui-grid-tile>
 
-        <!-- Unlinked Employees -->
-        <ui-card>
-          <div class="flex items-center justify-between mb-4">
-            <h2 class="font-semibold text-stone-900 dark:text-stone-100 flex items-center gap-2">
-              <ui-icon name="identification" class="w-5 h-5 text-indigo-600 dark:text-indigo-400"></ui-icon>
-              Unlinked Employees
-              @if (unlinkedEmployees().length > 0) {
-                <span class="text-xs bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400 px-2 py-0.5 rounded-full">{{ unlinkedEmployees().length }}</span>
-              }
-            </h2>
-          </div>
-
-          @if (loading()) {
-            <div class="space-y-3">
-              <div class="h-16 bg-stone-100 dark:bg-white/5 rounded-xl animate-pulse"></div>
-              <div class="h-16 bg-stone-100 dark:bg-white/5 rounded-xl animate-pulse"></div>
-            </div>
-          } @else if (unlinkedEmployees().length === 0) {
-            <div class="text-center py-8 text-stone-400 dark:text-stone-500">
-              <ui-icon name="check-circle" class="w-8 h-8 mx-auto mb-2 text-green-500 dark:text-green-400"></ui-icon>
-              <p>All employees have linked user accounts</p>
-            </div>
-          } @else {
-            <div class="space-y-3">
-              @for (emp of unlinkedEmployees(); track emp._id) {
-                <div class="p-4 rounded-xl border border-stone-200 dark:border-white/8 bg-stone-50/50 dark:bg-white/5 dark:backdrop-blur-xl flex items-center justify-between group hover:border-indigo-200 dark:hover:border-indigo-800 transition-all">
-                  <div class="flex items-center gap-3">
-                    <div class="h-10 w-10 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
-                      <ui-icon name="identification" class="w-5 h-5"></ui-icon>
+          <!-- Unlinked Employees -->
+          <ui-grid-tile title="Unlinked Employees" variant="compact">
+            @if (unlinkedEmployees().length > 0) {
+              <span tile-actions class="text-xs bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400 px-2 py-0.5 rounded-full">{{ unlinkedEmployees().length }}</span>
+            }
+            <div class="tile-body">
+              @if (loading()) {
+                <div class="space-y-3">
+                  <div class="h-16 bg-stone-100 dark:bg-white/5 rounded-xl animate-pulse"></div>
+                  <div class="h-16 bg-stone-100 dark:bg-white/5 rounded-xl animate-pulse"></div>
+                </div>
+              } @else if (unlinkedEmployees().length === 0) {
+                <div class="text-center py-8 text-stone-400 dark:text-stone-500">
+                  <ui-icon name="check-circle" class="w-8 h-8 mx-auto mb-2 text-green-500 dark:text-green-400"></ui-icon>
+                  <p>All employees have linked user accounts</p>
+                </div>
+              } @else {
+                <div class="space-y-3">
+                  @for (emp of unlinkedEmployees(); track emp._id) {
+                    <div class="p-4 rounded-xl border border-stone-200 dark:border-white/8 bg-stone-50/50 dark:bg-white/5 dark:backdrop-blur-xl flex items-center justify-between group hover:border-indigo-200 dark:hover:border-indigo-800 transition-all">
+                      <div class="flex items-center gap-3">
+                        <div class="h-10 w-10 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
+                          <ui-icon name="identification" class="w-5 h-5"></ui-icon>
+                        </div>
+                        <div>
+                          <div class="font-medium text-stone-900 dark:text-stone-100">{{ emp.firstName }} {{ emp.lastName }}</div>
+                          <div class="text-xs text-stone-500 dark:text-stone-400">{{ emp.email }}</div>
+                        </div>
+                      </div>
+                      <ui-badge [variant]="emp.status === 'active' ? 'success' : 'warning'" size="sm">
+                        {{ emp.status | titlecase }}
+                      </ui-badge>
                     </div>
-                    <div>
-                      <div class="font-medium text-stone-900 dark:text-stone-100">{{ emp.firstName }} {{ emp.lastName }}</div>
-                      <div class="text-xs text-stone-500 dark:text-stone-400">{{ emp.email }}</div>
-                    </div>
-                  </div>
-                  <ui-badge [variant]="emp.status === 'active' ? 'success' : 'warning'" size="sm">
-                    {{ emp.status | titlecase }}
-                  </ui-badge>
+                  }
                 </div>
               }
             </div>
-          }
-        </ui-card>
+          </ui-grid-tile>
+        </ui-grid>
       </div>
 
       <!-- Link Modal -->

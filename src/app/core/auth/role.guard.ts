@@ -11,42 +11,28 @@ export const roleGuard = (allowedRoles: string[]): CanActivateFn => {
     const toast = inject(ToastService);
     const convexService = inject(ConvexClientService);
 
-    // Wait for auth loading to complete (same as authGuard)
-    const waitForLoading = (): Promise<void> => {
-      return new Promise((resolve) => {
+    // Wait briefly for auth loading to settle, but don't hold route resolution for seconds.
+    const waitForLoading = (): Promise<void> =>
+      new Promise((resolve) => {
+        const deadline = Date.now() + 1200;
         const check = () => {
-          if (!convexService.isLoading()()) {
+          if (!convexService.isLoading()() || Date.now() >= deadline) {
             resolve();
-          } else {
-            setTimeout(check, 50);
+            return;
           }
+          setTimeout(check, 25);
         };
-        setTimeout(() => resolve(), 3000);
         check();
       });
-    };
 
     await waitForLoading();
 
-    // Wait for user data to be loaded (subscription might still be pending)
-    const waitForUser = (): Promise<any> => {
-      return new Promise((resolve) => {
-        let attempts = 0;
-        const maxAttempts = 40; // 2 seconds max (50ms * 40)
-        const check = () => {
-          const user = authService.getUser()();
-          if (user || attempts >= maxAttempts) {
-            resolve(user);
-          } else {
-            attempts++;
-            setTimeout(check, 50);
-          }
-        };
-        check();
-      });
-    };
-
-    const user = await waitForUser();
+    let user = authService.getUser()();
+    if (!user) {
+      // Best-effort refresh once so guards resolve quickly without visible route flicker.
+      await authService.refreshUser();
+      user = authService.getUser()();
+    }
 
     if (!user) {
       // If no user is loaded after waiting, redirect to login

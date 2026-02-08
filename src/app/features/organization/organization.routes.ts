@@ -24,6 +24,10 @@ export const ORGANIZATION_ROUTES: Routes = [
       {
         path: 'chart',
         loadComponent: () => import('./pages/org-chart/org-chart.component').then(m => m.OrgChartComponent)
+      },
+      {
+        path: 'settings',
+        loadComponent: () => import('./pages/org-settings.component').then(m => m.OrgSettingsComponent)
       }
     ]
   }

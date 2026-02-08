@@ -6,6 +6,8 @@ import { UiIconComponent } from '../../../shared/components/ui-icon/ui-icon.comp
 import { UiDataTableComponent, TableColumn } from '../../../shared/components/ui-data-table/ui-data-table.component';
 import { BadgeVariant } from '../../../shared/components/ui-badge/ui-badge.component';
 import { ReportFiltersComponent, ReportFilters } from '../components/report-filters.component';
+import { UiGridComponent } from '../../../shared/components/ui-grid/ui-grid.component';
+import { UiGridTileComponent } from '../../../shared/components/ui-grid/ui-grid-tile.component';
 import { ConvexClientService } from '../../../core/services/convex-client.service';
 import { CsvExportService } from '../../../core/services/csv-export.service';
 import { ToastService } from '../../../shared/services/toast.service';
@@ -43,7 +45,9 @@ interface AttendanceSummary {
     UiButtonComponent,
     UiIconComponent,
     UiDataTableComponent,
-    ReportFiltersComponent
+    ReportFiltersComponent,
+    UiGridComponent,
+    UiGridTileComponent
   ],
   template: `
     <div class="space-y-6">
@@ -73,59 +77,91 @@ interface AttendanceSummary {
         }
       </div>
 
-      <!-- Filters -->
-      <app-report-filters
-        [showDateRange]="true"
-        [showDepartment]="true"
-        (filtersChange)="onFiltersChange($event)"
-      ></app-report-filters>
+      <div class="dash-frame">
+        <ui-grid [columns]="'1fr'" [gap]="'0px'">
+          <ui-grid-tile title="Filters" variant="compact" divider="bottom">
+            <div class="tile-body">
+              <app-report-filters
+                [showDateRange]="true"
+                [showDepartment]="true"
+                (filtersChange)="onFiltersChange($event)"
+              ></app-report-filters>
+            </div>
+          </ui-grid-tile>
 
-      <!-- Summary Cards -->
-      @if (summary()) {
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-          <div class="bg-white dark:bg-stone-800 rounded-xl border border-stone-200 dark:border-stone-700 p-4">
-            <p class="text-xs font-medium text-stone-500 dark:text-stone-400 uppercase tracking-wide">Total Records</p>
-            <p class="mt-1 text-2xl font-bold text-stone-900 dark:text-stone-100">{{ summary()!.totalRecords }}</p>
-          </div>
-          <div class="bg-white dark:bg-stone-800 rounded-xl border border-stone-200 dark:border-stone-700 p-4">
-            <p class="text-xs font-medium text-green-600 dark:text-green-400 uppercase tracking-wide">Present</p>
-            <p class="mt-1 text-2xl font-bold text-green-700 dark:text-green-300">{{ summary()!.present }}</p>
-          </div>
-          <div class="bg-white dark:bg-stone-800 rounded-xl border border-stone-200 dark:border-stone-700 p-4">
-            <p class="text-xs font-medium text-amber-600 dark:text-amber-400 uppercase tracking-wide">Late</p>
-            <p class="mt-1 text-2xl font-bold text-amber-700 dark:text-amber-300">{{ summary()!.late }}</p>
-          </div>
-          <div class="bg-white dark:bg-stone-800 rounded-xl border border-stone-200 dark:border-stone-700 p-4">
-            <p class="text-xs font-medium text-red-600 dark:text-red-400 uppercase tracking-wide">Absent</p>
-            <p class="mt-1 text-2xl font-bold text-red-700 dark:text-red-300">{{ summary()!.absent }}</p>
-          </div>
-          <div class="bg-white dark:bg-stone-800 rounded-xl border border-stone-200 dark:border-stone-700 p-4">
-            <p class="text-xs font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wide">On Leave</p>
-            <p class="mt-1 text-2xl font-bold text-blue-700 dark:text-blue-300">{{ summary()!['on-leave'] }}</p>
-          </div>
-          <div class="bg-white dark:bg-stone-800 rounded-xl border border-stone-200 dark:border-stone-700 p-4">
-            <p class="text-xs font-medium text-purple-600 dark:text-purple-400 uppercase tracking-wide">Half Day</p>
-            <p class="mt-1 text-2xl font-bold text-purple-700 dark:text-purple-300">{{ summary()!['half-day'] }}</p>
-          </div>
-        </div>
-      }
+          @if (summary()) {
+            <ui-grid-tile title="Summary" variant="compact" divider="bottom">
+              <div class="tile-body">
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+                  <div class="bg-stone-50 dark:bg-stone-800/50 rounded-xl border border-stone-200 dark:border-stone-700 p-4">
+                    <p class="text-xs font-medium text-stone-500 dark:text-stone-400 uppercase tracking-wide">Total Records</p>
+                    <p class="mt-1 text-2xl font-bold text-stone-900 dark:text-stone-100">{{ summary()!.totalRecords }}</p>
+                  </div>
+                  <div class="bg-green-50 dark:bg-green-900/20 rounded-xl border border-green-200 dark:border-green-700/30 p-4">
+                    <p class="text-xs font-medium text-green-600 dark:text-green-400 uppercase tracking-wide">Present</p>
+                    <p class="mt-1 text-2xl font-bold text-green-700 dark:text-green-300">{{ summary()!.present }}</p>
+                  </div>
+                  <div class="bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-200 dark:border-amber-700/30 p-4">
+                    <p class="text-xs font-medium text-amber-600 dark:text-amber-400 uppercase tracking-wide">Late</p>
+                    <p class="mt-1 text-2xl font-bold text-amber-700 dark:text-amber-300">{{ summary()!.late }}</p>
+                  </div>
+                  <div class="bg-red-50 dark:bg-red-900/20 rounded-xl border border-red-200 dark:border-red-700/30 p-4">
+                    <p class="text-xs font-medium text-red-600 dark:text-red-400 uppercase tracking-wide">Absent</p>
+                    <p class="mt-1 text-2xl font-bold text-red-700 dark:text-red-300">{{ summary()!.absent }}</p>
+                  </div>
+                  <div class="bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-700/30 p-4">
+                    <p class="text-xs font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wide">On Leave</p>
+                    <p class="mt-1 text-2xl font-bold text-blue-700 dark:text-blue-300">{{ summary()!['on-leave'] }}</p>
+                  </div>
+                  <div class="bg-purple-50 dark:bg-purple-900/20 rounded-xl border border-purple-200 dark:border-purple-700/30 p-4">
+                    <p class="text-xs font-medium text-purple-600 dark:text-purple-400 uppercase tracking-wide">Half Day</p>
+                    <p class="mt-1 text-2xl font-bold text-purple-700 dark:text-purple-300">{{ summary()!['half-day'] }}</p>
+                  </div>
+                </div>
+              </div>
+            </ui-grid-tile>
+          }
 
-      <!-- Data Table -->
-      <ui-data-table
-        [data]="records()"
-        [columns]="columns"
-        [loading]="loading()"
-      ></ui-data-table>
+          <ui-grid-tile title="Attendance Records" variant="compact">
+            @if (records().length > 0) {
+              <span tile-actions class="text-sm text-stone-500 dark:text-stone-400">{{ records().length }} records</span>
+            }
+            <ui-data-table
+              [data]="records()"
+              [columns]="columns"
+              [loading]="loading()"
+              [headerVariant]="'neutral'"
+            ></ui-data-table>
 
-      <!-- Empty State -->
-      @if (!loading() && records().length === 0 && hasAppliedFilters()) {
-        <div class="bg-white dark:bg-stone-800 rounded-2xl border border-stone-200 dark:border-stone-700 p-12 text-center">
-          <ui-icon name="clipboard-document-list" class="w-12 h-12 text-stone-300 dark:text-stone-600 mx-auto mb-4"></ui-icon>
-          <p class="text-stone-600 dark:text-stone-400">No attendance records found for the selected filters</p>
-        </div>
-      }
+            @if (!loading() && records().length === 0 && hasAppliedFilters()) {
+              <div class="tile-body text-center">
+                <ui-icon name="clipboard-document-list" class="w-12 h-12 text-stone-300 dark:text-stone-600 mx-auto mb-4"></ui-icon>
+                <p class="text-stone-600 dark:text-stone-400">No attendance records found for the selected filters</p>
+              </div>
+            }
+          </ui-grid-tile>
+        </ui-grid>
+      </div>
     </div>
-  `
+  `,
+  styles: [`
+    .dash-frame {
+      background: white;
+      border-radius: 0.75rem;
+      border: 1px solid #e7e5e4;
+      box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+    }
+
+    :host-context(.dark) .dash-frame {
+      background: rgb(41 37 36 / 0.6);
+      border-color: rgb(68 64 60 / 0.5);
+      box-shadow: none;
+    }
+
+    .tile-body {
+      padding: 1.5rem;
+    }
+  `]
 })
 export class AttendanceReportComponent implements OnDestroy {
   private convexService = inject(ConvexClientService);

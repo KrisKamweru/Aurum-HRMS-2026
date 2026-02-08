@@ -5,6 +5,8 @@ import { UiButtonComponent } from '../../../../shared/components/ui-button/ui-bu
 import { UiIconComponent } from '../../../../shared/components/ui-icon/ui-icon.component';
 import { UiCardComponent } from '../../../../shared/components/ui-card/ui-card.component';
 import { UiBadgeComponent, BadgeVariant } from '../../../../shared/components/ui-badge/ui-badge.component';
+import { UiGridComponent } from '../../../../shared/components/ui-grid/ui-grid.component';
+import { UiGridTileComponent } from '../../../../shared/components/ui-grid/ui-grid-tile.component';
 import { ConvexClientService } from '../../../../core/services/convex-client.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { api } from '../../../../../../convex/_generated/api';
@@ -18,7 +20,9 @@ import { api } from '../../../../../../convex/_generated/api';
     UiButtonComponent,
     UiIconComponent,
     UiCardComponent,
-    UiBadgeComponent
+    UiBadgeComponent,
+    UiGridComponent,
+    UiGridTileComponent
   ],
   template: `
     <div class="space-y-6">
@@ -48,66 +52,74 @@ import { api } from '../../../../../../convex/_generated/api';
         <button class="px-4 py-2 text-sm font-medium text-stone-500 hover:text-stone-700">Closed</button>
       </div> -->
 
-      @if (loading()) {
-        <div class="flex items-center justify-center py-12">
-          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
-        </div>
-      } @else if (jobs().length === 0) {
-        <div class="text-center py-12 bg-stone-50 dark:bg-stone-800/50 rounded-2xl border border-stone-200 dark:border-stone-700">
-          <div class="w-16 h-16 bg-stone-100 dark:bg-stone-700 rounded-full flex items-center justify-center mx-auto mb-4">
-            <ui-icon name="briefcase" class="w-8 h-8 text-stone-400"></ui-icon>
-          </div>
-          <h3 class="text-lg font-bold text-stone-800 dark:text-stone-100">No jobs posted yet</h3>
-          <p class="text-stone-500 dark:text-stone-400 mt-1 mb-6">Create your first job posting to start recruiting.</p>
-          @if (canManage()) {
-            <ui-button routerLink="/recruitment/jobs/new">
-              Post a Job
-            </ui-button>
-          }
-        </div>
-      } @else {
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          @for (job of jobs(); track job._id) {
-            <ui-card class="flex flex-col h-full hover:shadow-md transition-shadow cursor-pointer group" (click)="viewJob(job._id)">
-              <div class="flex justify-between items-start mb-3">
-                <ui-badge [variant]="getStatusVariant(job.status)">
-                  {{ job.status | titlecase }}
-                </ui-badge>
-                @if (canManage()) {
-                  <button class="p-1.5 text-stone-400 hover:text-primary-600 hover:bg-stone-100 dark:hover:bg-stone-700 rounded-lg transition-colors opacity-0 group-hover:opacity-100" (click)="$event.stopPropagation(); editJob(job._id)">
-                    <ui-icon name="pencil" class="w-4 h-4"></ui-icon>
-                  </button>
-                }
-              </div>
+      <div class="dash-frame">
+        <ui-grid [columns]="'1fr'" [gap]="'0px'">
+          <ui-grid-tile title="Job Openings" variant="compact">
+            <div class="tile-body">
+              @if (loading()) {
+                <div class="flex items-center justify-center py-12">
+                  <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+                </div>
+              } @else if (jobs().length === 0) {
+                <div class="text-center py-12 bg-stone-50 dark:bg-stone-800/50 rounded-2xl border border-stone-200 dark:border-stone-700">
+                  <div class="w-16 h-16 bg-stone-100 dark:bg-stone-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <ui-icon name="briefcase" class="w-8 h-8 text-stone-400"></ui-icon>
+                  </div>
+                  <h3 class="text-lg font-bold text-stone-800 dark:text-stone-100">No jobs posted yet</h3>
+                  <p class="text-stone-500 dark:text-stone-400 mt-1 mb-6">Create your first job posting to start recruiting.</p>
+                  @if (canManage()) {
+                    <ui-button routerLink="/recruitment/jobs/new">
+                      Post a Job
+                    </ui-button>
+                  }
+                </div>
+              } @else {
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  @for (job of jobs(); track job._id) {
+                    <ui-card class="flex flex-col h-full hover:shadow-md transition-shadow cursor-pointer group" (click)="viewJob(job._id)">
+                      <div class="flex justify-between items-start mb-3">
+                        <ui-badge [variant]="getStatusVariant(job.status)">
+                          {{ job.status | titlecase }}
+                        </ui-badge>
+                        @if (canManage()) {
+                          <button class="p-1.5 text-stone-400 hover:text-primary-600 hover:bg-stone-100 dark:hover:bg-stone-700 rounded-lg transition-colors opacity-0 group-hover:opacity-100" (click)="$event.stopPropagation(); editJob(job._id)">
+                            <ui-icon name="pencil" class="w-4 h-4"></ui-icon>
+                          </button>
+                        }
+                      </div>
 
-              <h3 class="text-lg font-bold text-stone-800 dark:text-stone-100 mb-1 group-hover:text-primary-600 transition-colors">
-                {{ job.title }}
-              </h3>
+                      <h3 class="text-lg font-bold text-stone-800 dark:text-stone-100 mb-1 group-hover:text-primary-600 transition-colors">
+                        {{ job.title }}
+                      </h3>
 
-              <div class="text-sm text-stone-500 dark:text-stone-400 mb-4 flex flex-wrap gap-2 items-center">
-                <span>{{ job.departmentName }}</span>
-                <span class="w-1 h-1 rounded-full bg-stone-300 dark:bg-stone-600"></span>
-                <span>{{ job.locationName }}</span>
-                <span class="w-1 h-1 rounded-full bg-stone-300 dark:bg-stone-600"></span>
-                <span>{{ formatType(job.employmentType) }}</span>
-              </div>
+                      <div class="text-sm text-stone-500 dark:text-stone-400 mb-4 flex flex-wrap gap-2 items-center">
+                        <span>{{ job.departmentName }}</span>
+                        <span class="w-1 h-1 rounded-full bg-stone-300 dark:bg-stone-600"></span>
+                        <span>{{ job.locationName }}</span>
+                        <span class="w-1 h-1 rounded-full bg-stone-300 dark:bg-stone-600"></span>
+                        <span>{{ formatType(job.employmentType) }}</span>
+                      </div>
 
-              <p class="text-sm text-stone-600 dark:text-stone-300 line-clamp-3 mb-6 flex-grow">
-                {{ job.description }}
-              </p>
+                      <p class="text-sm text-stone-600 dark:text-stone-300 line-clamp-3 mb-6 flex-grow">
+                        {{ job.description }}
+                      </p>
 
-              <div class="flex items-center justify-between pt-4 border-t border-stone-100 dark:border-stone-700 mt-auto">
-                <span class="text-xs text-stone-500 dark:text-stone-400">
-                  Posted {{ job.createdAt | date:'mediumDate' }}
-                </span>
-                <span class="text-xs font-medium text-stone-700 dark:text-stone-300">
-                  {{ job.salaryRange || 'Salary not disclosed' }}
-                </span>
-              </div>
-            </ui-card>
-          }
-        </div>
-      }
+                      <div class="flex items-center justify-between pt-4 border-t border-stone-100 dark:border-stone-700 mt-auto">
+                        <span class="text-xs text-stone-500 dark:text-stone-400">
+                          Posted {{ job.createdAt | date:'mediumDate' }}
+                        </span>
+                        <span class="text-xs font-medium text-stone-700 dark:text-stone-300">
+                          {{ job.salaryRange || 'Salary not disclosed' }}
+                        </span>
+                      </div>
+                    </ui-card>
+                  }
+                </div>
+              }
+            </div>
+          </ui-grid-tile>
+        </ui-grid>
+      </div>
     </div>
   `
 })

@@ -6,6 +6,9 @@ import { UiButtonComponent } from '../../shared/components/ui-button/ui-button.c
 import { UiIconComponent } from '../../shared/components/ui-icon/ui-icon.component';
 import { UiModalComponent } from '../../shared/components/ui-modal/ui-modal.component';
 import { DynamicFormComponent } from '../../shared/components/dynamic-form/dynamic-form.component';
+import { UiGridTileComponent } from '../../shared/components/ui-grid/ui-grid-tile.component';
+import { UiGridComponent } from '../../shared/components/ui-grid/ui-grid.component';
+import { UiDataTableComponent, TableColumn } from '../../shared/components/ui-data-table/ui-data-table.component';
 import { FieldConfig } from '../../shared/services/form-helper.service';
 import { api } from '../../../../convex/_generated/api';
 import { ToastService } from '../../shared/services/toast.service';
@@ -19,15 +22,18 @@ import { ToastService } from '../../shared/services/toast.service';
     UiButtonComponent,
     UiIconComponent,
     UiModalComponent,
-    DynamicFormComponent
+    DynamicFormComponent,
+    UiGridTileComponent,
+    UiGridComponent,
+    UiDataTableComponent
   ],
   template: `
-    <div class="space-y-6">
+    <div class="payroll-list-container">
       <!-- Header -->
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div class="page-header">
         <div>
-          <h1 class="text-2xl font-bold text-stone-900 dark:text-white">Payroll Runs</h1>
-          <p class="text-stone-500 dark:text-stone-400 mt-1">Manage monthly payroll processing and salary slips</p>
+          <h1 class="page-title">Payroll Runs</h1>
+          <p class="page-subtitle">Manage monthly payroll processing and salary slips</p>
         </div>
         <ui-button (onClick)="openCreateModal()" variant="primary" icon="plus">
           <ui-icon name="plus" class="w-4 h-4 mr-2"></ui-icon>
@@ -35,111 +41,79 @@ import { ToastService } from '../../shared/services/toast.service';
         </ui-button>
       </div>
 
-      <!-- Stats Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="bg-white dark:bg-stone-800 p-6 rounded-2xl border border-stone-200 dark:border-stone-700 shadow-sm">
-          <div class="flex items-center gap-4">
-            <div class="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-xl">
-              <ui-icon name="banknotes" class="w-6 h-6 text-blue-600 dark:text-blue-400"></ui-icon>
-            </div>
-            <div>
-              <p class="text-sm font-medium text-stone-500 dark:text-stone-400">Total Processed (YTD)</p>
-              <h3 class="text-2xl font-bold text-stone-900 dark:text-white">--</h3>
-            </div>
-          </div>
-        </div>
+      <!-- Payroll Overview + Run History (Unified Grid) -->
+      <div class="dash-frame">
+        <ui-grid [columns]="'1fr'" [gap]="'0px'">
+          <ui-grid-tile title="Payroll Overview" variant="compact" divider="bottom">
+            <div class="tile-body">
+              <div class="stats-grid">
+                <div class="stat-card">
+                  <div class="stat-icon-wrapper bg-blue">
+                    <ui-icon name="banknotes" class="w-6 h-6"></ui-icon>
+                  </div>
+                  <div>
+                    <p class="stat-label">Total Processed (YTD)</p>
+                    <h3 class="stat-value">--</h3>
+                  </div>
+                </div>
 
-        <div class="bg-white dark:bg-stone-800 p-6 rounded-2xl border border-stone-200 dark:border-stone-700 shadow-sm">
-          <div class="flex items-center gap-4">
-            <div class="p-3 bg-green-100 dark:bg-green-900/30 rounded-xl">
-              <ui-icon name="users" class="w-6 h-6 text-green-600 dark:text-green-400"></ui-icon>
-            </div>
-            <div>
-              <p class="text-sm font-medium text-stone-500 dark:text-stone-400">Employees Paid</p>
-              <h3 class="text-2xl font-bold text-stone-900 dark:text-white">--</h3>
-            </div>
-          </div>
-        </div>
+                <div class="stat-card">
+                  <div class="stat-icon-wrapper bg-green">
+                    <ui-icon name="users" class="w-6 h-6"></ui-icon>
+                  </div>
+                  <div>
+                    <p class="stat-label">Employees Paid</p>
+                    <h3 class="stat-value">--</h3>
+                  </div>
+                </div>
 
-        <div class="bg-white dark:bg-stone-800 p-6 rounded-2xl border border-stone-200 dark:border-stone-700 shadow-sm">
-          <div class="flex items-center gap-4">
-            <div class="p-3 bg-amber-100 dark:bg-amber-900/30 rounded-xl">
-              <ui-icon name="clock" class="w-6 h-6 text-amber-600 dark:text-amber-400"></ui-icon>
+                <div class="stat-card">
+                  <div class="stat-icon-wrapper bg-amber">
+                    <ui-icon name="clock" class="w-6 h-6"></ui-icon>
+                  </div>
+                  <div>
+                    <p class="stat-label">Pending Runs</p>
+                    <h3 class="stat-value">--</h3>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div>
-              <p class="text-sm font-medium text-stone-500 dark:text-stone-400">Pending Runs</p>
-              <h3 class="text-2xl font-bold text-stone-900 dark:text-white">--</h3>
-            </div>
-          </div>
-        </div>
-      </div>
+          </ui-grid-tile>
 
-      <!-- Payroll Runs List -->
-      <div class="bg-white dark:bg-stone-800 rounded-2xl border border-stone-200 dark:border-stone-700 shadow-sm overflow-hidden">
-        <div class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-stone-200 dark:divide-stone-700">
-            <thead class="bg-stone-50 dark:bg-stone-900/50">
-              <tr>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-stone-500 dark:text-stone-400 uppercase tracking-wider">Period</th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-stone-500 dark:text-stone-400 uppercase tracking-wider">Run Date</th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-stone-500 dark:text-stone-400 uppercase tracking-wider">Employees</th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-stone-500 dark:text-stone-400 uppercase tracking-wider">Total Net Pay</th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-stone-500 dark:text-stone-400 uppercase tracking-wider">Status</th>
-                <th scope="col" class="relative px-6 py-3"><span class="sr-only">Actions</span></th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-stone-200 dark:divide-stone-700">
-              @for (run of runs(); track run._id) {
-                <tr class="hover:bg-stone-50 dark:hover:bg-stone-800/50 transition-colors">
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="flex items-center">
-                      <div class="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-lg bg-burgundy-100 dark:bg-burgundy-900/30 text-burgundy-700 dark:text-burgundy-300 font-bold">
-                        {{ getMonthName(run.month) | slice:0:3 }}
-                      </div>
-                      <div class="ml-4">
-                        <div class="text-sm font-medium text-stone-900 dark:text-white">
-                          {{ getMonthName(run.month) }} {{ run.year }}
-                        </div>
-                      </div>
+            <ui-grid-tile title="Payroll Run History" variant="compact">
+              <span tile-actions class="df-count">{{ runs().length }} runs</span>
+              <div class="overflow-x-auto">
+                <ui-data-table
+                  [data]="runs()"
+                  [columns]="columns"
+                  [headerVariant]="'neutral'"
+                  [cellTemplates]="{ period: periodTpl, totalNetPay: netPayTpl }"
+                  [actionsTemplate]="actionsTpl"
+                ></ui-data-table>
+                <ng-template #periodTpl let-row>
+                  <div class="period-cell">
+                    <div class="period-badge">
+                      {{ getMonthName(row.month) | slice:0:3 }}
                     </div>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-stone-500 dark:text-stone-400">
-                    {{ run.runDate | date:'mediumDate' }}
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-stone-500 dark:text-stone-400">
-                    {{ run.employeeCount || '-' }}
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-stone-900 dark:text-white">
-                    {{ run.totalNetPay ? (run.totalNetPay | currency) : '-' }}
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <span [class]="getStatusClasses(run.status)">
-                      {{ run.status | titlecase }}
+                    <span class="period-name">
+                      {{ getMonthName(row.month) }} {{ row.year }}
                     </span>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <button
-                      (click)="viewRun(run._id)"
-                      class="text-burgundy-600 dark:text-burgundy-400 hover:text-burgundy-900 dark:hover:text-burgundy-300 font-medium"
-                    >
-                      View
-                    </button>
-                  </td>
-                </tr>
-              } @empty {
-                <tr>
-                  <td colspan="6" class="px-6 py-12 text-center text-stone-500 dark:text-stone-400">
-                    <ui-icon name="document-text" class="w-12 h-12 mx-auto mb-3 opacity-20"></ui-icon>
-                    <p class="text-lg font-medium">No payroll runs found</p>
-                    <p class="text-sm">Create a new run to get started</p>
-                  </td>
-                </tr>
-              }
-            </tbody>
-          </table>
+                  </div>
+                </ng-template>
+                <ng-template #netPayTpl let-row>
+                  <span class="font-semibold text-stone-900 dark:text-white">
+                    {{ row.totalNetPay ? (row.totalNetPay | currency) : '-' }}
+                  </span>
+                </ng-template>
+                <ng-template #actionsTpl let-row>
+                  <button (click)="viewRun(row._id)" class="action-link">View</button>
+                </ng-template>
+              </div>
+            </ui-grid-tile>
+          </ui-grid>
         </div>
-      </div>
     </div>
+
 
     <!-- Create Run Modal -->
     <ui-modal
@@ -156,7 +130,179 @@ import { ToastService } from '../../shared/services/toast.service';
         [showCancel]="true"
       ></app-dynamic-form>
     </ui-modal>
-  `
+  `,
+  styles: [`
+    :host {
+      display: block;
+      --red: #861821;
+    }
+
+    .payroll-list-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .tile-body {
+      padding: 1.25rem;
+    }
+
+    /* Header */
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .page-title {
+      font-size: 1.875rem;
+      font-weight: 700;
+      color: #1c1917;
+      margin: 0;
+      line-height: 1.2;
+    }
+    :host-context(.dark) .page-title { color: white; }
+
+    .page-subtitle {
+      font-size: 0.9375rem;
+      color: #57534e;
+      margin: 0.5rem 0 0;
+    }
+    :host-context(.dark) .page-subtitle { color: #a8a29e; }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+    }
+
+    .stat-card {
+      background: white;
+      border: 1px solid #e7e5e4;
+      border-radius: 14px;
+      padding: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    :host-context(.dark) .stat-card {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(12px);
+      border-color: rgba(255,255,255,0.08);
+      box-shadow: none;
+    }
+
+    .stat-icon-wrapper {
+      padding: 0.75rem;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .stat-icon-wrapper.bg-blue {
+      background: rgba(59, 130, 246, 0.15);
+      color: #2563eb;
+    }
+    :host-context(.dark) .stat-icon-wrapper.bg-blue { color: #60a5fa; }
+
+    .stat-icon-wrapper.bg-green {
+      background: rgba(34, 197, 94, 0.15);
+      color: #16a34a;
+    }
+    :host-context(.dark) .stat-icon-wrapper.bg-green { color: #4ade80; }
+
+    .stat-icon-wrapper.bg-amber {
+      background: rgba(245, 158, 11, 0.15);
+      color: #d97706;
+    }
+    :host-context(.dark) .stat-icon-wrapper.bg-amber { color: #fbbf24; }
+
+    .stat-label {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: #57534e;
+      margin: 0 0 0.25rem;
+    }
+    :host-context(.dark) .stat-label { color: #a8a29e; }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #1c1917;
+      margin: 0;
+    }
+    :host-context(.dark) .stat-value { color: white; }
+
+    /* Dash Frame Pattern */
+    .dash-frame {
+      background: white;
+      border: 1px solid #e7e5e4;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    :host-context(.dark) .dash-frame {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(12px);
+      border-color: rgba(255,255,255,0.08);
+      box-shadow: none;
+    }
+
+    .df-count {
+      font-size: 0.75rem;
+      color: #78716c;
+    }
+    :host-context(.dark) .df-count { color: #a8a29e; }
+
+    .period-cell {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .period-badge {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      background: rgba(134,24,33,0.1);
+      color: #861821;
+      font-weight: 700;
+      font-size: 0.75rem;
+    }
+    :host-context(.dark) .period-badge {
+      background: rgba(134,24,33,0.25);
+      color: #ff6b77;
+    }
+
+    .period-name {
+      font-weight: 600;
+      color: #1c1917;
+    }
+    :host-context(.dark) .period-name { color: white; }
+
+    .action-link {
+      color: var(--red);
+      font-weight: 600;
+      font-size: 0.875rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.25rem 0.5rem;
+      transition: opacity 0.2s;
+    }
+
+    .action-link:hover {
+      opacity: 0.7;
+    }
+  `]
 })
 export class PayrollListComponent implements OnInit {
   private convex = inject(ConvexClientService);
@@ -166,6 +312,39 @@ export class PayrollListComponent implements OnInit {
   runs = signal<any[]>([]);
   isCreateModalOpen = false;
   isCreating = false;
+  columns: TableColumn[] = [
+    {
+      key: 'period',
+      header: 'Period'
+    },
+    {
+      key: 'runDate',
+      header: 'Run Date',
+      type: 'date'
+    },
+    {
+      key: 'employeeCount',
+      header: 'Employees',
+      formatter: (val) => val ?? '-'
+    },
+    {
+      key: 'totalNetPay',
+      header: 'Total Net Pay'
+    },
+    {
+      key: 'status',
+      header: 'Status',
+      type: 'badge',
+      badgeVariant: (val) => {
+        switch (val) {
+          case 'completed': return 'success';
+          case 'processing': return 'info';
+          case 'draft':
+          default: return 'neutral';
+        }
+      }
+    }
+  ];
 
   createFormFields: FieldConfig[] = [
     {

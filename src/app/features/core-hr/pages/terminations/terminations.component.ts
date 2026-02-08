@@ -6,8 +6,11 @@ import { UiModalComponent } from '../../../../shared/components/ui-modal/ui-moda
 import { UiIconComponent } from '../../../../shared/components/ui-icon/ui-icon.component';
 import { DynamicFormComponent } from '../../../../shared/components/dynamic-form/dynamic-form.component';
 import { FieldConfig } from '../../../../shared/services/form-helper.service';
+import { UiGridComponent } from '../../../../shared/components/ui-grid/ui-grid.component';
+import { UiGridTileComponent } from '../../../../shared/components/ui-grid/ui-grid-tile.component';
 import { ConvexClientService } from '../../../../core/services/convex-client.service';
 import { ToastService } from '../../../../shared/services/toast.service';
+import { ConfirmDialogService } from '../../../../shared/services/confirm-dialog.service';
 import { api } from '../../../../../../convex/_generated/api';
 
 @Component({
@@ -19,7 +22,9 @@ import { api } from '../../../../../../convex/_generated/api';
     UiButtonComponent,
     UiModalComponent,
     UiIconComponent,
-    DynamicFormComponent
+    DynamicFormComponent,
+    UiGridComponent,
+    UiGridTileComponent
   ],
   template: `
     <div class="space-y-6">
@@ -40,11 +45,20 @@ import { api } from '../../../../../../convex/_generated/api';
         </ui-button>
       </div>
 
-      <ui-data-table
-        [data]="enrichedTerminations()"
-        [columns]="columns"
-        [loading]="loading()"
-      ></ui-data-table>
+      <div class="dash-frame">
+        <ui-grid [columns]="'1fr'" [gap]="'0px'">
+          <ui-grid-tile title="Terminations" variant="compact">
+            <div class="tile-body">
+              <ui-data-table
+                [data]="enrichedTerminations()"
+                [columns]="columns"
+                [loading]="loading()"
+                headerVariant="neutral"
+              ></ui-data-table>
+            </div>
+          </ui-grid-tile>
+        </ui-grid>
+      </div>
 
       <ui-modal
         [(isOpen)]="showModal"
@@ -71,6 +85,7 @@ import { api } from '../../../../../../convex/_generated/api';
 export class TerminationsComponent implements OnInit, OnDestroy {
   private convexService = inject(ConvexClientService);
   private toastService = inject(ToastService);
+  private confirmDialog = inject(ConfirmDialogService);
 
   terminations = signal<any[]>([]);
   employees = signal<any[]>([]);
@@ -182,7 +197,15 @@ export class TerminationsComponent implements OnInit, OnDestroy {
   }
 
   async onSubmit(formData: any) {
-    if (!confirm('This action is irreversible and will mark the employee as terminated. Proceed?')) return;
+    const confirmed = await this.confirmDialog.confirm({
+      title: 'Terminate Employee',
+      message: 'This action is irreversible and will mark the employee as terminated. Are you sure you want to proceed?',
+      confirmText: 'Terminate',
+      cancelText: 'Cancel',
+      variant: 'danger'
+    });
+
+    if (!confirmed) return;
 
     this.submitting.set(true);
     const client = this.convexService.getClient();

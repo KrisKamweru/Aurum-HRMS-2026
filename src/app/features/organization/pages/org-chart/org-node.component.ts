@@ -28,36 +28,44 @@ import { UiAvatarComponent } from '../../../../shared/components/ui-avatar/ui-av
             </p>
 
             <div class="mt-2 flex items-center gap-2 text-xs text-stone-500 dark:text-stone-400">
-              <span class="flex items-center gap-1" *ngIf="node.directReports?.length">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3 h-3">
-                  <path d="M7 8a3 3 0 100-6 3 3 0 000 6zM14.5 9a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM1.615 16.428a1.224 1.224 0 01-.569-1.175 6.002 6.002 0 0111.908 0c.058.467-.172.92-.57 1.174A9.953 9.953 0 017 18a9.953 9.953 0 01-5.385-1.572zM14.5 16h-.106c.07-.297.088-.611.048-.933a7.47 7.47 0 00-1.588-3.755 4.502 4.502 0 015.874 2.636.818.818 0 01-.36.98A7.465 7.465 0 0114.5 16z" />
-                </svg>
-                {{ node.directReports.length }} reports
-              </span>
+              @if (node.directReports?.length) {
+                <span class="flex items-center gap-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3 h-3">
+                    <path d="M7 8a3 3 0 100-6 3 3 0 000 6zM14.5 9a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM1.615 16.428a1.224 1.224 0 01-.569-1.175 6.002 6.002 0 0111.908 0c.058.467-.172.92-.57 1.174A9.953 9.953 0 017 18a9.953 9.953 0 01-5.385-1.572zM14.5 16h-.106c.07-.297.088-.611.048-.933a7.47 7.47 0 00-1.588-3.755 4.502 4.502 0 015.874 2.636.818.818 0 01-.36.98A7.465 7.465 0 0114.5 16z" />
+                  </svg>
+                  {{ node.directReports.length }} reports
+                </span>
+              }
             </div>
           </div>
         </div>
 
         <!-- Connector Line (Vertical from bottom) -->
-        <div *ngIf="node.directReports?.length" class="absolute left-1/2 bottom-0 w-px h-8 bg-stone-300 dark:bg-stone-600 translate-y-full"></div>
+        @if (node.directReports?.length) {
+          <div class="absolute left-1/2 bottom-0 w-px h-8 bg-stone-300 dark:bg-stone-600 translate-y-full"></div>
+        }
       </div>
 
       <!-- Children Container -->
-      <div *ngIf="node.directReports?.length" class="mt-8 flex gap-8 items-start relative">
-        <!-- Horizontal connector line connecting all children -->
-        <div class="absolute top-0 left-0 right-0 h-px bg-stone-300 dark:bg-stone-600 -translate-y-px"
-             style="left: calc(50% / {{node.directReports.length}} + 2rem); right: calc(50% / {{node.directReports.length}} + 2rem);"
-             *ngIf="node.directReports.length > 1"></div>
+      @if (node.directReports?.length) {
+        <div class="mt-8 flex gap-8 items-start relative">
+          <!-- Horizontal connector line connecting all children -->
+          @if (node.directReports.length > 1) {
+            <div class="absolute top-0 left-0 right-0 h-px bg-stone-300 dark:bg-stone-600 -translate-y-px"
+                 style="left: calc(50% / {{node.directReports.length}} + 2rem); right: calc(50% / {{node.directReports.length}} + 2rem);"></div>
+          }
 
-        <app-org-node
-          *ngFor="let child of node.directReports; let first = first; let last = last"
-          [node]="child"
-          class="relative"
-        >
-          <!-- Vertical line connecting to the horizontal line above -->
-          <div class="absolute -top-8 left-1/2 w-px h-8 bg-stone-300 dark:bg-stone-600"></div>
-        </app-org-node>
-      </div>
+          @for (child of node.directReports; track child._id; let first = $first; let last = $last) {
+            <app-org-node
+              [node]="child"
+              class="relative"
+            >
+              <!-- Vertical line connecting to the horizontal line above -->
+              <div class="absolute -top-8 left-1/2 w-px h-8 bg-stone-300 dark:bg-stone-600"></div>
+            </app-org-node>
+          }
+        </div>
+      }
     </div>
   `
 })

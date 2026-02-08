@@ -1,5 +1,6 @@
 import { Component, computed, effect, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ConvexClientService } from '../../../core/services/convex-client.service';
 import { api } from '../../../../../convex/_generated/api';
@@ -9,6 +10,10 @@ import { UiModalComponent } from '../../../shared/components/ui-modal/ui-modal.c
 import { DynamicFormComponent } from '../../../shared/components/dynamic-form/dynamic-form.component';
 import { FieldConfig } from '../../../shared/services/form-helper.service';
 import { ToastService } from '../../../shared/services/toast.service';
+import { ConfirmDialogService } from '../../../shared/services/confirm-dialog.service';
+import { UiGridComponent } from '../../../shared/components/ui-grid/ui-grid.component';
+import { UiGridTileComponent } from '../../../shared/components/ui-grid/ui-grid-tile.component';
+import { UiDataTableComponent, TableColumn } from '../../../shared/components/ui-data-table/ui-data-table.component';
 import { Id } from '../../../../../convex/_generated/dataModel';
 import { AuthService } from '../../../core/auth/auth.service';
 
@@ -25,456 +30,534 @@ type ActionType = 'promote' | 'transfer' | 'resign' | 'terminate' | 'warning' | 
   standalone: true,
   imports: [
     CommonModule,
+    ReactiveFormsModule,
     RouterModule,
     UiButtonComponent,
     UiIconComponent,
     UiModalComponent,
     DynamicFormComponent,
+    UiGridComponent,
+    UiGridTileComponent,
+    UiDataTableComponent,
     ProfilePersonalComponent,
     ProfileFinancialComponent,
     ProfileEducationComponent,
     ProfileDocumentsComponent
   ],
   template: `
-    <div class="space-y-6" *ngIf="employee(); else loadingTpl">
+    @if (employee()) {
+      <div class="space-y-6">
       <!-- Header -->
       <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
         <div class="flex items-center gap-4">
-          <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-stone-200 dark:bg-stone-700 flex items-center justify-center text-2xl sm:text-3xl font-bold text-stone-500 dark:text-stone-300 flex-shrink-0">
+          <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-lg bg-burgundy-700 dark:bg-burgundy-700/75 flex items-center justify-center text-2xl sm:text-3xl font-bold text-white flex-shrink-0">
             {{ getInitials(employee()) }}
           </div>
           <div>
-            <h1 class="heading-accent text-2xl sm:text-3xl dark:text-stone-100">{{ employee().firstName }} {{ employee().lastName }}</h1>
-            <p class="text-stone-500 dark:text-stone-400 flex items-center gap-2 mt-1">
+            <h1 class="text-3xl font-bold text-stone-900 dark:text-white tracking-tight">{{ employee().firstName }} {{ employee().lastName }}</h1>
+            <p class="text-[15px] text-stone-500 dark:text-stone-400 flex items-center gap-2 mt-1">
               <ui-icon name="briefcase" class="w-4 h-4"></ui-icon>
               {{ employee().position || 'No Position' }}
             </p>
           </div>
         </div>
 
-        <div class="flex flex-wrap gap-2 w-full md:w-auto md:justify-end" *ngIf="canManageEmployees()">
-          <ui-button
-            variant="outline"
-            size="sm"
-            (onClick)="openAction('promote')"
-            [prerequisitesMet]="designations().length > 1"
-            prerequisiteMessage="You need multiple designations defined to promote an employee."
-            [prerequisiteAction]="{ label: 'Manage Designations', link: ['/organization/designations'] }"
-          >
-            Promote
-          </ui-button>
+        @if (canPerformHrActions()) {
+          <div class="flex flex-wrap gap-2 w-full md:w-auto md:justify-end">
+            <ui-button
+              variant="outline"
+              size="sm"
+              (onClick)="openAction('promote')"
+              [prerequisitesMet]="designations().length > 1"
+              prerequisiteMessage="You need multiple designations defined to promote an employee."
+              [prerequisiteAction]="{ label: 'Manage Designations', link: ['/organization/designations'] }"
+            >
+              Promote
+            </ui-button>
 
-          <ui-button
-            variant="outline"
-            size="sm"
-            (onClick)="openAction('transfer')"
-            [prerequisitesMet]="departments().length > 1"
-            prerequisiteMessage="You need multiple departments defined to transfer an employee."
-            [prerequisiteAction]="{ label: 'Manage Departments', link: ['/organization/departments'] }"
-          >
-            Transfer
-          </ui-button>
+            <ui-button
+              variant="outline"
+              size="sm"
+              (onClick)="openAction('transfer')"
+              [prerequisitesMet]="departments().length > 1"
+              prerequisiteMessage="You need multiple departments defined to transfer an employee."
+              [prerequisiteAction]="{ label: 'Manage Departments', link: ['/organization/departments'] }"
+            >
+              Transfer
+            </ui-button>
 
-          <ui-button variant="outline" size="sm" (onClick)="openAction('warning')" class="!text-amber-600 dark:!text-amber-400 !border-amber-200 dark:!border-amber-800 hover:!bg-amber-50 dark:hover:!bg-amber-900/20">Warning</ui-button>
-          <ui-button variant="outline" size="sm" (onClick)="openAction('award')" class="!text-indigo-600 dark:!text-indigo-400 !border-indigo-200 dark:!border-indigo-800 hover:!bg-indigo-50 dark:hover:!bg-indigo-900/20">Award</ui-button>
+            <ui-button variant="outline" size="sm" (onClick)="openAction('warning')" class="!text-amber-600 dark:!text-amber-400 !border-amber-200 dark:!border-amber-800 hover:!bg-amber-50 dark:hover:!bg-amber-900/20">Warning</ui-button>
+            <ui-button variant="outline" size="sm" (onClick)="openAction('award')" class="!text-indigo-600 dark:!text-indigo-400 !border-indigo-200 dark:!border-indigo-800 hover:!bg-indigo-50 dark:hover:!bg-indigo-900/20">Award</ui-button>
 
-          <!-- More Actions Dropdown (Simulated with wrap for now) -->
-          <ui-button variant="outline" size="sm" (onClick)="openAction('travel')" class="!text-sky-600 dark:!text-sky-400 !border-sky-200 dark:!border-sky-800 hover:!bg-sky-50 dark:hover:!bg-sky-900/20">Travel</ui-button>
-          <ui-button variant="outline" size="sm" (onClick)="openAction('complaint')" class="!text-rose-600 dark:!text-rose-400 !border-rose-200 dark:!border-rose-800 hover:!bg-rose-50 dark:hover:!bg-rose-900/20">Complaint</ui-button>
-          <ui-button variant="outline" size="sm" (onClick)="openAction('resign')" class="!text-orange-600 dark:!text-orange-400 !border-orange-200 dark:!border-orange-800 hover:!bg-orange-50 dark:hover:!bg-orange-900/20">Resignation</ui-button>
-          <ui-button variant="outline" size="sm" (onClick)="openAction('terminate')" class="!text-red-600 dark:!text-red-400 !border-red-200 dark:!border-red-800 hover:!bg-red-50 dark:hover:!bg-red-900/20">Terminate</ui-button>
-        </div>
+            <!-- More Actions Dropdown (Simulated with wrap for now) -->
+            <ui-button variant="outline" size="sm" (onClick)="openAction('travel')" class="!text-sky-600 dark:!text-sky-400 !border-sky-200 dark:!border-sky-800 hover:!bg-sky-50 dark:hover:!bg-sky-900/20">Travel</ui-button>
+            <ui-button variant="outline" size="sm" (onClick)="openAction('complaint')" class="!text-rose-600 dark:!text-rose-400 !border-rose-200 dark:!border-rose-800 hover:!bg-rose-50 dark:hover:!bg-rose-900/20">Complaint</ui-button>
+            <ui-button variant="outline" size="sm" (onClick)="openAction('resign')" class="!text-orange-600 dark:!text-orange-400 !border-orange-200 dark:!border-orange-800 hover:!bg-orange-50 dark:hover:!bg-orange-900/20">Resignation</ui-button>
+            <ui-button variant="outline" size="sm" (onClick)="openAction('terminate')" class="!text-red-600 dark:!text-red-400 !border-red-200 dark:!border-red-800 hover:!bg-red-50 dark:hover:!bg-red-900/20">Terminate</ui-button>
+          </div>
+        }
       </div>
 
       <!-- Tabs -->
-      <div class="border-b border-stone-200 dark:border-stone-700 -mx-4 px-4 sm:mx-0 sm:px-0">
-        <nav class="-mb-px flex space-x-6 overflow-x-auto no-scrollbar pb-1 sm:pb-0" aria-label="Tabs">
-          <button
-            *ngFor="let tab of tabs"
-            [class.border-[#8b1e3f]]="activeTab() === tab"
-            [class.dark:border-[#fce7eb]]="activeTab() === tab"
-            [class.text-[#8b1e3f]]="activeTab() === tab"
-            [class.dark:text-[#fce7eb]]="activeTab() === tab"
-            [class.border-transparent]="activeTab() !== tab"
-            [class.text-stone-500]="activeTab() !== tab"
-            [class.dark:text-stone-400]="activeTab() !== tab"
-            class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm hover:text-[#8b1e3f] dark:hover:text-[#fce7eb] transition-colors capitalize flex-shrink-0"
-            (click)="activeTab.set(tab)"
-          >
-            {{ tab }}
-          </button>
+      <div class="border-b border-stone-200 dark:border-white/8 -mx-4 px-4 sm:mx-0 sm:px-0">
+        <nav class="-mb-px flex space-x-8 overflow-x-auto no-scrollbar pb-1 sm:pb-0" aria-label="Tabs">
+          @for (tab of tabs; track tab) {
+            <button
+              [class.border-burgundy-700]="activeTab() === tab"
+              [class.dark:border-burgundy-400]="activeTab() === tab"
+              [class.text-burgundy-700]="activeTab() === tab"
+              [class.dark:text-burgundy-300]="activeTab() === tab"
+              [class.border-transparent]="activeTab() !== tab"
+              [class.text-stone-500]="activeTab() !== tab"
+              [class.dark:text-stone-400]="activeTab() !== tab"
+              class="whitespace-nowrap py-3 border-b-2 font-semibold text-sm hover:text-burgundy-700 dark:hover:text-burgundy-300 transition-colors capitalize flex-shrink-0"
+              (click)="activeTab.set(tab)"
+            >
+              {{ tab }}
+            </button>
+          }
         </nav>
       </div>
 
       <!-- Content Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6" *ngIf="activeTab() === 'overview'">
+      @if (activeTab() === 'overview') {
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
 
         <!-- Left Column: Personal & Professional Info -->
-        <div class="md:col-span-2 space-y-6">
+        <div class="md:col-span-2 space-y-4 sm:space-y-6">
           <!-- Professional Details card -->
-          <div class="bg-white dark:bg-stone-800 rounded-2xl p-6 shadow-sm border border-stone-200 dark:border-stone-700">
-            <h3 class="font-bold text-lg mb-4 text-[#8b1e3f] dark:text-[#fce7eb] border-b border-stone-100 dark:border-stone-700 pb-2">Professional Details</h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div class="info-group">
-                <label>Employee ID</label>
-                <p class="font-mono text-sm text-stone-800 dark:text-stone-200">{{ employee()._id }}</p>
-              </div>
-              <div class="info-group">
-                <label>Email</label>
-                <p class="text-stone-800 dark:text-stone-200">{{ employee().email }}</p>
-              </div>
-              <div class="info-group">
-                <label>Department</label>
-                <p class="text-stone-800 dark:text-stone-200">{{ employee().department || '-' }}</p>
-              </div>
-              <div class="info-group">
-                <label>Location</label>
-                <p class="text-stone-800 dark:text-stone-200">{{ employee().location || '-' }}</p>
-              </div>
-              <div class="info-group">
-                <label>Status</label>
-                <span [class]="'badge ' + getStatusBadgeClass(employee().status)">
-                  {{ employee().status | titlecase }}
-                </span>
-              </div>
-              <div class="info-group">
-                <label>Start Date</label>
-                <p class="text-stone-800 dark:text-stone-200">{{ employee().startDate | date }}</p>
-              </div>
-              <div class="info-group">
-                <label>Manager</label>
-                <p class="text-stone-800 dark:text-stone-200">{{ employee().managerName || '-' }}</p>
-              </div>
-            </div>
+          <div class="dash-frame">
+            <ui-grid [columns]="'1fr'" [gap]="'0px'">
+              <ui-grid-tile title="Professional Details" variant="compact">
+                <div class="tile-body">
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="info-group">
+                      <label class="block text-xs font-semibold uppercase tracking-wide text-stone-500 dark:text-stone-400 mb-1">Employee ID</label>
+                      <p class="font-mono text-sm text-stone-800 dark:text-stone-200">{{ employee()._id }}</p>
+                    </div>
+                    <div class="info-group">
+                      <label class="block text-xs font-semibold uppercase tracking-wide text-stone-500 dark:text-stone-400 mb-1">Email</label>
+                      <p class="text-stone-800 dark:text-stone-200">{{ employee().email }}</p>
+                    </div>
+                    <div class="info-group">
+                      <label class="block text-xs font-semibold uppercase tracking-wide text-stone-500 dark:text-stone-400 mb-1">Department</label>
+                      <p class="text-stone-800 dark:text-stone-200">{{ employee().department || '-' }}</p>
+                    </div>
+                    <div class="info-group">
+                      <label class="block text-xs font-semibold uppercase tracking-wide text-stone-500 dark:text-stone-400 mb-1">Location</label>
+                      <p class="text-stone-800 dark:text-stone-200">{{ employee().location || '-' }}</p>
+                    </div>
+                    <div class="info-group">
+                      <label class="block text-xs font-semibold uppercase tracking-wide text-stone-500 dark:text-stone-400 mb-1">Status</label>
+                      <span [class]="getStatusBadgeClass(employee().status)">
+                        {{ employee().status | titlecase }}
+                      </span>
+                    </div>
+                    <div class="info-group">
+                      <label class="block text-xs font-semibold uppercase tracking-wide text-stone-500 dark:text-stone-400 mb-1">Start Date</label>
+                      <p class="text-stone-800 dark:text-stone-200">{{ employee().startDate | date }}</p>
+                    </div>
+                    <div class="info-group">
+                      <label class="block text-xs font-semibold uppercase tracking-wide text-stone-500 dark:text-stone-400 mb-1">Manager</label>
+                      <p class="text-stone-800 dark:text-stone-200">{{ employee().managerName || '-' }}</p>
+                    </div>
+                  </div>
+                </div>
+              </ui-grid-tile>
+            </ui-grid>
           </div>
 
           <!-- Personal Details card -->
-          <div class="bg-white dark:bg-stone-800 rounded-2xl p-6 shadow-sm border border-stone-200 dark:border-stone-700">
-            <h3 class="font-bold text-lg mb-4 text-[#8b1e3f] dark:text-[#fce7eb] border-b border-stone-100 dark:border-stone-700 pb-2">Personal Details</h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div class="info-group">
-                <label>Phone</label>
-                <p class="text-stone-800 dark:text-stone-200">{{ employee().phone || '-' }}</p>
-              </div>
-              <div class="info-group">
-                <label>Address</label>
-                <p class="text-stone-800 dark:text-stone-200">{{ employee().address || '-' }}</p>
-              </div>
-              <div class="info-group">
-                <label>Gender</label>
-                <p class="text-stone-800 dark:text-stone-200">{{ employee().gender || '-' }}</p>
-              </div>
-              <div class="info-group">
-                <label>Date of Birth</label>
-                <p class="text-stone-800 dark:text-stone-200">{{ employee().dob ? (employee().dob | date) : '-' }}</p>
-              </div>
-            </div>
+          <div class="dash-frame">
+            <ui-grid [columns]="'1fr'" [gap]="'0px'">
+              <ui-grid-tile title="Personal Details" variant="compact">
+                <div class="tile-body">
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="info-group">
+                      <label class="block text-xs font-semibold uppercase tracking-wide text-stone-500 dark:text-stone-400 mb-1">Phone</label>
+                      <p class="text-stone-800 dark:text-stone-200">{{ employee().phone || '-' }}</p>
+                    </div>
+                    <div class="info-group">
+                      <label class="block text-xs font-semibold uppercase tracking-wide text-stone-500 dark:text-stone-400 mb-1">Address</label>
+                      <p class="text-stone-800 dark:text-stone-200">{{ employee().address || '-' }}</p>
+                    </div>
+                    <div class="info-group">
+                      <label class="block text-xs font-semibold uppercase tracking-wide text-stone-500 dark:text-stone-400 mb-1">Gender</label>
+                      <p class="text-stone-800 dark:text-stone-200">{{ employee().gender || '-' }}</p>
+                    </div>
+                    <div class="info-group">
+                      <label class="block text-xs font-semibold uppercase tracking-wide text-stone-500 dark:text-stone-400 mb-1">Date of Birth</label>
+                      <p class="text-stone-800 dark:text-stone-200">{{ employee().dob ? (employee().dob | date) : '-' }}</p>
+                    </div>
+                  </div>
+                </div>
+              </ui-grid-tile>
+            </ui-grid>
           </div>
         </div>
 
         <!-- Right Column: Quick Actions -->
-        <div class="space-y-6">
-          <div class="bg-stone-50 dark:bg-stone-800/50 rounded-2xl p-6 border border-stone-200 dark:border-stone-700">
-            <h3 class="font-bold mb-2 text-stone-800 dark:text-stone-200">Quick Actions</h3>
-            <p class="text-sm text-stone-500 dark:text-stone-400 mb-4">Common tasks for this employee.</p>
-            <div class="flex flex-col gap-2">
-              <button (click)="activeTab.set('documents')" class="text-left p-2 hover:bg-white dark:hover:bg-stone-800 rounded transition text-sm flex items-center gap-2 text-stone-600 dark:text-stone-300">
-                <ui-icon name="document" class="w-4 h-4"></ui-icon> View Documents
-              </button>
-              <button (click)="activeTab.set('payroll')" class="text-left p-2 hover:bg-white dark:hover:bg-stone-800 rounded transition text-sm flex items-center gap-2 text-stone-600 dark:text-stone-300">
-                <ui-icon name="banknotes" class="w-4 h-4"></ui-icon> View Payslips
-              </button>
-              <button (click)="activeTab.set('history')" class="text-left p-2 hover:bg-white dark:hover:bg-stone-800 rounded transition text-sm flex items-center gap-2 text-stone-600 dark:text-stone-300">
-                 <ui-icon name="clock" class="w-4 h-4"></ui-icon> View History
-              </button>
-            </div>
+        <div class="space-y-4 sm:space-y-6">
+          <div class="dash-frame">
+            <ui-grid [columns]="'1fr'" [gap]="'0px'">
+              <ui-grid-tile title="Quick Actions" variant="compact">
+                <div class="tile-body">
+                  <p class="text-[13px] text-stone-500 dark:text-stone-400 mb-4">Common tasks for this employee.</p>
+                  <div class="flex flex-col gap-1">
+                    <button (click)="activeTab.set('documents')" class="text-left px-3 py-2 hover:bg-burgundy-50/50 dark:hover:bg-burgundy-700/[0.06] rounded-lg transition-colors text-sm flex items-center gap-2 text-stone-600 dark:text-stone-300">
+                      <ui-icon name="document" class="w-4 h-4"></ui-icon> View Documents
+                    </button>
+                    <button (click)="activeTab.set('compensation')" class="text-left px-3 py-2 hover:bg-burgundy-50/50 dark:hover:bg-burgundy-700/[0.06] rounded-lg transition-colors text-sm flex items-center gap-2 text-stone-600 dark:text-stone-300">
+                      <ui-icon name="currency-dollar" class="w-4 h-4"></ui-icon> View Compensation
+                    </button>
+                    <button (click)="activeTab.set('payroll')" class="text-left px-3 py-2 hover:bg-burgundy-50/50 dark:hover:bg-burgundy-700/[0.06] rounded-lg transition-colors text-sm flex items-center gap-2 text-stone-600 dark:text-stone-300">
+                      <ui-icon name="banknotes" class="w-4 h-4"></ui-icon> View Payslips
+                    </button>
+                    <button (click)="activeTab.set('history')" class="text-left px-3 py-2 hover:bg-burgundy-50/50 dark:hover:bg-burgundy-700/[0.06] rounded-lg transition-colors text-sm flex items-center gap-2 text-stone-600 dark:text-stone-300">
+                       <ui-icon name="clock" class="w-4 h-4"></ui-icon> View History
+                    </button>
+                  </div>
+                </div>
+              </ui-grid-tile>
+            </ui-grid>
           </div>
         </div>
       </div>
+      }
 
       <!-- Extended Tabs Content -->
-      <app-profile-personal
-        *ngIf="activeTab() === 'personal'"
-        [contacts]="emergencyContacts()"
-        [loading]="contactsLoading()"
-        (save)="saveContact($event)"
-        (delete)="deleteContact($event)"
-      ></app-profile-personal>
+      @if (activeTab() === 'personal') {
+        <app-profile-personal
+          [contacts]="emergencyContacts()"
+          [loading]="contactsLoading()"
+          (save)="saveContact($event)"
+          (delete)="deleteContact($event)"
+        ></app-profile-personal>
+      }
 
-      <app-profile-financial
-        *ngIf="activeTab() === 'financial'"
-        [statutory]="statutoryInfo()"
-        [banking]="bankingDetails()"
-        [adjustments]="adjustments()"
-        [loading]="bankingLoading()"
-        [adjustmentsLoading]="adjustmentsLoading()"
-        (saveStatutory)="saveStatutory($event)"
-        (saveBank)="saveBank($event)"
-        (deleteBank)="deleteBank($event)"
-        (addCredit)="addCredit($event)"
-        (addDebit)="addDebit($event)"
-        (toggleAdjustment)="toggleAdjustment($event)"
-      ></app-profile-financial>
+      @if (activeTab() === 'financial') {
+        <app-profile-financial
+          [statutory]="statutoryInfo()"
+          [banking]="bankingDetails()"
+          [adjustments]="adjustments()"
+          [loading]="bankingLoading()"
+          [adjustmentsLoading]="adjustmentsLoading()"
+          [canEditFinancialData]="canEditFinancialData()"
+          (saveStatutory)="saveStatutory($event)"
+          (saveBank)="saveBank($event)"
+          (deleteBank)="deleteBank($event)"
+          (addCredit)="addCredit($event)"
+          (addDebit)="addDebit($event)"
+          (toggleAdjustment)="toggleAdjustment($event)"
+        ></app-profile-financial>
+      }
 
-      <app-profile-education
-        *ngIf="activeTab() === 'education'"
-        [education]="education()"
-        [loading]="educationLoading()"
-        (save)="saveEducation($event)"
-        (delete)="deleteEducation($event)"
-      ></app-profile-education>
+      @if (activeTab() === 'education') {
+        <app-profile-education
+          [education]="education()"
+          [loading]="educationLoading()"
+          (save)="saveEducation($event)"
+          (delete)="deleteEducation($event)"
+        ></app-profile-education>
+      }
 
-      <app-profile-documents
-        *ngIf="activeTab() === 'documents'"
-        [documents]="documents()"
-        [loading]="documentsLoading()"
-        (save)="saveDocument($event)"
-        (delete)="deleteDocument($event)"
-      ></app-profile-documents>
+      @if (activeTab() === 'documents') {
+        <app-profile-documents
+          [documents]="documents()"
+          [loading]="documentsLoading()"
+          (save)="saveDocument($event)"
+          (delete)="deleteDocument($event)"
+        ></app-profile-documents>
+      }
+
+      <!-- Compensation Tab -->
+      @if (activeTab() === 'compensation') {
+        <div>
+          <div class="dash-frame">
+            <ui-grid [columns]="'1fr'" [gap]="'0px'">
+              <ui-grid-tile title="Compensation Details" variant="compact">
+              @if (canEditCompensation()) {
+                <button tile-actions (click)="toggleEditCompensation()" class="text-sm text-burgundy-600 dark:text-burgundy-400 hover:text-burgundy-700 dark:hover:text-burgundy-300 font-semibold">
+                  {{ editingCompensation() ? 'Cancel' : 'Edit' }}
+                </button>
+              }
+              <div class="tile-body">
+            @if (editingCompensation()) {
+              <!-- Edit Form -->
+              <form [formGroup]="compensationForm" (ngSubmit)="saveCompensation()" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">Base Salary</label>
+                  <input formControlName="baseSalary" type="number" step="0.01" class="w-full px-3 py-2 border border-stone-300 dark:border-stone-600 rounded-lg bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-burgundy-500" />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">Currency</label>
+                  <select formControlName="currency" class="w-full px-3 py-2 border border-stone-300 dark:border-stone-600 rounded-lg bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-burgundy-500">
+                    <option value="USD">USD</option>
+                    <option value="EUR">EUR</option>
+                    <option value="GBP">GBP</option>
+                    <option value="INR">INR</option>
+                    <option value="CAD">CAD</option>
+                    <option value="AUD">AUD</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">Pay Frequency</label>
+                  <select formControlName="payFrequency" class="w-full px-3 py-2 border border-stone-300 dark:border-stone-600 rounded-lg bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-burgundy-500">
+                    <option value="monthly">Monthly</option>
+                    <option value="bi_weekly">Bi-Weekly</option>
+                    <option value="weekly">Weekly</option>
+                  </select>
+                </div>
+                <div class="md:col-span-2 flex justify-end gap-3 pt-4">
+                  <button type="button" (click)="toggleEditCompensation()" class="px-4 py-2 border border-stone-300 dark:border-stone-600 rounded-lg text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors">
+                    Cancel
+                  </button>
+                  <button type="submit" class="px-4 py-2 bg-burgundy-600 text-white rounded-lg hover:bg-burgundy-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" [disabled]="saving()">
+                    {{ saving() ? 'Saving...' : 'Save Changes' }}
+                  </button>
+                </div>
+              </form>
+            } @else {
+              <!-- View Mode -->
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                  <p class="text-sm text-stone-500 dark:text-stone-400">Base Salary</p>
+                  <p class="text-lg font-semibold text-stone-900 dark:text-stone-100 mt-1">
+                    {{ formatSalary(employee()?.baseSalary, employee()?.currency) }}
+                  </p>
+                </div>
+                <div>
+                  <p class="text-sm text-stone-500 dark:text-stone-400">Currency</p>
+                  <p class="text-lg font-semibold text-stone-900 dark:text-stone-100 mt-1">
+                    {{ employee()?.currency || 'Not set' }}
+                  </p>
+                </div>
+                <div>
+                  <p class="text-sm text-stone-500 dark:text-stone-400">Pay Frequency</p>
+                  <p class="text-lg font-semibold text-stone-900 dark:text-stone-100 mt-1">
+                    {{ formatPayFrequency(employee()?.payFrequency) }}
+                  </p>
+                </div>
+              </div>
+            }
+              </div>
+            </ui-grid-tile>
+          </ui-grid>
+          </div>
+        </div>
+      }
 
       <!-- Payroll Tab -->
-      <div class="space-y-6" *ngIf="activeTab() === 'payroll'">
-        <div class="bg-white dark:bg-stone-800 rounded-2xl p-6 shadow-sm border border-stone-200 dark:border-stone-700">
-          <h3 class="font-bold text-lg mb-4 text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
-            <ui-icon name="banknotes" class="w-5 h-5"></ui-icon> Payslips
-          </h3>
+      @if (activeTab() === 'payroll') {
+        <div class="space-y-4 sm:space-y-6">
+          <div class="dash-frame">
+            <ui-grid [columns]="'1fr'" [gap]="'0px'">
+              <ui-grid-tile title="Payslips" variant="compact">
+                <div class="tile-body">
+                  <ui-data-table
+                    [data]="payslips()"
+                    [columns]="payslipColumns"
+                    [loading]="false"
+                    [cellTemplates]="{ month: payslipMonth }"
+                    [actionsTemplate]="payslipActions"
+                    headerVariant="neutral"
+                  >
+                    <ng-template #payslipMonth let-row>
+                      <div class="flex items-center gap-2">
+                        <span class="font-semibold text-stone-800 dark:text-stone-100">
+                          {{ getMonthName(row.month) }} {{ row.year }}
+                        </span>
+                        @if (row.status !== 'completed') {
+                          <span class="text-xs bg-stone-100 text-stone-600 px-2 py-0.5 rounded-full dark:bg-stone-700 dark:text-stone-300">
+                            {{ row.status | titlecase }}
+                          </span>
+                        }
+                      </div>
+                    </ng-template>
 
-          <div *ngIf="payslips().length === 0" class="text-stone-500 dark:text-stone-400 italic text-center py-8">
-            No payslips generated yet.
-          </div>
-
-          <div *ngIf="payslips().length > 0" class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-stone-200 dark:divide-stone-700">
-              <thead class="bg-stone-50 dark:bg-stone-900/50">
-                <tr>
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-stone-500 dark:text-stone-400 uppercase tracking-wider">Month</th>
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-stone-500 dark:text-stone-400 uppercase tracking-wider">Generated On</th>
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-stone-500 dark:text-stone-400 uppercase tracking-wider">Gross</th>
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-stone-500 dark:text-stone-400 uppercase tracking-wider">Net Pay</th>
-                  <th scope="col" class="relative px-6 py-3"><span class="sr-only">Actions</span></th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-stone-200 dark:divide-stone-700">
-                <tr *ngFor="let slip of payslips()" class="hover:bg-stone-50 dark:hover:bg-stone-800/50 transition-colors">
-                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-stone-900 dark:text-white">
-                    {{ getMonthName(slip.month) }} {{ slip.year }}
-                    <span *ngIf="slip.status !== 'completed'" class="ml-2 text-xs bg-stone-100 text-stone-600 px-2 py-0.5 rounded-full dark:bg-stone-700 dark:text-stone-300">
-                      {{ slip.status | titlecase }}
-                    </span>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-stone-500 dark:text-stone-400">
-                    {{ slip.generatedAt | date }}
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-stone-500 dark:text-stone-400">
-                    {{ slip.grossSalary | currency }}
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-burgundy-700 dark:text-burgundy-300">
-                    {{ slip.netSalary | currency }}
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <a [routerLink]="['/payroll/slip', slip._id]" class="text-burgundy-600 dark:text-burgundy-400 hover:text-burgundy-900 dark:hover:text-burgundy-300">View</a>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+                    <ng-template #payslipActions let-row>
+                      <a [routerLink]="['/payroll/slip', row._id]" class="text-sm font-semibold text-burgundy-600 dark:text-burgundy-400 hover:text-burgundy-900 dark:hover:text-burgundy-300">View</a>
+                    </ng-template>
+                  </ui-data-table>
+                </div>
+              </ui-grid-tile>
+            </ui-grid>
           </div>
         </div>
-      </div>
-
+      }
       <!-- History Tab -->
-      <div class="space-y-6" *ngIf="activeTab() === 'history'">
+      @if (activeTab() === 'history') {
+        <div class="space-y-4 sm:space-y-6">
+          <div class="dash-frame">
+            <ui-grid [columns]="'1fr'" [gap]="'0px'">
+              <ui-grid-tile title="Promotions" variant="compact" divider="bottom">
+                <div class="tile-body space-y-4">
+                  @if (promotions().length === 0) {
+                    <div class="text-stone-500 dark:text-stone-400 italic">No promotion history.</div>
+                  }
+                  @for (item of promotions(); track item._id) {
+                    <div class="border-l-2 border-burgundy-700 dark:border-burgundy-400 pl-4 py-1">
+                      <div class="text-sm text-stone-500 dark:text-stone-400">{{ item.promotionDate | date }}</div>
+                      <div class="font-medium text-stone-800 dark:text-stone-200">Promoted to new designation</div>
+                      @if (item.remarks) {
+                        <div class="text-sm text-stone-600 dark:text-stone-300">"{{ item.remarks }}"</div>
+                      }
+                      @if (item.salaryIncrement) {
+                        <div class="text-xs text-stone-400 dark:text-stone-500 mt-1">Salary Increment: {{ item.salaryIncrement | currency }}</div>
+                      }
+                    </div>
+                  }
+                </div>
+              </ui-grid-tile>
 
-        <!-- Promotions -->
-        <div class="bg-white dark:bg-stone-800 rounded-2xl p-6 shadow-sm border border-stone-200 dark:border-stone-700">
-          <h3 class="font-bold text-lg mb-4 text-[#8b1e3f] dark:text-[#fce7eb] flex items-center gap-2">
-            <ui-icon name="trending-up" class="w-5 h-5"></ui-icon> Promotions
-          </h3>
-          <div *ngIf="promotions().length === 0" class="text-stone-500 dark:text-stone-400 italic">No promotion history.</div>
-          <div class="space-y-4">
-            <div *ngFor="let item of promotions()" class="border-l-2 border-[#8b1e3f] dark:border-[#fce7eb] pl-4 py-1">
-              <div class="text-sm text-stone-500 dark:text-stone-400">{{ item.promotionDate | date }}</div>
-              <div class="font-medium text-stone-800 dark:text-stone-200">Promoted to new designation</div>
-              <div class="text-sm text-stone-600 dark:text-stone-300" *ngIf="item.remarks">"{{ item.remarks }}"</div>
-              <div class="text-xs text-stone-400 dark:text-stone-500 mt-1" *ngIf="item.salaryIncrement">Salary Increment: {{ item.salaryIncrement | currency }}</div>
-            </div>
+              <ui-grid-tile title="Transfers" variant="compact" divider="bottom">
+                <div class="tile-body space-y-4">
+                  @if (transfers().length === 0) {
+                    <div class="text-stone-500 dark:text-stone-400 italic">No transfer history.</div>
+                  }
+                  @for (item of transfers(); track item._id) {
+                    <div class="border-l-2 border-blue-500 dark:border-blue-400 pl-4 py-1">
+                      <div class="text-sm text-stone-500 dark:text-stone-400">{{ item.transferDate | date }}</div>
+                      <div class="font-medium text-stone-800 dark:text-stone-200">Transferred</div>
+                      @if (item.remarks) {
+                        <div class="text-sm text-stone-600 dark:text-stone-300">"{{ item.remarks }}"</div>
+                      }
+                    </div>
+                  }
+                </div>
+              </ui-grid-tile>
+
+              <ui-grid-tile title="Separation / Resignation" variant="compact" divider="bottom">
+                <div class="tile-body space-y-4">
+                  @if (resignations().length === 0) {
+                    <div class="text-stone-500 dark:text-stone-400 italic">No resignations recorded.</div>
+                  }
+                  @for (item of resignations(); track item._id) {
+                    <div class="border-l-2 border-red-500 dark:border-red-400 pl-4 py-1">
+                      <div class="flex justify-between">
+                        <div class="font-medium text-stone-800 dark:text-stone-200">Resignation Submitted</div>
+                        <span [class]="getStatusBadgeClass(item.status)">{{ item.status | titlecase }}</span>
+                      </div>
+                      <div class="text-sm text-stone-500 dark:text-stone-400 mt-1">Last Working Day: {{ item.lastWorkingDay | date }}</div>
+                      <div class="text-sm text-stone-600 dark:text-stone-300 italic mt-1">"{{ item.reason }}"</div>
+                    </div>
+                  }
+                </div>
+              </ui-grid-tile>
+
+              <ui-grid-tile title="Warnings" variant="compact" divider="bottom">
+                <div class="tile-body space-y-4">
+                  @if (warnings().length === 0) {
+                    <div class="text-stone-500 dark:text-stone-400 italic">No disciplinary history.</div>
+                  }
+                  @for (item of warnings(); track item._id) {
+                    <div class="bg-amber-50 dark:bg-amber-900/10 p-3 rounded-lg border border-amber-100 dark:border-amber-800/30">
+                      <div class="flex justify-between items-start">
+                        <span class="font-bold text-amber-800 dark:text-amber-200">{{ item.subject }}</span>
+                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-200 dark:bg-amber-900/40 text-amber-900 dark:text-amber-200 uppercase">{{ item.severity }}</span>
+                      </div>
+                      <div class="text-sm text-amber-900 dark:text-amber-100 mt-1">{{ item.description }}</div>
+                      <div class="text-xs text-amber-700 dark:text-amber-300 mt-2">Date: {{ item.issueDate | date }}</div>
+                    </div>
+                  }
+                </div>
+              </ui-grid-tile>
+
+              <ui-grid-tile title="Awards" variant="compact" divider="bottom">
+                <div class="tile-body space-y-4">
+                  @if (awards().length === 0) {
+                    <div class="text-stone-500 dark:text-stone-400 italic">No awards received.</div>
+                  }
+                  @for (item of awards(); track item._id) {
+                    <div class="bg-indigo-50 dark:bg-indigo-900/10 p-3 rounded-lg border border-indigo-100 dark:border-indigo-800/30 flex items-start gap-3">
+                      <div class="p-2 bg-white dark:bg-white/5 rounded-full text-yellow-500 dark:text-yellow-400 shadow-sm">
+                        <ui-icon name="star" class="w-5 h-5"></ui-icon>
+                      </div>
+                      <div>
+                        <div class="font-bold text-indigo-900 dark:text-indigo-200">{{ item.title }}</div>
+                        <div class="text-sm text-indigo-800 dark:text-indigo-300">{{ item.description }}</div>
+                        <div class="text-xs text-indigo-600 dark:text-indigo-400 mt-1">
+                          {{ item.date | date }}
+                          @if (item.cashPrice) {
+                            <span>• {{ item.cashPrice | currency }}</span>
+                          }
+                        </div>
+                      </div>
+                    </div>
+                  }
+                </div>
+              </ui-grid-tile>
+
+              <ui-grid-tile title="Travel History" variant="compact" divider="bottom">
+                <div class="tile-body space-y-4">
+                  @if (travelRequests().length === 0) {
+                    <div class="text-stone-500 dark:text-stone-400 italic">No travel history.</div>
+                  }
+                  @for (item of travelRequests(); track item._id) {
+                    <div class="bg-sky-50 dark:bg-sky-900/10 p-3 rounded-lg border border-sky-100 dark:border-sky-800/30">
+                      <div class="flex justify-between items-start">
+                        <span class="font-bold text-sky-900 dark:text-sky-200">{{ item.destination }}</span>
+                        <span [class]="getStatusBadgeClass(item.status)">{{ item.status | titlecase }}</span>
+                      </div>
+                      <div class="text-sm text-sky-800 dark:text-sky-300 mt-1">Purpose: {{ item.purpose }}</div>
+                      <div class="text-xs text-sky-600 dark:text-sky-400 mt-2">
+                        {{ item.startDate | date }} - {{ item.endDate | date }}
+                        @if (item.budget) {
+                          <span>• Budget: {{ item.budget | currency }}</span>
+                        }
+                      </div>
+                    </div>
+                  }
+                </div>
+              </ui-grid-tile>
+
+              <ui-grid-tile title="Complaints Filed" variant="compact">
+                <div class="tile-body space-y-4">
+                  @if (complaints().length === 0) {
+                    <div class="text-stone-500 dark:text-stone-400 italic">No complaints filed.</div>
+                  }
+                  @for (item of complaints(); track item._id) {
+                    <div class="bg-rose-50 dark:bg-rose-900/10 p-3 rounded-lg border border-rose-100 dark:border-rose-800/30">
+                      <div class="flex justify-between items-start">
+                        <span class="font-bold text-rose-900 dark:text-rose-200">{{ item.subject }}</span>
+                        <span [class]="getStatusBadgeClass(item.status)">{{ item.status | titlecase }}</span>
+                      </div>
+                      <div class="text-sm text-rose-800 dark:text-rose-300 mt-1">{{ item.description }}</div>
+                      <div class="text-xs text-rose-600 dark:text-rose-400 mt-2">
+                        Filed on: {{ item.date | date }}
+                        @if (item.accusedId) {
+                          <span>• Against ID: {{ item.accusedId }}</span>
+                        }
+                      </div>
+                    </div>
+                  }
+                </div>
+              </ui-grid-tile>
+            </ui-grid>
           </div>
         </div>
-
-        <!-- Transfers -->
-        <div class="bg-white dark:bg-stone-800 rounded-2xl p-6 shadow-sm border border-stone-200 dark:border-stone-700">
-          <h3 class="font-bold text-lg mb-4 text-[#8b1e3f] dark:text-[#fce7eb] flex items-center gap-2">
-            <ui-icon name="arrows-right-left" class="w-5 h-5"></ui-icon> Transfers
-          </h3>
-          <div *ngIf="transfers().length === 0" class="text-stone-500 dark:text-stone-400 italic">No transfer history.</div>
-          <div class="space-y-4">
-            <div *ngFor="let item of transfers()" class="border-l-2 border-blue-500 dark:border-blue-400 pl-4 py-1">
-              <div class="text-sm text-stone-500 dark:text-stone-400">{{ item.transferDate | date }}</div>
-              <div class="font-medium text-stone-800 dark:text-stone-200">Transferred</div>
-              <div class="text-sm text-stone-600 dark:text-stone-300" *ngIf="item.remarks">"{{ item.remarks }}"</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Resignations -->
-        <div class="bg-white dark:bg-stone-800 rounded-2xl p-6 shadow-sm border border-stone-200 dark:border-stone-700" *ngIf="resignations().length > 0">
-          <h3 class="font-bold text-lg mb-4 text-red-600 dark:text-red-400 flex items-center gap-2">
-            <ui-icon name="user" class="w-5 h-5"></ui-icon> Separation / Resignation
-          </h3>
-          <div class="space-y-4">
-            <div *ngFor="let item of resignations()" class="border-l-2 border-red-500 dark:border-red-400 pl-4 py-1">
-              <div class="flex justify-between">
-                 <div class="font-medium text-stone-800 dark:text-stone-200">Resignation Submitted</div>
-                 <span [class]="'badge ' + getStatusBadgeClass(item.status)">{{ item.status | titlecase }}</span>
-              </div>
-              <div class="text-sm text-stone-500 dark:text-stone-400 mt-1">Last Working Day: {{ item.lastWorkingDay | date }}</div>
-              <div class="text-sm text-stone-600 dark:text-stone-300 italic mt-1">"{{ item.reason }}"</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Warnings -->
-        <div class="bg-white dark:bg-stone-800 rounded-2xl p-6 shadow-sm border border-stone-200 dark:border-stone-700">
-          <h3 class="font-bold text-lg mb-4 text-amber-600 dark:text-amber-400 flex items-center gap-2">
-            <ui-icon name="exclamation-triangle" class="w-5 h-5"></ui-icon> Warnings
-          </h3>
-          <div *ngIf="warnings().length === 0" class="text-stone-500 dark:text-stone-400 italic">No disciplinary history.</div>
-          <div class="space-y-4">
-            <div *ngFor="let item of warnings()" class="bg-amber-50 dark:bg-amber-900/10 p-3 rounded-lg border border-amber-100 dark:border-amber-800/30">
-              <div class="flex justify-between items-start">
-                <span class="font-bold text-amber-800 dark:text-amber-200">{{ item.subject }}</span>
-                <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-200 dark:bg-amber-900/40 text-amber-900 dark:text-amber-200 uppercase">{{ item.severity }}</span>
-              </div>
-              <div class="text-sm text-amber-900 dark:text-amber-100 mt-1">{{ item.description }}</div>
-              <div class="text-xs text-amber-700 dark:text-amber-300 mt-2">Date: {{ item.issueDate | date }}</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Awards -->
-        <div class="bg-white dark:bg-stone-800 rounded-2xl p-6 shadow-sm border border-stone-200 dark:border-stone-700">
-          <h3 class="font-bold text-lg mb-4 text-indigo-600 dark:text-indigo-400 flex items-center gap-2">
-            <ui-icon name="star" class="w-5 h-5"></ui-icon> Awards
-          </h3>
-          <div *ngIf="awards().length === 0" class="text-stone-500 dark:text-stone-400 italic">No awards received.</div>
-          <div class="space-y-4">
-            <div *ngFor="let item of awards()" class="bg-indigo-50 dark:bg-indigo-900/10 p-3 rounded-lg border border-indigo-100 dark:border-indigo-800/30 flex items-start gap-3">
-               <div class="p-2 bg-white dark:bg-stone-800 rounded-full text-yellow-500 dark:text-yellow-400 shadow-sm">
-                 <ui-icon name="star" class="w-5 h-5"></ui-icon>
-               </div>
-               <div>
-                 <div class="font-bold text-indigo-900 dark:text-indigo-200">{{ item.title }}</div>
-                 <div class="text-sm text-indigo-800 dark:text-indigo-300">{{ item.description }}</div>
-                 <div class="text-xs text-indigo-600 dark:text-indigo-400 mt-1">{{ item.date | date }} <span *ngIf="item.cashPrice">• {{ item.cashPrice | currency }}</span></div>
-               </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Travel Requests -->
-        <div class="bg-white dark:bg-stone-800 rounded-2xl p-6 shadow-sm border border-stone-200 dark:border-stone-700">
-          <h3 class="font-bold text-lg mb-4 text-sky-600 dark:text-sky-400 flex items-center gap-2">
-            <ui-icon name="globe-alt" class="w-5 h-5"></ui-icon> Travel History
-          </h3>
-          <div *ngIf="travelRequests().length === 0" class="text-stone-500 dark:text-stone-400 italic">No travel history.</div>
-          <div class="space-y-4">
-            <div *ngFor="let item of travelRequests()" class="bg-sky-50 dark:bg-sky-900/10 p-3 rounded-lg border border-sky-100 dark:border-sky-800/30">
-              <div class="flex justify-between items-start">
-                <span class="font-bold text-sky-900 dark:text-sky-200">{{ item.destination }}</span>
-                <span [class]="'badge ' + getStatusBadgeClass(item.status)">{{ item.status | titlecase }}</span>
-              </div>
-              <div class="text-sm text-sky-800 dark:text-sky-300 mt-1">Purpose: {{ item.purpose }}</div>
-              <div class="text-xs text-sky-600 dark:text-sky-400 mt-2">
-                {{ item.startDate | date }} - {{ item.endDate | date }}
-                <span *ngIf="item.budget">• Budget: {{ item.budget | currency }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Complaints -->
-        <div class="bg-white dark:bg-stone-800 rounded-2xl p-6 shadow-sm border border-stone-200 dark:border-stone-700">
-          <h3 class="font-bold text-lg mb-4 text-rose-600 dark:text-rose-400 flex items-center gap-2">
-            <ui-icon name="scale" class="w-5 h-5"></ui-icon> Complaints Filed
-          </h3>
-          <div *ngIf="complaints().length === 0" class="text-stone-500 dark:text-stone-400 italic">No complaints filed.</div>
-          <div class="space-y-4">
-            <div *ngFor="let item of complaints()" class="bg-rose-50 dark:bg-rose-900/10 p-3 rounded-lg border border-rose-100 dark:border-rose-800/30">
-              <div class="flex justify-between items-start">
-                <span class="font-bold text-rose-900 dark:text-rose-200">{{ item.subject }}</span>
-                <span [class]="'badge ' + getStatusBadgeClass(item.status)">{{ item.status | titlecase }}</span>
-              </div>
-              <div class="text-sm text-rose-800 dark:text-rose-300 mt-1">{{ item.description }}</div>
-              <div class="text-xs text-rose-600 dark:text-rose-400 mt-2">
-                Filed on: {{ item.date | date }}
-                <span *ngIf="item.accusedId">• Against ID: {{ item.accusedId }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
+      }
       </div>
-    </div>
-
-    <!-- Loading Template -->
-    <ng-template #loadingTpl>
+    } @else {
       <div class="flex items-center justify-center h-64">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#8b1e3f]"></div>
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-burgundy-700"></div>
       </div>
-    </ng-template>
+    }
 
     <!-- Action Modal -->
     <ui-modal [(isOpen)]="showActionModal" [title]="actionModalTitle()">
-      <app-dynamic-form
-        *ngIf="currentActionConfig()"
-        [fields]="currentActionConfig()!"
-        [loading]="submitting()"
-        [submitLabel]="actionSubmitLabel()"
-        (formSubmit)="onActionSubmit($event)"
-        (cancel)="showActionModal.set(false)"
-        [showCancel]="true"
-      ></app-dynamic-form>
+      @if (currentActionConfig()) {
+        <app-dynamic-form
+          [fields]="currentActionConfig()!"
+          [loading]="submitting()"
+          [submitLabel]="actionSubmitLabel()"
+          (formSubmit)="onActionSubmit($event)"
+          (cancel)="showActionModal.set(false)"
+          [showCancel]="true"
+        ></app-dynamic-form>
+      }
     </ui-modal>
-  `,
-  styles: [`
-    .info-group label {
-      display: block;
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: #78716c;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 0.25rem;
-    }
-    :host-context(.dark) .info-group label {
-      color: #a8a29e;
-    }
-    .info-group p {
-      color: #292524;
-      font-weight: 500;
-    }
-    :host-context(.dark) .info-group p {
-      color: #e7e5e4;
-    }
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      padding: 0.125rem 0.625rem;
-      border-radius: 9999px;
-      font-size: 0.75rem;
-      font-weight: 500;
-    }
-    .badge-success { background-color: #dcfce7; color: #166534; }
-    :host-context(.dark) .badge-success { background-color: rgba(22, 101, 52, 0.2); color: #86efac; border: 1px solid rgba(22, 101, 52, 0.3); }
-
-    .badge-warning { background-color: #fef9c3; color: #854d0e; }
-    :host-context(.dark) .badge-warning { background-color: rgba(133, 77, 14, 0.2); color: #fde047; border: 1px solid rgba(133, 77, 14, 0.3); }
-
-    .badge-danger { background-color: #fee2e2; color: #991b1b; }
-    :host-context(.dark) .badge-danger { background-color: rgba(153, 27, 27, 0.2); color: #fca5a5; border: 1px solid rgba(153, 27, 27, 0.3); }
-
-    .badge-neutral { background-color: #f3f4f6; color: #1f2937; }
-    :host-context(.dark) .badge-neutral { background-color: rgba(31, 41, 55, 0.4); color: #d1d5db; border: 1px solid rgba(75, 85, 99, 0.3); }
-  `]
+  `
 })
 export class EmployeeDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
@@ -482,8 +565,11 @@ export class EmployeeDetailComponent implements OnInit {
   private convex = inject(ConvexClientService);
   private toast = inject(ToastService);
   private authService = inject(AuthService);
+  private confirmDialog = inject(ConfirmDialogService);
 
   protected canManageEmployees = this.authService.hasRole(['super_admin', 'admin', 'hr_manager', 'manager']);
+  protected canPerformHrActions = this.authService.hasRole(['super_admin', 'admin', 'hr_manager']);
+  protected canEditFinancialData = this.authService.hasRole(['super_admin', 'admin', 'hr_manager']);
 
   employeeId = signal<Id<"employees"> | null>(null);
   employee = signal<any>(null);
@@ -521,8 +607,20 @@ export class EmployeeDetailComponent implements OnInit {
   documentsLoading = signal(false);
 
   // UI State
-  activeTab = signal<'overview' | 'personal' | 'financial' | 'education' | 'documents' | 'history' | 'payroll'>('overview');
-  tabs: ('overview' | 'personal' | 'financial' | 'education' | 'documents' | 'history' | 'payroll')[] = ['overview', 'personal', 'financial', 'education', 'documents', 'history', 'payroll'];
+  activeTab = signal<'overview' | 'personal' | 'financial' | 'education' | 'documents' | 'compensation' | 'history' | 'payroll'>('overview');
+  tabs: ('overview' | 'personal' | 'financial' | 'education' | 'documents' | 'compensation' | 'history' | 'payroll')[] = ['overview', 'personal', 'financial', 'education', 'documents', 'compensation', 'history', 'payroll'];
+
+  payslipColumns: TableColumn[] = [
+    { key: 'month', header: 'Month', sortable: true },
+    { key: 'generatedAt', header: 'Generated', type: 'date', sortable: true },
+    { key: 'grossSalary', header: 'Gross', type: 'currency' },
+    { key: 'netSalary', header: 'Net Pay', type: 'currency' }
+  ];
+
+  // Compensation State
+  editingCompensation = signal(false);
+  saving = signal(false);
+  compensationForm!: FormGroup;
 
 
   // Modal State
@@ -564,6 +662,13 @@ export class EmployeeDetailComponent implements OnInit {
   });
 
   ngOnInit() {
+    // Initialize compensation form
+    this.compensationForm = new FormGroup({
+      baseSalary: new FormControl<number | null>(null),
+      currency: new FormControl<string>('USD'),
+      payFrequency: new FormControl<string>('monthly'),
+    });
+
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
       if (id) {
@@ -684,7 +789,16 @@ export class EmployeeDetailComponent implements OnInit {
   }
 
   async deleteContact(id: string) {
-    if (!confirm('Are you sure you want to delete this contact?')) return;
+    const confirmed = await this.confirmDialog.confirm({
+      title: 'Delete Contact',
+      message: 'Are you sure you want to delete this contact? This action cannot be undone.',
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      variant: 'danger'
+    });
+
+    if (!confirmed) return;
+
     try {
       await this.convex.getClient().mutation(api.employee_details.deleteEmergencyContact, {
         id: id as any,
@@ -697,6 +811,10 @@ export class EmployeeDetailComponent implements OnInit {
   }
 
   async saveStatutory(data: any) {
+    if (!this.canEditFinancialData()) {
+      this.toast.error('You do not have permission to update financial data');
+      return;
+    }
     if (!this.employeeId()) return;
     this.bankingLoading.set(true); // Share loading state or create new one
     try {
@@ -713,6 +831,10 @@ export class EmployeeDetailComponent implements OnInit {
   }
 
   async saveBank(data: any) {
+    if (!this.canEditFinancialData()) {
+      this.toast.error('You do not have permission to update financial data');
+      return;
+    }
     if (!this.employeeId()) return;
     this.bankingLoading.set(true);
     try {
@@ -738,7 +860,20 @@ export class EmployeeDetailComponent implements OnInit {
   }
 
   async deleteBank(id: string) {
-    if (!confirm('Delete this bank account?')) return;
+    if (!this.canEditFinancialData()) {
+      this.toast.error('You do not have permission to update financial data');
+      return;
+    }
+    const confirmed = await this.confirmDialog.confirm({
+      title: 'Delete Bank Account',
+      message: 'Are you sure you want to delete this bank account? This action cannot be undone.',
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      variant: 'danger'
+    });
+
+    if (!confirmed) return;
+
     try {
       await this.convex.getClient().mutation(api.employee_details.deleteBankingDetail, {
         id: id as any,
@@ -751,6 +886,10 @@ export class EmployeeDetailComponent implements OnInit {
   }
 
   async addCredit(data: any) {
+    if (!this.canEditFinancialData()) {
+      this.toast.error('You do not have permission to update financial data');
+      return;
+    }
     if (!this.employeeId()) return;
     this.adjustmentsLoading.set(true);
     try {
@@ -768,6 +907,10 @@ export class EmployeeDetailComponent implements OnInit {
   }
 
   async addDebit(data: any) {
+    if (!this.canEditFinancialData()) {
+      this.toast.error('You do not have permission to update financial data');
+      return;
+    }
     if (!this.employeeId()) return;
     this.adjustmentsLoading.set(true);
     try {
@@ -785,6 +928,10 @@ export class EmployeeDetailComponent implements OnInit {
   }
 
   async toggleAdjustment(data: { id: string, type: 'credit' | 'debit', isActive: boolean }) {
+    if (!this.canEditFinancialData()) {
+      this.toast.error('You do not have permission to update financial data');
+      return;
+    }
     try {
       await this.convex.getClient().mutation(api.payroll.toggleAdjustmentStatus, data);
       this.toast.success('Status updated');
@@ -819,7 +966,16 @@ export class EmployeeDetailComponent implements OnInit {
   }
 
   async deleteEducation(id: string) {
-    if (!confirm('Remove this education record?')) return;
+    const confirmed = await this.confirmDialog.confirm({
+      title: 'Delete Education Record',
+      message: 'Are you sure you want to remove this education record? This action cannot be undone.',
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      variant: 'danger'
+    });
+
+    if (!confirmed) return;
+
     try {
       await this.convex.getClient().mutation(api.employee_details.deleteEducation, {
         id: id as any,
@@ -850,7 +1006,16 @@ export class EmployeeDetailComponent implements OnInit {
   }
 
   async deleteDocument(id: string) {
-    if (!confirm('Delete this document?')) return;
+    const confirmed = await this.confirmDialog.confirm({
+      title: 'Delete Document',
+      message: 'Are you sure you want to delete this document? This action cannot be undone.',
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      variant: 'danger'
+    });
+
+    if (!confirmed) return;
+
     try {
       await this.convex.getClient().mutation(api.employee_details.deleteDocument, {
         id: id as any,
@@ -862,6 +1027,64 @@ export class EmployeeDetailComponent implements OnInit {
     }
   }
 
+  // --- Compensation Handlers ---
+
+  canEditCompensation(): boolean {
+    return this.authService.hasRole(['super_admin', 'admin', 'hr_manager'])();
+  }
+
+  toggleEditCompensation(): void {
+    if (!this.canEditCompensation()) {
+      this.toast.error('You do not have permission to edit compensation');
+      return;
+    }
+    const editing = !this.editingCompensation();
+    this.editingCompensation.set(editing);
+    if (editing) {
+      const emp = this.employee();
+      this.compensationForm.patchValue({
+        baseSalary: emp?.baseSalary ?? null,
+        currency: emp?.currency ?? 'USD',
+        payFrequency: emp?.payFrequency ?? 'monthly',
+      });
+    }
+  }
+
+  async saveCompensation(): Promise<void> {
+    if (!this.canEditCompensation()) {
+      this.toast.error('You do not have permission to edit compensation');
+      return;
+    }
+    if (!this.employeeId()) return;
+    this.saving.set(true);
+    try {
+      await this.convex.getClient().mutation(api.employees.updateCompensation, {
+        employeeId: this.employeeId()!,
+        ...this.compensationForm.value,
+      });
+      this.editingCompensation.set(false);
+      this.toast.success('Compensation updated successfully');
+    } catch (error: any) {
+      this.toast.error(error.message || 'Failed to update compensation');
+    } finally {
+      this.saving.set(false);
+    }
+  }
+
+  formatSalary(amount?: number, currency?: string): string {
+    if (!amount) return 'Not set';
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency || 'USD' }).format(amount);
+  }
+
+  formatPayFrequency(freq?: string): string {
+    const map: Record<string, string> = {
+      monthly: 'Monthly',
+      bi_weekly: 'Bi-Weekly',
+      weekly: 'Weekly',
+    };
+    return map[freq || ''] || 'Not set';
+  }
+
   loadOrganizationData() {
     const client = this.convex.getClient();
     // We fetch these once to populate dropdowns.
@@ -870,7 +1093,7 @@ export class EmployeeDetailComponent implements OnInit {
     client.onUpdate(api.organization.listDesignations, {}, (data) => this.designations.set(data));
     client.onUpdate(api.organization.listLocations, {}, (data) => this.locations.set(data));
     // Fetch employees for autocomplete/selects
-    if (this.canManageEmployees()) {
+    if (this.canPerformHrActions()) {
       client.onUpdate(api.employees.list, {}, (data) => this.employeesList.set(data));
     }
   }
@@ -887,16 +1110,20 @@ export class EmployeeDetailComponent implements OnInit {
 
   getStatusBadgeClass(status: string): string {
     switch (status) {
-      case 'active': return 'badge-success';
+      case 'active':
+      case 'resolved':
+      case 'approved':
+        return 'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold bg-green-100 text-green-700 border border-green-200 dark:bg-green-900/20 dark:text-green-300 dark:border-green-700/30';
       case 'pending':
-      case 'investigating': return 'badge-warning';
+      case 'investigating':
+        return 'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold bg-amber-100 text-amber-700 border border-amber-200 dark:bg-amber-900/20 dark:text-amber-300 dark:border-amber-700/30';
       case 'terminated':
       case 'resigned':
       case 'rejected':
-      case 'dismissed': return 'badge-danger';
-      case 'resolved':
-      case 'approved': return 'badge-success';
-      default: return 'badge-neutral';
+      case 'dismissed':
+        return 'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold bg-red-100 text-red-700 border border-red-200 dark:bg-red-900/20 dark:text-red-300 dark:border-red-700/30';
+      default:
+        return 'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold bg-stone-100 text-stone-700 border border-stone-200 dark:bg-stone-700/40 dark:text-stone-300 dark:border-stone-600/40';
     }
   }
 
@@ -1130,3 +1357,4 @@ export class EmployeeDetailComponent implements OnInit {
     ];
   }
 }
+

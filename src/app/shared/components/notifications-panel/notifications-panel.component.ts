@@ -9,7 +9,7 @@ import { UiIconComponent } from '../ui-icon/ui-icon.component';
   imports: [CommonModule, UiIconComponent],
   template: `
     <div
-      class="absolute right-0 mt-2 w-80 sm:w-96 bg-white dark:bg-stone-800 rounded-2xl shadow-xl ring-1 ring-black ring-opacity-5 z-50 overflow-hidden transition-all transform origin-top-right border border-stone-100 dark:border-stone-700"
+      class="absolute right-0 mt-2 w-80 sm:w-96 bg-white dark:bg-white/5 dark:backdrop-blur-xl rounded-2xl shadow-xl ring-1 ring-black ring-opacity-5 z-50 overflow-hidden transition-all transform origin-top-right border border-stone-100 dark:border-white/8"
       [class.opacity-0]="!notificationService.isOpen()"
       [class.scale-95]="!notificationService.isOpen()"
       [class.pointer-events-none]="!notificationService.isOpen()"
@@ -18,13 +18,13 @@ import { UiIconComponent } from '../ui-icon/ui-icon.component';
       [class.pointer-events-auto]="notificationService.isOpen()"
     >
       <!-- Header -->
-      <div class="px-4 py-3 border-b border-stone-100 dark:border-stone-700 flex items-center justify-between bg-stone-50/50 dark:bg-stone-900/50">
+      <div class="px-4 py-3 border-b border-stone-100 dark:border-white/5 flex items-center justify-between bg-stone-50/50 dark:bg-white/5">
         <h3 class="text-sm font-bold text-stone-900 dark:text-stone-100">Notifications</h3>
         <div class="flex items-center gap-2">
           @if (notificationService.unreadCount() > 0) {
             <button
               (click)="notificationService.markAllAsRead()"
-              class="text-xs text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium"
+              class="text-xs text-burgundy-700 dark:text-burgundy-300 hover:text-burgundy-800 dark:hover:text-burgundy-200 font-medium"
             >
               Mark all read
             </button>
@@ -53,13 +53,12 @@ import { UiIconComponent } from '../ui-icon/ui-icon.component';
           <div class="divide-y divide-stone-100 dark:divide-stone-700">
             @for (notification of notificationService.notifications(); track notification._id) {
               <div
-                class="group relative px-4 py-3 hover:bg-stone-50 dark:hover:bg-stone-700/30 transition-colors flex gap-3"
+                class="group relative px-4 py-3 hover:bg-stone-50 dark:hover:bg-white/5 transition-colors flex gap-3"
                 [class.bg-blue-50_]="!notification.isRead"
                 [class.dark:bg-blue-900_10]="!notification.isRead"
               >
-                <!-- Unread Indicator -->
-                @if (!notification.isRead) {
-                  <div class="absolute left-0 top-0 bottom-0 w-1 bg-primary-500"></div>
+                  @if (!notification.isRead) {
+                  <div class="absolute left-0 top-0 bottom-0 w-1 bg-burgundy-500"></div>
                 }
 
                 <!-- Icon -->
@@ -84,7 +83,7 @@ import { UiIconComponent } from '../ui-icon/ui-icon.component';
                     {{ notification.message }}
                   </p>
                   @if (notification.link) {
-                    <div class="mt-2 flex items-center text-xs font-medium text-primary-600 dark:text-primary-400 group-hover:underline">
+                    <div class="mt-2 flex items-center text-xs font-medium text-burgundy-700 dark:text-burgundy-300 group-hover:underline">
                       View details <ui-icon name="chevron-right" class="w-3 h-3 ml-1"></ui-icon>
                     </div>
                   }
@@ -98,7 +97,7 @@ import { UiIconComponent } from '../ui-icon/ui-icon.component';
                       class="p-1 rounded-full hover:bg-stone-200 dark:hover:bg-stone-600 text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 transition-colors"
                       title="Mark as read"
                     >
-                      <div class="w-2 h-2 rounded-full bg-primary-500"></div>
+                      <div class="w-2 h-2 rounded-full bg-burgundy-500"></div>
                     </button>
                   }
                 </div>

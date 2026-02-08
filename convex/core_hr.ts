@@ -16,7 +16,7 @@ async function getViewerInfo(ctx: any) {
 }
 
 function isPrivileged(role: string) {
-  return ["super_admin", "admin", "hr_manager", "manager"].includes(role);
+  return ["super_admin", "admin", "hr_manager"].includes(role);
 }
 
 // --- Promotions ---

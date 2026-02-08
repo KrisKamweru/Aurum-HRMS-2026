@@ -9,7 +9,7 @@ import { AbstractControl, ReactiveFormsModule } from '@angular/forms';
   template: `
     <div class="space-y-1">
       <div class="flex justify-between">
-        <label [for]="id" class="block text-sm font-semibold text-stone-700 dark:text-stone-300">
+        <label [for]="id" class="block text-[13px] font-medium text-stone-700 dark:text-stone-300">
           {{ label }}
           @if (required) {
             <span class="text-burgundy-600 dark:text-burgundy-400">*</span>

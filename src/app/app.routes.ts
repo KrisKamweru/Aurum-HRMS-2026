@@ -33,7 +33,8 @@ export const routes: Routes = [
       },
       {
         path: 'recruitment',
-        loadChildren: () => import('./features/recruitment/recruitment.routes').then(m => m.RECRUITMENT_ROUTES)
+        loadChildren: () => import('./features/recruitment/recruitment.routes').then(m => m.RECRUITMENT_ROUTES),
+        canActivate: [roleGuard(['super_admin', 'admin', 'hr_manager', 'manager'])]
       },
       {
         path: 'training',
@@ -87,6 +88,10 @@ export const routes: Routes = [
   {
     path: 'demo',
     loadChildren: () => import('./features/demo/demo.routes').then(m => m.DEMO_ROUTES)
+  },
+  {
+    path: '6',
+    loadComponent: () => import('./features/showcase/design-six.component').then(m => m.ShowcaseSixComponent)
   },
   {
     path: 'auth',

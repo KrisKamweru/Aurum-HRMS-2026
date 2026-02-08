@@ -6,8 +6,11 @@ import { UiModalComponent } from '../../../../shared/components/ui-modal/ui-moda
 import { UiIconComponent } from '../../../../shared/components/ui-icon/ui-icon.component';
 import { DynamicFormComponent } from '../../../../shared/components/dynamic-form/dynamic-form.component';
 import { FieldConfig } from '../../../../shared/services/form-helper.service';
+import { UiGridComponent } from '../../../../shared/components/ui-grid/ui-grid.component';
+import { UiGridTileComponent } from '../../../../shared/components/ui-grid/ui-grid-tile.component';
 import { ConvexClientService } from '../../../../core/services/convex-client.service';
 import { ToastService } from '../../../../shared/services/toast.service';
+import { ConfirmDialogService } from '../../../../shared/services/confirm-dialog.service';
 import { api } from '../../../../../../convex/_generated/api';
 
 @Component({
@@ -19,7 +22,9 @@ import { api } from '../../../../../../convex/_generated/api';
     UiButtonComponent,
     UiModalComponent,
     UiIconComponent,
-    DynamicFormComponent
+    DynamicFormComponent,
+    UiGridComponent,
+    UiGridTileComponent
   ],
   template: `
     <div class="space-y-6">
@@ -39,12 +44,21 @@ import { api } from '../../../../../../convex/_generated/api';
         </ui-button>
       </div>
 
-      <ui-data-table
-        [data]="enrichedResignations()"
-        [columns]="columns"
-        [loading]="loading()"
-        [actionsTemplate]="actionsRef"
-      ></ui-data-table>
+      <div class="dash-frame">
+        <ui-grid [columns]="'1fr'" [gap]="'0px'">
+          <ui-grid-tile title="Resignations" variant="compact">
+            <div class="tile-body">
+              <ui-data-table
+                [data]="enrichedResignations()"
+                [columns]="columns"
+                [loading]="loading()"
+                [actionsTemplate]="actionsRef"
+                headerVariant="neutral"
+              ></ui-data-table>
+            </div>
+          </ui-grid-tile>
+        </ui-grid>
+      </div>
 
       <ng-template #actionsRef let-row>
         @if (row.status === 'pending') {
@@ -87,6 +101,7 @@ import { api } from '../../../../../../convex/_generated/api';
 export class ResignationsComponent implements OnInit, OnDestroy {
   private convexService = inject(ConvexClientService);
   private toastService = inject(ToastService);
+  private confirmDialog = inject(ConfirmDialogService);
 
   @ViewChild('actionsRef') actionsRef!: TemplateRef<any>;
 
@@ -211,7 +226,16 @@ export class ResignationsComponent implements OnInit, OnDestroy {
   }
 
   async updateStatus(row: any, status: 'approved' | 'rejected') {
-    if (!confirm(`Are you sure you want to ${status} this resignation?`)) return;
+    const action = status === 'approved' ? 'approve' : 'reject';
+    const confirmed = await this.confirmDialog.confirm({
+      title: `${status === 'approved' ? 'Approve' : 'Reject'} Resignation`,
+      message: `Are you sure you want to ${action} this resignation?`,
+      confirmText: status === 'approved' ? 'Approve' : 'Reject',
+      cancelText: 'Cancel',
+      variant: status === 'approved' ? 'warning' : 'danger'
+    });
+
+    if (!confirmed) return;
 
     const client = this.convexService.getClient();
     try {

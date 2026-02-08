@@ -1,7 +1,6 @@
 import { Component, computed, inject, signal, effect } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { UiCardComponent } from '../../../shared/components/ui-card/ui-card.component';
 import { UiIconComponent } from '../../../shared/components/ui-icon/ui-icon.component';
 import { UiButtonComponent } from '../../../shared/components/ui-button/ui-button.component';
 import { UiDataTableComponent, TableColumn } from '../../../shared/components/ui-data-table/ui-data-table.component';
@@ -9,6 +8,8 @@ import { UiBadgeComponent, BadgeVariant } from '../../../shared/components/ui-ba
 import { ManualEntryModalComponent } from './manual-entry-modal/manual-entry-modal.component';
 import { ConvexClientService } from '../../../core/services/convex-client.service';
 import { api } from '../../../../../convex/_generated/api';
+import { UiGridComponent } from '../../../shared/components/ui-grid/ui-grid.component';
+import { UiGridTileComponent } from '../../../shared/components/ui-grid/ui-grid-tile.component';
 
 @Component({
   selector: 'app-team-attendance',
@@ -16,10 +17,11 @@ import { api } from '../../../../../convex/_generated/api';
   imports: [
     CommonModule,
     FormsModule,
-    UiCardComponent,
     UiIconComponent,
     UiButtonComponent,
     UiDataTableComponent,
+    UiGridComponent,
+    UiGridTileComponent,
     ManualEntryModalComponent
   ],
   providers: [DatePipe],
@@ -28,7 +30,7 @@ import { api } from '../../../../../convex/_generated/api';
       <!-- Header -->
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 class="text-2xl font-bold text-stone-800 dark:text-stone-100">Team Attendance</h1>
+          <h1 class="text-2xl font-semibold text-stone-900 dark:text-white tracking-tight">Team Attendance</h1>
           <p class="text-stone-500 dark:text-stone-400 mt-1">Monitor and manage your team's work hours</p>
         </div>
         <div class="flex items-center gap-3">
@@ -37,7 +39,7 @@ import { api } from '../../../../../convex/_generated/api';
               type="date"
               [ngModel]="selectedDate()"
               (ngModelChange)="onDateChange($event)"
-              class="pl-10 pr-4 py-2 rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-800 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-[#8b1e3f] focus:border-transparent transition-all"
+              class="pl-10 pr-4 py-2 rounded-lg border border-stone-200 dark:border-white/8 bg-white dark:bg-white/5 text-stone-800 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-burgundy-700 focus:border-transparent transition-all"
             />
             <ui-icon name="calendar" class="w-5 h-5 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"></ui-icon>
           </div>
@@ -47,79 +49,88 @@ import { api } from '../../../../../convex/_generated/api';
         </div>
       </div>
 
-      <!-- Stats Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div class="bg-white dark:bg-stone-800 rounded-xl p-4 border border-stone-200 dark:border-stone-700 shadow-sm flex items-center gap-4">
-          <div class="w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-            <ui-icon name="check" class="w-6 h-6"></ui-icon>
-          </div>
-          <div>
-            <div class="text-2xl font-bold text-stone-800 dark:text-stone-100">{{ stats().present }}</div>
-            <div class="text-xs text-stone-500 dark:text-stone-400 font-medium uppercase">Present</div>
-          </div>
-        </div>
+      <div class="dash-frame">
+        <ui-grid [columns]="'1fr'" [gap]="'0px'">
+          <ui-grid-tile title="Attendance Snapshot" variant="compact" divider="bottom">
+            <div class="tile-body">
+              <div class="grid grid-cols-1 md:grid-cols-4 gap-4 sm:gap-6">
+                <div class="bg-white dark:bg-white/5 rounded-xl p-4 border border-stone-200 dark:border-white/8 shadow-sm flex items-center gap-4">
+                  <div class="w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                    <ui-icon name="check" class="w-6 h-6"></ui-icon>
+                  </div>
+                  <div>
+                    <div class="text-2xl font-bold text-stone-800 dark:text-stone-100">{{ stats().present }}</div>
+                    <div class="text-xs text-stone-500 dark:text-stone-400 font-medium uppercase">Present</div>
+                  </div>
+                </div>
 
-        <div class="bg-white dark:bg-stone-800 rounded-xl p-4 border border-stone-200 dark:border-stone-700 shadow-sm flex items-center gap-4">
-          <div class="w-12 h-12 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 flex items-center justify-center">
-            <ui-icon name="clock" class="w-6 h-6"></ui-icon>
-          </div>
-          <div>
-            <div class="text-2xl font-bold text-stone-800 dark:text-stone-100">{{ stats().late }}</div>
-            <div class="text-xs text-stone-500 dark:text-stone-400 font-medium uppercase">Late</div>
-          </div>
-        </div>
+                <div class="bg-white dark:bg-white/5 rounded-xl p-4 border border-stone-200 dark:border-white/8 shadow-sm flex items-center gap-4">
+                  <div class="w-12 h-12 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+                    <ui-icon name="clock" class="w-6 h-6"></ui-icon>
+                  </div>
+                  <div>
+                    <div class="text-2xl font-bold text-stone-800 dark:text-stone-100">{{ stats().late }}</div>
+                    <div class="text-xs text-stone-500 dark:text-stone-400 font-medium uppercase">Late</div>
+                  </div>
+                </div>
 
-        <div class="bg-white dark:bg-stone-800 rounded-xl p-4 border border-stone-200 dark:border-stone-700 shadow-sm flex items-center gap-4">
-          <div class="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 flex items-center justify-center">
-            <ui-icon name="x-mark" class="w-6 h-6"></ui-icon>
-          </div>
-          <div>
-            <div class="text-2xl font-bold text-stone-800 dark:text-stone-100">{{ stats().absent }}</div>
-            <div class="text-xs text-stone-500 dark:text-stone-400 font-medium uppercase">Absent</div>
-          </div>
-        </div>
+                <div class="bg-white dark:bg-white/5 rounded-xl p-4 border border-stone-200 dark:border-white/8 shadow-sm flex items-center gap-4">
+                  <div class="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 flex items-center justify-center">
+                    <ui-icon name="x-mark" class="w-6 h-6"></ui-icon>
+                  </div>
+                  <div>
+                    <div class="text-2xl font-bold text-stone-800 dark:text-stone-100">{{ stats().absent }}</div>
+                    <div class="text-xs text-stone-500 dark:text-stone-400 font-medium uppercase">Absent</div>
+                  </div>
+                </div>
 
-        <div class="bg-white dark:bg-stone-800 rounded-xl p-4 border border-stone-200 dark:border-stone-700 shadow-sm flex items-center gap-4">
-          <div class="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center">
-            <ui-icon name="briefcase" class="w-6 h-6"></ui-icon>
-          </div>
-          <div>
-            <div class="text-2xl font-bold text-stone-800 dark:text-stone-100">{{ stats().onLeave }}</div>
-            <div class="text-xs text-stone-500 dark:text-stone-400 font-medium uppercase">On Leave</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Team Table -->
-      <ui-card class="overflow-hidden w-full max-w-full">
-        <ui-data-table
-          [data]="tableData()"
-          [columns]="columns"
-          [loading]="isLoading()"
-          [pagination]="true"
-          [pageSize]="10"
-          [page]="currentPage()"
-          [totalItems]="tableData().length"
-          (pageChange)="currentPage.set($event)"
-          [actionsTemplate]="actionTemplate"
-          [cellTemplates]="{ 'name': employeeTemplate }"
-        >
-          <!-- Employee Column Template -->
-          <ng-template #employeeTemplate let-row>
-            <div>
-              <div class="font-medium text-stone-800 dark:text-stone-100">{{ row.name }}</div>
-              <div class="text-xs text-stone-500">{{ row.email }}</div>
+                <div class="bg-white dark:bg-white/5 rounded-xl p-4 border border-stone-200 dark:border-white/8 shadow-sm flex items-center gap-4">
+                  <div class="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+                    <ui-icon name="briefcase" class="w-6 h-6"></ui-icon>
+                  </div>
+                  <div>
+                    <div class="text-2xl font-bold text-stone-800 dark:text-stone-100">{{ stats().onLeave }}</div>
+                    <div class="text-xs text-stone-500 dark:text-stone-400 font-medium uppercase">On Leave</div>
+                  </div>
+                </div>
+              </div>
             </div>
-          </ng-template>
+          </ui-grid-tile>
 
-          <!-- Custom Action Template -->
-          <ng-template #actionTemplate let-row>
-            <ui-button variant="ghost" size="sm" (onClick)="openEditModal(row)">
-              <ui-icon name="pencil-square" class="w-4 h-4 text-stone-500"></ui-icon>
-            </ui-button>
-          </ng-template>
-        </ui-data-table>
-      </ui-card>
+          <ui-grid-tile title="Team Attendance" variant="compact">
+            <div class="tile-body">
+              <ui-data-table
+                [data]="tableData()"
+                [columns]="columns"
+                [loading]="isLoading()"
+                [pagination]="true"
+                [pageSize]="10"
+                [page]="currentPage()"
+                [totalItems]="tableData().length"
+                (pageChange)="currentPage.set($event)"
+                [actionsTemplate]="actionTemplate"
+                [cellTemplates]="{ 'name': employeeTemplate }"
+                headerVariant="neutral"
+              >
+                <!-- Employee Column Template -->
+                <ng-template #employeeTemplate let-row>
+                  <div>
+                    <div class="font-medium text-stone-800 dark:text-stone-100">{{ row.name }}</div>
+                    <div class="text-xs text-stone-500">{{ row.email }}</div>
+                  </div>
+                </ng-template>
+
+                <!-- Custom Action Template -->
+                <ng-template #actionTemplate let-row>
+                  <ui-button variant="ghost" size="sm" (onClick)="openEditModal(row)">
+                    <ui-icon name="pencil-square" class="w-4 h-4 text-stone-500"></ui-icon>
+                  </ui-button>
+                </ng-template>
+              </ui-data-table>
+            </div>
+          </ui-grid-tile>
+        </ui-grid>
+      </div>
     </div>
 
     <!-- Edit Modal -->

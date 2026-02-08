@@ -6,55 +6,69 @@ import { UiButtonComponent } from '../../shared/components/ui-button/ui-button.c
 import { UiModalComponent } from '../../shared/components/ui-modal/ui-modal.component';
 import { UiIconComponent } from '../../shared/components/ui-icon/ui-icon.component';
 import { DynamicFormComponent } from '../../shared/components/dynamic-form/dynamic-form.component';
+import { UiGridComponent } from '../../shared/components/ui-grid/ui-grid.component';
+import { UiGridTileComponent } from '../../shared/components/ui-grid/ui-grid-tile.component';
 import { FieldConfig } from '../../shared/services/form-helper.service';
 import { ConvexClientService } from '../../core/services/convex-client.service';
 import { ToastService } from '../../shared/services/toast.service';
 import { AuthService } from '../../core/auth/auth.service';
+import { ConfirmDialogService } from '../../shared/services/confirm-dialog.service';
 import { api } from '../../../../convex/_generated/api';
 
 @Component({
   selector: 'app-employees',
   standalone: true,
-  imports: [CommonModule, UiDataTableComponent, UiButtonComponent, UiModalComponent, UiIconComponent, DynamicFormComponent],
+  imports: [CommonModule, UiDataTableComponent, UiButtonComponent, UiModalComponent, UiIconComponent, DynamicFormComponent, UiGridComponent, UiGridTileComponent],
   template: `
     <div class="space-y-6">
       <div class="flex items-center justify-between">
         <div>
-          <h1 class="heading-accent dark:text-stone-100">Employees</h1>
-          <p class="mt-3 text-stone-500 dark:text-stone-400">Manage your workforce.</p>
+          <h1 class="text-3xl font-bold text-stone-900 dark:text-white tracking-tight">Employees</h1>
+          <p class="mt-3 text-[15px] text-stone-500 dark:text-stone-400">Manage your workforce.</p>
         </div>
-        <ui-button
-          (onClick)="openCreateModal()"
-          *ngIf="canManage()"
-          [prerequisitesMet]="departments().length > 0 && designations().length > 0"
-          prerequisiteMessage="You need to create Departments and Designations before adding employees."
-          [prerequisiteAction]="{ label: 'Go to Organization', link: ['/organization'] }"
-        >
-          <ui-icon name="plus" class="w-4 h-4 mr-2"></ui-icon>
-          Add Employee
-        </ui-button>
+        @if (canManage()) {
+          <ui-button
+            (onClick)="openCreateModal()"
+            [prerequisitesMet]="departments().length > 0 && designations().length > 0"
+            prerequisiteMessage="You need to create Departments and Designations before adding employees."
+            [prerequisiteAction]="{ label: 'Go to Organization', link: ['/organization'] }"
+          >
+            <ui-icon name="plus" class="w-4 h-4 mr-2"></ui-icon>
+            Add Employee
+          </ui-button>
+        }
       </div>
 
-      <ui-data-table
-          [data]="employees()"
-          [columns]="columns"
-          [loading]="loading()"
-          [actionsTemplate]="actionsRef"
-        ></ui-data-table>
+      <!-- Dash-frame glass container -->
+      <div class="dash-frame">
+        <ui-grid [columns]="'1fr'" [gap]="'0px'">
+          <ui-grid-tile title="Employees" variant="compact">
+            <div class="tile-body">
+              <ui-data-table
+                [data]="employees()"
+                [columns]="columns"
+                [loading]="loading()"
+                [actionsTemplate]="actionsRef"
+                headerVariant="neutral"
+              ></ui-data-table>
+            </div>
+          </ui-grid-tile>
+        </ui-grid>
+      </div>
 
       <ng-template #actionsRef let-row>
         <div class="flex gap-2 justify-end">
           <button
-            class="p-1.5 text-stone-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 dark:hover:text-indigo-400 rounded-lg transition-colors"
+            class="p-1.5 text-stone-400 hover:text-burgundy-700 hover:bg-burgundy-50 dark:hover:text-burgundy-300 dark:hover:bg-burgundy-700/20 rounded-lg transition-colors"
             (click)="viewEmployee(row)"
             title="View Details"
           >
             <ui-icon name="eye" class="w-4 h-4"></ui-icon>
           </button>
 
-          <ng-container *ngIf="canManage()">
+          @if (canManage()) {
             <button
-              class="p-1.5 text-stone-400 hover:text-[#8b1e3f] hover:bg-[#fdf2f4] dark:hover:text-[#fce7eb] dark:hover:bg-[#8b1e3f]/20 rounded-lg transition-colors"
+              class="p-1.5 text-stone-400 hover:text-burgundy-700 hover:bg-burgundy-50 dark:hover:text-burgundy-300 dark:hover:bg-burgundy-700/20 rounded-lg transition-colors"
               (click)="openEditModal(row)"
               title="Edit"
             >
@@ -67,7 +81,7 @@ import { api } from '../../../../convex/_generated/api';
             >
               <ui-icon name="trash" class="w-4 h-4"></ui-icon>
             </button>
-          </ng-container>
+          }
         </div>
       </ng-template>
 
@@ -93,6 +107,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
   private toastService = inject(ToastService);
   private router = inject(Router);
   private authService = inject(AuthService);
+  private confirmDialog = inject(ConfirmDialogService);
 
   canManage = this.authService.hasRole(['super_admin', 'admin', 'hr_manager', 'manager']);
 
@@ -348,7 +363,15 @@ export class EmployeesComponent implements OnInit, OnDestroy {
   }
 
   async deleteEmployee(row: any) {
-    if (!confirm('Are you sure you want to delete this employee?')) return;
+    const confirmed = await this.confirmDialog.confirm({
+      title: 'Delete Employee',
+      message: 'Are you sure you want to delete this employee? This action cannot be undone.',
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      variant: 'danger'
+    });
+
+    if (!confirmed) return;
 
     try {
       const client = this.convexService.getClient();

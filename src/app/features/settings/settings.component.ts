@@ -9,11 +9,9 @@ import { UiIconComponent } from '../../shared/components/ui-icon/ui-icon.compone
   imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, UiIconComponent],
   template: `
     <div class="space-y-6">
-      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 class="text-3xl font-bold text-stone-900 dark:text-white tracking-tight">Settings</h1>
-          <p class="text-[15px] text-stone-600 dark:text-stone-400 mt-2">Manage organization configuration and preferences.</p>
-        </div>
+      <div>
+        <h1 class="text-3xl font-bold text-stone-900 dark:text-white tracking-tight">Settings</h1>
+        <p class="text-[15px] text-stone-600 dark:text-stone-400 mt-2">Manage your personal preferences and application settings.</p>
       </div>
 
       <div class="flex flex-col md:flex-row gap-8">
@@ -25,7 +23,7 @@ import { UiIconComponent } from '../../shared/components/ui-icon/ui-icon.compone
             class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-stone-600 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-white/5 hover:text-stone-700 dark:hover:text-stone-200 transition-colors"
           >
             <ui-icon name="cog-6-tooth" class="w-5 h-5"></ui-icon>
-            General
+            User Preferences
           </a>
           <a
             routerLink="leave-policies"

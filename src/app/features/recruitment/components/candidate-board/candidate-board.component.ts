@@ -8,6 +8,8 @@ import { ConvexClientService } from '../../../../core/services/convex-client.ser
 import { ToastService } from '../../../../shared/services/toast.service';
 import { api } from '../../../../../../convex/_generated/api';
 import { Id } from '../../../../../../convex/_generated/dataModel';
+import { UiGridComponent } from '../../../../shared/components/ui-grid/ui-grid.component';
+import { UiGridTileComponent } from '../../../../shared/components/ui-grid/ui-grid-tile.component';
 
 interface Application {
   _id: string;
@@ -35,7 +37,9 @@ interface Column {
     FormsModule,
     DragDropModule,
     UiButtonComponent,
-    UiIconComponent
+    UiIconComponent,
+    UiGridComponent,
+    UiGridTileComponent
   ],
   template: `
     <div class="h-[calc(100vh-8rem)] flex flex-col">
@@ -66,78 +70,86 @@ interface Column {
       </div>
 
       <!-- Board -->
-      @if (loading()) {
-        <div class="flex-1 flex items-center justify-center">
-          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
-        </div>
-      } @else {
-        <div class="flex-1 overflow-x-auto pb-4">
-          <div class="inline-flex gap-4 h-full min-w-full px-1">
-            @for (column of boardColumns(); track column.id) {
-              <div class="w-80 flex-shrink-0 flex flex-col bg-stone-100 dark:bg-stone-900/50 rounded-xl border border-stone-200 dark:border-stone-700 h-full max-h-full">
-                <!-- Column Header -->
-                <div class="p-3 flex items-center justify-between border-b border-stone-200 dark:border-stone-700 bg-stone-50/50 dark:bg-stone-800/50 rounded-t-xl sticky top-0 z-10 backdrop-blur-sm">
-                  <div class="flex items-center gap-2">
-                    <div class="w-3 h-3 rounded-full" [ngClass]="column.colorClass"></div>
-                    <h3 class="font-bold text-stone-700 dark:text-stone-200 text-sm uppercase tracking-wide">
-                      {{ column.title }}
-                    </h3>
-                  </div>
-                  <span class="bg-white dark:bg-stone-800 text-stone-500 text-xs font-semibold px-2 py-0.5 rounded-full shadow-sm border border-stone-200 dark:border-stone-700">
-                    {{ column.items.length }}
-                  </span>
+      <div class="dash-frame flex-1 min-h-0">
+        <ui-grid [columns]="'1fr'" [gap]="'0px'">
+          <ui-grid-tile title="Pipeline" variant="compact">
+            <div class="tile-body h-full flex flex-col min-h-0">
+              @if (loading()) {
+                <div class="flex-1 flex items-center justify-center">
+                  <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
                 </div>
-
-                <!-- Drop List -->
-                <div
-                  cdkDropList
-                  [id]="column.id"
-                  [cdkDropListData]="column.items"
-                  [cdkDropListConnectedTo]="connectedDropLists"
-                  (cdkDropListDropped)="drop($event, column.status)"
-                  class="flex-1 overflow-y-auto p-2 space-y-3 min-h-[100px]"
-                >
-                  @for (item of column.items; track item._id) {
-                    <div
-                      cdkDrag
-                      [cdkDragData]="item"
-                      class="bg-white dark:bg-stone-800 p-4 rounded-xl shadow-sm border border-stone-200 dark:border-stone-700 hover:shadow-md cursor-grab active:cursor-grabbing transition-shadow group relative"
-                    >
-                      <!-- Card Content -->
-                      <div class="flex justify-between items-start mb-2">
-                        <div class="font-bold text-stone-800 dark:text-stone-100 line-clamp-1">
-                          {{ item.candidateName }}
-                        </div>
-                        @if (item.rating) {
-                          <div class="flex text-amber-400 text-xs">
-                            <ui-icon name="star" class="w-3 h-3"></ui-icon>
-                            <span class="ml-0.5 font-bold text-stone-600 dark:text-stone-400">{{ item.rating }}</span>
+              } @else {
+                <div class="flex-1 overflow-x-auto pb-4">
+                  <div class="inline-flex gap-4 h-full min-w-full px-1">
+                    @for (column of boardColumns(); track column.id) {
+                      <div class="w-80 flex-shrink-0 flex flex-col bg-stone-100 dark:bg-stone-900/50 rounded-xl border border-stone-200 dark:border-stone-700 h-full max-h-full">
+                        <!-- Column Header -->
+                        <div class="p-3 flex items-center justify-between border-b border-stone-200 dark:border-stone-700 bg-stone-50/50 dark:bg-stone-800/50 rounded-t-xl sticky top-0 z-10 backdrop-blur-sm">
+                          <div class="flex items-center gap-2">
+                            <div class="w-3 h-3 rounded-full" [ngClass]="column.colorClass"></div>
+                            <h3 class="font-bold text-stone-700 dark:text-stone-200 text-sm uppercase tracking-wide">
+                              {{ column.title }}
+                            </h3>
                           </div>
-                        }
-                      </div>
+                          <span class="bg-white dark:bg-stone-800 text-stone-500 text-xs font-semibold px-2 py-0.5 rounded-full shadow-sm border border-stone-200 dark:border-stone-700">
+                            {{ column.items.length }}
+                          </span>
+                        </div>
 
-                      <div class="text-xs text-stone-500 dark:text-stone-400 mb-3 truncate">
-                        {{ item.jobTitle }}
-                      </div>
+                        <!-- Drop List -->
+                        <div
+                          cdkDropList
+                          [id]="column.id"
+                          [cdkDropListData]="column.items"
+                          [cdkDropListConnectedTo]="connectedDropLists"
+                          (cdkDropListDropped)="drop($event, column.status)"
+                          class="flex-1 overflow-y-auto p-2 space-y-3 min-h-[100px]"
+                        >
+                          @for (item of column.items; track item._id) {
+                            <div
+                              cdkDrag
+                              [cdkDragData]="item"
+                              class="bg-white dark:bg-stone-800 p-4 rounded-xl shadow-sm border border-stone-200 dark:border-stone-700 hover:shadow-md cursor-grab active:cursor-grabbing transition-shadow group relative"
+                            >
+                              <!-- Card Content -->
+                              <div class="flex justify-between items-start mb-2">
+                                <div class="font-bold text-stone-800 dark:text-stone-100 line-clamp-1">
+                                  {{ item.candidateName }}
+                                </div>
+                                @if (item.rating) {
+                                  <div class="flex text-amber-400 text-xs">
+                                    <ui-icon name="star" class="w-3 h-3"></ui-icon>
+                                    <span class="ml-0.5 font-bold text-stone-600 dark:text-stone-400">{{ item.rating }}</span>
+                                  </div>
+                                }
+                              </div>
 
-                      <div class="flex items-center justify-between text-xs text-stone-400 border-t border-stone-100 dark:border-stone-700 pt-3 mt-1">
-                        <span>{{ item.appliedAt | date:'mediumDate' }}</span>
-                        <div class="opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
-                            <!-- TODO: View Details Action -->
-                            <button class="hover:text-primary-600">View</button>
+                              <div class="text-xs text-stone-500 dark:text-stone-400 mb-3 truncate">
+                                {{ item.jobTitle }}
+                              </div>
+
+                              <div class="flex items-center justify-between text-xs text-stone-400 border-t border-stone-100 dark:border-stone-700 pt-3 mt-1">
+                                <span>{{ item.appliedAt | date:'mediumDate' }}</span>
+                                <div class="opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
+                                    <!-- TODO: View Details Action -->
+                                    <button class="hover:text-primary-600">View</button>
+                                </div>
+                              </div>
+
+                              <!-- Drag Placeholder -->
+                              <div *cdkDragPlaceholder class="opacity-0"></div>
+                            </div>
+                          }
                         </div>
                       </div>
-
-                      <!-- Drag Placeholder -->
-                      <div *cdkDragPlaceholder class="opacity-0"></div>
-                    </div>
-                  }
+                    }
+                  </div>
                 </div>
-              </div>
-            }
-          </div>
-        </div>
-      }
+              }
+            </div>
+          </ui-grid-tile>
+        </ui-grid>
+      </div>
     </div>
   `,
   styles: [`

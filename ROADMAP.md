@@ -32,6 +32,67 @@ Aurum HRMS is a modern, comprehensive, and scalable **SaaS** Human Resource Mana
 
 ---
 
+## Consolidated Active Backlog (Single Source of Truth)
+This section is now the canonical task list. Items in older checklist files are tracked here.
+
+### 1. Security and Permission Model (Highest Priority)
+- [ ] Implement maker-checker for sensitive pay operations:
+  - compensation edits (`baseSalary`, `currency`, `payFrequency`)
+  - payroll credits/debits add/edit/toggle
+  - payroll run finalize/delete where applicable
+- [ ] Enforce anti-self-approval for org-scoped sensitive actions (`admin` <-> `manager` dual control).
+- [ ] Add explicit irreversible-action communication everywhere:
+  - clear impact copy
+  - strong confirm dialogs
+  - actor + target summary before submit
+- [ ] Design and implement a robust audit trail:
+  - before/after snapshots for sensitive changes
+  - requester/approver IDs
+  - timestamps and reason fields
+
+### 2. Pay Data and Payroll UX Validation
+- [x] Role boundaries validated for pay-data controls (super_admin/admin editable, manager view-only, employee denied on other-employee detail).
+- [ ] Add negative-path automated tests for unauthorized mutation attempts against Convex functions.
+- [ ] Add Playwright regression suite for compensation + financial tab workflows (open/edit/cancel/save/deny paths).
+
+### 3. Unified Grid / Design System Completion
+- [x] Core app-wide grid treatment rollout completed for primary routes.
+- [ ] Final conformance sweep for edge routes/components still carrying legacy visual patterns.
+- [ ] Continue replacing custom tables with `ui-data-table` where low-risk; keep complex custom tables only when behavior would regress.
+- [ ] Keep `/6` as no-touch showcase reference.
+
+### 4. Tailwind-First Styling Migration
+- [x] Major style cleanup completed on key surfaces (including employee detail pay-data views).
+- [ ] Reduce remaining component-scoped custom CSS and shift to Tailwind utilities/design tokens.
+- [ ] Remove outdated/duplicate style fragments once equivalent utility classes are in place.
+
+### 5. Quality Gates and Automation
+- [x] Build baseline clean (no blocking budget/parser/type errors).
+- [x] Deep role-route audit baseline green (`148/148`).
+- [x] Pay-data role audit baseline green (`19/19`).
+- [ ] Add CI execution for:
+  - deep role-route audit script
+  - pay-data audit script
+  - negative authorization tests
+- [ ] Raise automated coverage toward full negative-path validation for critical routes/actions.
+
+### 6. MVP Closeout
+- [ ] Complete Basic Reports MVP item:
+  - attendance list/report view polish
+  - payroll list/report view polish
+  - CSV export flows (including empty/error cases)
+- [ ] Final release-readiness pass on UX consistency and route/action correctness across all roles.
+
+### 7. Backlog Hygiene
+- [ ] Archive or mark informational-only the following docs after migration into this roadmap:
+  - `docs/GRID-TREATMENT-TODO.md`
+  - `docs/DESIGN-SIX-TREATMENT-CHECKLIST.md`
+  - `docs/UI-VALIDATION-LOG.md`
+  - `docs/PAY-DATA-AUDIT-CHECKLIST.md`
+  - `docs/ROLE-ROUTE-AUDIT-CHECKLIST.md`
+
+---
+
 ## Strategic Roadmap
 
 ### 🚧 Foundations (Cross-Cutting Concerns)

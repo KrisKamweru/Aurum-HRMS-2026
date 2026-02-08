@@ -7,14 +7,14 @@ import { UiToastComponent } from '../../shared/components/ui-toast/ui-toast.comp
   selector: 'app-auth-layout',
   imports: [RouterOutlet, UiIconComponent, UiToastComponent],
   template: `
-    <div class="min-h-screen flex">
+    <div class="min-h-screen flex bg-white dark:bg-[#0b0b0b]">
       <!-- Global Toast Container -->
       <ui-toast></ui-toast>
 
       <!-- Left Panel - Branding -->
       <div class="hidden lg:flex lg:w-1/2 relative overflow-hidden">
         <!-- Background gradient -->
-        <div class="absolute inset-0 bg-gradient-to-br from-[#722038] via-[#8b1e3f] to-[#4a0d1f]"></div>
+        <div class="absolute inset-0 bg-gradient-to-br from-burgundy-700 to-burgundy-950"></div>
 
         <!-- Decorative elements -->
         <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-br from-amber-400/10 to-transparent rounded-full blur-3xl transform translate-x-1/3 -translate-y-1/3"></div>
@@ -34,7 +34,7 @@ import { UiToastComponent } from '../../shared/components/ui-toast/ui-toast.comp
           <div class="mb-10 animate-fade-in-down">
             <div class="w-24 h-24 rounded-2xl bg-gradient-to-br from-amber-300 via-amber-400 to-amber-500 flex items-center justify-center shadow-2xl shadow-amber-500/20 transform hover:scale-105 transition-transform duration-300 relative overflow-hidden">
               <div class="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent"></div>
-              <span class="relative text-[#4a0d1f] font-bold text-5xl">A</span>
+              <span class="relative text-burgundy-950 font-bold text-5xl">A</span>
             </div>
           </div>
 
@@ -79,38 +79,38 @@ import { UiToastComponent } from '../../shared/components/ui-toast/ui-toast.comp
       </div>
 
       <!-- Right Panel - Form -->
-      <div class="flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-20 xl:px-24 bg-gradient-to-b from-stone-50 to-stone-100">
+      <div class="flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-20 xl:px-24 bg-gradient-to-b from-stone-50 to-stone-100 dark:from-[#0b0b0b] dark:to-stone-950">
         <!-- Mobile logo -->
         <div class="lg:hidden flex justify-center mb-10">
           <div class="flex items-center gap-4">
-            <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-[#8b1e3f] to-[#722038] flex items-center justify-center shadow-lg shadow-[#8b1e3f]/20">
+            <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-burgundy-700 to-burgundy-900 flex items-center justify-center shadow-lg shadow-burgundy-700/20">
               <span class="text-amber-300 font-bold text-2xl">A</span>
             </div>
             <div>
-              <h1 class="text-2xl font-bold text-stone-900">
-                Aurum <span class="text-[#8b1e3f]">HRMS</span>
+              <h1 class="text-2xl font-bold text-stone-900 dark:text-stone-100">
+                Aurum <span class="text-burgundy-700 dark:text-burgundy-500">HRMS</span>
               </h1>
-              <p class="text-sm text-stone-500">Human Resource Management</p>
+              <p class="text-sm text-stone-500 dark:text-stone-400">Human Resource Management</p>
             </div>
           </div>
         </div>
 
         <div class="mx-auto w-full max-w-sm lg:max-w-md">
           <!-- Card with subtle top accent -->
-          <div class="relative bg-white rounded-2xl shadow-xl shadow-stone-200/60 p-8 sm:p-10 border border-stone-100 animate-scale-in overflow-hidden">
+          <div class="relative bg-white dark:bg-white/5 rounded-2xl shadow-xl shadow-stone-200/60 dark:shadow-black/30 p-8 sm:p-10 border border-stone-100 dark:border-white/8 dark:backdrop-blur-xl animate-scale-in overflow-hidden">
             <!-- Top accent bar -->
-            <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#8b1e3f] via-[#a82349] to-[#8b1e3f]"></div>
+            <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-burgundy-700 via-burgundy-600 to-burgundy-700"></div>
             <router-outlet />
           </div>
 
           <!-- Footer -->
           <div class="mt-10 text-center">
-            <div class="flex items-center justify-center gap-2 text-stone-400 text-sm mb-2">
-              <div class="w-8 h-px bg-gradient-to-r from-transparent to-stone-300"></div>
-              <span class="text-stone-500">Crafted with precision</span>
-              <div class="w-8 h-px bg-gradient-to-l from-transparent to-stone-300"></div>
+            <div class="flex items-center justify-center gap-2 text-stone-400 dark:text-stone-500 text-sm mb-2">
+              <div class="w-8 h-px bg-gradient-to-r from-transparent to-stone-300 dark:to-stone-700"></div>
+              <span class="text-stone-500 dark:text-stone-400">Crafted with precision</span>
+              <div class="w-8 h-px bg-gradient-to-l from-transparent to-stone-300 dark:to-stone-700"></div>
             </div>
-            <p class="text-stone-400 text-xs">
+            <p class="text-stone-400 dark:text-stone-500 text-xs">
               &copy; 2026 Aurum HRMS. All rights reserved.
             </p>
           </div>

@@ -3,9 +3,10 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { UiButtonComponent } from '../../shared/components/ui-button/ui-button.component';
-import { UiCardComponent } from '../../shared/components/ui-card/ui-card.component';
 import { UiIconComponent } from '../../shared/components/ui-icon/ui-icon.component';
 import { UiFormFieldComponent } from '../../shared/components/ui-form-field/ui-form-field.component';
+import { UiGridComponent } from '../../shared/components/ui-grid/ui-grid.component';
+import { UiGridTileComponent } from '../../shared/components/ui-grid/ui-grid-tile.component';
 import { ConvexClientService } from '../../core/services/convex-client.service';
 import { AuthService } from '../../core/auth/auth.service';
 import { ToastService } from '../../shared/services/toast.service';
@@ -27,9 +28,10 @@ interface WizardStep {
     ReactiveFormsModule,
     RouterLink,
     UiButtonComponent,
-    UiCardComponent,
     UiIconComponent,
-    UiFormFieldComponent
+    UiFormFieldComponent,
+    UiGridComponent,
+    UiGridTileComponent
   ],
   template: `
     <div class="min-h-screen bg-stone-50 py-8 px-4">
@@ -80,8 +82,11 @@ interface WizardStep {
         </div>
 
         <!-- Step Content -->
-        <ui-card variant="premium" padding="lg">
-          <form [formGroup]="wizardForm">
+        <div class="dash-frame">
+          <ui-grid [columns]="'1fr'" [gap]="'0px'">
+            <ui-grid-tile title="Organization Setup" variant="compact">
+              <div class="tile-body">
+                <form [formGroup]="wizardForm">
             <!-- Step 1: Organization Details -->
             @if (currentStep() === 0) {
               <div class="space-y-4" formGroupName="organization">
@@ -336,41 +341,44 @@ interface WizardStep {
                 }
               </div>
             }
-          </form>
+                </form>
 
-          <!-- Navigation Buttons -->
-          <div class="flex items-center justify-between mt-8 pt-6 border-t border-stone-100">
-            <ui-button
-              variant="ghost"
-              [disabled]="currentStep() === 0"
-              (onClick)="previousStep()"
-            >
-              <ui-icon name="arrow-left" class="w-4 h-4 mr-2"></ui-icon>
-              Previous
-            </ui-button>
+                <!-- Navigation Buttons -->
+                <div class="flex items-center justify-between mt-8 pt-6 border-t border-stone-100">
+                  <ui-button
+                    variant="ghost"
+                    [disabled]="currentStep() === 0"
+                    (onClick)="previousStep()"
+                  >
+                    <ui-icon name="arrow-left" class="w-4 h-4 mr-2"></ui-icon>
+                    Previous
+                  </ui-button>
 
-            @if (currentStep() < steps.length - 1) {
-              <ui-button
-                variant="primary"
-                [disabled]="!isCurrentStepValid()"
-                (onClick)="nextStep()"
-              >
-                Next
-                <ui-icon name="arrow-right" class="w-4 h-4 ml-2"></ui-icon>
-              </ui-button>
-            } @else {
-              <ui-button
-                variant="primary"
-                [loading]="submitting()"
-                [disabled]="!isCurrentStepValid() || submitting()"
-                (onClick)="submit()"
-              >
-                Create Organization
-                <ui-icon name="check" class="w-4 h-4 ml-2"></ui-icon>
-              </ui-button>
-            }
-          </div>
-        </ui-card>
+                  @if (currentStep() < steps.length - 1) {
+                    <ui-button
+                      variant="primary"
+                      [disabled]="!isCurrentStepValid()"
+                      (onClick)="nextStep()"
+                    >
+                      Next
+                      <ui-icon name="arrow-right" class="w-4 h-4 ml-2"></ui-icon>
+                    </ui-button>
+                  } @else {
+                    <ui-button
+                      variant="primary"
+                      [loading]="submitting()"
+                      [disabled]="!isCurrentStepValid() || submitting()"
+                      (onClick)="submit()"
+                    >
+                      Create Organization
+                      <ui-icon name="check" class="w-4 h-4 ml-2"></ui-icon>
+                    </ui-button>
+                  }
+                </div>
+              </div>
+            </ui-grid-tile>
+          </ui-grid>
+        </div>
 
         <!-- Back to Pending -->
         <div class="text-center mt-6">

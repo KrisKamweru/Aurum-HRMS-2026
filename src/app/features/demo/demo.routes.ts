@@ -22,6 +22,10 @@ export const DEMO_ROUTES: Routes = [
       {
         path: 'modals',
         loadComponent: () => import('./pages/modals-demo.component').then(m => m.ModalsDemoComponent)
+      },
+      {
+        path: 'date-picker',
+        loadComponent: () => import('./pages/date-picker-demo.component').then(m => m.DatePickerDemoComponent)
       }
     ]
   }

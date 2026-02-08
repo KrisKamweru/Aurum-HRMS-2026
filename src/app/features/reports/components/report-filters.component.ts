@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UiButtonComponent } from '../../../shared/components/ui-button/ui-button.component';
 import { UiIconComponent } from '../../../shared/components/ui-icon/ui-icon.component';
+import { UiDateRangeComponent, DateRange } from '../../../shared/components/ui-date-range/ui-date-range.component';
 import { ConvexClientService } from '../../../core/services/convex-client.service';
 import { api } from '../../../../../convex/_generated/api';
 import { Id } from '../../../../../convex/_generated/dataModel';
@@ -36,30 +37,20 @@ interface PayrollRun {
 @Component({
   selector: 'app-report-filters',
   standalone: true,
-  imports: [CommonModule, FormsModule, UiButtonComponent, UiIconComponent],
+  imports: [CommonModule, FormsModule, UiButtonComponent, UiIconComponent, UiDateRangeComponent],
   template: `
     <div class="bg-white dark:bg-stone-800 rounded-2xl border border-stone-200 dark:border-stone-700 p-4 sm:p-6">
       <div class="flex flex-wrap items-end gap-4">
         <!-- Date Range Filters -->
         @if (showDateRange) {
-          <div class="flex-1 min-w-[200px]">
-            <label class="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1.5">
-              Start Date
+          <div class="flex-1 min-w-[400px]">
+            <label class="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
+              Date Range
             </label>
-            <input
-              type="date"
-              [(ngModel)]="startDate"
-              class="w-full px-3 py-2 rounded-lg border border-stone-300 dark:border-stone-600 bg-white dark:bg-stone-700 text-stone-900 dark:text-stone-100 focus:ring-2 focus:ring-burgundy-500 focus:border-burgundy-500 transition-colors"
-            />
-          </div>
-          <div class="flex-1 min-w-[200px]">
-            <label class="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1.5">
-              End Date
-            </label>
-            <input
-              type="date"
-              [(ngModel)]="endDate"
-              class="w-full px-3 py-2 rounded-lg border border-stone-300 dark:border-stone-600 bg-white dark:bg-stone-700 text-stone-900 dark:text-stone-100 focus:ring-2 focus:ring-burgundy-500 focus:border-burgundy-500 transition-colors"
+            <ui-date-range
+              [startDate]="filterStartDate()"
+              [endDate]="filterEndDate()"
+              (rangeChange)="onFilterDateChange($event)"
             />
           </div>
         }
@@ -132,8 +123,8 @@ export class ReportFiltersComponent implements OnInit {
   @Output() filtersChange = new EventEmitter<ReportFilters>();
 
   // Filter values
-  startDate = '';
-  endDate = '';
+  filterStartDate = signal<Date | null>(null);
+  filterEndDate = signal<Date | null>(null);
   selectedDepartmentId: Id<'departments'> | null = null;
   selectedPayrollRunId: Id<'payroll_runs'> | null = null;
 
@@ -152,12 +143,16 @@ export class ReportFiltersComponent implements OnInit {
   private setDefaultDates() {
     // Default to current month
     const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const lastDay = new Date(year, now.getMonth() + 1, 0).getDate();
+    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+    const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
 
-    this.startDate = `${year}-${month}-01`;
-    this.endDate = `${year}-${month}-${lastDay}`;
+    this.filterStartDate.set(firstDay);
+    this.filterEndDate.set(lastDay);
+  }
+
+  onFilterDateChange(range: DateRange): void {
+    this.filterStartDate.set(range.start);
+    this.filterEndDate.set(range.end);
   }
 
   private loadFilterData() {
@@ -192,8 +187,10 @@ export class ReportFiltersComponent implements OnInit {
 
   isValid(): boolean {
     if (this.showDateRange) {
-      if (!this.startDate || !this.endDate) return false;
-      if (this.startDate > this.endDate) return false;
+      const start = this.filterStartDate();
+      const end = this.filterEndDate();
+      if (!start || !end) return false;
+      if (start > end) return false;
     }
     if (this.showPayrollRun && !this.selectedPayrollRunId) {
       return false;
@@ -207,10 +204,15 @@ export class ReportFiltersComponent implements OnInit {
     const filters: ReportFilters = {};
 
     if (this.showDateRange) {
-      filters.dateRange = {
-        startDate: this.startDate,
-        endDate: this.endDate,
-      };
+      const start = this.filterStartDate();
+      const end = this.filterEndDate();
+
+      if (start && end) {
+        filters.dateRange = {
+          startDate: this.formatDateToISO(start),
+          endDate: this.formatDateToISO(end),
+        };
+      }
     }
 
     if (this.showDepartment) {
@@ -232,6 +234,13 @@ export class ReportFiltersComponent implements OnInit {
     } else {
       this.selectedPayrollRunId = null;
     }
+  }
+
+  private formatDateToISO(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 
   ngOnDestroy() {

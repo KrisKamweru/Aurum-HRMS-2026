@@ -11,7 +11,10 @@
       "Bash(npx vitest run:*)",
       "Bash(npm test:*)",
       "Bash(npx playwright test:*)",
-      "mcp__playwright__browser_press_key"
+      "mcp__playwright__browser_press_key",
+      "mcp__playwright__browser_console_messages",
+      "Bash(timeout:*)",
+      "Bash(npm start)"
     ]
   }
 }

@@ -1,14 +1,16 @@
 import { Component, computed, effect, inject, OnDestroy, signal, resource } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { UiCardComponent } from '../../shared/components/ui-card/ui-card.component';
 import { UiIconComponent } from '../../shared/components/ui-icon/ui-icon.component';
 import { UiButtonComponent } from '../../shared/components/ui-button/ui-button.component';
 import { UiBadgeComponent, BadgeVariant } from '../../shared/components/ui-badge/ui-badge.component';
 import { UiDataTableComponent, TableColumn } from '../../shared/components/ui-data-table/ui-data-table.component';
+import { UiGridComponent } from '../../shared/components/ui-grid/ui-grid.component';
+import { UiGridTileComponent } from '../../shared/components/ui-grid/ui-grid-tile.component';
 import { ConvexClientService } from '../../core/services/convex-client.service';
 import { ToastService } from '../../shared/services/toast.service';
 import { AuthService } from '../../core/auth/auth.service';
+import { ConfirmDialogService } from '../../shared/services/confirm-dialog.service';
 import { api } from '../../../../convex/_generated/api';
 
 interface AttendanceSummary {
@@ -25,11 +27,12 @@ interface AttendanceSummary {
   imports: [
     CommonModule,
     RouterLink,
-    UiCardComponent,
     UiIconComponent,
     UiButtonComponent,
     UiBadgeComponent,
-    UiDataTableComponent
+    UiDataTableComponent,
+    UiGridComponent,
+    UiGridTileComponent
   ],
   providers: [DatePipe],
   template: `
@@ -37,7 +40,7 @@ interface AttendanceSummary {
       <!-- Header -->
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 class="text-2xl font-bold text-stone-800 dark:text-stone-100">Time & Attendance</h1>
+          <h1 class="text-2xl font-semibold text-stone-900 dark:text-white tracking-tight">Time & Attendance</h1>
           <p class="text-stone-500 dark:text-stone-400 mt-1">Track your work hours and attendance history</p>
         </div>
 
@@ -49,193 +52,463 @@ interface AttendanceSummary {
             </ui-button>
           }
 
-          <div class="text-right pl-4 border-l border-stone-200 dark:border-stone-700">
-            <div class="text-3xl font-mono font-bold text-[#8b1e3f] dark:text-[#fce7eb]">{{ currentTime() | date:'mediumTime' }}</div>
+          <div class="text-right pl-4 border-l border-stone-200 dark:border-white/8">
+            <div class="text-3xl font-mono font-bold text-burgundy-700 dark:text-burgundy-400">{{ currentTime() | date:'mediumTime' }}</div>
             <div class="text-sm text-stone-500 dark:text-stone-400">{{ currentTime() | date:'fullDate' }}</div>
           </div>
         </div>
       </div>
 
-      <!-- Main Action Area -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Clock In/Out Widget -->
-        <ui-card class="lg:col-span-2 relative overflow-hidden">
-          <div class="absolute top-0 right-0 p-32 bg-[#8b1e3f]/5 dark:bg-[#8b1e3f]/10 rounded-full -mr-16 -mt-16 blur-3xl pointer-events-none"></div>
-
-          <div class="relative z-10 flex flex-col items-center justify-center py-8 text-center h-full">
-            <div class="mb-6">
-              <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium"
+      <!-- Main Dash Frame: Clock Widget + Today's Summary -->
+      <div class="dash-frame">
+        <ui-grid [columns]="'1fr 320px'" [gap]="'0px'">
+          <!-- Clock In/Out Widget -->
+          <div class="df-clock-widget">
+            <div class="df-status-badge">
+              <div class="status-dot"
                 [ngClass]="{
-                  'bg-stone-100 text-stone-600 dark:bg-stone-700 dark:text-stone-300': attendanceState() === 'not-clocked-in',
-                  'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400': attendanceState() === 'unlinked',
-                  'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400': attendanceState() === 'working',
-                  'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400': attendanceState() === 'clocked-out'
-                }">
-                <div class="w-2 h-2 rounded-full"
-                  [ngClass]="{
-                    'bg-stone-400 dark:bg-stone-500': attendanceState() === 'not-clocked-in',
-                    'bg-amber-500': attendanceState() === 'unlinked',
-                    'bg-green-500 animate-pulse': attendanceState() === 'working',
-                    'bg-blue-500': attendanceState() === 'clocked-out'
-                  }"></div>
-                {{ attendanceStateLabel() }}
-              </span>
+                  'bg-stone-400 dark:bg-stone-500': attendanceState() === 'not-clocked-in',
+                  'bg-amber-400': attendanceState() === 'unlinked',
+                  'bg-emerald-400 animate-pulse': attendanceState() === 'working',
+                  'bg-blue-400': attendanceState() === 'clocked-out'
+                }"></div>
+              {{ attendanceStateLabel() }}
             </div>
 
-            <div class="mb-8">
+            <div class="df-clock-display">
               @if (attendanceState() === 'working') {
-                <div class="text-5xl font-mono font-bold text-stone-800 dark:text-stone-100 mb-2">
-                  {{ activeDuration() }}
-                </div>
-                <p class="text-stone-500 dark:text-stone-400">Duration worked today</p>
+                <div class="clock-time">{{ activeDuration() }}</div>
+                <p class="clock-label">Duration worked today</p>
               } @else if (attendanceState() === 'clocked-out') {
-                <div class="text-5xl font-mono font-bold text-stone-800 dark:text-stone-100 mb-2">
-                  {{ formatDuration(todayStatusResource.value()?.workMinutes || 0) }}
-                </div>
-                <p class="text-stone-500 dark:text-stone-400">Total hours worked today</p>
+                <div class="clock-time">{{ formatDuration(todayStatusResource.value()?.workMinutes || 0) }}</div>
+                <p class="clock-label">Total hours worked today</p>
               } @else if (attendanceState() === 'unlinked') {
                 <div class="text-amber-600 dark:text-amber-400 mb-2">
                   <ui-icon name="exclamation-circle" class="w-12 h-12 mx-auto mb-2"></ui-icon>
                 </div>
-                <p class="text-stone-500 dark:text-stone-400 max-w-xs mx-auto">
+                <p class="clock-label max-w-xs mx-auto">
                   Your account is not linked to an employee profile. Please contact HR to enable time tracking.
                 </p>
               } @else {
-                <div class="text-5xl font-mono font-bold text-stone-800 dark:text-stone-100 mb-2">--:--:--</div>
-                <p class="text-stone-500 dark:text-stone-400">Ready to start your day</p>
+                <div class="clock-time">--:--:--</div>
+                <p class="clock-label">Ready to start your day</p>
               }
             </div>
 
-            <div class="flex gap-4">
+            <div class="df-clock-actions">
               @if (attendanceState() === 'not-clocked-in') {
                 <button
                   (click)="handleClockIn()"
                   [disabled]="isActionLoading()"
-                  class="h-16 px-8 rounded-full bg-[#8b1e3f] hover:bg-[#722038] text-white text-lg font-semibold shadow-lg shadow-[#8b1e3f]/20 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3">
-                  <ui-icon name="play" class="w-6 h-6"></ui-icon>
+                  class="clock-btn clock-btn-in">
+                  <ui-icon name="play" class="w-5 h-5"></ui-icon>
                   Clock In
                 </button>
               } @else if (attendanceState() === 'working') {
                 <button
                   (click)="handleClockOut()"
                   [disabled]="isActionLoading()"
-                  class="h-16 px-8 rounded-full bg-red-600 hover:bg-red-700 text-white text-lg font-semibold shadow-lg shadow-red-600/20 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3">
-                  <ui-icon name="stop" class="w-6 h-6"></ui-icon>
+                  class="clock-btn clock-btn-out">
+                  <ui-icon name="stop" class="w-5 h-5"></ui-icon>
                   Clock Out
                 </button>
               } @else {
-                <div class="text-center p-4 bg-stone-50 dark:bg-stone-800/50 rounded-xl border border-stone-100 dark:border-stone-700">
-                  <p class="text-stone-600 dark:text-stone-300 font-medium">You have completed your work day.</p>
-                  <p class="text-xs text-stone-400 dark:text-stone-500 mt-1">See you tomorrow!</p>
+                <div class="clock-done">
+                  <p class="text-stone-600 dark:text-stone-300 font-medium text-sm">You have completed your work day.</p>
+                  <p class="text-xs text-stone-500 dark:text-stone-400 mt-1">See you tomorrow!</p>
                 </div>
               }
             </div>
           </div>
-        </ui-card>
 
-        <!-- Today's Summary -->
-        <div class="space-y-6">
-          <ui-card class="h-full">
-            <h3 class="font-bold text-stone-800 dark:text-stone-100 mb-4 flex items-center gap-2">
-              <ui-icon name="calendar" class="w-5 h-5 text-[#8b1e3f] dark:text-[#fce7eb]"></ui-icon>
-              Today's Summary
-            </h3>
-
-            <div class="space-y-4">
-              <div class="flex justify-between items-center py-3 border-b border-stone-100 dark:border-stone-700">
-                <span class="text-stone-500 dark:text-stone-400 text-sm">Clock In</span>
-                <span class="font-mono font-medium text-stone-800 dark:text-stone-200">
+          <!-- Today's Summary -->
+          <ui-grid-tile title="Today's Summary" [minHeight]="'400px'" [minHeightMobile]="'300px'">
+            <div class="df-summary-rows">
+              <div class="df-summary-row">
+                <span class="summary-label">Clock In</span>
+                <span class="summary-value">
                   {{ (todayStatusResource.value()?.clockIn | date:'shortTime') || '--:--' }}
                 </span>
               </div>
-
-              <div class="flex justify-between items-center py-3 border-b border-stone-100 dark:border-stone-700">
-                <span class="text-stone-500 dark:text-stone-400 text-sm">Clock Out</span>
-                <span class="font-mono font-medium text-stone-800 dark:text-stone-200">
+              <div class="df-summary-row">
+                <span class="summary-label">Clock Out</span>
+                <span class="summary-value">
                   {{ (todayStatusResource.value()?.clockOut | date:'shortTime') || 'Working...' }}
                 </span>
               </div>
-
-              <div class="flex justify-between items-center py-3 border-b border-stone-100 dark:border-stone-700">
-                <span class="text-stone-500 dark:text-stone-400 text-sm">Break Time</span>
-                <span class="font-mono font-medium text-stone-800 dark:text-stone-200">
+              <div class="df-summary-row">
+                <span class="summary-label">Break Time</span>
+                <span class="summary-value">
                   {{ todayStatusResource.value()?.breakMinutes || 0 }} min
                 </span>
               </div>
+              <div class="df-summary-row">
+                <span class="summary-label">Status</span>
+                <ui-badge [variant]="getBadgeVariant(todayStatusResource.value()?.status)">
+                  {{ todayStatusResource.value()?.status || 'Pending' }}
+                </ui-badge>
+              </div>
+            </div>
+          </ui-grid-tile>
+        </ui-grid>
+      </div>
 
-              <div class="pt-2">
-                <div class="flex justify-between items-center mb-2">
-                  <span class="text-xs text-stone-500 dark:text-stone-400 uppercase tracking-wider font-semibold">Status</span>
-                  <ui-badge [variant]="getBadgeVariant(todayStatusResource.value()?.status)">
-                    {{ todayStatusResource.value()?.status || 'Pending' }}
-                  </ui-badge>
+      <!-- Monthly Stats + History Table -->
+      <div class="dash-frame">
+        <ui-grid [columns]="'280px 1fr'" [gap]="'0px'">
+          <!-- Monthly Stats Panel -->
+          <ui-grid-tile [title]="currentMonthName() + ' Stats'" divider="right">
+            <div class="df-stats-content">
+              <div class="stat-card stat-highlight">
+                <p class="stat-label">Present Days</p>
+                <p class="stat-value">{{ summaryResource.value()?.presentDays || 0 }}</p>
+              </div>
+
+              <div class="stat-mini-grid">
+                <div class="stat-card">
+                  <p class="stat-label-sm">Late</p>
+                  <p class="stat-value-sm">{{ summaryResource.value()?.lateDays || 0 }}</p>
+                </div>
+                <div class="stat-card">
+                  <p class="stat-label-sm">Absent</p>
+                  <p class="stat-value-sm">{{ summaryResource.value()?.absentDays || 0 }}</p>
                 </div>
               </div>
-            </div>
-          </ui-card>
-        </div>
-      </div>
 
-      <!-- Monthly Summary & History -->
-      <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <!-- Monthly Stats -->
-        <ui-card class="lg:col-span-1">
-          <h3 class="font-bold text-stone-800 dark:text-stone-100 mb-4 flex items-center gap-2">
-            <ui-icon name="chart-bar" class="w-5 h-5 text-[#8b1e3f] dark:text-[#fce7eb]"></ui-icon>
-            {{ currentMonthName() }} Stats
-          </h3>
-
-          <div class="space-y-4">
-            <div class="bg-[#fdf2f4] dark:bg-[#8b1e3f]/20 rounded-xl p-4 border border-[#f9d0da] dark:border-[#8b1e3f]/30">
-              <p class="text-xs text-[#8b1e3f] dark:text-[#fce7eb] font-semibold uppercase tracking-wider mb-1">Present Days</p>
-              <p class="text-2xl font-bold text-[#8b1e3f] dark:text-[#fce7eb]">{{ summaryResource.value()?.presentDays || 0 }}</p>
-            </div>
-
-            <div class="grid grid-cols-2 gap-4">
-              <div class="bg-stone-50 dark:bg-stone-800/50 rounded-xl p-3 border border-stone-100 dark:border-stone-700">
-                <p class="text-xs text-stone-500 dark:text-stone-400 font-semibold mb-1">Late</p>
-                <p class="text-lg font-bold text-stone-700 dark:text-stone-200">{{ summaryResource.value()?.lateDays || 0 }}</p>
-              </div>
-              <div class="bg-stone-50 dark:bg-stone-800/50 rounded-xl p-3 border border-stone-100 dark:border-stone-700">
-                <p class="text-xs text-stone-500 dark:text-stone-400 font-semibold mb-1">Absent</p>
-                <p class="text-lg font-bold text-stone-700 dark:text-stone-200">{{ summaryResource.value()?.absentDays || 0 }}</p>
+              <div class="stat-card">
+                <div class="flex justify-between items-center mb-1">
+                  <p class="stat-label">Avg Work Hours</p>
+                </div>
+                <p class="stat-value-lg">
+                  {{ formatDuration(summaryResource.value()?.avgWorkMinutes || 0) }} / day
+                </p>
               </div>
             </div>
+          </ui-grid-tile>
 
-            <div class="bg-white dark:bg-stone-800 rounded-xl p-4 border border-stone-200 dark:border-stone-700 shadow-sm">
-              <div class="flex justify-between items-center mb-1">
-                <p class="text-xs text-stone-500 dark:text-stone-400 font-semibold uppercase">Avg Work Hours</p>
-              </div>
-              <p class="text-xl font-bold text-stone-800 dark:text-stone-100">
-                {{ formatDuration(summaryResource.value()?.avgWorkMinutes || 0) }} / day
-              </p>
-            </div>
-          </div>
-        </ui-card>
-
-        <!-- Attendance History Table -->
-        <div class="lg:col-span-3">
-          <ui-data-table
-            [data]="paginatedHistory()"
-            [columns]="columns"
-            [loading]="historyResource.isLoading()"
-            [pageSize]="pageSize"
-            [page]="currentPage()"
-            [pagination]="true"
-            [totalItems]="historyResource.value().length || 0"
-            (pageChange)="onPageChange($event)"
-            (sortChange)="onSortChange($event)">
-          </ui-data-table>
-        </div>
+          <!-- History Table -->
+          <ui-grid-tile title="Attendance History">
+            <span tile-actions class="live-badge">● Live</span>
+            <ui-data-table
+              [data]="paginatedHistory()"
+              [columns]="columns"
+              [loading]="historyResource.isLoading()"
+              [pagination]="historyResource.value().length > pageSize"
+              [totalItems]="historyResource.value().length"
+              [pageSize]="pageSize"
+              [page]="currentPage()"
+              [headerVariant]="'neutral'"
+              [cellTemplates]="{ status: statusTpl }"
+              (sortChange)="onSortChange($event)"
+              (pageChange)="onPageChange($event)"
+            ></ui-data-table>
+            <ng-template #statusTpl let-row>
+              <span class="df-td-status">
+                <span class="dot"
+                  [ngClass]="{
+                    'bg-emerald-400': row.status === 'present',
+                    'bg-amber-400': row.status === 'late',
+                    'bg-red-400': row.status === 'absent',
+                    'bg-blue-400': row.status === 'half-day',
+                    'bg-stone-400': row.status === 'on-leave' || row.status === 'holiday'
+                  }"></span>
+                {{ row.status }}
+              </span>
+            </ng-template>
+          </ui-grid-tile>
+        </ui-grid>
       </div>
     </div>
-  `
+  `,
+  styles: [`
+    /* Design Six: Attendance Dash-Frame Styles */
+    .dash-frame {
+      background: rgba(255,255,255,0.8);
+      border: 1px solid #e7e5e4;
+      border-radius: 14px;
+      overflow: hidden;
+    }
+    :host-context(.dark) .dash-frame {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(12px);
+      border-color: rgba(255,255,255,0.08);
+    }
+
+    /* Clock Widget */
+    .df-clock-widget {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      gap: 1.5rem;
+      border-right: 1px solid #e7e5e4;
+    }
+    :host-context(.dark) .df-clock-widget {
+      border-color: rgba(255,255,255,0.08);
+    }
+    @media (max-width: 900px) {
+      .df-clock-widget {
+        border-right: none;
+        border-bottom: 1px solid #e7e5e4;
+      }
+      :host-context(.dark) .df-clock-widget {
+        border-color: rgba(255,255,255,0.08);
+      }
+    }
+
+    .df-status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 100px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: #292524;
+      background: #fafaf9;
+      border: 1px solid #e7e5e4;
+    }
+    :host-context(.dark) .df-status-badge {
+      background: rgba(255,255,255,0.05);
+      border-color: rgba(255,255,255,0.08);
+      color: #d6d3d1;
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+
+    .df-clock-display {
+      text-align: center;
+    }
+
+    .clock-time {
+      font-size: 3rem;
+      font-weight: 700;
+      font-family: ui-monospace, monospace;
+      color: #1c1917;
+      margin-bottom: 0.5rem;
+    }
+    :host-context(.dark) .clock-time {
+      color: white;
+    }
+
+    .clock-label {
+      font-size: 0.75rem;
+      color: #78716c;
+    }
+    :host-context(.dark) .clock-label {
+      color: #a8a29e;
+    }
+
+    .df-clock-actions {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .clock-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem 2rem;
+      border-radius: 10px;
+      border: none;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .clock-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .clock-btn-in {
+      background: #861821;
+      color: white;
+      box-shadow: 0 4px 12px rgba(134,24,33,0.25);
+    }
+    .clock-btn-in:not(:disabled):hover {
+      background: #741530;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(134,24,33,0.3);
+    }
+
+    .clock-btn-out {
+      background: #dc2626;
+      color: white;
+      box-shadow: 0 4px 12px rgba(220,38,38,0.25);
+    }
+    .clock-btn-out:not(:disabled):hover {
+      background: #b91c1c;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(220,38,38,0.3);
+    }
+
+    .clock-done {
+      text-align: center;
+      padding: 1rem 1.5rem;
+      background: #fafaf9;
+      border: 1px solid #e7e5e4;
+      border-radius: 10px;
+    }
+    :host-context(.dark) .clock-done {
+      background: rgba(255,255,255,0.05);
+      border-color: rgba(255,255,255,0.08);
+    }
+
+    .live-badge {
+      font-size: 0.75rem;
+      color: #2dd4bf;
+      letter-spacing: 0.06em;
+    }
+
+    .df-summary-rows {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .df-summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 1.25rem;
+      border-bottom: 1px solid #fafaf9;
+    }
+    :host-context(.dark) .df-summary-row {
+      border-color: rgba(255,255,255,0.03);
+    }
+    .df-summary-row:last-child {
+      border-bottom: none;
+    }
+
+    .summary-label {
+      font-size: 0.875rem;
+      color: #57534e;
+    }
+    :host-context(.dark) .summary-label {
+      color: #a8a29e;
+    }
+
+    .summary-value {
+      font-size: 0.875rem;
+      font-weight: 600;
+      font-family: ui-monospace, monospace;
+      color: #1c1917;
+    }
+    :host-context(.dark) .summary-value {
+      color: white;
+    }
+
+    .df-stats-content {
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .stat-card {
+      padding: 0.875rem;
+      border-radius: 10px;
+      border: 1px solid #e7e5e4;
+      background: white;
+    }
+    :host-context(.dark) .stat-card {
+      background: rgba(255,255,255,0.03);
+      border-color: rgba(255,255,255,0.08);
+    }
+
+    .stat-highlight {
+      background: rgba(134,24,33,0.06);
+      border-color: rgba(134,24,33,0.15);
+    }
+    :host-context(.dark) .stat-highlight {
+      background: rgba(134,24,33,0.12);
+      border-color: rgba(134,24,33,0.2);
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #57534e;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.25rem;
+    }
+    :host-context(.dark) .stat-label {
+      color: #a8a29e;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #861821;
+    }
+    :host-context(.dark) .stat-value {
+      color: #ff6b77;
+    }
+
+    .stat-mini-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    .stat-label-sm {
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: #57534e;
+      margin-bottom: 0.25rem;
+    }
+    :host-context(.dark) .stat-label-sm {
+      color: #a8a29e;
+    }
+
+    .stat-value-sm {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #1c1917;
+    }
+    :host-context(.dark) .stat-value-sm {
+      color: white;
+    }
+
+    .stat-value-lg {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: #1c1917;
+    }
+    :host-context(.dark) .stat-value-lg {
+      color: white;
+    }
+
+    .df-td-status {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+  `]
 })
 export class AttendanceComponent implements OnDestroy {
   private convex = inject(ConvexClientService);
   private toast = inject(ToastService);
   private datePipe = inject(DatePipe);
   private authService = inject(AuthService);
+  private confirmDialog = inject(ConfirmDialogService);
+
+  // Expose Math for template usage
+  Math = Math;
 
   canManage = this.authService.hasRole(['super_admin', 'admin', 'hr_manager', 'manager']);
 
@@ -379,8 +652,6 @@ export class AttendanceComponent implements OnDestroy {
     {
       key: 'status',
       header: 'Status',
-      type: 'badge',
-      badgeVariant: (val) => this.getBadgeVariant(val),
       sortable: true
     }
   ];
@@ -453,7 +724,15 @@ export class AttendanceComponent implements OnDestroy {
   }
 
   async handleClockOut() {
-    if (!confirm('Are you sure you want to clock out?')) return;
+    const confirmed = await this.confirmDialog.confirm({
+      title: 'Clock Out',
+      message: 'Are you sure you want to clock out? This will end your work session for today.',
+      confirmText: 'Clock Out',
+      cancelText: 'Cancel',
+      variant: 'warning'
+    });
+
+    if (!confirmed) return;
 
     this.isActionLoading.set(true);
     try {

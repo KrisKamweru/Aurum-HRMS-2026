@@ -4,7 +4,6 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { UiButtonComponent } from '../../../../shared/components/ui-button/ui-button.component';
 import { UiIconComponent } from '../../../../shared/components/ui-icon/ui-icon.component';
-import { UiCardComponent } from '../../../../shared/components/ui-card/ui-card.component';
 import { UiBadgeComponent, BadgeVariant } from '../../../../shared/components/ui-badge/ui-badge.component';
 import { UiModalComponent } from '../../../../shared/components/ui-modal/ui-modal.component';
 import { UiFormFieldComponent } from '../../../../shared/components/ui-form-field/ui-form-field.component';
@@ -13,6 +12,8 @@ import { AuthService } from '../../../../core/auth/auth.service';
 import { ToastService } from '../../../../shared/services/toast.service';
 import { api } from '../../../../../../convex/_generated/api';
 import { Id } from '../../../../../../convex/_generated/dataModel';
+import { UiGridComponent } from '../../../../shared/components/ui-grid/ui-grid.component';
+import { UiGridTileComponent } from '../../../../shared/components/ui-grid/ui-grid-tile.component';
 
 @Component({
   selector: 'app-job-detail',
@@ -25,7 +26,9 @@ import { Id } from '../../../../../../convex/_generated/dataModel';
     UiIconComponent,
     UiBadgeComponent,
     UiModalComponent,
-    UiFormFieldComponent
+    UiFormFieldComponent,
+    UiGridComponent,
+    UiGridTileComponent
   ],
   template: `
     <div class="max-w-4xl mx-auto space-y-6">
@@ -47,55 +50,61 @@ import { Id } from '../../../../../../convex/_generated/dataModel';
         </div>
       } @else {
         <!-- Job Header -->
-        <div class="bg-white dark:bg-stone-800 rounded-2xl p-6 md:p-8 shadow-sm border border-stone-200 dark:border-stone-700">
-          <div class="flex flex-col md:flex-row md:items-start justify-between gap-6">
-            <div>
-              <div class="flex items-center gap-3 mb-3">
-                <h1 class="text-2xl md:text-3xl font-bold text-stone-900 dark:text-white">{{ job().title }}</h1>
-                <ui-badge [variant]="getStatusVariant(job().status)">
-                  {{ job().status | titlecase }}
-                </ui-badge>
+        <div class="dash-frame">
+          <ui-grid [columns]="'1fr'" [gap]="'0px'">
+            <ui-grid-tile title="Job Overview" variant="compact">
+              <div class="tile-body">
+                <div class="flex flex-col md:flex-row md:items-start justify-between gap-6">
+                  <div>
+                    <div class="flex items-center gap-3 mb-3">
+                      <h1 class="text-2xl md:text-3xl font-bold text-stone-900 dark:text-white">{{ job().title }}</h1>
+                      <ui-badge [variant]="getStatusVariant(job().status)">
+                        {{ job().status | titlecase }}
+                      </ui-badge>
+                    </div>
+
+                    <div class="flex flex-wrap gap-4 text-sm text-stone-600 dark:text-stone-400">
+                      <div class="flex items-center gap-1.5">
+                        <ui-icon name="building-office" class="w-4 h-4"></ui-icon>
+                        {{ job().departmentName }}
+                      </div>
+                      <div class="flex items-center gap-1.5">
+                        <ui-icon name="map-pin" class="w-4 h-4"></ui-icon>
+                        {{ job().locationName }}
+                      </div>
+                      <div class="flex items-center gap-1.5">
+                        <ui-icon name="briefcase" class="w-4 h-4"></ui-icon>
+                        {{ formatType(job().employmentType) }}
+                      </div>
+                      <div class="flex items-center gap-1.5">
+                        <ui-icon name="banknotes" class="w-4 h-4"></ui-icon>
+                        {{ job().salaryRange || 'Competitive' }}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="flex gap-3 shrink-0">
+                    @if (canManage()) {
+                      <ui-button variant="outline" [routerLink]="['/recruitment/jobs', job()._id, 'edit']">
+                        <ui-icon name="pencil" class="w-4 h-4 mr-2"></ui-icon>
+                        Edit Job
+                      </ui-button>
+                    }
+                    <ui-button (onClick)="openApplyModal()" [disabled]="job().status !== 'open'">
+                      Apply Now
+                    </ui-button>
+                  </div>
+                </div>
+
+                <hr class="my-8 border-stone-100 dark:border-stone-700">
+
+                <!-- Job Description -->
+                <div class="prose dark:prose-invert max-w-none text-stone-700 dark:text-stone-300 whitespace-pre-wrap">
+                  {{ job().description }}
+                </div>
               </div>
-
-              <div class="flex flex-wrap gap-4 text-sm text-stone-600 dark:text-stone-400">
-                <div class="flex items-center gap-1.5">
-                  <ui-icon name="building-office" class="w-4 h-4"></ui-icon>
-                  {{ job().departmentName }}
-                </div>
-                <div class="flex items-center gap-1.5">
-                  <ui-icon name="map-pin" class="w-4 h-4"></ui-icon>
-                  {{ job().locationName }}
-                </div>
-                <div class="flex items-center gap-1.5">
-                  <ui-icon name="briefcase" class="w-4 h-4"></ui-icon>
-                  {{ formatType(job().employmentType) }}
-                </div>
-                <div class="flex items-center gap-1.5">
-                  <ui-icon name="banknotes" class="w-4 h-4"></ui-icon>
-                  {{ job().salaryRange || 'Competitive' }}
-                </div>
-              </div>
-            </div>
-
-            <div class="flex gap-3 shrink-0">
-              @if (canManage()) {
-                <ui-button variant="outline" [routerLink]="['/recruitment/jobs', job()._id, 'edit']">
-                  <ui-icon name="pencil" class="w-4 h-4 mr-2"></ui-icon>
-                  Edit Job
-                </ui-button>
-              }
-              <ui-button (onClick)="openApplyModal()" [disabled]="job().status !== 'open'">
-                Apply Now
-              </ui-button>
-            </div>
-          </div>
-
-          <hr class="my-8 border-stone-100 dark:border-stone-700">
-
-          <!-- Job Description -->
-          <div class="prose dark:prose-invert max-w-none text-stone-700 dark:text-stone-300 whitespace-pre-wrap">
-            {{ job().description }}
-          </div>
+            </ui-grid-tile>
+          </ui-grid>
         </div>
       }
 

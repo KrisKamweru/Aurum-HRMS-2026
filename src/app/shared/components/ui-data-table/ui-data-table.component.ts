@@ -27,17 +27,23 @@ export interface SortEvent {
   imports: [CommonModule, UiButtonComponent, UiBadgeComponent, UiIconComponent],
   providers: [DatePipe, CurrencyPipe],
   template: `
-    <div class="bg-white dark:bg-stone-800 rounded-2xl shadow-lg shadow-stone-200/50 dark:shadow-black/20 border border-stone-200 dark:border-stone-700 overflow-hidden">
-      <div class="overflow-x-auto">
+    <div class="bg-white dark:bg-white/5 rounded-2xl shadow-lg shadow-stone-200/50 dark:shadow-none border border-stone-200 dark:border-white/8 dark:backdrop-blur-xl overflow-hidden">
+      <div class="table-wrapper">
         <table class="w-full text-left text-sm">
-          <thead class="bg-burgundy-50 dark:bg-burgundy-900/20 border-b border-burgundy-100 dark:border-burgundy-800/30">
+          <thead [class]="headerClasses()">
             <tr>
               @for (col of columns; track col.key) {
                 <th
-                  class="px-6 py-4 text-xs font-bold text-burgundy-800 dark:text-burgundy-200 uppercase tracking-wider whitespace-nowrap"
+                  class="px-6 py-4 text-xs font-bold uppercase tracking-wider whitespace-nowrap"
                   [class.cursor-pointer]="col.sortable"
-                  [class.hover:text-burgundy-900]="col.sortable"
-                  [class.dark:hover:text-burgundy-100]="col.sortable"
+                  [class.hover:text-burgundy-900]="col.sortable && headerVariant === 'accent'"
+                  [class.dark:hover:text-burgundy-100]="col.sortable && headerVariant === 'accent'"
+                  [class.hover:text-stone-800]="col.sortable && headerVariant === 'neutral'"
+                  [class.dark:hover:text-stone-100]="col.sortable && headerVariant === 'neutral'"
+                  [class.text-burgundy-800]="headerVariant === 'accent'"
+                  [class.dark:text-burgundy-200]="headerVariant === 'accent'"
+                  [class.text-stone-600]="headerVariant === 'neutral'"
+                  [class.dark:text-stone-300]="headerVariant === 'neutral'"
                   [style.width]="col.width"
                   (click)="handleSort(col)"
                 >
@@ -58,17 +64,21 @@ export interface SortEvent {
                 </th>
               }
               @if (actionsTemplate) {
-                <th class="px-6 py-4 text-xs font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wider text-right">Actions</th>
+                <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-right"
+                    [class.text-stone-500]="headerVariant === 'accent'"
+                    [class.dark:text-stone-400]="headerVariant === 'accent'"
+                    [class.text-stone-600]="headerVariant === 'neutral'"
+                    [class.dark:text-stone-300]="headerVariant === 'neutral'">Actions</th>
               }
             </tr>
           </thead>
-          <tbody class="divide-y divide-stone-100 dark:divide-stone-700">
+          <tbody class="divide-y divide-stone-100 dark:divide-white/[0.03]">
             @if (loading) {
               <tr>
                 <td [attr.colspan]="totalColumns()" class="px-6 py-16 text-center">
                   <div class="flex flex-col items-center gap-3">
                     <div class="relative">
-                      <div class="w-12 h-12 rounded-full border-4 border-stone-100 dark:border-stone-700 border-t-burgundy-800 dark:border-t-burgundy-500 animate-spin"></div>
+                      <div class="w-12 h-12 rounded-full border-4 border-stone-100 dark:border-white/8 border-t-burgundy-800 dark:border-t-burgundy-500 animate-spin"></div>
                     </div>
                     <p class="text-sm text-stone-500 dark:text-stone-400">Loading data...</p>
                   </div>
@@ -89,9 +99,9 @@ export interface SortEvent {
                 </td>
               </tr>
             } @else {
-              @for (row of data; track trackByFn(row); let i = $index) {
+              @for (row of data; track trackByFn(row, $index); let i = $index) {
                 <tr
-                  class="hover:bg-gradient-to-r hover:from-burgundy-50 hover:to-transparent dark:hover:from-burgundy-900/20 dark:hover:to-transparent transition-all duration-200 cursor-pointer group"
+                  class="hover:bg-gradient-to-r hover:from-burgundy-50 hover:to-transparent dark:hover:from-burgundy-700/[0.06] dark:hover:to-transparent transition-all duration-200 cursor-pointer group"
                   [class.animate-fade-in-up]="true"
                   [style.animation-delay.ms]="i * 30"
                   (click)="rowClick.emit(row)"
@@ -127,7 +137,7 @@ export interface SortEvent {
 
       <!-- Pagination -->
       @if (pagination && data.length > 0) {
-        <div class="bg-stone-50 dark:bg-stone-900/50 px-4 sm:px-6 py-4 flex items-center justify-between border-t border-stone-200 dark:border-stone-700">
+        <div class="bg-stone-50 dark:bg-white/5 px-4 sm:px-6 py-4 flex items-center justify-between border-t border-stone-200 dark:border-white/5">
           <!-- Mobile Pagination controls -->
           <div class="flex flex-1 justify-between items-center sm:hidden">
             <ui-button
@@ -194,6 +204,49 @@ export interface SortEvent {
       display: block;
     }
 
+    .table-head-neutral {
+      background: var(--surface-header);
+    }
+    :host-context(.dark) .table-head-neutral {
+      background: rgba(255,255,255,0.02);
+    }
+
+    .table-wrapper {
+      max-width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .table-wrapper::-webkit-scrollbar {
+      height: 8px;
+    }
+
+    .table-wrapper::-webkit-scrollbar-track {
+      background: transparent;
+      border-radius: 4px;
+    }
+
+    .table-wrapper::-webkit-scrollbar-thumb {
+      background: #d6d3d1;
+      border-radius: 4px;
+    }
+
+    .table-wrapper::-webkit-scrollbar-thumb:hover {
+      background: #a8a29e;
+    }
+
+    :host-context(.dark) .table-wrapper::-webkit-scrollbar-thumb {
+      background: #57534e;
+    }
+
+    :host-context(.dark) .table-wrapper::-webkit-scrollbar-thumb:hover {
+      background: #78716c;
+    }
+
+    table {
+      min-width: 600px;
+    }
+
     .animate-fade-in-up {
       animation: fadeInUp 0.3s ease-out forwards;
       opacity: 0;
@@ -215,6 +268,7 @@ export class UiDataTableComponent {
   @Input() data: any[] = [];
   @Input() columns: TableColumn[] = [];
   @Input() loading = false;
+  @Input() headerVariant: 'accent' | 'neutral' = 'accent';
   @Input() pagination = false;
   @Input() totalItems = 0;
   @Input() pageSize = 10;
@@ -262,6 +316,13 @@ export class UiDataTableComponent {
     }
   }
 
+  headerClasses(): string {
+    if (this.headerVariant === 'neutral') {
+      return 'table-head-neutral border-b border-stone-200 dark:border-white/8';
+    }
+    return 'bg-burgundy-50 dark:bg-burgundy-900/20 border-b border-burgundy-100 dark:border-burgundy-800/30';
+  }
+
   onPageChange(newPage: number) {
     this.pageChange.emit(newPage);
   }
@@ -301,7 +362,11 @@ export class UiDataTableComponent {
     return 'neutral';
   }
 
-  trackByFn(item: any): any {
-    return item.id || item._id || item;
+  trackByFn(item: any, index = 0): any {
+    const id = item?._id ?? item?.id;
+    if (typeof id === 'string' && id.trim().length > 0) return id;
+    if (typeof id === 'number') return id;
+    // Fallback key avoids NG0955 when rows lack stable IDs.
+    return `row-${index}`;
   }
 }

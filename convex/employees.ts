@@ -421,3 +421,39 @@ export const getMyProfile = query({
     };
   },
 });
+
+// Update compensation details
+export const updateCompensation = mutation({
+  args: {
+    employeeId: v.id("employees"),
+    baseSalary: v.optional(v.number()),
+    currency: v.optional(v.string()),
+    payFrequency: v.optional(v.union(v.literal("monthly"), v.literal("bi_weekly"), v.literal("weekly"))),
+  },
+  handler: async (ctx, args) => {
+    const viewer = await getViewerInfo(ctx);
+    if (!viewer) throw new Error("Not authenticated");
+
+    // Only HR/Admin can update compensation
+    if (!["hr_manager", "admin", "super_admin"].includes(viewer.role)) {
+      throw new Error("Unauthorized: Only HR or Admin can update compensation");
+    }
+
+    const { employeeId, ...updates } = args;
+
+    // Verify employee belongs to the same org
+    const employee = await ctx.db.get(employeeId);
+    if (!employee || employee.orgId !== viewer.orgId) {
+      throw new Error("Employee not found or unauthorized");
+    }
+
+    // Filter out undefined values
+    const cleanUpdates: Record<string, unknown> = {};
+    if (updates.baseSalary !== undefined) cleanUpdates['baseSalary'] = updates.baseSalary;
+    if (updates.currency !== undefined) cleanUpdates['currency'] = updates.currency;
+    if (updates.payFrequency !== undefined) cleanUpdates['payFrequency'] = updates.payFrequency;
+
+    await ctx.db.patch(employeeId, cleanUpdates);
+    return { success: true };
+  },
+});

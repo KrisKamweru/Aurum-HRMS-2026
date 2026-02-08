@@ -2,13 +2,15 @@ import { Component, inject, signal, OnInit, OnDestroy, computed } from '@angular
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UiButtonComponent } from '../../shared/components/ui-button/ui-button.component';
-import { UiCardComponent } from '../../shared/components/ui-card/ui-card.component';
 import { UiIconComponent } from '../../shared/components/ui-icon/ui-icon.component';
 import { UiModalComponent } from '../../shared/components/ui-modal/ui-modal.component';
 import { UiFormFieldComponent } from '../../shared/components/ui-form-field/ui-form-field.component';
-import { UiBadgeComponent } from '../../shared/components/ui-badge/ui-badge.component';
+import { UiGridComponent } from '../../shared/components/ui-grid/ui-grid.component';
+import { UiGridTileComponent } from '../../shared/components/ui-grid/ui-grid-tile.component';
+import { UiDataTableComponent, TableColumn } from '../../shared/components/ui-data-table/ui-data-table.component';
 import { ConvexClientService } from '../../core/services/convex-client.service';
 import { ToastService } from '../../shared/services/toast.service';
+import { ConfirmDialogService } from '../../shared/services/confirm-dialog.service';
 import { api } from '../../../../convex/_generated/api';
 
 @Component({
@@ -19,11 +21,12 @@ import { api } from '../../../../convex/_generated/api';
     FormsModule,
     ReactiveFormsModule,
     UiButtonComponent,
-    UiCardComponent,
     UiIconComponent,
     UiModalComponent,
     UiFormFieldComponent,
-    UiBadgeComponent
+    UiGridComponent,
+    UiGridTileComponent,
+    UiDataTableComponent
   ],
   template: `
     <div class="space-y-6">
@@ -39,181 +42,163 @@ import { api } from '../../../../convex/_generated/api';
         </ui-button>
       </div>
 
-      <!-- Stats Grid -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div class="bg-burgundy-50 border border-burgundy-200 rounded-2xl p-5
-                    dark:bg-burgundy-700/12 dark:border-burgundy-700/20 dark:backdrop-blur-xl">
-          <div class="flex items-start justify-between">
-            <div>
-              <p class="text-[13px] font-medium text-burgundy-600 dark:text-burgundy-300 tracking-wide uppercase">Organizations</p>
-              <h3 class="text-2xl font-bold text-burgundy-700 dark:text-burgundy-300 mt-1">{{ stats()?.totalOrganizations || 0 }}</h3>
-            </div>
-            <div class="p-2 bg-burgundy-100 dark:bg-burgundy-700/25 rounded-lg text-burgundy-700 dark:text-burgundy-300">
-              <ui-icon name="building-office-2" class="w-5 h-5"></ui-icon>
-            </div>
-          </div>
-          <div class="mt-3 text-xs text-burgundy-600 dark:text-burgundy-400">
-            <span class="font-medium">{{ stats()?.activeOrganizations || 0 }} active</span>
-            <span class="mx-1">·</span>
-            <span>{{ stats()?.suspendedOrganizations || 0 }} suspended</span>
-          </div>
-        </div>
+      <div class="dash-frame">
+        <ui-grid [columns]="'1fr'" [gap]="'0px'">
+          <ui-grid-tile title="System Overview" variant="compact" divider="bottom">
+            <div class="tile-body">
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-burgundy-50 border border-burgundy-200 rounded-xl p-5
+                            dark:bg-burgundy-700/12 dark:border-burgundy-700/20">
+                  <div class="flex items-start justify-between">
+                    <div>
+                      <p class="text-[13px] font-medium text-burgundy-600 dark:text-burgundy-300 tracking-wide uppercase">Organizations</p>
+                      <h3 class="text-2xl font-bold text-burgundy-700 dark:text-burgundy-300 mt-1">{{ stats()?.totalOrganizations || 0 }}</h3>
+                    </div>
+                    <div class="p-2 bg-burgundy-100 dark:bg-burgundy-700/25 rounded-lg text-burgundy-700 dark:text-burgundy-300">
+                      <ui-icon name="building-office-2" class="w-5 h-5"></ui-icon>
+                    </div>
+                  </div>
+                  <div class="mt-3 text-xs text-burgundy-600 dark:text-burgundy-400">
+                    <span class="font-medium">{{ stats()?.activeOrganizations || 0 }} active</span>
+                    <span class="mx-1">·</span>
+                    <span>{{ stats()?.suspendedOrganizations || 0 }} suspended</span>
+                  </div>
+                </div>
 
-        <div class="bg-white border border-stone-200 rounded-2xl shadow-sm p-5
-                    dark:bg-white/5 dark:border-white/8 dark:backdrop-blur-xl dark:shadow-none">
-          <div class="flex items-start justify-between">
-            <div>
-              <p class="text-[13px] font-medium text-stone-500 dark:text-stone-400 tracking-wide uppercase">Total Users</p>
-              <h3 class="text-2xl font-bold text-stone-900 dark:text-white mt-1">{{ stats()?.totalUsers || 0 }}</h3>
-            </div>
-            <div class="p-2 bg-indigo-50 dark:bg-indigo-500/10 rounded-lg text-indigo-600 dark:text-indigo-400">
-              <ui-icon name="users" class="w-5 h-5"></ui-icon>
-            </div>
-          </div>
-          <div class="mt-3 text-xs text-stone-500 dark:text-stone-400">
-            <span class="text-green-600 dark:text-green-400">{{ stats()?.activeUsers || 0 }} active</span>
-            <span class="mx-1">·</span>
-            <span class="text-amber-600 dark:text-amber-400">{{ stats()?.pendingUsers || 0 }} pending</span>
-          </div>
-        </div>
+                <div class="bg-stone-50 border border-stone-200 rounded-xl p-5
+                            dark:bg-white/[0.03] dark:border-white/[0.06]">
+                  <div class="flex items-start justify-between">
+                    <div>
+                      <p class="text-[13px] font-medium text-stone-500 dark:text-stone-400 tracking-wide uppercase">Total Users</p>
+                      <h3 class="text-2xl font-bold text-stone-900 dark:text-white mt-1">{{ stats()?.totalUsers || 0 }}</h3>
+                    </div>
+                    <div class="p-2 bg-indigo-50 dark:bg-indigo-500/10 rounded-lg text-indigo-600 dark:text-indigo-400">
+                      <ui-icon name="users" class="w-5 h-5"></ui-icon>
+                    </div>
+                  </div>
+                  <div class="mt-3 text-xs text-stone-500 dark:text-stone-400">
+                    <span class="text-green-600 dark:text-green-400">{{ stats()?.activeUsers || 0 }} active</span>
+                    <span class="mx-1">·</span>
+                    <span class="text-amber-600 dark:text-amber-400">{{ stats()?.pendingUsers || 0 }} pending</span>
+                  </div>
+                </div>
 
-        <div class="bg-white border border-stone-200 rounded-2xl shadow-sm p-5
-                    dark:bg-white/5 dark:border-white/8 dark:backdrop-blur-xl dark:shadow-none">
-          <div class="flex items-start justify-between">
-            <div>
-              <p class="text-[13px] font-medium text-stone-500 dark:text-stone-400 tracking-wide uppercase">Total Employees</p>
-              <h3 class="text-2xl font-bold text-stone-900 dark:text-white mt-1">{{ stats()?.totalEmployees || 0 }}</h3>
-            </div>
-            <div class="p-2 bg-emerald-50 dark:bg-emerald-500/10 rounded-lg text-emerald-600 dark:text-emerald-400">
-              <ui-icon name="identification" class="w-5 h-5"></ui-icon>
-            </div>
-          </div>
-          <div class="mt-3 text-xs text-stone-500 dark:text-stone-400">
-            Across all organizations
-          </div>
-        </div>
+                <div class="bg-stone-50 border border-stone-200 rounded-xl p-5
+                            dark:bg-white/[0.03] dark:border-white/[0.06]">
+                  <div class="flex items-start justify-between">
+                    <div>
+                      <p class="text-[13px] font-medium text-stone-500 dark:text-stone-400 tracking-wide uppercase">Total Employees</p>
+                      <h3 class="text-2xl font-bold text-stone-900 dark:text-white mt-1">{{ stats()?.totalEmployees || 0 }}</h3>
+                    </div>
+                    <div class="p-2 bg-emerald-50 dark:bg-emerald-500/10 rounded-lg text-emerald-600 dark:text-emerald-400">
+                      <ui-icon name="identification" class="w-5 h-5"></ui-icon>
+                    </div>
+                  </div>
+                  <div class="mt-3 text-xs text-stone-500 dark:text-stone-400">
+                    Across all organizations
+                  </div>
+                </div>
 
-        <div class="bg-white border border-stone-200 rounded-2xl shadow-sm p-5
-                    dark:bg-white/5 dark:border-white/8 dark:backdrop-blur-xl dark:shadow-none">
-          <div class="flex items-start justify-between">
-            <div>
-              <p class="text-[13px] font-medium text-stone-500 dark:text-stone-400 tracking-wide uppercase">Pending Users</p>
-              <h3 class="text-2xl font-bold text-stone-900 dark:text-white mt-1">{{ stats()?.pendingUsers || 0 }}</h3>
+                <div class="bg-stone-50 border border-stone-200 rounded-xl p-5
+                            dark:bg-white/[0.03] dark:border-white/[0.06]">
+                  <div class="flex items-start justify-between">
+                    <div>
+                      <p class="text-[13px] font-medium text-stone-500 dark:text-stone-400 tracking-wide uppercase">Pending Users</p>
+                      <h3 class="text-2xl font-bold text-stone-900 dark:text-white mt-1">{{ stats()?.pendingUsers || 0 }}</h3>
+                    </div>
+                    <div class="p-2 bg-amber-50 dark:bg-amber-500/10 rounded-lg text-amber-600 dark:text-amber-400">
+                      <ui-icon name="clock" class="w-5 h-5"></ui-icon>
+                    </div>
+                  </div>
+                  <div class="mt-3 text-xs text-stone-500 dark:text-stone-400">
+                    Awaiting organization assignment
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="p-2 bg-amber-50 dark:bg-amber-500/10 rounded-lg text-amber-600 dark:text-amber-400">
-              <ui-icon name="clock" class="w-5 h-5"></ui-icon>
-            </div>
-          </div>
-          <div class="mt-3 text-xs text-stone-500 dark:text-stone-400">
-            Awaiting organization assignment
-          </div>
-        </div>
-      </div>
+          </ui-grid-tile>
 
-      <!-- Organizations Table -->
-      <div class="bg-white border border-stone-200 rounded-2xl shadow-sm
-                  dark:bg-white/5 dark:border-white/8 dark:backdrop-blur-xl dark:shadow-none">
-        <div class="p-6 border-b border-stone-200 dark:border-white/5">
-          <h2 class="text-lg font-semibold text-stone-900 dark:text-white">All Organizations</h2>
-        </div>
-
-        @if (loading()) {
-          <div class="p-6 space-y-3">
-            <div class="h-16 bg-stone-100 dark:bg-white/5 rounded-xl animate-pulse"></div>
-            <div class="h-16 bg-stone-100 dark:bg-white/5 rounded-xl animate-pulse"></div>
-            <div class="h-16 bg-stone-100 dark:bg-white/5 rounded-xl animate-pulse"></div>
-          </div>
-        } @else if (organizations().length === 0) {
-          <div class="p-12 text-center text-stone-400 dark:text-stone-500">
-            <ui-icon name="building-office-2" class="w-12 h-12 mx-auto mb-3"></ui-icon>
-            <p class="font-semibold">No organizations yet</p>
-            <p class="text-sm mt-1">Create your first organization to get started</p>
-          </div>
-        } @else {
-          <div class="overflow-x-auto">
-            <table class="w-full">
-              <thead>
-                <tr class="border-b border-stone-200 dark:border-white/5">
-                  <th class="text-left py-3 px-6 text-xs font-semibold text-stone-400 dark:text-stone-500 uppercase tracking-wide">Organization</th>
-                  <th class="text-left py-3 px-6 text-xs font-semibold text-stone-400 dark:text-stone-500 uppercase tracking-wide">Status</th>
-                  <th class="text-left py-3 px-6 text-xs font-semibold text-stone-400 dark:text-stone-500 uppercase tracking-wide">Plan</th>
-                  <th class="text-center py-3 px-6 text-xs font-semibold text-stone-400 dark:text-stone-500 uppercase tracking-wide">Users</th>
-                  <th class="text-center py-3 px-6 text-xs font-semibold text-stone-400 dark:text-stone-500 uppercase tracking-wide">Employees</th>
-                  <th class="text-center py-3 px-6 text-xs font-semibold text-stone-400 dark:text-stone-500 uppercase tracking-wide">Pending</th>
-                  <th class="text-right py-3 px-6 text-xs font-semibold text-stone-400 dark:text-stone-500 uppercase tracking-wide">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (org of organizations(); track org._id) {
-                  <tr class="border-b border-stone-50 dark:border-white/[0.03]
-                             hover:bg-burgundy-50/50 dark:hover:bg-burgundy-700/[0.06] transition-colors">
-                    <td class="py-4 px-6">
-                      <div class="font-semibold text-stone-900 dark:text-white">{{ org.name }}</div>
-                      @if (org.domain) {
-                        <div class="text-xs text-stone-500 dark:text-stone-400">{{ org.domain }}</div>
-                      }
-                    </td>
-                    <td class="py-4 px-6">
-                      <ui-badge [variant]="org.status === 'active' ? 'success' : 'warning'" size="sm">
-                        {{ org.status | titlecase }}
-                      </ui-badge>
-                    </td>
-                    <td class="py-4 px-6">
-                      <span class="text-sm text-stone-600 dark:text-stone-300 capitalize">{{ org.subscriptionPlan }}</span>
-                    </td>
-                    <td class="py-4 px-6 text-center">
-                      <span class="text-sm font-semibold text-stone-900 dark:text-white">{{ org.userCount }}</span>
-                    </td>
-                    <td class="py-4 px-6 text-center">
-                      <span class="text-sm font-semibold text-stone-900 dark:text-white">{{ org.employeeCount }}</span>
-                    </td>
-                    <td class="py-4 px-6 text-center">
-                      @if (org.pendingRequestCount > 0) {
-                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 text-xs font-semibold">
-                          {{ org.pendingRequestCount }}
-                        </span>
-                      } @else {
-                        <span class="text-stone-400 dark:text-stone-500">-</span>
-                      }
-                    </td>
-                    <td class="py-4 px-6 text-right">
-                      <div class="flex items-center justify-end gap-2">
-                        <ui-button
-                          variant="ghost"
-                          size="sm"
-                          (onClick)="openEditModal(org)"
-                        >
-                          Edit
-                        </ui-button>
-                        @if (org.status === 'active') {
-                          <ui-button
-                            variant="ghost"
-                            size="sm"
-                            class="text-amber-600 hover:text-amber-700 dark:text-amber-400 dark:hover:text-amber-300"
-                            [loading]="processingOrgId() === org._id"
-                            (onClick)="suspendOrg(org._id)"
-                          >
-                            Suspend
-                          </ui-button>
-                        } @else {
-                          <ui-button
-                            variant="ghost"
-                            size="sm"
-                            class="text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300"
-                            [loading]="processingOrgId() === org._id"
-                            (onClick)="activateOrg(org._id)"
-                          >
-                            Activate
-                          </ui-button>
-                        }
-                      </div>
-                    </td>
-                  </tr>
+          <ui-grid-tile title="All Organizations" variant="compact">
+            @if (loading()) {
+              <div class="tile-body space-y-3">
+                <div class="h-16 bg-stone-100 dark:bg-white/5 rounded-xl animate-pulse"></div>
+                <div class="h-16 bg-stone-100 dark:bg-white/5 rounded-xl animate-pulse"></div>
+                <div class="h-16 bg-stone-100 dark:bg-white/5 rounded-xl animate-pulse"></div>
+              </div>
+            } @else if (organizations().length === 0) {
+              <div class="tile-body text-center text-stone-400 dark:text-stone-500">
+                <ui-icon name="building-office-2" class="w-12 h-12 mx-auto mb-3"></ui-icon>
+                <p class="font-semibold">No organizations yet</p>
+                <p class="text-sm mt-1">Create your first organization to get started</p>
+              </div>
+            } @else {
+              <ui-data-table
+                [data]="organizations()"
+                [columns]="columns"
+                [headerVariant]="'neutral'"
+                [cellTemplates]="{ org: orgTpl, pending: pendingTpl, userCount: userCountTpl, employeeCount: employeeCountTpl }"
+                [actionsTemplate]="actionsTpl"
+              ></ui-data-table>
+              <ng-template #orgTpl let-row>
+                <div class="font-semibold text-stone-900 dark:text-white">{{ row.name }}</div>
+                @if (row.domain) {
+                  <div class="text-xs text-stone-500 dark:text-stone-400">{{ row.domain }}</div>
                 }
-              </tbody>
-            </table>
-          </div>
-        }
+              </ng-template>
+              <ng-template #userCountTpl let-row>
+                <span class="block text-center text-sm font-semibold text-stone-900 dark:text-white">
+                  {{ row.userCount }}
+                </span>
+              </ng-template>
+              <ng-template #employeeCountTpl let-row>
+                <span class="block text-center text-sm font-semibold text-stone-900 dark:text-white">
+                  {{ row.employeeCount }}
+                </span>
+              </ng-template>
+              <ng-template #pendingTpl let-row>
+                @if (row.pendingRequestCount > 0) {
+                  <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 text-xs font-semibold">
+                    {{ row.pendingRequestCount }}
+                  </span>
+                } @else {
+                  <span class="text-stone-400 dark:text-stone-500">-</span>
+                }
+              </ng-template>
+              <ng-template #actionsTpl let-row>
+                <div class="flex items-center justify-end gap-2">
+                  <ui-button
+                    variant="ghost"
+                    size="sm"
+                    (onClick)="openEditModal(row)"
+                  >
+                    Edit
+                  </ui-button>
+                  @if (row.status === 'active') {
+                    <ui-button
+                      variant="ghost"
+                      size="sm"
+                      class="text-amber-600 hover:text-amber-700 dark:text-amber-400 dark:hover:text-amber-300"
+                      [loading]="processingOrgId() === row._id"
+                      (onClick)="suspendOrg(row._id)"
+                    >
+                      Suspend
+                    </ui-button>
+                  } @else {
+                    <ui-button
+                      variant="ghost"
+                      size="sm"
+                      class="text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300"
+                      [loading]="processingOrgId() === row._id"
+                      (onClick)="activateOrg(row._id)"
+                    >
+                      Activate
+                    </ui-button>
+                  }
+                </div>
+              </ng-template>
+            }
+          </ui-grid-tile>
+        </ui-grid>
       </div>
 
       <!-- Create/Edit Modal -->
@@ -302,18 +287,50 @@ import { api } from '../../../../convex/_generated/api';
         </form>
       </ui-modal>
     </div>
-  `
+  `,
+  styles: [`
+    .dash-frame {
+      background: white;
+      border-radius: 0.75rem;
+      border: 1px solid #e7e5e4;
+      box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+    }
+
+    :host-context(.dark) .dash-frame {
+      background: rgb(41 37 36 / 0.6);
+      border-color: rgb(68 64 60 / 0.5);
+      box-shadow: none;
+    }
+
+    .tile-body {
+      padding: 1.5rem;
+    }
+  `]
 })
 export class SuperAdminComponent implements OnInit, OnDestroy {
   private convex = inject(ConvexClientService);
   private toastService = inject(ToastService);
   private fb = inject(FormBuilder);
+  private confirmDialog = inject(ConfirmDialogService);
 
   organizations = signal<any[]>([]);
   stats = signal<any>(null);
   loading = signal(true);
   submitting = signal(false);
   processingOrgId = signal<string | null>(null);
+  columns: TableColumn[] = [
+    { key: 'org', header: 'Organization' },
+    {
+      key: 'status',
+      header: 'Status',
+      type: 'badge',
+      badgeVariant: (val) => (val === 'active' ? 'success' : 'warning')
+    },
+    { key: 'subscriptionPlan', header: 'Plan', formatter: (val) => val || '-' },
+    { key: 'userCount', header: 'Users' },
+    { key: 'employeeCount', header: 'Employees' },
+    { key: 'pending', header: 'Pending' }
+  ];
 
   showModal = signal(false);
   editingOrg = signal<any>(null);
@@ -397,7 +414,15 @@ export class SuperAdminComponent implements OnInit, OnDestroy {
   }
 
   async suspendOrg(orgId: string) {
-    if (!confirm('Are you sure you want to suspend this organization?')) return;
+    const confirmed = await this.confirmDialog.confirm({
+      title: 'Suspend Organization',
+      message: 'Are you sure you want to suspend this organization? Users will not be able to access the system.',
+      confirmText: 'Suspend',
+      cancelText: 'Cancel',
+      variant: 'warning'
+    });
+
+    if (!confirmed) return;
 
     this.processingOrgId.set(orgId);
     try {

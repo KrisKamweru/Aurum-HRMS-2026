@@ -9,21 +9,23 @@ import { api } from '../../../../convex/_generated/api';
 import { ConvexClientService } from '../../core/services/convex-client.service';
 
 // UI Components
-import { UiCardComponent } from '../../shared/components/ui-card/ui-card.component';
 import { UiButtonComponent } from '../../shared/components/ui-button/ui-button.component';
 import { UiIconComponent } from '../../shared/components/ui-icon/ui-icon.component';
 import { UiFormFieldComponent } from '../../shared/components/ui-form-field/ui-form-field.component';
 import { ToastService } from '../../shared/services/toast.service';
+import { UiGridComponent } from '../../shared/components/ui-grid/ui-grid.component';
+import { UiGridTileComponent } from '../../shared/components/ui-grid/ui-grid-tile.component';
 
 @Component({
   selector: 'app-profile',
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    UiCardComponent,
     UiButtonComponent,
     UiIconComponent,
-    UiFormFieldComponent
+    UiFormFieldComponent,
+    UiGridComponent,
+    UiGridTileComponent
   ],
   template: `
     <div class="max-w-5xl mx-auto space-y-6">
@@ -119,62 +121,59 @@ import { ToastService } from '../../shared/services/toast.service';
         @if (profile) {
           <!-- My Info Tab -->
           @if (activeTab() === 'info') {
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="dash-frame">
+              <ui-grid [columns]="'1fr 2fr'" [gap]="'0px'">
+                <ui-grid-tile title="Profile" variant="compact" divider="right">
+                  <div class="tile-body">
+                    <div class="flex flex-col items-center text-center">
+                      <div class="w-32 h-32 rounded-full bg-stone-100 dark:bg-stone-700 flex items-center justify-center mb-4 overflow-hidden border-4 border-white dark:border-stone-600 shadow-md">
+                        @if (profile.user && profile.user.image) {
+                          <img [src]="profile.user.image" alt="Profile" class="w-full h-full object-cover">
+                        } @else {
+                          <span class="text-4xl font-bold text-stone-300 dark:text-stone-500">
+                            {{ getInitials(profile.firstName, profile.lastName) }}
+                          </span>
+                        }
+                      </div>
 
-              <!-- Left Column: Identity Card -->
-              <div class="lg:col-span-1 space-y-6">
-                <ui-card class="h-full">
-                  <div class="flex flex-col items-center text-center p-6">
-                    <div class="w-32 h-32 rounded-full bg-stone-100 dark:bg-stone-700 flex items-center justify-center mb-4 overflow-hidden border-4 border-white dark:border-stone-600 shadow-md">
-                      @if (profile.user && profile.user.image) {
-                        <img [src]="profile.user.image" alt="Profile" class="w-full h-full object-cover">
-                      } @else {
-                        <span class="text-4xl font-bold text-stone-300 dark:text-stone-500">
-                          {{ getInitials(profile.firstName, profile.lastName) }}
+                      <h2 class="text-xl font-bold text-stone-900 dark:text-stone-100">{{ profile.firstName }} {{ profile.lastName }}</h2>
+                      <p class="text-stone-500 dark:text-stone-400">{{ profile.position || 'No Designation' }}</p>
+
+                      <div class="mt-4 flex flex-wrap justify-center gap-2">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-burgundy-50 dark:bg-burgundy-700/12 text-burgundy-700 dark:text-burgundy-300">
+                          {{ profile.department || 'No Department' }}
                         </span>
-                      }
-                    </div>
-
-                    <h2 class="text-xl font-bold text-stone-900 dark:text-stone-100">{{ profile.firstName }} {{ profile.lastName }}</h2>
-                    <p class="text-stone-500 dark:text-stone-400">{{ profile.position || 'No Designation' }}</p>
-
-                    <div class="mt-4 flex flex-wrap justify-center gap-2">
-                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-burgundy-50 dark:bg-burgundy-700/12 text-burgundy-700 dark:text-burgundy-300">
-                        {{ profile.department || 'No Department' }}
-                      </span>
-                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-stone-100 dark:bg-stone-700 text-stone-800 dark:text-stone-200">
-                        {{ profile.location || 'Remote' }}
-                      </span>
-                    </div>
-
-                    <div class="w-full mt-6 pt-6 border-t border-stone-100 dark:border-white/5 space-y-4">
-                      <div class="flex justify-between items-center text-sm">
-                        <span class="text-stone-500 dark:text-stone-400">Employee ID</span>
-                        <span class="font-mono font-medium text-stone-900 dark:text-stone-100">{{ formatId(profile._id) }}</span>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-stone-100 dark:bg-stone-700 text-stone-800 dark:text-stone-200">
+                          {{ profile.location || 'Remote' }}
+                        </span>
                       </div>
-                      <div class="flex justify-between items-center text-sm">
-                        <span class="text-stone-500 dark:text-stone-400">Joined</span>
-                        <span class="font-medium text-stone-900 dark:text-stone-100">{{ profile.startDate | date:'mediumDate' }}</span>
-                      </div>
-                      <div class="flex justify-between items-center text-sm">
-                        <span class="text-stone-500 dark:text-stone-400">Tenure</span>
-                        <span class="font-medium text-stone-900 dark:text-stone-100">{{ profile.tenure }}</span>
-                      </div>
-                      @if (profile.managerName) {
+
+                      <div class="w-full mt-6 pt-6 border-t border-stone-100 dark:border-white/5 space-y-4">
                         <div class="flex justify-between items-center text-sm">
-                          <span class="text-stone-500 dark:text-stone-400">Reports To</span>
-                          <span class="font-medium text-stone-900 dark:text-stone-100">{{ profile.managerName }}</span>
+                          <span class="text-stone-500 dark:text-stone-400">Employee ID</span>
+                          <span class="font-mono font-medium text-stone-900 dark:text-stone-100">{{ formatId(profile._id) }}</span>
                         </div>
-                      }
+                        <div class="flex justify-between items-center text-sm">
+                          <span class="text-stone-500 dark:text-stone-400">Joined</span>
+                          <span class="font-medium text-stone-900 dark:text-stone-100">{{ profile.startDate | date:'mediumDate' }}</span>
+                        </div>
+                        <div class="flex justify-between items-center text-sm">
+                          <span class="text-stone-500 dark:text-stone-400">Tenure</span>
+                          <span class="font-medium text-stone-900 dark:text-stone-100">{{ profile.tenure }}</span>
+                        </div>
+                        @if (profile.managerName) {
+                          <div class="flex justify-between items-center text-sm">
+                            <span class="text-stone-500 dark:text-stone-400">Reports To</span>
+                            <span class="font-medium text-stone-900 dark:text-stone-100">{{ profile.managerName }}</span>
+                          </div>
+                        }
+                      </div>
                     </div>
                   </div>
-                </ui-card>
-              </div>
+                </ui-grid-tile>
 
-              <!-- Right Column: Details & Edit Form -->
-              <div class="lg:col-span-2">
-                <ui-card title="Personal Information" subtitle="Manage your personal contact details">
-                  <div header-actions>
+                <ui-grid-tile title="Personal Information" variant="compact">
+                  <div tile-actions>
                     @if (!isEditing()) {
                       <ui-button variant="secondary" size="sm" (onClick)="toggleEdit()">
                         <ui-icon name="edit" class="w-4 h-4 mr-1"></ui-icon>
@@ -182,146 +181,157 @@ import { ToastService } from '../../shared/services/toast.service';
                       </ui-button>
                     }
                   </div>
+                  <div class="tile-body">
+                    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500 dark:text-stone-400">
+                      Manage your personal contact details
+                    </p>
 
-                  @if (!isEditing()) {
-                    <!-- View Mode -->
-                    <div class="space-y-6">
-                      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                          <p class="text-sm font-medium text-stone-500 dark:text-stone-400">Email Address</p>
-                          <p class="mt-1 text-base text-stone-900 dark:text-stone-100">{{ profile.email }}</p>
-                        </div>
-                        <div>
-                          <p class="text-sm font-medium text-stone-500 dark:text-stone-400">Phone Number</p>
-                          <p class="mt-1 text-base text-stone-900 dark:text-stone-100">{{ profile.phone || 'Not set' }}</p>
-                        </div>
-                        <div>
-                          <p class="text-sm font-medium text-stone-500 dark:text-stone-400">Date of Birth</p>
-                          <p class="mt-1 text-base text-stone-900 dark:text-stone-100">{{ (profile.dob | date:'mediumDate') || 'Not set' }}</p>
-                        </div>
-                        <div>
-                          <p class="text-sm font-medium text-stone-500 dark:text-stone-400">Gender</p>
-                          <p class="mt-1 text-base text-stone-900 dark:text-stone-100 capitalize">{{ profile.gender || 'Not set' }}</p>
-                        </div>
-                        <div class="md:col-span-2">
-                          <p class="text-sm font-medium text-stone-500 dark:text-stone-400">Address</p>
-                          <p class="mt-1 text-base text-stone-900 dark:text-stone-100">{{ profile.address || 'Not set' }}</p>
+                    @if (!isEditing()) {
+                      <!-- View Mode -->
+                      <div class="mt-6 space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div>
+                            <p class="text-sm font-medium text-stone-500 dark:text-stone-400">Email Address</p>
+                            <p class="mt-1 text-base text-stone-900 dark:text-stone-100">{{ profile.email }}</p>
+                          </div>
+                          <div>
+                            <p class="text-sm font-medium text-stone-500 dark:text-stone-400">Phone Number</p>
+                            <p class="mt-1 text-base text-stone-900 dark:text-stone-100">{{ profile.phone || 'Not set' }}</p>
+                          </div>
+                          <div>
+                            <p class="text-sm font-medium text-stone-500 dark:text-stone-400">Date of Birth</p>
+                            <p class="mt-1 text-base text-stone-900 dark:text-stone-100">{{ (profile.dob | date:'mediumDate') || 'Not set' }}</p>
+                          </div>
+                          <div>
+                            <p class="text-sm font-medium text-stone-500 dark:text-stone-400">Gender</p>
+                            <p class="mt-1 text-base text-stone-900 dark:text-stone-100 capitalize">{{ profile.gender || 'Not set' }}</p>
+                          </div>
+                          <div class="md:col-span-2">
+                            <p class="text-sm font-medium text-stone-500 dark:text-stone-400">Address</p>
+                            <p class="mt-1 text-base text-stone-900 dark:text-stone-100">{{ profile.address || 'Not set' }}</p>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  } @else {
-                    <!-- Edit Mode -->
-                    <form [formGroup]="editForm" (ngSubmit)="saveProfile()" class="space-y-6">
-                      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Read-only Email -->
-                        <div class="md:col-span-2">
-                           <ui-form-field label="Email Address" hint="Contact HR to change your email">
-                             <input type="email" [value]="profile.email" disabled
-                               class="w-full px-4 py-2.5 rounded-lg text-sm
-                                      bg-stone-50 border border-stone-200
-                                      dark:bg-stone-800 dark:border-stone-700
-                                      text-stone-500 dark:text-stone-400 cursor-not-allowed">
-                           </ui-form-field>
-                        </div>
+                    } @else {
+                      <!-- Edit Mode -->
+                      <form [formGroup]="editForm" (ngSubmit)="saveProfile()" class="mt-6 space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <!-- Read-only Email -->
+                          <div class="md:col-span-2">
+                             <ui-form-field label="Email Address" hint="Contact HR to change your email">
+                               <input type="email" [value]="profile.email" disabled
+                                 class="w-full px-4 py-2.5 rounded-lg text-sm
+                                        bg-stone-50 border border-stone-200
+                                        dark:bg-stone-800 dark:border-stone-700
+                                        text-stone-500 dark:text-stone-400 cursor-not-allowed">
+                             </ui-form-field>
+                          </div>
 
-                        <ui-form-field label="Phone Number" [control]="editForm.get('phone')">
-                          <input type="tel" formControlName="phone"
-                            class="w-full px-4 py-2.5 rounded-lg text-sm
-                                   bg-white border border-stone-200
-                                   dark:bg-white/5 dark:border-white/8 dark:text-white
-                                   placeholder:text-stone-400 dark:placeholder:text-stone-500
-                                   focus:border-burgundy-700 focus:ring-2 focus:ring-burgundy-700/20
-                                   transition-all">
-                        </ui-form-field>
-
-                        <ui-form-field label="Gender" [control]="editForm.get('gender')">
-                          <select formControlName="gender"
-                            class="w-full px-4 py-2.5 rounded-lg text-sm
-                                   bg-white border border-stone-200
-                                   dark:bg-white/5 dark:border-white/8 dark:text-white
-                                   focus:border-burgundy-700 focus:ring-2 focus:ring-burgundy-700/20
-                                   transition-all appearance-none">
-                            <option value="">Select Gender</option>
-                            <option value="male">Male</option>
-                            <option value="female">Female</option>
-                            <option value="other">Other</option>
-                            <option value="prefer-not-to-say">Prefer not to say</option>
-                          </select>
-                        </ui-form-field>
-
-                        <ui-form-field label="Date of Birth" [control]="editForm.get('dob')">
-                          <input type="date" formControlName="dob"
-                            class="w-full px-4 py-2.5 rounded-lg text-sm
-                                   bg-white border border-stone-200
-                                   dark:bg-white/5 dark:border-white/8 dark:text-white
-                                   focus:border-burgundy-700 focus:ring-2 focus:ring-burgundy-700/20
-                                   transition-all">
-                        </ui-form-field>
-
-                        <div class="md:col-span-2">
-                          <ui-form-field label="Address" [control]="editForm.get('address')">
-                            <textarea formControlName="address" rows="3"
+                          <ui-form-field label="Phone Number" [control]="editForm.get('phone')">
+                            <input type="tel" formControlName="phone"
                               class="w-full px-4 py-2.5 rounded-lg text-sm
                                      bg-white border border-stone-200
                                      dark:bg-white/5 dark:border-white/8 dark:text-white
                                      placeholder:text-stone-400 dark:placeholder:text-stone-500
                                      focus:border-burgundy-700 focus:ring-2 focus:ring-burgundy-700/20
-                                     transition-all"></textarea>
+                                     transition-all">
                           </ui-form-field>
-                        </div>
-                      </div>
 
-                      <div class="flex items-center justify-end gap-3 pt-4 border-t border-stone-100 dark:border-white/5">
-                        <ui-button variant="ghost" (onClick)="cancelEdit()">Cancel</ui-button>
-                        <ui-button type="submit" [loading]="isSaving()" [disabled]="editForm.invalid || isSaving()">
-                          Save Changes
-                        </ui-button>
-                      </div>
-                    </form>
-                  }
-                </ui-card>
-              </div>
+                          <ui-form-field label="Gender" [control]="editForm.get('gender')">
+                            <select formControlName="gender"
+                              class="w-full px-4 py-2.5 rounded-lg text-sm
+                                     bg-white border border-stone-200
+                                     dark:bg-white/5 dark:border-white/8 dark:text-white
+                                     focus:border-burgundy-700 focus:ring-2 focus:ring-burgundy-700/20
+                                     transition-all appearance-none">
+                              <option value="">Select Gender</option>
+                              <option value="male">Male</option>
+                              <option value="female">Female</option>
+                              <option value="other">Other</option>
+                              <option value="prefer-not-to-say">Prefer not to say</option>
+                            </select>
+                          </ui-form-field>
+
+                          <ui-form-field label="Date of Birth" [control]="editForm.get('dob')">
+                            <input type="date" formControlName="dob"
+                              class="w-full px-4 py-2.5 rounded-lg text-sm
+                                     bg-white border border-stone-200
+                                     dark:bg-white/5 dark:border-white/8 dark:text-white
+                                     focus:border-burgundy-700 focus:ring-2 focus:ring-burgundy-700/20
+                                     transition-all">
+                          </ui-form-field>
+
+                          <div class="md:col-span-2">
+                            <ui-form-field label="Address" [control]="editForm.get('address')">
+                              <textarea formControlName="address" rows="3"
+                                class="w-full px-4 py-2.5 rounded-lg text-sm
+                                       bg-white border border-stone-200
+                                       dark:bg-white/5 dark:border-white/8 dark:text-white
+                                       placeholder:text-stone-400 dark:placeholder:text-stone-500
+                                       focus:border-burgundy-700 focus:ring-2 focus:ring-burgundy-700/20
+                                       transition-all"></textarea>
+                            </ui-form-field>
+                          </div>
+                        </div>
+
+                        <div class="flex items-center justify-end gap-3 pt-4 border-t border-stone-100 dark:border-white/5">
+                          <ui-button variant="ghost" (onClick)="cancelEdit()">Cancel</ui-button>
+                          <ui-button type="submit" [loading]="isSaving()" [disabled]="editForm.invalid || isSaving()">
+                            Save Changes
+                          </ui-button>
+                        </div>
+                      </form>
+                    }
+                  </div>
+                </ui-grid-tile>
+              </ui-grid>
             </div>
           } @else {
             <!-- Settings Tab -->
-            <ui-card title="Account Settings" subtitle="Manage your application preferences">
-              <div class="py-16 flex flex-col items-center justify-center text-center">
-                <svg class="w-40 h-40 mb-6" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <defs>
-                    <linearGradient id="settings-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stop-color="#8b1e3f" stop-opacity="0.15"/>
-                      <stop offset="100%" stop-color="#b8956b" stop-opacity="0.15"/>
-                    </linearGradient>
-                  </defs>
+            <div class="dash-frame">
+              <ui-grid [columns]="'1fr'" [gap]="'0px'">
+                <ui-grid-tile title="Account Settings" variant="compact">
+                  <div class="tile-body">
+                    <div class="py-16 flex flex-col items-center justify-center text-center">
+                      <svg class="w-40 h-40 mb-6" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                          <linearGradient id="settings-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#8b1e3f" stop-opacity="0.15"/>
+                            <stop offset="100%" stop-color="#b8956b" stop-opacity="0.15"/>
+                          </linearGradient>
+                        </defs>
 
-                  <!-- Background Gear -->
-                  <circle cx="80" cy="80" r="60" class="stroke-stone-200 dark:stroke-stone-700" stroke-width="1" stroke-dasharray="8 8"/>
+                        <!-- Background Gear -->
+                        <circle cx="80" cy="80" r="60" class="stroke-stone-200 dark:stroke-stone-700" stroke-width="1" stroke-dasharray="8 8"/>
 
-                  <!-- Main Gear -->
-                  <path d="M80 50L84 40H76L80 50ZM110 80L120 76V84L110 80ZM80 110L76 120H84L80 110ZM50 80L40 84V76L50 80Z" class="fill-stone-300 dark:fill-stone-600"/>
-                  <circle cx="80" cy="80" r="30" fill="url(#settings-grad)" class="stroke-stone-300 dark:stroke-stone-600" stroke-width="2"/>
-                  <circle cx="80" cy="80" r="12" class="fill-white dark:fill-stone-800 stroke-[#8b1e3f]" stroke-width="2"/>
+                        <!-- Main Gear -->
+                        <path d="M80 50L84 40H76L80 50ZM110 80L120 76V84L110 80ZM80 110L76 120H84L80 110ZM50 80L40 84V76L50 80Z" class="fill-stone-300 dark:fill-stone-600"/>
+                        <circle cx="80" cy="80" r="30" fill="url(#settings-grad)" class="stroke-stone-300 dark:stroke-stone-600" stroke-width="2"/>
+                        <circle cx="80" cy="80" r="12" class="fill-white dark:fill-stone-800 stroke-[#8b1e3f]" stroke-width="2"/>
 
-                  <!-- Floating Elements -->
-                  <circle cx="110" cy="50" r="8" stroke="#b8956b" stroke-width="1.5" class="fill-white dark:fill-stone-800"/>
-                  <path d="M107 50L113 50" stroke="#b8956b" stroke-width="1.5"/>
-                  <path d="M110 47L110 53" stroke="#b8956b" stroke-width="1.5"/>
+                        <!-- Floating Elements -->
+                        <circle cx="110" cy="50" r="8" stroke="#b8956b" stroke-width="1.5" class="fill-white dark:fill-stone-800"/>
+                        <path d="M107 50L113 50" stroke="#b8956b" stroke-width="1.5"/>
+                        <path d="M110 47L110 53" stroke="#b8956b" stroke-width="1.5"/>
 
-                  <rect x="40" y="100" width="16" height="12" rx="2" stroke="#8b1e3f" stroke-width="1.5" class="fill-white dark:fill-stone-800"/>
-                  <path d="M48 100V98" stroke="#8b1e3f" stroke-width="1.5"/>
-                </svg>
+                        <rect x="40" y="100" width="16" height="12" rx="2" stroke="#8b1e3f" stroke-width="1.5" class="fill-white dark:fill-stone-800"/>
+                        <path d="M48 100V98" stroke="#8b1e3f" stroke-width="1.5"/>
+                      </svg>
 
-                <h3 class="text-xl font-bold text-stone-800 dark:text-stone-100 mb-2">Settings Coming Soon</h3>
-                <p class="text-stone-500 dark:text-stone-400 max-w-sm leading-relaxed">
-                  We're crafting a new settings experience to give you more control over your profile, notifications, and security preferences.
-                </p>
-                <div class="mt-6 flex gap-2">
-                  <span class="px-3 py-1 bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-300 rounded-full text-xs font-medium border border-stone-200 dark:border-stone-600">Notifications</span>
-                  <span class="px-3 py-1 bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-300 rounded-full text-xs font-medium border border-stone-200 dark:border-stone-600">Security</span>
-                  <span class="px-3 py-1 bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-300 rounded-full text-xs font-medium border border-stone-200 dark:border-stone-600">Appearance</span>
-                </div>
-              </div>
-            </ui-card>
+                      <h3 class="text-xl font-bold text-stone-800 dark:text-stone-100 mb-2">Settings Coming Soon</h3>
+                      <p class="text-stone-500 dark:text-stone-400 max-w-sm leading-relaxed">
+                        We're crafting a new settings experience to give you more control over your profile, notifications, and security preferences.
+                      </p>
+                      <div class="mt-6 flex gap-2">
+                        <span class="px-3 py-1 bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-300 rounded-full text-xs font-medium border border-stone-200 dark:border-stone-600">Notifications</span>
+                        <span class="px-3 py-1 bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-300 rounded-full text-xs font-medium border border-stone-200 dark:border-stone-600">Security</span>
+                        <span class="px-3 py-1 bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-300 rounded-full text-xs font-medium border border-stone-200 dark:border-stone-600">Appearance</span>
+                      </div>
+                    </div>
+                  </div>
+                </ui-grid-tile>
+              </ui-grid>
+            </div>
           }
 
         } @else {
@@ -496,3 +506,10 @@ export class ProfileComponent {
     return id.slice(-6).toUpperCase();
   }
 }
+
+
+
+
+
+
+

@@ -17,10 +17,10 @@ import { CommonModule } from '@angular/common';
 
       <!-- Header -->
       @if (title || subtitle || hasHeaderActions) {
-        <div class="px-6 py-4 border-b border-stone-100 dark:border-stone-700 flex items-center justify-between" [class.bg-stone-50]="variant === 'default'" [class.dark:bg-stone-800]="variant === 'default'" [class.pl-8]="accent">
+        <div class="px-5 sm:px-6 py-4 border-b border-stone-100 dark:border-white/5 flex items-center justify-between" [class.bg-stone-50]="variant === 'default'" [class.dark:bg-white/5]="variant === 'default'" [class.pl-8]="accent">
           <div>
             @if (title) {
-              <h3 class="text-lg font-bold text-stone-900 dark:text-stone-100">{{ title }}</h3>
+              <h3 class="text-lg font-semibold text-stone-900 dark:text-white">{{ title }}</h3>
             }
             @if (subtitle) {
               <p class="text-sm text-stone-500 dark:text-stone-400 mt-0.5">{{ subtitle }}</p>
@@ -39,7 +39,7 @@ import { CommonModule } from '@angular/common';
 
       <!-- Footer -->
       @if (hasFooter) {
-        <div class="px-6 py-4 bg-stone-50 dark:bg-stone-800 border-t border-stone-100 dark:border-stone-700" [class.pl-8]="accent">
+        <div class="px-5 sm:px-6 py-4 bg-stone-50 dark:bg-white/5 border-t border-stone-100 dark:border-white/5" [class.pl-8]="accent">
           <ng-content select="[footer]"></ng-content>
         </div>
       }
@@ -61,13 +61,13 @@ export class UiCardComponent {
   @Input() hasFooter = false;
 
   getContainerClasses(): string {
-    const baseClasses = 'overflow-hidden h-full flex flex-col transition-all duration-300 relative';
+    const baseClasses = 'overflow-hidden h-full flex flex-col transition-all duration-300 relative rounded-2xl';
 
     const variants = {
-      default: 'bg-white dark:bg-stone-800 rounded-2xl shadow-sm border border-stone-200 dark:border-stone-700',
-      premium: 'card-premium dark:bg-stone-800 dark:border-stone-700', // Ensure premium also respects dark bg base
-      glass: 'card-glass dark:bg-stone-800/80 dark:border-stone-700/50',     // Ensure glass respects dark bg base
-      outlined: 'bg-white dark:bg-stone-800 rounded-2xl border border-stone-200 dark:border-stone-700'
+      default: 'bg-white dark:bg-white/5 border border-stone-200 dark:border-white/8 shadow-sm dark:shadow-none dark:backdrop-blur-xl',
+      premium: 'bg-white dark:bg-white/5 border border-stone-200 dark:border-white/8 shadow-sm dark:shadow-none dark:backdrop-blur-xl',
+      glass: 'bg-white dark:bg-white/5 border border-stone-200 dark:border-white/8 shadow-sm dark:shadow-none dark:backdrop-blur-xl',
+      outlined: 'bg-white dark:bg-white/5 border border-stone-200 dark:border-white/8 dark:backdrop-blur-xl'
     };
 
     return `${baseClasses} ${variants[this.variant]}`;
@@ -77,7 +77,7 @@ export class UiCardComponent {
     const paddings = {
       none: '',
       sm: 'p-3 sm:p-4',
-      md: 'p-4 sm:p-6',
+      md: 'p-5 sm:p-6',
       lg: 'p-5 sm:p-8'
     };
 

@@ -6,16 +6,19 @@ import { UiModalComponent } from '../../../shared/components/ui-modal/ui-modal.c
 import { UiIconComponent } from '../../../shared/components/ui-icon/ui-icon.component';
 import { DynamicFormComponent } from '../../../shared/components/dynamic-form/dynamic-form.component';
 import { FieldConfig } from '../../../shared/services/form-helper.service';
+import { UiGridComponent } from '../../../shared/components/ui-grid/ui-grid.component';
+import { UiGridTileComponent } from '../../../shared/components/ui-grid/ui-grid-tile.component';
 import { ConvexClientService } from '../../../core/services/convex-client.service';
 import { ToastService } from '../../../shared/services/toast.service';
 import { AuthService } from '../../../core/auth/auth.service';
+import { ConfirmDialogService } from '../../../shared/services/confirm-dialog.service';
 import { api } from '../../../../../convex/_generated/api';
 import { Id } from '../../../../../convex/_generated/dataModel';
 
 @Component({
   selector: 'app-departments',
   standalone: true,
-  imports: [CommonModule, UiDataTableComponent, UiButtonComponent, UiModalComponent, UiIconComponent, DynamicFormComponent],
+  imports: [CommonModule, UiDataTableComponent, UiButtonComponent, UiModalComponent, UiIconComponent, DynamicFormComponent, UiGridComponent, UiGridTileComponent],
   template: `
     <div class="space-y-6">
       <div class="flex items-center justify-between">
@@ -23,18 +26,29 @@ import { Id } from '../../../../../convex/_generated/dataModel';
           <h1 class="text-3xl font-bold text-stone-900 dark:text-white tracking-tight">Departments</h1>
           <p class="mt-2 text-[15px] text-stone-600 dark:text-stone-400">Manage organizational departments.</p>
         </div>
-        <ui-button (onClick)="openCreateModal()" *ngIf="canManage()">
-          <ui-icon name="plus" class="w-4 h-4 mr-2"></ui-icon>
-          Add Department
-        </ui-button>
+        @if (canManage()) {
+          <ui-button (onClick)="openCreateModal()">
+            <ui-icon name="plus" class="w-4 h-4 mr-2"></ui-icon>
+            Add Department
+          </ui-button>
+        }
       </div>
 
-      <ui-data-table
-          [data]="departments()"
-          [columns]="columns"
-          [loading]="loading()"
-          [actionsTemplate]="canManage() ? actionsRef : undefined"
-        ></ui-data-table>
+      <div class="dash-frame">
+        <ui-grid [columns]="'1fr'" [gap]="'0px'">
+          <ui-grid-tile title="Departments" variant="compact">
+            <div class="tile-body">
+              <ui-data-table
+                [data]="departments()"
+                [columns]="columns"
+                [loading]="loading()"
+                [actionsTemplate]="canManage() ? actionsRef : undefined"
+                headerVariant="neutral"
+              ></ui-data-table>
+            </div>
+          </ui-grid-tile>
+        </ui-grid>
+      </div>
 
       <ng-template #actionsRef let-row>
         <div class="flex gap-2 justify-end">
@@ -76,6 +90,7 @@ export class DepartmentsComponent implements OnInit, OnDestroy {
   private convexService = inject(ConvexClientService);
   private toastService = inject(ToastService);
   private authService = inject(AuthService);
+  private confirmDialog = inject(ConfirmDialogService);
 
   // Only Super Admin, Admin, and HR Manager can manage organization structure
   canManage = this.authService.hasRole(['super_admin', 'admin', 'hr_manager']);
@@ -161,7 +176,15 @@ export class DepartmentsComponent implements OnInit, OnDestroy {
   }
 
   async deleteDepartment(row: any) {
-    if (!confirm('Are you sure you want to delete this department?')) return;
+    const confirmed = await this.confirmDialog.confirm({
+      title: 'Delete Department',
+      message: 'Are you sure you want to delete this department? This action cannot be undone.',
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      variant: 'danger'
+    });
+
+    if (!confirmed) return;
 
     try {
       const client = this.convexService.getClient();
