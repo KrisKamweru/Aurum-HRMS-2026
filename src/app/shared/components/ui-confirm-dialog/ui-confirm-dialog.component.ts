@@ -31,6 +31,37 @@ import { UiIconComponent } from '../ui-icon/ui-icon.component';
             {{ options()?.message }}
           </p>
 
+          @if (options()?.details?.length) {
+            <div class="mb-6 rounded-lg border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-900/40 p-3 text-left">
+              @if (options()?.impactLabel) {
+                <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-stone-500 dark:text-stone-400">
+                  {{ options()?.impactLabel }}
+                </p>
+              }
+              <ul class="space-y-1 text-xs text-stone-700 dark:text-stone-300">
+                @for (item of options()?.details || []; track $index) {
+                  <li>{{ item }}</li>
+                }
+              </ul>
+            </div>
+          }
+
+          @if (options()?.reasonRequired) {
+            <div class="mb-6 text-left">
+              <label for="confirm-reason" class="mb-2 block text-xs font-semibold uppercase tracking-wide text-stone-500 dark:text-stone-400">
+                {{ options()?.reasonLabel || 'Reason' }}
+              </label>
+              <textarea
+                id="confirm-reason"
+                [value]="reason()"
+                (input)="onReasonInput($event)"
+                rows="3"
+                class="block w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 focus:border-burgundy-500 focus:outline-none focus:ring-2 focus:ring-burgundy-500/20 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-100"
+                [placeholder]="options()?.reasonPlaceholder || 'Enter a reason'"
+              ></textarea>
+            </div>
+          }
+
           <!-- Buttons -->
           <div class="flex gap-3 justify-end">
             <button
@@ -44,6 +75,9 @@ import { UiIconComponent } from '../ui-icon/ui-icon.component';
               type="button"
               class="px-4 py-2 rounded-lg text-sm font-medium transition-colors text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
               [class]="getConfirmButtonClass()"
+              [disabled]="confirmDisabled()"
+              [class.opacity-50]="confirmDisabled()"
+              [class.cursor-not-allowed]="confirmDisabled()"
               (click)="onConfirm()"
             >
               {{ options()?.confirmText }}
@@ -88,13 +122,24 @@ export class UiConfirmDialogComponent {
 
   protected isOpen = computed(() => this.confirmDialogService.dialogState().isOpen);
   protected options = computed(() => this.confirmDialogService.dialogState().options);
+  protected reason = computed(() => this.confirmDialogService.dialogState().reason);
+  protected confirmDisabled = computed(() => {
+    if (!this.options()?.reasonRequired) return false;
+    return !this.reason().trim();
+  });
 
   protected onConfirm(): void {
+    if (this.confirmDisabled()) return;
     this.confirmDialogService.handleResponse(true);
   }
 
   protected onCancel(): void {
     this.confirmDialogService.handleResponse(false);
+  }
+
+  protected onReasonInput(event: Event): void {
+    const target = event.target as HTMLTextAreaElement | null;
+    this.confirmDialogService.setReason(target?.value || '');
   }
 
   protected getIconName(): string {

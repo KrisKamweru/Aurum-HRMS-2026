@@ -66,16 +66,15 @@ interface PayrollRunInfo {
           </p>
         </div>
 
-        @if (records().length > 0) {
-          <ui-button
-            variant="outline"
-            (onClick)="exportToCsv()"
-            [loading]="exporting()"
-          >
-            <ui-icon name="arrow-down-tray" class="w-4 h-4 mr-2"></ui-icon>
-            Export CSV
-          </ui-button>
-        }
+        <ui-button
+          variant="outline"
+          (onClick)="exportToCsv()"
+          [loading]="exporting()"
+          [disabled]="loading()"
+        >
+          <ui-icon name="arrow-down-tray" class="w-4 h-4 mr-2"></ui-icon>
+          Export CSV
+        </ui-button>
       </div>
 
       <!-- Filters -->
@@ -229,45 +228,51 @@ export class PayrollReportComponent implements OnDestroy {
   }
 
   exportToCsv() {
-    if (this.records().length === 0) return;
+    if (this.records().length === 0) {
+      this.toastService.warning('No payroll data to export for the selected filters');
+      return;
+    }
 
     this.exporting.set(true);
+    try {
+      const csvColumns = [
+        { key: 'employeeName', header: 'Employee Name' },
+        { key: 'designation', header: 'Designation' },
+        { key: 'department', header: 'Department' },
+        {
+          key: 'basicSalary',
+          header: 'Basic Salary',
+          formatter: (value: unknown) => this.csvExportService.formatCurrency(value)
+        },
+        {
+          key: 'grossSalary',
+          header: 'Gross Salary',
+          formatter: (value: unknown) => this.csvExportService.formatCurrency(value)
+        },
+        {
+          key: 'deductions',
+          header: 'Total Deductions',
+          formatter: (value: unknown) => this.csvExportService.formatCurrency(value)
+        },
+        {
+          key: 'netSalary',
+          header: 'Net Pay',
+          formatter: (value: unknown) => this.csvExportService.formatCurrency(value)
+        },
+      ];
 
-    const csvColumns = [
-      { key: 'employeeName', header: 'Employee Name' },
-      { key: 'designation', header: 'Designation' },
-      { key: 'department', header: 'Department' },
-      {
-        key: 'basicSalary',
-        header: 'Basic Salary',
-        formatter: (value: unknown) => this.csvExportService.formatCurrency(value)
-      },
-      {
-        key: 'grossSalary',
-        header: 'Gross Salary',
-        formatter: (value: unknown) => this.csvExportService.formatCurrency(value)
-      },
-      {
-        key: 'deductions',
-        header: 'Total Deductions',
-        formatter: (value: unknown) => this.csvExportService.formatCurrency(value)
-      },
-      {
-        key: 'netSalary',
-        header: 'Net Pay',
-        formatter: (value: unknown) => this.csvExportService.formatCurrency(value)
-      },
-    ];
+      const run = this.runInfo();
+      const filename = run
+        ? `payroll-report-${this.getMonthName(run.month)}-${run.year}`
+        : 'payroll-report';
 
-    const run = this.runInfo();
-    const filename = run
-      ? `payroll-report-${this.getMonthName(run.month)}-${run.year}`
-      : 'payroll-report';
-
-    this.csvExportService.exportToCsv(this.records() as unknown as Record<string, unknown>[], csvColumns, filename);
-
-    this.exporting.set(false);
-    this.toastService.success('Payroll report exported successfully');
+      this.csvExportService.exportToCsv(this.records() as unknown as Record<string, unknown>[], csvColumns, filename);
+      this.toastService.success('Payroll report exported successfully');
+    } catch (error: any) {
+      this.toastService.error(error.message || 'Payroll export failed');
+    } finally {
+      this.exporting.set(false);
+    }
   }
 
   formatCurrency(value: number): string {

@@ -11,7 +11,9 @@ import { UiGridComponent } from '../../shared/components/ui-grid/ui-grid.compone
 import { UiDataTableComponent, TableColumn } from '../../shared/components/ui-data-table/ui-data-table.component';
 import { FieldConfig } from '../../shared/services/form-helper.service';
 import { api } from '../../../../convex/_generated/api';
+import { Id } from '../../../../convex/_generated/dataModel';
 import { ToastService } from '../../shared/services/toast.service';
+import { ConfirmDialogService } from '../../shared/services/confirm-dialog.service';
 
 @Component({
   selector: 'app-payroll-list',
@@ -110,6 +112,24 @@ import { ToastService } from '../../shared/services/toast.service';
                 </ng-template>
               </div>
             </ui-grid-tile>
+
+            @if (pendingChanges().length > 0) {
+              <ui-grid-tile title="Pending Sensitive Changes" variant="compact">
+                <span tile-actions class="df-count">{{ pendingChanges().length }} awaiting approval</span>
+                <ui-data-table
+                  [data]="pendingChanges()"
+                  [columns]="pendingColumns"
+                  [headerVariant]="'neutral'"
+                  [actionsTemplate]="pendingActionsTpl"
+                ></ui-data-table>
+                <ng-template #pendingActionsTpl let-row>
+                  <div class="flex items-center gap-2">
+                    <button (click)="approveChange(row._id)" class="action-link">Approve</button>
+                    <button (click)="rejectChange(row._id)" class="action-link text-red-600 dark:text-red-400">Reject</button>
+                  </div>
+                </ng-template>
+              </ui-grid-tile>
+            }
           </ui-grid>
         </div>
     </div>
@@ -123,6 +143,8 @@ import { ToastService } from '../../shared/services/toast.service';
     >
       <app-dynamic-form
         [fields]="createFormFields"
+        [sections]="createFormSections"
+        [container]="'modal'"
         submitLabel="Create Draft"
         [loading]="isCreating"
         (formSubmit)="handleCreateRun($event)"
@@ -308,8 +330,10 @@ export class PayrollListComponent implements OnInit {
   private convex = inject(ConvexClientService);
   private router = inject(Router);
   private toast = inject(ToastService);
+  private confirmDialog = inject(ConfirmDialogService);
 
   runs = signal<any[]>([]);
+  pendingChanges = signal<any[]>([]);
   isCreateModalOpen = false;
   isCreating = false;
   columns: TableColumn[] = [
@@ -345,6 +369,26 @@ export class PayrollListComponent implements OnInit {
       }
     }
   ];
+  pendingColumns: TableColumn[] = [
+    { key: 'targetTable', header: 'Target' },
+    {
+      key: 'operation',
+      header: 'Operation',
+      type: 'badge',
+      badgeVariant: (val) => {
+        switch (val) {
+          case 'delete':
+            return 'danger';
+          case 'update':
+            return 'warning';
+          default:
+            return 'info';
+        }
+      }
+    },
+    { key: 'reason', header: 'Reason', formatter: (val) => val || '-' },
+    { key: 'createdAt', header: 'Requested', type: 'date' },
+  ];
 
   createFormFields: FieldConfig[] = [
     {
@@ -352,6 +396,7 @@ export class PayrollListComponent implements OnInit {
       label: 'Month',
       type: 'select',
       required: true,
+      sectionId: 'period',
       options: [
         { label: 'January', value: 1 },
         { label: 'February', value: 2 },
@@ -372,7 +417,16 @@ export class PayrollListComponent implements OnInit {
       label: 'Year',
       type: 'number',
       required: true,
+      sectionId: 'period',
       placeholder: new Date().getFullYear().toString()
+    }
+  ];
+  createFormSections = [
+    {
+      id: 'period',
+      title: 'Payroll Period',
+      description: 'Select the payroll month and year to open as a draft run.',
+      columns: { base: 1 as const, md: 2 as const, lg: 2 as const }
     }
   ];
 
@@ -381,6 +435,9 @@ export class PayrollListComponent implements OnInit {
     // Subscribe to updates
     client.onUpdate(api.payroll.listRuns, {}, (runs) => {
       this.runs.set(runs);
+    });
+    client.onUpdate(api.payroll.listPendingSensitiveChanges, {}, (requests) => {
+      this.pendingChanges.set(requests);
     });
   }
 
@@ -412,6 +469,54 @@ export class PayrollListComponent implements OnInit {
 
   viewRun(id: string) {
     this.router.navigate(['/payroll', id]);
+  }
+
+  async approveChange(changeRequestId: Id<'change_requests'>) {
+    const confirmed = await this.confirmDialog.confirm({
+      title: 'Approve Sensitive Change',
+      message: 'Confirm approval for this pending sensitive payroll request.',
+      confirmText: 'Approve',
+      cancelText: 'Cancel',
+      variant: 'warning',
+    });
+    if (!confirmed) return;
+
+    try {
+      await this.convex.getClient().mutation(api.payroll.reviewSensitiveChange, {
+        changeRequestId,
+        decision: 'approved',
+      });
+      this.toast.success('Change approved successfully');
+    } catch (error: any) {
+      this.toast.error(error.message || 'Failed to approve change');
+    }
+  }
+
+  async rejectChange(changeRequestId: Id<'change_requests'>) {
+    const reason = await this.confirmDialog.confirmWithReason({
+      title: 'Reject Sensitive Change',
+      message: 'Provide a rejection reason before denying this pending sensitive payroll request.',
+      confirmText: 'Reject',
+      cancelText: 'Cancel',
+      variant: 'danger',
+      reasonLabel: 'Rejection reason',
+      reasonPlaceholder: 'Explain why this request is being rejected',
+    });
+    if (!reason) {
+      this.toast.warning('A rejection reason is required');
+      return;
+    }
+
+    try {
+      await this.convex.getClient().mutation(api.payroll.reviewSensitiveChange, {
+        changeRequestId,
+        decision: 'rejected',
+        rejectionReason: reason,
+      });
+      this.toast.success('Change rejected');
+    } catch (error: any) {
+      this.toast.error(error.message || 'Failed to reject change');
+    }
   }
 
   getMonthName(month: number): string {

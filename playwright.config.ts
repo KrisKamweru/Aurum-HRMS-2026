@@ -11,6 +11,12 @@ export default defineConfig({
     baseURL: 'http://localhost:4200',
     trace: 'on-first-retry',
   },
+  webServer: {
+    command: 'npm start',
+    url: 'http://localhost:4200',
+    reuseExistingServer: true,
+    timeout: 120000,
+  },
   projects: [
     {
       name: 'chromium',

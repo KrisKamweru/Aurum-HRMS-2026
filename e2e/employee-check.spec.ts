@@ -9,14 +9,10 @@ test('Employee Dashboard Verification', async ({ page }) => {
   
   // Wait for navigation
   await page.waitForURL('**/dashboard');
-  
-  // Verify Employee specific elements
-  // Employees usually see "My Attendance" or similar, maybe different widgets
-  await expect(page.getByRole('heading', { name: /Dashboard|Welcome/ })).toBeVisible();
-  
-  // Check if they have restricted access (e.g. should NOT see "Employees" or "Departments" in sidebar if they are just standard employees, 
-  // though the menu might just be filtered)
-  // Based on login.component.html/main-layout, the menu items are guarded by @if (canManageEmployees())
+
+  // Verify dashboard shell is loaded for employee role.
+  await expect(page.locator('main')).toBeVisible();
+  await expect(page.getByRole('link', { name: /employees/i })).toHaveCount(0);
   
   // Let's take a screenshot
   await page.waitForTimeout(1000);

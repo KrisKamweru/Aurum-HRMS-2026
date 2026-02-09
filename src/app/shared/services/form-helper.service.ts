@@ -15,9 +15,31 @@ export interface FieldConfig {
   disabled?: boolean;
 
   // Layout properties
-  columns?: 1 | 2 | 3;        // Number of columns for this field's row (default: 1)
-  colspan?: number;           // How many columns this field spans (for full-width in multi-column)
-  section?: string;           // Section name - fields with same section grouped under a header
+  columns?: 1 | 2 | 3;        // legacy: Number of columns for this field's row (default: 1)
+  colspan?: number;           // legacy
+  colSpan?: 1 | 2 | 3;
+  rowSpan?: 1 | 2;
+  section?: string;           // legacy section label
+  sectionId?: string;
+}
+
+export interface FormSectionConfig {
+  id: string;
+  title?: string;
+  description?: string;
+  columns?: {
+    base?: 1 | 2 | 3;
+    md?: 1 | 2 | 3;
+    lg?: 1 | 2 | 3;
+  };
+}
+
+export interface FormStepConfig {
+  id: string;
+  title: string;
+  description?: string;
+  fieldNames?: string[];
+  sectionIds?: string[];
 }
 
 @Injectable({

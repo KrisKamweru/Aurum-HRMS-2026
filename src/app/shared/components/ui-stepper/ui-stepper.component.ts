@@ -1,4 +1,4 @@
-import { Component, input, output, contentChildren, signal } from '@angular/core';
+import { Component, computed, contentChildren, input, output, signal } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { UiStepComponent } from './ui-step.component';
 
@@ -8,7 +8,7 @@ import { UiStepComponent } from './ui-step.component';
   template: `
     <!-- Step Indicators -->
     <div class="flex items-center justify-center mb-8">
-      @for (step of steps(); track $index; let i = $index) {
+      @for (step of renderSteps(); track $index; let i = $index) {
         <div class="flex items-center">
           <!-- Step Circle -->
           <button
@@ -33,13 +33,13 @@ import { UiStepComponent } from './ui-step.component';
             <p class="text-sm font-medium" [class]="getStepLabelClass(i)">
               {{ step.title() }}
             </p>
-            @if (step.subtitle()) {
-              <p class="text-xs text-stone-500 dark:text-stone-400">{{ step.subtitle() }}</p>
+            @if (step.subtitle) {
+              <p class="text-xs text-stone-500 dark:text-stone-400">{{ step.subtitle }}</p>
             }
           </div>
 
           <!-- Connector Line (except after last step) -->
-          @if (i < steps().length - 1) {
+          @if (i < renderSteps().length - 1) {
             <div
               class="w-16 h-0.5 mr-6"
               [class]="i < currentStep() ? 'bg-burgundy-600' : 'bg-stone-300 dark:bg-stone-600'"
@@ -53,17 +53,20 @@ import { UiStepComponent } from './ui-step.component';
     <div class="mb-8">
       @for (step of steps(); track $index; let i = $index) {
         @if (i === currentStep()) {
-          <ng-container [ngTemplateOutlet]="step.contentTemplate"></ng-container>
+          @if (stepsData().length === 0) {
+            <ng-container [ngTemplateOutlet]="step.contentTemplate"></ng-container>
+          }
         }
       }
     </div>
 
     <!-- Navigation Buttons -->
-    <div class="flex justify-between pt-6 border-t border-stone-200 dark:border-stone-700">
+    @if (showNavigation()) {
+      <div class="flex justify-between pt-6 border-t border-stone-200 dark:border-stone-700">
       <button
         type="button"
         (click)="previous()"
-        [disabled]="currentStep() === 0"
+        [disabled]="currentStep() === 0 || disabled()"
         class="px-6 py-2 text-sm font-medium rounded-lg transition-colors
                bg-stone-100 dark:bg-stone-700 text-stone-700 dark:text-stone-200
                hover:bg-stone-200 dark:hover:bg-stone-600
@@ -73,10 +76,11 @@ import { UiStepComponent } from './ui-step.component';
       </button>
 
       <div class="flex gap-3">
-        @if (currentStep() < steps().length - 1) {
+        @if (currentStep() < renderSteps().length - 1) {
           <button
             type="button"
             (click)="next()"
+            [disabled]="disabled()"
             class="px-6 py-2 text-sm font-medium rounded-lg transition-colors
                    bg-burgundy-600 text-white hover:bg-burgundy-700"
           >
@@ -86,6 +90,7 @@ import { UiStepComponent } from './ui-step.component';
           <button
             type="button"
             (click)="submit()"
+            [disabled]="disabled()"
             class="px-6 py-2 text-sm font-medium rounded-lg transition-colors
                    bg-burgundy-600 text-white hover:bg-burgundy-700"
           >
@@ -93,10 +98,14 @@ import { UiStepComponent } from './ui-step.component';
           </button>
         }
       </div>
-    </div>
+      </div>
+    }
   `
 })
 export class UiStepperComponent {
+  stepsData = input<{ title: string; subtitle?: string }[]>([]);
+  showNavigation = input<boolean>(true);
+  disabled = input<boolean>(false);
   // Inputs
   submitText = input<string>('Submit');
   linear = input<boolean>(true); // If true, must complete steps in order
@@ -107,13 +116,18 @@ export class UiStepperComponent {
 
   // Content children
   steps = contentChildren(UiStepComponent);
+  renderSteps = computed(() =>
+    this.stepsData().length > 0
+      ? this.stepsData().map((s) => ({ title: () => s.title, subtitle: s.subtitle }))
+      : this.steps().map((s) => ({ title: () => s.title(), subtitle: s.subtitle() || undefined }))
+  );
 
   // Internal state
   currentStep = signal(0);
 
   // Methods
   next(): void {
-    if (this.currentStep() < this.steps().length - 1) {
+    if (this.currentStep() < this.renderSteps().length - 1) {
       this.currentStep.update(s => s + 1);
       this.stepChange.emit(this.currentStep());
     }

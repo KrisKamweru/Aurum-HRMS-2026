@@ -55,7 +55,6 @@ import { Id } from '../../../../convex/_generated/dataModel';
               @if (r.status !== 'completed') {
                 <ui-button
                   variant="danger"
-                  variant="outline"
                   (onClick)="deleteRun()"
                   [loading]="isDeleting"
                   icon="trash"
@@ -588,21 +587,40 @@ export class PayrollRunComponent implements OnInit {
 
   async finalizeRun() {
     if (!this.runId()) return;
+    const currentRun = this.run();
+    if (!currentRun) return;
 
-    const confirmed = await this.confirmDialog.confirm({
+    const reason = await this.confirmDialog.confirmWithReason({
       title: 'Finalize Payroll Run',
-      message: 'Are you sure you want to finalize this payroll run? This action cannot be undone and will lock all records.',
+      message: 'This will lock the run and make payslips the official payroll output.',
       confirmText: 'Finalize',
       cancelText: 'Cancel',
-      variant: 'warning'
+      variant: 'warning',
+      impactLabel: 'Impact Summary',
+      details: [
+        `Actor: ${this.run()?.processedBy || 'Current user'}`,
+        `Target: ${this.getMonthName(currentRun.month)} ${currentRun.year} payroll run`,
+        `Employees affected: ${currentRun.employeeCount || 0}`,
+        'This action cannot be undone without administrative intervention.',
+      ],
+      reasonLabel: 'Finalization reason',
+      reasonPlaceholder: 'Explain why this run is ready to finalize',
     });
-
-    if (!confirmed) return;
+    if (!reason) {
+      this.toast.warning('A reason is required to finalize payroll');
+      return;
+    }
 
     this.isFinalizing = true;
     try {
-      await this.convex.getClient().mutation(api.payroll.finalizeRun, { runId: this.runId()! });
-      this.toast.success('Payroll run finalized and locked');
+      const result = await this.convex
+        .getClient()
+        .mutation(api.payroll.finalizeRun, { runId: this.runId()!, reason });
+      if (result?.mode === 'pending') {
+        this.toast.success('Payroll finalize request submitted for approval');
+      } else {
+        this.toast.success('Payroll run finalized and locked');
+      }
     } catch (error: any) {
       this.toast.error(error.message || 'Failed to finalize run');
     } finally {
@@ -612,22 +630,41 @@ export class PayrollRunComponent implements OnInit {
 
   async deleteRun() {
     if (!this.runId()) return;
+    const currentRun = this.run();
+    if (!currentRun) return;
 
-    const confirmed = await this.confirmDialog.confirm({
+    const reason = await this.confirmDialog.confirmWithReason({
       title: 'Delete Payroll Run',
-      message: 'Are you sure you want to delete this payroll run? All generated slips will be removed.',
+      message: 'Deleting this run will remove generated slips and cannot be undone.',
       confirmText: 'Delete',
       cancelText: 'Cancel',
-      variant: 'danger'
+      variant: 'danger',
+      impactLabel: 'Impact Summary',
+      details: [
+        `Actor: ${this.run()?.processedBy || 'Current user'}`,
+        `Target: ${this.getMonthName(currentRun.month)} ${currentRun.year} payroll run`,
+        `Payslips to remove: ${this.slips().length}`,
+        'This is irreversible once approved.',
+      ],
+      reasonLabel: 'Deletion reason',
+      reasonPlaceholder: 'Explain why this payroll run should be deleted',
     });
-
-    if (!confirmed) return;
+    if (!reason) {
+      this.toast.warning('A reason is required to delete payroll');
+      return;
+    }
 
     this.isDeleting = true;
     try {
-      await this.convex.getClient().mutation(api.payroll.deleteRun, { runId: this.runId()! });
-      this.toast.success('Payroll run deleted');
-      this.router.navigate(['/payroll']);
+      const result = await this.convex
+        .getClient()
+        .mutation(api.payroll.deleteRun, { runId: this.runId()!, reason });
+      if (result?.mode === 'pending') {
+        this.toast.success('Payroll deletion request submitted for approval');
+      } else {
+        this.toast.success('Payroll run deleted');
+        this.router.navigate(['/payroll']);
+      }
     } catch (error: any) {
       this.toast.error(error.message || 'Failed to delete run');
     } finally {

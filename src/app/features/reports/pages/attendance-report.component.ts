@@ -65,16 +65,15 @@ interface AttendanceSummary {
           </p>
         </div>
 
-        @if (records().length > 0) {
-          <ui-button
-            variant="outline"
-            (onClick)="exportToCsv()"
-            [loading]="exporting()"
-          >
-            <ui-icon name="arrow-down-tray" class="w-4 h-4 mr-2"></ui-icon>
-            Export CSV
-          </ui-button>
-        }
+        <ui-button
+          variant="outline"
+          (onClick)="exportToCsv()"
+          [loading]="exporting()"
+          [disabled]="loading()"
+        >
+          <ui-icon name="arrow-down-tray" class="w-4 h-4 mr-2"></ui-icon>
+          Export CSV
+        </ui-button>
       </div>
 
       <div class="dash-frame">
@@ -143,25 +142,7 @@ interface AttendanceSummary {
         </ui-grid>
       </div>
     </div>
-  `,
-  styles: [`
-    .dash-frame {
-      background: white;
-      border-radius: 0.75rem;
-      border: 1px solid #e7e5e4;
-      box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
-    }
-
-    :host-context(.dark) .dash-frame {
-      background: rgb(41 37 36 / 0.6);
-      border-color: rgb(68 64 60 / 0.5);
-      box-shadow: none;
-    }
-
-    .tile-body {
-      padding: 1.5rem;
-    }
-  `]
+  `
 })
 export class AttendanceReportComponent implements OnDestroy {
   private convexService = inject(ConvexClientService);
@@ -246,39 +227,45 @@ export class AttendanceReportComponent implements OnDestroy {
   }
 
   exportToCsv() {
-    if (this.records().length === 0) return;
+    if (this.records().length === 0) {
+      this.toastService.warning('No attendance data to export for the selected filters');
+      return;
+    }
 
     this.exporting.set(true);
+    try {
+      const csvColumns = [
+        { key: 'employeeName', header: 'Employee Name' },
+        { key: 'employeeNumber', header: 'Employee #' },
+        { key: 'department', header: 'Department' },
+        { key: 'date', header: 'Date' },
+        { key: 'status', header: 'Status' },
+        {
+          key: 'clockIn',
+          header: 'Clock In',
+          formatter: (value: unknown) => value ? this.formatTime(value as string) : ''
+        },
+        {
+          key: 'clockOut',
+          header: 'Clock Out',
+          formatter: (value: unknown) => value ? this.formatTime(value as string) : ''
+        },
+        {
+          key: 'workMinutes',
+          header: 'Duration (HH:MM)',
+          formatter: (value: unknown) => this.csvExportService.formatDuration(value)
+        },
+        { key: 'notes', header: 'Notes' },
+      ];
 
-    const csvColumns = [
-      { key: 'employeeName', header: 'Employee Name' },
-      { key: 'employeeNumber', header: 'Employee #' },
-      { key: 'department', header: 'Department' },
-      { key: 'date', header: 'Date' },
-      { key: 'status', header: 'Status' },
-      {
-        key: 'clockIn',
-        header: 'Clock In',
-        formatter: (value: unknown) => value ? this.formatTime(value as string) : ''
-      },
-      {
-        key: 'clockOut',
-        header: 'Clock Out',
-        formatter: (value: unknown) => value ? this.formatTime(value as string) : ''
-      },
-      {
-        key: 'workMinutes',
-        header: 'Duration (HH:MM)',
-        formatter: (value: unknown) => this.csvExportService.formatDuration(value)
-      },
-      { key: 'notes', header: 'Notes' },
-    ];
-
-    const filename = `attendance-report-${this.currentFilters?.dateRange?.startDate}-to-${this.currentFilters?.dateRange?.endDate}`;
-    this.csvExportService.exportToCsv(this.records() as unknown as Record<string, unknown>[], csvColumns, filename);
-
-    this.exporting.set(false);
-    this.toastService.success('Attendance report exported successfully');
+      const filename = `attendance-report-${this.currentFilters?.dateRange?.startDate}-to-${this.currentFilters?.dateRange?.endDate}`;
+      this.csvExportService.exportToCsv(this.records() as unknown as Record<string, unknown>[], csvColumns, filename);
+      this.toastService.success('Attendance report exported successfully');
+    } catch (error: any) {
+      this.toastService.error(error.message || 'Attendance export failed');
+    } finally {
+      this.exporting.set(false);
+    }
   }
 
   private formatTime(isoString: string): string {

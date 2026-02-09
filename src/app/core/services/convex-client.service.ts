@@ -34,6 +34,10 @@ export class ConvexClientService {
     this.httpClient = new ConvexHttpClient(environment.convexUrl);
     this.storageNamespace = environment.convexUrl.replace(/[^a-zA-Z0-9]/g, '');
 
+    if (!environment.production && typeof window !== 'undefined') {
+      (window as any).__aurumConvexClient = this.client;
+    }
+
     // Initialize auth state from storage
     this.initializeAuth();
   }

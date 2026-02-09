@@ -24,6 +24,7 @@ import type * as recruitment from "../recruitment.js";
 import type * as reports from "../reports.js";
 import type * as seed from "../seed.js";
 import type * as seed_tax from "../seed_tax.js";
+import type * as sensitive_changes from "../sensitive_changes.js";
 import type * as settings from "../settings.js";
 import type * as super_admin from "../super_admin.js";
 import type * as tax_calculator from "../tax_calculator.js";
@@ -53,6 +54,7 @@ declare const fullApi: ApiFromModules<{
   reports: typeof reports;
   seed: typeof seed;
   seed_tax: typeof seed_tax;
+  sensitive_changes: typeof sensitive_changes;
   settings: typeof settings;
   super_admin: typeof super_admin;
   tax_calculator: typeof tax_calculator;

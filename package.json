@@ -7,7 +7,12 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "vitest",
-    "e2e": "playwright test"
+    "e2e": "playwright test",
+    "audit:roles": "node scripts/deep-role-audit.mjs",
+    "audit:pay-data": "node scripts/pay-data-audit.mjs",
+    "test:auth-negative": "playwright test e2e/negative-auth.spec.ts",
+    "test:compensation-regression": "playwright test e2e/compensation-security.spec.ts",
+    "ci:security": "npm run audit:roles && npm run audit:pay-data && npm run test:auth-negative && npm run test:compensation-regression"
   },
   "prettier": {
     "printWidth": 100,

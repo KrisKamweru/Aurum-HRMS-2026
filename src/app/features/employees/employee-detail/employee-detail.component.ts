@@ -549,6 +549,7 @@ type ActionType = 'promote' | 'transfer' | 'resign' | 'terminate' | 'warning' | 
       @if (currentActionConfig()) {
         <app-dynamic-form
           [fields]="currentActionConfig()!"
+          [container]="'modal'"
           [loading]="submitting()"
           [submitLabel]="actionSubmitLabel()"
           (formSubmit)="onActionSubmit($event)"
@@ -891,14 +892,32 @@ export class EmployeeDetailComponent implements OnInit {
       return;
     }
     if (!this.employeeId()) return;
+    const reason = await this.confirmDialog.confirmWithReason({
+      title: 'Submit Allowance Change',
+      message: 'Provide a reason for this payroll allowance change request.',
+      confirmText: 'Submit',
+      cancelText: 'Cancel',
+      variant: 'warning',
+      reasonLabel: 'Allowance change reason',
+      reasonPlaceholder: 'Explain business context for this allowance',
+    });
+    if (!reason) {
+      this.toast.warning('A reason is required for payroll allowance changes');
+      return;
+    }
     this.adjustmentsLoading.set(true);
     try {
-      await this.convex.getClient().mutation(api.payroll.addCredit, {
+      const result = await this.convex.getClient().mutation(api.payroll.addCredit, {
         employeeId: this.employeeId()!,
         ...data,
-        amount: Number(data.amount)
+        amount: Number(data.amount),
+        reason,
       });
-      this.toast.success('Allowance added');
+      if (result?.mode === 'pending') {
+        this.toast.success('Allowance change submitted for approval');
+      } else {
+        this.toast.success('Allowance added');
+      }
     } catch (err: any) {
       this.toast.error(err.message || 'Failed to add allowance');
     } finally {
@@ -912,14 +931,32 @@ export class EmployeeDetailComponent implements OnInit {
       return;
     }
     if (!this.employeeId()) return;
+    const reason = await this.confirmDialog.confirmWithReason({
+      title: 'Submit Deduction Change',
+      message: 'Provide a reason for this payroll deduction change request.',
+      confirmText: 'Submit',
+      cancelText: 'Cancel',
+      variant: 'warning',
+      reasonLabel: 'Deduction change reason',
+      reasonPlaceholder: 'Explain business context for this deduction',
+    });
+    if (!reason) {
+      this.toast.warning('A reason is required for payroll deduction changes');
+      return;
+    }
     this.adjustmentsLoading.set(true);
     try {
-      await this.convex.getClient().mutation(api.payroll.addDebit, {
+      const result = await this.convex.getClient().mutation(api.payroll.addDebit, {
         employeeId: this.employeeId()!,
         ...data,
-        amount: Number(data.amount)
+        amount: Number(data.amount),
+        reason,
       });
-      this.toast.success('Deduction added');
+      if (result?.mode === 'pending') {
+        this.toast.success('Deduction change submitted for approval');
+      } else {
+        this.toast.success('Deduction added');
+      }
     } catch (err: any) {
       this.toast.error(err.message || 'Failed to add deduction');
     } finally {
@@ -932,9 +969,29 @@ export class EmployeeDetailComponent implements OnInit {
       this.toast.error('You do not have permission to update financial data');
       return;
     }
+    const reason = await this.confirmDialog.confirmWithReason({
+      title: 'Confirm Adjustment Status Change',
+      message: 'Provide a reason before changing payroll adjustment status.',
+      confirmText: 'Confirm',
+      cancelText: 'Cancel',
+      variant: 'warning',
+      reasonLabel: 'Status change reason',
+      reasonPlaceholder: 'Explain why this status should change',
+    });
+    if (!reason) {
+      this.toast.warning('A reason is required for payroll adjustment status changes');
+      return;
+    }
     try {
-      await this.convex.getClient().mutation(api.payroll.toggleAdjustmentStatus, data);
-      this.toast.success('Status updated');
+      const result = await this.convex.getClient().mutation(api.payroll.toggleAdjustmentStatus, {
+        ...data,
+        reason,
+      });
+      if (result?.mode === 'pending') {
+        this.toast.success('Status change submitted for approval');
+      } else {
+        this.toast.success('Status updated');
+      }
     } catch (err: any) {
       this.toast.error('Failed to update status');
     }
@@ -1056,14 +1113,39 @@ export class EmployeeDetailComponent implements OnInit {
       return;
     }
     if (!this.employeeId()) return;
+    const reason = await this.confirmDialog.confirmWithReason({
+      title: 'Submit Compensation Update',
+      message: 'Provide a reason for this compensation update request.',
+      confirmText: 'Submit',
+      cancelText: 'Cancel',
+      variant: 'warning',
+      reasonLabel: 'Compensation update reason',
+      reasonPlaceholder: 'Explain why this compensation change is needed',
+      impactLabel: 'Impact Summary',
+      details: [
+        `Target employee: ${this.employee()?.firstName || ''} ${this.employee()?.lastName || ''}`.trim(),
+        `Base salary: ${this.compensationForm.value.baseSalary ?? '-'}`,
+        `Currency: ${this.compensationForm.value.currency ?? '-'}`,
+        `Pay frequency: ${this.compensationForm.value.payFrequency ?? '-'}`,
+      ],
+    });
+    if (!reason) {
+      this.toast.warning('A reason is required for compensation updates');
+      return;
+    }
     this.saving.set(true);
     try {
-      await this.convex.getClient().mutation(api.employees.updateCompensation, {
+      const result = await this.convex.getClient().mutation(api.employees.updateCompensation, {
         employeeId: this.employeeId()!,
         ...this.compensationForm.value,
+        reason,
       });
       this.editingCompensation.set(false);
-      this.toast.success('Compensation updated successfully');
+      if (result?.mode === 'pending') {
+        this.toast.success('Compensation change submitted for approval');
+      } else {
+        this.toast.success('Compensation updated successfully');
+      }
     } catch (error: any) {
       this.toast.error(error.message || 'Failed to update compensation');
     } finally {

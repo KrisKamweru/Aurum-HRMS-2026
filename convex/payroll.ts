@@ -1,19 +1,56 @@
 import { v } from "convex/values";
-import { mutation, query, QueryCtx, MutationCtx } from "./_generated/server";
-import { getAuthUserId } from "@convex-dev/auth/server";
+import { mutation, query, MutationCtx } from "./_generated/server";
 import { Id } from "./_generated/dataModel";
 import { createNotification } from "./notifications";
 import { calculateTaxDeductions, fetchActiveRules } from "./tax_calculator";
+import {
+  canApproveRequester,
+  canMutatePayroll,
+  finalizeApprovalMetadata,
+  getViewerInfo,
+  isApproverRole,
+  queueChangeRequest,
+} from "./sensitive_changes";
 
-// Helper to get viewer info including role and employeeId
-async function getViewerInfo(ctx: QueryCtx | MutationCtx) {
-  const userId = await getAuthUserId(ctx);
-  if (!userId) throw new Error("Unauthorized");
+async function applyFinalizeRun(ctx: MutationCtx, runId: Id<"payroll_runs">, actorUserId: Id<"users">) {
+  const run = await ctx.db.get(runId);
+  if (!run) {
+    throw new Error("Run not found");
+  }
+  await ctx.db.patch(runId, {
+    status: "completed",
+  });
 
-  const user = await ctx.db.get(userId);
-  if (!user || !user.orgId) throw new Error("User has no organization");
+  await createNotification(ctx, {
+    userId: actorUserId,
+    title: "Payroll Finalized",
+    message: `Payroll run for ${run.month}/${run.year} has been finalized.`,
+    type: "success",
+    relatedId: runId,
+    relatedTable: "payroll_runs",
+    link: `/payroll/${runId}`,
+  });
+}
 
-  return user;
+async function applyDeleteRun(ctx: MutationCtx, runId: Id<"payroll_runs">) {
+  const run = await ctx.db.get(runId);
+  if (!run) {
+    throw new Error("Run not found");
+  }
+  if (run.status === "completed") {
+    throw new Error("Cannot delete a completed payroll run");
+  }
+
+  const slips = await ctx.db
+    .query("salary_slips")
+    .withIndex("by_run", (q) => q.eq("runId", runId))
+    .collect();
+
+  for (const slip of slips) {
+    await ctx.db.delete(slip._id);
+  }
+
+  await ctx.db.delete(runId);
 }
 
 // List payroll runs
@@ -22,7 +59,7 @@ export const listRuns = query({
   handler: async (ctx) => {
     const user = await getViewerInfo(ctx);
     const orgId = user.orgId!;
-    const isPrivileged = ["super_admin", "admin", "hr_manager"].includes(user.role);
+    const isPrivileged = canMutatePayroll(user.role);
 
     if (!isPrivileged) {
       throw new Error("Unauthorized: Insufficient permissions");
@@ -44,7 +81,7 @@ export const getRun = query({
   handler: async (ctx, args) => {
     const user = await getViewerInfo(ctx);
     const orgId = user.orgId!;
-    const isPrivileged = ["super_admin", "admin", "hr_manager"].includes(user.role);
+    const isPrivileged = canMutatePayroll(user.role);
 
     if (!isPrivileged) {
       throw new Error("Unauthorized: Insufficient permissions");
@@ -65,7 +102,7 @@ export const getRunSlips = query({
   handler: async (ctx, args) => {
     const user = await getViewerInfo(ctx);
     const orgId = user.orgId!;
-    const isPrivileged = ["super_admin", "admin", "hr_manager"].includes(user.role);
+    const isPrivileged = canMutatePayroll(user.role);
 
     if (!isPrivileged) {
       throw new Error("Unauthorized: Insufficient permissions");
@@ -94,7 +131,7 @@ export const createRun = mutation({
   handler: async (ctx, args) => {
     const user = await getViewerInfo(ctx);
     const orgId = user.orgId!;
-    const isPrivileged = ["super_admin", "admin", "hr_manager"].includes(user.role);
+    const isPrivileged = canMutatePayroll(user.role);
 
     if (!isPrivileged) {
       throw new Error("Unauthorized: Insufficient permissions");
@@ -133,7 +170,7 @@ export const processRun = mutation({
   handler: async (ctx, args) => {
     const user = await getViewerInfo(ctx);
     const orgId = user.orgId!;
-    const isPrivileged = ["super_admin", "admin", "hr_manager"].includes(user.role);
+    const isPrivileged = canMutatePayroll(user.role);
 
     if (!isPrivileged) {
       throw new Error("Unauthorized: Insufficient permissions");
@@ -296,35 +333,50 @@ export const processRun = mutation({
 export const finalizeRun = mutation({
     args: {
         runId: v.id("payroll_runs"),
+        reason: v.optional(v.string()),
     },
     handler: async (ctx, args) => {
         const user = await getViewerInfo(ctx);
         const orgId = user.orgId!;
-        const isPrivileged = ["super_admin", "admin", "hr_manager"].includes(user.role);
+        const isPrivileged = canMutatePayroll(user.role);
 
         if (!isPrivileged) throw new Error("Unauthorized");
 
         const run = await ctx.db.get(args.runId);
         if (!run || run.orgId !== orgId) throw new Error("Run not found");
 
-        await ctx.db.patch(args.runId, {
-            status: "completed",
-        });
+        const oldData = { status: run.status };
+        const newData = { status: "completed" };
 
-        // Notify the processor
-        await createNotification(ctx, {
-            userId: user._id,
-            title: "Payroll Finalized",
-            message: `Payroll run for ${run.month}/${run.year} has been finalized.`,
-            type: "success",
-            relatedId: args.runId,
-            relatedTable: "payroll_runs",
-            link: `/payroll/${args.runId}`
-        });
+        if (user.role === "super_admin") {
+          await applyFinalizeRun(ctx, args.runId, user._id);
+          const changeRequestId = await queueChangeRequest(ctx, {
+            orgId,
+            requesterUserId: user._id,
+            approverUserId: user._id,
+            targetTable: "payroll_runs",
+            targetId: String(args.runId),
+            operation: "update",
+            oldData,
+            newData,
+            reason: args.reason,
+            status: "approved",
+          });
+          return { mode: "applied" as const, changeRequestId };
+        }
 
-        // Optional: We could notify all employees that their payslip is ready?
-        // That might be too many notifications at once.
-        // Better to let them see it on dashboard or send email (future).
+        const changeRequestId = await queueChangeRequest(ctx, {
+          orgId,
+          requesterUserId: user._id,
+          targetTable: "payroll_runs",
+          targetId: String(args.runId),
+          operation: "update",
+          oldData,
+          newData,
+          reason: args.reason,
+          status: "pending",
+        });
+        return { mode: "pending" as const, changeRequestId };
     }
 });
 
@@ -332,33 +384,167 @@ export const finalizeRun = mutation({
 export const deleteRun = mutation({
     args: {
         runId: v.id("payroll_runs"),
+        reason: v.optional(v.string()),
     },
     handler: async (ctx, args) => {
         const user = await getViewerInfo(ctx);
         const orgId = user.orgId!;
-        const isPrivileged = ["super_admin", "admin", "hr_manager"].includes(user.role);
+        const isPrivileged = canMutatePayroll(user.role);
 
         if (!isPrivileged) throw new Error("Unauthorized");
 
         const run = await ctx.db.get(args.runId);
         if (!run || run.orgId !== orgId) throw new Error("Run not found");
 
-        if (run.status === "completed") {
-            throw new Error("Cannot delete a completed payroll run");
-        }
-
-        // Delete all slips
-        const slips = await ctx.db
+        const oldData = {
+          run,
+          slips: await ctx.db
             .query("salary_slips")
             .withIndex("by_run", (q) => q.eq("runId", args.runId))
-            .collect();
+            .collect(),
+        };
 
-        for (const slip of slips) {
-            await ctx.db.delete(slip._id);
+        if (user.role === "super_admin") {
+          await applyDeleteRun(ctx, args.runId);
+          const changeRequestId = await queueChangeRequest(ctx, {
+            orgId,
+            requesterUserId: user._id,
+            approverUserId: user._id,
+            targetTable: "payroll_runs",
+            targetId: String(args.runId),
+            operation: "delete",
+            oldData,
+            reason: args.reason,
+            status: "approved",
+          });
+          return { mode: "applied" as const, changeRequestId };
         }
 
-        await ctx.db.delete(args.runId);
+        const changeRequestId = await queueChangeRequest(ctx, {
+          orgId,
+          requesterUserId: user._id,
+          targetTable: "payroll_runs",
+          targetId: String(args.runId),
+          operation: "delete",
+          oldData,
+          reason: args.reason,
+          status: "pending",
+        });
+        return { mode: "pending" as const, changeRequestId };
     }
+});
+
+export const listPendingSensitiveChanges = query({
+  args: {},
+  handler: async (ctx) => {
+    const viewer = await getViewerInfo(ctx);
+    if (!isApproverRole(viewer.role)) {
+      throw new Error("Unauthorized");
+    }
+
+    const pending = await ctx.db
+      .query("change_requests")
+      .withIndex("by_org_status", (q) => q.eq("orgId", viewer.orgId!).eq("status", "pending"))
+      .order("desc")
+      .collect();
+
+    return pending
+      .filter((request) => request.requesterUserId !== viewer._id)
+      .slice(0, 200);
+  },
+});
+
+export const reviewSensitiveChange = mutation({
+  args: {
+    changeRequestId: v.id("change_requests"),
+    decision: v.union(v.literal("approved"), v.literal("rejected")),
+    rejectionReason: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const approver = await getViewerInfo(ctx);
+    if (!isApproverRole(approver.role)) {
+      throw new Error("Unauthorized");
+    }
+
+    const request = await ctx.db.get(args.changeRequestId);
+    if (!request || request.orgId !== approver.orgId) {
+      throw new Error("Change request not found");
+    }
+    if (request.status !== "pending") {
+      throw new Error("Change request is not pending");
+    }
+    if (request.requesterUserId === approver._id) {
+      throw new Error("Self-approval is not allowed");
+    }
+
+    const requester = await ctx.db.get(request.requesterUserId);
+    if (!requester) {
+      throw new Error("Requester account not found");
+    }
+    if (!canApproveRequester(requester.role, approver.role)) {
+      throw new Error("Approval must be performed by an authorized dual-control role");
+    }
+
+    if (args.decision === "rejected") {
+      await finalizeApprovalMetadata(
+        ctx,
+        request,
+        approver._id,
+        "rejected",
+        args.rejectionReason ?? "Rejected by approver"
+      );
+      return { status: "rejected" as const };
+    }
+
+    if (request.targetTable === "employees" && request.operation === "update") {
+      if (!request.targetId) throw new Error("Missing target employee");
+      const employeeId = request.targetId as Id<"employees">;
+      const employee = await ctx.db.get(employeeId);
+      if (!employee || employee.orgId !== approver.orgId) {
+        throw new Error("Target employee not found");
+      }
+      await ctx.db.patch(employeeId, request.newData as Partial<typeof employee>);
+    } else if (request.targetTable === "payroll_credits" && request.operation === "create") {
+      await ctx.db.insert("payroll_credits", {
+        ...(request.newData as Record<string, unknown>),
+        processedBy: approver._id,
+        processedDate: new Date().toISOString(),
+      } as any);
+    } else if (request.targetTable === "payroll_debits" && request.operation === "create") {
+      await ctx.db.insert("payroll_debits", {
+        ...(request.newData as Record<string, unknown>),
+        processedBy: approver._id,
+        processedDate: new Date().toISOString(),
+      } as any);
+    } else if (request.targetTable === "payroll_credits" && request.operation === "update") {
+      if (!request.targetId) throw new Error("Missing target credit");
+      const creditId = request.targetId as Id<"payroll_credits">;
+      const credit = await ctx.db.get(creditId);
+      if (!credit || credit.orgId !== approver.orgId) {
+        throw new Error("Target credit not found");
+      }
+      await ctx.db.patch(creditId, request.newData as Partial<typeof credit>);
+    } else if (request.targetTable === "payroll_debits" && request.operation === "update") {
+      if (!request.targetId) throw new Error("Missing target debit");
+      const debitId = request.targetId as Id<"payroll_debits">;
+      const debit = await ctx.db.get(debitId);
+      if (!debit || debit.orgId !== approver.orgId) {
+        throw new Error("Target debit not found");
+      }
+      await ctx.db.patch(debitId, request.newData as Partial<typeof debit>);
+    } else if (request.targetTable === "payroll_runs" && request.operation === "update") {
+      if (!request.targetId) throw new Error("Missing target payroll run");
+      await applyFinalizeRun(ctx, request.targetId as Id<"payroll_runs">, approver._id);
+    } else if (request.targetTable === "payroll_runs" && request.operation === "delete") {
+      if (!request.targetId) throw new Error("Missing target payroll run");
+      await applyDeleteRun(ctx, request.targetId as Id<"payroll_runs">);
+    } else {
+      throw new Error("Unsupported change request target");
+    }
+
+    await finalizeApprovalMetadata(ctx, request, approver._id, "approved");
+    return { status: "approved" as const };
+  },
 });
 
 // Get My Payslips (Employee View)
@@ -497,10 +683,11 @@ export const addCredit = mutation({
         type: v.union(v.literal("allowance"), v.literal("bonus"), v.literal("commission"), v.literal("reimbursement"), v.literal("other")),
         isTaxable: v.boolean(),
         isPermanent: v.boolean(), // recurring
+        reason: v.optional(v.string()),
     },
     handler: async (ctx, args) => {
         const user = await getViewerInfo(ctx);
-        const isPrivileged = ["super_admin", "admin", "hr_manager"].includes(user.role);
+        const isPrivileged = canMutatePayroll(user.role);
         if (!isPrivileged) throw new Error("Unauthorized");
 
         const employee = await ctx.db.get(args.employeeId);
@@ -508,7 +695,7 @@ export const addCredit = mutation({
           throw new Error("Employee not found or unauthorized");
         }
 
-        await ctx.db.insert("payroll_credits", {
+        const newData = {
             orgId: user.orgId!,
             employeeId: args.employeeId,
             name: args.name,
@@ -517,10 +704,39 @@ export const addCredit = mutation({
             isTaxable: args.isTaxable,
             isPermanent: args.isPermanent,
             isActive: true,
-            status: "approved", // Direct add by admin is approved
+            status: "approved" as const,
             requestDate: new Date().toISOString(),
-            processedBy: user._id
+        };
+
+        if (user.role === "super_admin") {
+          const createdId = await ctx.db.insert("payroll_credits", {
+            ...newData,
+            processedBy: user._id,
+          });
+          const changeRequestId = await queueChangeRequest(ctx, {
+            orgId: user.orgId!,
+            requesterUserId: user._id,
+            approverUserId: user._id,
+            targetTable: "payroll_credits",
+            targetId: String(createdId),
+            operation: "create",
+            newData,
+            reason: args.reason,
+            status: "approved",
+          });
+          return { mode: "applied" as const, changeRequestId };
+        }
+
+        const changeRequestId = await queueChangeRequest(ctx, {
+            orgId: user.orgId!,
+            requesterUserId: user._id,
+            targetTable: "payroll_credits",
+            operation: "create",
+            newData,
+            reason: args.reason,
+            status: "pending",
         });
+        return { mode: "pending" as const, changeRequestId };
     }
 });
 
@@ -531,10 +747,11 @@ export const addDebit = mutation({
         amount: v.number(),
         type: v.union(v.literal("loan"), v.literal("advance"), v.literal("penalty"), v.literal("tax"), v.literal("statutory"), v.literal("other")),
         isPermanent: v.boolean(),
+        reason: v.optional(v.string()),
     },
     handler: async (ctx, args) => {
         const user = await getViewerInfo(ctx);
-        const isPrivileged = ["super_admin", "admin", "hr_manager"].includes(user.role);
+        const isPrivileged = canMutatePayroll(user.role);
         if (!isPrivileged) throw new Error("Unauthorized");
 
         const employee = await ctx.db.get(args.employeeId);
@@ -542,7 +759,7 @@ export const addDebit = mutation({
           throw new Error("Employee not found or unauthorized");
         }
 
-        await ctx.db.insert("payroll_debits", {
+        const newData = {
             orgId: user.orgId!,
             employeeId: args.employeeId,
             name: args.name,
@@ -550,10 +767,39 @@ export const addDebit = mutation({
             itemType: args.type,
             isPermanent: args.isPermanent,
             isActive: true,
-            status: "approved",
+            status: "approved" as const,
             requestDate: new Date().toISOString(),
+        };
+
+        if (user.role === "super_admin") {
+          const createdId = await ctx.db.insert("payroll_debits", {
+            ...newData,
             processedBy: user._id
+          });
+          const changeRequestId = await queueChangeRequest(ctx, {
+            orgId: user.orgId!,
+            requesterUserId: user._id,
+            approverUserId: user._id,
+            targetTable: "payroll_debits",
+            targetId: String(createdId),
+            operation: "create",
+            newData,
+            reason: args.reason,
+            status: "approved",
+          });
+          return { mode: "applied" as const, changeRequestId };
+        }
+
+        const changeRequestId = await queueChangeRequest(ctx, {
+          orgId: user.orgId!,
+          requesterUserId: user._id,
+          targetTable: "payroll_debits",
+          operation: "create",
+          newData,
+          reason: args.reason,
+          status: "pending",
         });
+        return { mode: "pending" as const, changeRequestId };
     }
 });
 
@@ -561,21 +807,77 @@ export const toggleAdjustmentStatus = mutation({
     args: {
         id: v.string(), // ID of credit or debit
         type: v.union(v.literal("credit"), v.literal("debit")),
-        isActive: v.boolean()
+        isActive: v.boolean(),
+        reason: v.optional(v.string()),
     },
     handler: async (ctx, args) => {
         const user = await getViewerInfo(ctx);
-        const isPrivileged = ["super_admin", "admin", "hr_manager"].includes(user.role);
+        const isPrivileged = canMutatePayroll(user.role);
         if (!isPrivileged) throw new Error("Unauthorized");
 
         if (args.type === "credit") {
             const record = await ctx.db.get(args.id as Id<"payroll_credits">);
             if (!record || record.orgId !== user.orgId!) throw new Error("Record not found or unauthorized");
-            await ctx.db.patch(args.id as Id<"payroll_credits">, { isActive: args.isActive });
+            if (user.role === "super_admin") {
+              await ctx.db.patch(args.id as Id<"payroll_credits">, { isActive: args.isActive });
+              const changeRequestId = await queueChangeRequest(ctx, {
+                orgId: user.orgId!,
+                requesterUserId: user._id,
+                approverUserId: user._id,
+                targetTable: "payroll_credits",
+                targetId: String(args.id),
+                operation: "update",
+                oldData: { isActive: record.isActive },
+                newData: { isActive: args.isActive },
+                reason: args.reason,
+                status: "approved",
+              });
+              return { mode: "applied" as const, changeRequestId };
+            }
+
+            const changeRequestId = await queueChangeRequest(ctx, {
+              orgId: user.orgId!,
+              requesterUserId: user._id,
+              targetTable: "payroll_credits",
+              targetId: String(args.id),
+              operation: "update",
+              oldData: { isActive: record.isActive },
+              newData: { isActive: args.isActive },
+              reason: args.reason,
+              status: "pending",
+            });
+            return { mode: "pending" as const, changeRequestId };
         } else {
             const record = await ctx.db.get(args.id as Id<"payroll_debits">);
             if (!record || record.orgId !== user.orgId!) throw new Error("Record not found or unauthorized");
-            await ctx.db.patch(args.id as Id<"payroll_debits">, { isActive: args.isActive });
+            if (user.role === "super_admin") {
+              await ctx.db.patch(args.id as Id<"payroll_debits">, { isActive: args.isActive });
+              const changeRequestId = await queueChangeRequest(ctx, {
+                orgId: user.orgId!,
+                requesterUserId: user._id,
+                approverUserId: user._id,
+                targetTable: "payroll_debits",
+                targetId: String(args.id),
+                operation: "update",
+                oldData: { isActive: record.isActive },
+                newData: { isActive: args.isActive },
+                reason: args.reason,
+                status: "approved",
+              });
+              return { mode: "applied" as const, changeRequestId };
+            }
+            const changeRequestId = await queueChangeRequest(ctx, {
+              orgId: user.orgId!,
+              requesterUserId: user._id,
+              targetTable: "payroll_debits",
+              targetId: String(args.id),
+              operation: "update",
+              oldData: { isActive: record.isActive },
+              newData: { isActive: args.isActive },
+              reason: args.reason,
+              status: "pending",
+            });
+            return { mode: "pending" as const, changeRequestId };
         }
     }
 });

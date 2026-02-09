@@ -2,6 +2,11 @@ import { v } from "convex/values";
 import { mutation, query, QueryCtx, MutationCtx } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { Id } from "./_generated/dataModel";
+import {
+  canMutatePayroll,
+  getViewerInfo as getViewerFromSecurity,
+  queueChangeRequest,
+} from "./sensitive_changes";
 
 // Helper to get viewer info including role and employeeId
 async function getViewerInfo(ctx: QueryCtx | MutationCtx) {
@@ -429,13 +434,14 @@ export const updateCompensation = mutation({
     baseSalary: v.optional(v.number()),
     currency: v.optional(v.string()),
     payFrequency: v.optional(v.union(v.literal("monthly"), v.literal("bi_weekly"), v.literal("weekly"))),
+    reason: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const viewer = await getViewerInfo(ctx);
+    const viewer = await getViewerFromSecurity(ctx);
     if (!viewer) throw new Error("Not authenticated");
 
     // Only HR/Admin can update compensation
-    if (!["hr_manager", "admin", "super_admin"].includes(viewer.role)) {
+    if (!canMutatePayroll(viewer.role)) {
       throw new Error("Unauthorized: Only HR or Admin can update compensation");
     }
 
@@ -449,11 +455,51 @@ export const updateCompensation = mutation({
 
     // Filter out undefined values
     const cleanUpdates: Record<string, unknown> = {};
-    if (updates.baseSalary !== undefined) cleanUpdates['baseSalary'] = updates.baseSalary;
-    if (updates.currency !== undefined) cleanUpdates['currency'] = updates.currency;
-    if (updates.payFrequency !== undefined) cleanUpdates['payFrequency'] = updates.payFrequency;
+    if (updates.baseSalary !== undefined) cleanUpdates["baseSalary"] = updates.baseSalary;
+    if (updates.currency !== undefined) cleanUpdates["currency"] = updates.currency;
+    if (updates.payFrequency !== undefined) cleanUpdates["payFrequency"] = updates.payFrequency;
 
-    await ctx.db.patch(employeeId, cleanUpdates);
-    return { success: true };
+    if (Object.keys(cleanUpdates).length === 0) {
+      throw new Error("No compensation fields provided");
+    }
+
+    if (viewer.role === "super_admin") {
+      await ctx.db.patch(employeeId, cleanUpdates);
+      const changeRequestId = await queueChangeRequest(ctx, {
+        orgId: viewer.orgId!,
+        requesterUserId: viewer._id,
+        approverUserId: viewer._id,
+        targetTable: "employees",
+        targetId: String(employeeId),
+        operation: "update",
+        oldData: {
+          baseSalary: employee.baseSalary,
+          currency: employee.currency,
+          payFrequency: employee.payFrequency,
+        },
+        newData: cleanUpdates,
+        reason: args.reason,
+        status: "approved",
+      });
+      return { success: true, mode: "applied" as const, changeRequestId };
+    }
+
+    const changeRequestId = await queueChangeRequest(ctx, {
+      orgId: viewer.orgId!,
+      requesterUserId: viewer._id,
+      targetTable: "employees",
+      targetId: String(employeeId),
+      operation: "update",
+      oldData: {
+        baseSalary: employee.baseSalary,
+        currency: employee.currency,
+        payFrequency: employee.payFrequency,
+      },
+      newData: cleanUpdates,
+      reason: args.reason,
+      status: "pending",
+    });
+
+    return { success: true, mode: "pending" as const, changeRequestId };
   },
 });
