@@ -38,11 +38,12 @@ import { api } from '../../../../../convex/_generated/api';
           <ui-grid-tile title="Designations" variant="compact">
             <div class="tile-body">
               <ui-data-table
+                cornerStyle="square"
                 [data]="designations()"
                 [columns]="columns"
                 [loading]="loading()"
                 [actionsTemplate]="canManage() ? actionsRef : undefined"
-                headerVariant="neutral"
+                headerVariant="plain"
               ></ui-data-table>
             </div>
           </ui-grid-tile>
@@ -196,3 +197,4 @@ export class DesignationsComponent implements OnInit, OnDestroy {
     }
   }
 }
+

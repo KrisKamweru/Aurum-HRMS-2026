@@ -190,6 +190,7 @@ interface AttendanceSummary {
           <ui-grid-tile title="Attendance History">
             <span tile-actions class="live-badge">● Live</span>
             <ui-data-table
+              cornerStyle="square"
               [data]="paginatedHistory()"
               [columns]="columns"
               [loading]="historyResource.isLoading()"
@@ -197,7 +198,7 @@ interface AttendanceSummary {
               [totalItems]="historyResource.value().length"
               [pageSize]="pageSize"
               [page]="currentPage()"
-              [headerVariant]="'neutral'"
+              [headerVariant]="'plain'"
               [cellTemplates]="{ status: statusTpl }"
               (sortChange)="onSortChange($event)"
               (pageChange)="onPageChange($event)"
@@ -766,3 +767,4 @@ export class AttendanceComponent implements OnDestroy {
     }
   }
 }
+

@@ -355,12 +355,13 @@ type ActionType = 'promote' | 'transfer' | 'resign' | 'terminate' | 'warning' | 
               <ui-grid-tile title="Payslips" variant="compact">
                 <div class="tile-body">
                   <ui-data-table
+                    cornerStyle="square"
                     [data]="payslips()"
                     [columns]="payslipColumns"
                     [loading]="false"
                     [cellTemplates]="{ month: payslipMonth }"
                     [actionsTemplate]="payslipActions"
-                    headerVariant="neutral"
+                    headerVariant="plain"
                   >
                     <ng-template #payslipMonth let-row>
                       <div class="flex items-center gap-2">
@@ -1439,4 +1440,5 @@ export class EmployeeDetailComponent implements OnInit {
     ];
   }
 }
+
 

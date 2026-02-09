@@ -623,6 +623,14 @@ import { ToastService } from '../../shared/services/toast.service';
       color: #6b1219;
     }
 
+    :host-context(.dark) .view-all-link {
+      color: #fda4af;
+    }
+
+    :host-context(.dark) .view-all-link:hover {
+      color: #fecdd3;
+    }
+
     /* Balance Grid */
     .balance-grid {
       display: grid;
@@ -919,6 +927,15 @@ import { ToastService } from '../../shared/services/toast.service';
     .empty-action:hover {
       opacity: 0.7;
       text-decoration: underline;
+    }
+
+    :host-context(.dark) .empty-action {
+      color: #fda4af;
+    }
+
+    :host-context(.dark) .empty-action:hover {
+      color: #fecdd3;
+      opacity: 1;
     }
 
     .request-row {

@@ -39,11 +39,12 @@ import { Id } from '../../../../../convex/_generated/dataModel';
           <ui-grid-tile title="Departments" variant="compact">
             <div class="tile-body">
               <ui-data-table
+                cornerStyle="square"
                 [data]="departments()"
                 [columns]="columns"
                 [loading]="loading()"
                 [actionsTemplate]="canManage() ? actionsRef : undefined"
-                headerVariant="neutral"
+                headerVariant="plain"
               ></ui-data-table>
             </div>
           </ui-grid-tile>
@@ -196,3 +197,4 @@ export class DepartmentsComponent implements OnInit, OnDestroy {
     }
   }
 }
+

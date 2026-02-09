@@ -119,9 +119,10 @@ import { Id } from '../../../../convex/_generated/dataModel';
               <span tile-actions class="text-xs text-stone-500 dark:text-stone-400">{{ slips().length }} records</span>
               @if (slips().length > 0) {
                 <ui-data-table
+                  cornerStyle="square"
                   [data]="slips()"
                   [columns]="columns"
-                  [headerVariant]="'neutral'"
+                  [headerVariant]="'plain'"
                   [cellTemplates]="{ employee: employeeTpl, netSalary: netPayTpl, basicSalary: basicTpl, grossSalary: grossTpl }"
                   [actionsTemplate]="actionsTpl"
                 ></ui-data-table>
@@ -359,3 +360,4 @@ export class PayrollRunComponent implements OnInit {
     }
   }
 }
+

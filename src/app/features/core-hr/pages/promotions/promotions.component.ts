@@ -42,6 +42,7 @@ import { api } from '../../../../../../convex/_generated/api';
       </div>
 
       <ui-data-table
+        cornerStyle="square"
         [data]="enrichedPromotions()"
         [columns]="columns"
         [loading]="loading()"

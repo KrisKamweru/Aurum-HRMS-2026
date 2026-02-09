@@ -133,9 +133,10 @@ import { api } from '../../../../convex/_generated/api';
               </div>
             } @else {
               <ui-data-table
+                cornerStyle="square"
                 [data]="organizations()"
                 [columns]="columns"
-                [headerVariant]="'neutral'"
+                [headerVariant]="'plain'"
                 [cellTemplates]="{ org: orgTpl, pending: pendingTpl, userCount: userCountTpl, employeeCount: employeeCountTpl }"
                 [actionsTemplate]="actionsTpl"
               ></ui-data-table>
@@ -453,3 +454,4 @@ export class SuperAdminComponent implements OnInit, OnDestroy {
     }
   }
 }
+

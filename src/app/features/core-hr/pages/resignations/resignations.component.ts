@@ -49,11 +49,12 @@ import { api } from '../../../../../../convex/_generated/api';
           <ui-grid-tile title="Resignations" variant="compact">
             <div class="tile-body">
               <ui-data-table
+                cornerStyle="square"
                 [data]="enrichedResignations()"
                 [columns]="columns"
                 [loading]="loading()"
                 [actionsTemplate]="actionsRef"
-                headerVariant="neutral"
+                headerVariant="plain"
               ></ui-data-table>
             </div>
           </ui-grid-tile>
@@ -250,3 +251,4 @@ export class ResignationsComponent implements OnInit, OnDestroy {
     }
   }
 }
+

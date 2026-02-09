@@ -100,6 +100,7 @@ import { UiGridTileComponent } from '../../../shared/components/ui-grid/ui-grid-
           <ui-grid-tile title="Team Attendance" variant="compact">
             <div class="tile-body">
               <ui-data-table
+                cornerStyle="square"
                 [data]="tableData()"
                 [columns]="columns"
                 [loading]="isLoading()"
@@ -110,7 +111,7 @@ import { UiGridTileComponent } from '../../../shared/components/ui-grid/ui-grid-
                 (pageChange)="currentPage.set($event)"
                 [actionsTemplate]="actionTemplate"
                 [cellTemplates]="{ 'name': employeeTemplate }"
-                headerVariant="neutral"
+                headerVariant="plain"
               >
                 <!-- Employee Column Template -->
                 <ng-template #employeeTemplate let-row>
@@ -276,3 +277,4 @@ export class TeamAttendanceComponent {
     }
   }
 }
+

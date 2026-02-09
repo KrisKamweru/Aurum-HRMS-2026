@@ -86,9 +86,10 @@ import { ConfirmDialogService } from '../../shared/services/confirm-dialog.servi
               <span tile-actions class="text-xs text-stone-500 dark:text-stone-400">{{ runs().length }} runs</span>
               <div class="overflow-x-auto">
                 <ui-data-table
+                  cornerStyle="square"
                   [data]="runs()"
                   [columns]="columns"
-                  [headerVariant]="'neutral'"
+                  [headerVariant]="'plain'"
                   [cellTemplates]="{ period: periodTpl, totalNetPay: netPayTpl }"
                   [actionsTemplate]="actionsTpl"
                 ></ui-data-table>
@@ -117,9 +118,10 @@ import { ConfirmDialogService } from '../../shared/services/confirm-dialog.servi
               <ui-grid-tile title="Pending Sensitive Changes" variant="compact">
                 <span tile-actions class="text-xs text-stone-500 dark:text-stone-400">{{ pendingChanges().length }} awaiting approval</span>
                 <ui-data-table
+                  cornerStyle="square"
                   [data]="pendingChanges()"
                   [columns]="pendingColumns"
-                  [headerVariant]="'neutral'"
+                  [headerVariant]="'plain'"
                   [actionsTemplate]="pendingActionsTpl"
                 ></ui-data-table>
                 <ng-template #pendingActionsTpl let-row>
@@ -364,3 +366,4 @@ export class PayrollListComponent implements OnInit {
     }
   }
 }
+

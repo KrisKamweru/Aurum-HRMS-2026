@@ -126,10 +126,11 @@ interface AttendanceSummary {
               <span tile-actions class="text-sm text-stone-500 dark:text-stone-400">{{ records().length }} records</span>
             }
             <ui-data-table
+              cornerStyle="square"
               [data]="records()"
               [columns]="columns"
               [loading]="loading()"
-              [headerVariant]="'neutral'"
+              [headerVariant]="'plain'"
             ></ui-data-table>
 
             @if (!loading() && records().length === 0 && hasAppliedFilters()) {
@@ -288,3 +289,4 @@ export class AttendanceReportComponent implements OnDestroy {
     this.unsubscribe?.();
   }
 }
+

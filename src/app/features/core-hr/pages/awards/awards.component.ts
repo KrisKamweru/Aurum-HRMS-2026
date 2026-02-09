@@ -40,6 +40,7 @@ import { api } from '../../../../../../convex/_generated/api';
       </div>
 
       <ui-data-table
+        cornerStyle="square"
         [data]="enrichedAwards()"
         [columns]="columns"
         [loading]="loading()"

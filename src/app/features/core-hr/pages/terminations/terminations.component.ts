@@ -50,10 +50,11 @@ import { api } from '../../../../../../convex/_generated/api';
           <ui-grid-tile title="Terminations" variant="compact">
             <div class="tile-body">
               <ui-data-table
+                cornerStyle="square"
                 [data]="enrichedTerminations()"
                 [columns]="columns"
                 [loading]="loading()"
-                headerVariant="neutral"
+                headerVariant="plain"
               ></ui-data-table>
             </div>
           </ui-grid-tile>
@@ -229,3 +230,4 @@ export class TerminationsComponent implements OnInit, OnDestroy {
     }
   }
 }
+

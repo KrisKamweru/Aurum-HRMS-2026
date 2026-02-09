@@ -157,6 +157,7 @@ interface PayrollRunInfo {
 
       <!-- Data Table -->
       <ui-data-table
+        cornerStyle="square"
         [data]="records()"
         [columns]="columns"
         [loading]="loading()"

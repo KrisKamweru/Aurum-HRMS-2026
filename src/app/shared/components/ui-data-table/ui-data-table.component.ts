@@ -27,7 +27,11 @@ export interface SortEvent {
   imports: [CommonModule, UiButtonComponent, UiBadgeComponent, UiIconComponent],
   providers: [DatePipe, CurrencyPipe],
   template: `
-    <div class="bg-white dark:bg-white/5 rounded-2xl shadow-lg shadow-stone-200/50 dark:shadow-none border border-stone-200 dark:border-white/8 dark:backdrop-blur-xl overflow-hidden">
+    <div
+      class="bg-white dark:bg-white/5 shadow-lg shadow-stone-200/50 dark:shadow-none border border-stone-200 dark:border-white/8 dark:backdrop-blur-xl overflow-hidden"
+      [class.rounded-2xl]="cornerStyle === 'rounded'"
+      [class.rounded-none]="cornerStyle === 'square'"
+    >
       <div class="table-wrapper">
         <table class="w-full text-left text-sm">
           <thead [class]="headerClasses()">
@@ -38,12 +42,12 @@ export interface SortEvent {
                   [class.cursor-pointer]="col.sortable"
                   [class.hover:text-burgundy-900]="col.sortable && headerVariant === 'accent'"
                   [class.dark:hover:text-burgundy-100]="col.sortable && headerVariant === 'accent'"
-                  [class.hover:text-stone-800]="col.sortable && headerVariant === 'neutral'"
-                  [class.dark:hover:text-stone-100]="col.sortable && headerVariant === 'neutral'"
+                  [class.hover:text-stone-800]="col.sortable && headerVariant !== 'accent'"
+                  [class.dark:hover:text-stone-100]="col.sortable && headerVariant !== 'accent'"
                   [class.text-burgundy-800]="headerVariant === 'accent'"
                   [class.dark:text-burgundy-200]="headerVariant === 'accent'"
-                  [class.text-stone-600]="headerVariant === 'neutral'"
-                  [class.dark:text-stone-300]="headerVariant === 'neutral'"
+                  [class.text-stone-600]="headerVariant !== 'accent'"
+                  [class.dark:text-stone-300]="headerVariant !== 'accent'"
                   [style.width]="col.width"
                   (click)="handleSort(col)"
                 >
@@ -52,9 +56,23 @@ export interface SortEvent {
                     @if (col.sortable) {
                       <div class="flex flex-col">
                         @if (sortKey() === col.key && sortDirection() === 'asc') {
-                          <ui-icon name="chevron-up" class="w-4 h-4 text-burgundy-800 dark:text-burgundy-200"></ui-icon>
+                          <ui-icon
+                            name="chevron-up"
+                            class="w-4 h-4"
+                            [class.text-burgundy-800]="headerVariant === 'accent'"
+                            [class.dark:text-burgundy-200]="headerVariant === 'accent'"
+                            [class.text-stone-500]="headerVariant !== 'accent'"
+                            [class.dark:text-stone-300]="headerVariant !== 'accent'"
+                          ></ui-icon>
                         } @else if (sortKey() === col.key && sortDirection() === 'desc') {
-                          <ui-icon name="chevron-down" class="w-4 h-4 text-burgundy-800 dark:text-burgundy-200"></ui-icon>
+                          <ui-icon
+                            name="chevron-down"
+                            class="w-4 h-4"
+                            [class.text-burgundy-800]="headerVariant === 'accent'"
+                            [class.dark:text-burgundy-200]="headerVariant === 'accent'"
+                            [class.text-stone-500]="headerVariant !== 'accent'"
+                            [class.dark:text-stone-300]="headerVariant !== 'accent'"
+                          ></ui-icon>
                         } @else {
                           <ui-icon name="selector" class="w-4 h-4 text-stone-300 dark:text-stone-600 opacity-0 group-hover:opacity-100 transition-opacity"></ui-icon>
                         }
@@ -67,8 +85,8 @@ export interface SortEvent {
                 <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-right"
                     [class.text-stone-500]="headerVariant === 'accent'"
                     [class.dark:text-stone-400]="headerVariant === 'accent'"
-                    [class.text-stone-600]="headerVariant === 'neutral'"
-                    [class.dark:text-stone-300]="headerVariant === 'neutral'">Actions</th>
+                    [class.text-stone-600]="headerVariant !== 'accent'"
+                    [class.dark:text-stone-300]="headerVariant !== 'accent'">Actions</th>
               }
             </tr>
           </thead>
@@ -268,7 +286,8 @@ export class UiDataTableComponent {
   @Input() data: any[] = [];
   @Input() columns: TableColumn[] = [];
   @Input() loading = false;
-  @Input() headerVariant: 'accent' | 'neutral' = 'accent';
+  @Input() headerVariant: 'accent' | 'neutral' | 'plain' = 'accent';
+  @Input() cornerStyle: 'rounded' | 'square' = 'rounded';
   @Input() pagination = false;
   @Input() totalItems = 0;
   @Input() pageSize = 10;
@@ -317,6 +336,9 @@ export class UiDataTableComponent {
   }
 
   headerClasses(): string {
+    if (this.headerVariant === 'plain') {
+      return 'border-b border-stone-200 dark:border-white/8';
+    }
     if (this.headerVariant === 'neutral') {
       return 'table-head-neutral border-b border-stone-200 dark:border-white/8';
     }

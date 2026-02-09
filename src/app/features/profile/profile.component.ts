@@ -130,7 +130,7 @@ import { UiGridTileComponent } from '../../shared/components/ui-grid/ui-grid-til
                         @if (profile.user && profile.user.image) {
                           <img [src]="profile.user.image" alt="Profile" class="w-full h-full object-cover">
                         } @else {
-                          <span class="text-4xl font-bold text-stone-300 dark:text-stone-500">
+                          <span class="text-4xl font-bold text-stone-300 dark:text-stone-200">
                             {{ getInitials(profile.firstName, profile.lastName) }}
                           </span>
                         }

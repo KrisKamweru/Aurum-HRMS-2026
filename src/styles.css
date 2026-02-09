@@ -155,6 +155,11 @@ body {
   min-height: 100vh;
 }
 
+.dark body {
+  background: #0b0b0b;
+  color: #e7e5e4;
+}
+
 /* Main layout background treatment */
 .app-shell {
   position: relative;
@@ -162,6 +167,13 @@ body {
     radial-gradient(1100px 520px at 15% -10%, rgba(134,24,33,0.045), transparent 60%),
     radial-gradient(900px 500px at 100% 0%, rgba(134,24,33,0.03), transparent 60%),
     linear-gradient(180deg, #f4f5f8 0%, #f7f7f9 45%, #eceef2 100%);
+}
+
+.dark .app-shell {
+  background:
+    radial-gradient(1100px 520px at 15% -10%, rgba(134,24,33,0.18), transparent 62%),
+    radial-gradient(900px 500px at 100% 0%, rgba(134,24,33,0.12), transparent 62%),
+    linear-gradient(180deg, #0b0b0b 0%, #111112 45%, #17171a 100%);
 }
 
 /* Unified grid frame defaults */

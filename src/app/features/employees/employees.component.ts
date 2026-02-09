@@ -45,11 +45,12 @@ import { api } from '../../../../convex/_generated/api';
           <ui-grid-tile title="Employees" variant="compact">
             <div class="tile-body">
               <ui-data-table
+                cornerStyle="square"
                 [data]="employees()"
                 [columns]="columns"
                 [loading]="loading()"
                 [actionsTemplate]="actionsRef"
-                headerVariant="neutral"
+                headerVariant="plain"
               ></ui-data-table>
             </div>
           </ui-grid-tile>
@@ -383,3 +384,4 @@ export class EmployeesComponent implements OnInit, OnDestroy {
     }
   }
 }
+

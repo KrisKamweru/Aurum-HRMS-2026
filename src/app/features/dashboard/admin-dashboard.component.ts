@@ -67,7 +67,8 @@ import { AuthService } from '../../core/auth/auth.service';
               [loading]="false"
               [cellTemplates]="{ name: activityName }"
               [actionsTemplate]="activityActions"
-              headerVariant="neutral"
+              headerVariant="plain"
+              cornerStyle="square"
             >
               <ng-template #activityName let-row>
                 <div class="flex items-center gap-2">
