@@ -29,13 +29,26 @@ import { ToastService } from '../../shared/services/toast.service';
           Back
         </button>
 
-        <ui-button variant="outline" (onClick)="printSlip()">
-          <ui-icon name="printer" class="w-4 h-4 mr-2"></ui-icon>
-          Print / Download PDF
-        </ui-button>
+        @if (slip()) {
+          <ui-button variant="outline" (onClick)="printSlip()">
+            <ui-icon name="printer" class="w-4 h-4 mr-2"></ui-icon>
+            Print / Download PDF
+          </ui-button>
+        }
       </div>
 
-      @if (slip(); as s) {
+      @if (loading()) {
+        <div class="loading-state">
+          <div class="spinner"></div>
+        </div>
+      } @else if (loadError(); as err) {
+        <div class="error-state">
+          <div class="error-icon">!</div>
+          <h3 class="error-title">Payslip Unavailable</h3>
+          <p class="error-text">{{ err }}</p>
+          <ui-button variant="outline" (onClick)="goBack()">Back to Dashboard</ui-button>
+        </div>
+      } @else if (slip(); as s) {
         <!-- Payslip Card - Design Six Pattern -->
         <div class="pay-card">
           <!-- Banner Header -->
@@ -134,10 +147,6 @@ import { ToastService } from '../../shared/services/toast.service';
               <p class="pc-net-value">{{ s.netSalary | currency }}</p>
             </div>
           </div>
-        </div>
-      } @else {
-        <div class="loading-state">
-          <div class="spinner"></div>
         </div>
       }
     </div>
@@ -370,6 +379,46 @@ import { ToastService } from '../../shared/services/toast.service';
       min-height: 16rem;
     }
 
+    .error-state {
+      min-height: 16rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      text-align: center;
+      padding: 1.5rem;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: 14px;
+    }
+
+    .error-icon {
+      width: 2rem;
+      height: 2rem;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: #ff6b77;
+      background: rgba(134,24,33,0.22);
+    }
+
+    .error-title {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #f5f5f4;
+    }
+
+    .error-text {
+      margin: 0;
+      max-width: 28rem;
+      font-size: 0.875rem;
+      color: #a8a29e;
+    }
+
     .spinner {
       width: 2rem;
       height: 2rem;
@@ -454,6 +503,8 @@ export class PayslipViewComponent implements OnInit {
 
   slipId = signal<Id<"salary_slips"> | null>(null);
   slip = signal<any>(null);
+  loading = signal(true);
+  loadError = signal<string | null>(null);
 
   ngOnInit() {
     this.route.params.subscribe(params => {
@@ -467,25 +518,32 @@ export class PayslipViewComponent implements OnInit {
 
   loadSlip(id: Id<"salary_slips">) {
     const client = this.convex.getClient();
-    // Perform an immediate auth check/read first so unauthorized deep links redirect deterministically.
+    this.loading.set(true);
+    this.loadError.set(null);
+    this.slip.set(null);
+
+    // Perform an immediate auth check/read first.
     client.query(api.payroll.getPayslip, { slipId: id })
       .then((data) => {
-        this.slip.set(data);
         if (!data) {
-          this.toast.error('Payslip not found or unauthorized');
-          this.goBack();
+          this.loadError.set('Payslip is unavailable. It may still be processing or you may not have access.');
+          this.loading.set(false);
           return;
         }
+        this.slip.set(data);
+        this.loading.set(false);
       })
       .catch(() => {
-        this.toast.error('Payslip not found or unauthorized');
-        this.goBack();
+        this.loadError.set('Payslip is unavailable. It may still be processing or you may not have access.');
+        this.loading.set(false);
       });
 
     // Keep subscription for live updates once initial access is validated.
     client.onUpdate(api.payroll.getPayslip, { slipId: id }, (data) => {
       if (!data) return;
       this.slip.set(data);
+      this.loadError.set(null);
+      this.loading.set(false);
     });
   }
 
@@ -519,9 +577,10 @@ export class PayslipViewComponent implements OnInit {
     // However, window.history.back() can exit the app if it's the first page.
     // Safe default:
     if (this.slip()?.runId) {
-       this.router.navigate(['/payroll', this.slip().runId]);
+      this.router.navigate(['/payroll', this.slip().runId]);
     } else {
-       this.router.navigate(['/payroll']);
+      // Avoid sending non-privileged users to a guarded payroll root.
+      this.router.navigate(['/dashboard']);
     }
   }
 

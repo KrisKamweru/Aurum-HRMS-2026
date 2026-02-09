@@ -8,6 +8,8 @@
     "watch": "ng build --watch --configuration development",
     "test": "vitest",
     "e2e": "playwright test",
+    "visual:smoke": "node scripts/visual-smoke.mjs",
+    "visual:compare": "node scripts/visual-compare.mjs",
     "audit:roles": "node scripts/deep-role-audit.mjs",
     "audit:pay-data": "node scripts/pay-data-audit.mjs",
     "test:auth-negative": "playwright test e2e/negative-auth.spec.ts",

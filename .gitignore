@@ -50,6 +50,7 @@ Thumbs.db
 # Playwright test artifacts
 /playwright-report
 /test-results
+/artifacts
 
 # Internal design docs
 SHOWCASE-6-DESIGN.md
