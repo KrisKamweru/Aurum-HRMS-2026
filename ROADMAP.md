@@ -46,12 +46,14 @@ The following backlog themes are complete and now tracked in git history rather 
 This section is the active sequencing guide and supersedes ad-hoc backlog ordering.
 
 ### P0. Immediate Stabilization and Context Hygiene (Now)
-- Ensure seeded environments are payroll-ready:
+Status: Substantially completed on 2026-02-09.
+- [x] Ensure seeded environments are payroll-ready:
   - compensation fields (`baseSalary`, `currency`, `payFrequency`) present for seeded employees
   - idempotent compensation backfill when test org already exists
-- Reduce Markdown/doc sprawl to keep active context minimal:
-  - retain canonical docs (`README`, `ROADMAP`, `CLAUDE`, Design docs)
-  - remove non-essential status/checklist artifacts after confirmation
+- [x] Reduce Markdown/doc sprawl to keep active context minimal:
+  - canonical docs retained (`README`, `ROADMAP`, `CLAUDE`, Design docs, `convex/README`)
+  - non-essential status/checklist markdown artifacts removed
+- [ ] Optional follow-up: final pass to archive or remove stale non-Markdown generated artifacts if needed
 
 ### P1. Reliability and Regression Safety (Highest Product Risk)
 - Expand automated coverage for high-risk flows:
@@ -60,6 +62,7 @@ This section is the active sequencing guide and supersedes ad-hoc backlog orderi
   - leave and attendance edge cases
   - cross-role and cross-org negative authorization paths
 - Define risk-based quality gates for critical modules before release.
+- Progress update (2026-02-09): visual regression workflow, multi-profile baseline, and comparison tooling added.
 
 ### P2. Compliance and Data Governance Baseline
 - Formalize and enforce:
