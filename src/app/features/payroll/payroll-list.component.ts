@@ -30,12 +30,12 @@ import { ConfirmDialogService } from '../../shared/services/confirm-dialog.servi
     UiDataTableComponent
   ],
   template: `
-    <div class="payroll-list-container">
+    <div class="flex flex-col gap-6">
       <!-- Header -->
-      <div class="page-header">
+      <div class="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 class="page-title">Payroll Runs</h1>
-          <p class="page-subtitle">Manage monthly payroll processing and salary slips</p>
+          <h1 class="text-3xl font-bold leading-tight text-stone-900 dark:text-white">Payroll Runs</h1>
+          <p class="mt-2 text-[0.9375rem] text-stone-600 dark:text-stone-400">Manage monthly payroll processing and salary slips</p>
         </div>
         <ui-button (onClick)="openCreateModal()" variant="primary" icon="plus">
           <ui-icon name="plus" class="w-4 h-4 mr-2"></ui-icon>
@@ -44,38 +44,38 @@ import { ConfirmDialogService } from '../../shared/services/confirm-dialog.servi
       </div>
 
       <!-- Payroll Overview + Run History (Unified Grid) -->
-      <div class="dash-frame">
+      <div class="overflow-hidden rounded-[14px] border border-stone-200 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.05)] dark:border-white/8 dark:bg-white/5 dark:shadow-none dark:backdrop-blur-xl">
         <ui-grid [columns]="'1fr'" [gap]="'0px'">
           <ui-grid-tile title="Payroll Overview" variant="compact" divider="bottom">
-            <div class="tile-body">
-              <div class="stats-grid">
-                <div class="stat-card">
-                  <div class="stat-icon-wrapper bg-blue">
+            <div class="p-5">
+              <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+                <div class="flex items-center gap-4 rounded-[14px] border border-stone-200 bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.05)] dark:border-white/8 dark:bg-white/5 dark:shadow-none dark:backdrop-blur-xl">
+                  <div class="flex items-center justify-center rounded-[10px] bg-blue-500/15 p-3 text-blue-600 dark:text-blue-400">
                     <ui-icon name="banknotes" class="w-6 h-6"></ui-icon>
                   </div>
                   <div>
-                    <p class="stat-label">Total Processed (YTD)</p>
-                    <h3 class="stat-value">--</h3>
+                    <p class="mb-1 text-[0.8125rem] font-medium text-stone-600 dark:text-stone-400">Total Processed (YTD)</p>
+                    <h3 class="text-2xl font-bold text-stone-900 dark:text-white">--</h3>
                   </div>
                 </div>
 
-                <div class="stat-card">
-                  <div class="stat-icon-wrapper bg-green">
+                <div class="flex items-center gap-4 rounded-[14px] border border-stone-200 bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.05)] dark:border-white/8 dark:bg-white/5 dark:shadow-none dark:backdrop-blur-xl">
+                  <div class="flex items-center justify-center rounded-[10px] bg-green-500/15 p-3 text-green-600 dark:text-green-400">
                     <ui-icon name="users" class="w-6 h-6"></ui-icon>
                   </div>
                   <div>
-                    <p class="stat-label">Employees Paid</p>
-                    <h3 class="stat-value">--</h3>
+                    <p class="mb-1 text-[0.8125rem] font-medium text-stone-600 dark:text-stone-400">Employees Paid</p>
+                    <h3 class="text-2xl font-bold text-stone-900 dark:text-white">--</h3>
                   </div>
                 </div>
 
-                <div class="stat-card">
-                  <div class="stat-icon-wrapper bg-amber">
+                <div class="flex items-center gap-4 rounded-[14px] border border-stone-200 bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.05)] dark:border-white/8 dark:bg-white/5 dark:shadow-none dark:backdrop-blur-xl">
+                  <div class="flex items-center justify-center rounded-[10px] bg-amber-500/15 p-3 text-amber-600 dark:text-amber-400">
                     <ui-icon name="clock" class="w-6 h-6"></ui-icon>
                   </div>
                   <div>
-                    <p class="stat-label">Pending Runs</p>
-                    <h3 class="stat-value">--</h3>
+                    <p class="mb-1 text-[0.8125rem] font-medium text-stone-600 dark:text-stone-400">Pending Runs</p>
+                    <h3 class="text-2xl font-bold text-stone-900 dark:text-white">--</h3>
                   </div>
                 </div>
               </div>
@@ -83,7 +83,7 @@ import { ConfirmDialogService } from '../../shared/services/confirm-dialog.servi
           </ui-grid-tile>
 
             <ui-grid-tile title="Payroll Run History" variant="compact">
-              <span tile-actions class="df-count">{{ runs().length }} runs</span>
+              <span tile-actions class="text-xs text-stone-500 dark:text-stone-400">{{ runs().length }} runs</span>
               <div class="overflow-x-auto">
                 <ui-data-table
                   [data]="runs()"
@@ -93,11 +93,11 @@ import { ConfirmDialogService } from '../../shared/services/confirm-dialog.servi
                   [actionsTemplate]="actionsTpl"
                 ></ui-data-table>
                 <ng-template #periodTpl let-row>
-                  <div class="period-cell">
-                    <div class="period-badge">
+                  <div class="flex items-center gap-3">
+                    <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-burgundy-700/10 text-xs font-bold text-burgundy-700 dark:bg-burgundy-700/25 dark:text-rose-300">
                       {{ getMonthName(row.month) | slice:0:3 }}
                     </div>
-                    <span class="period-name">
+                    <span class="font-semibold text-stone-900 dark:text-white">
                       {{ getMonthName(row.month) }} {{ row.year }}
                     </span>
                   </div>
@@ -108,14 +108,14 @@ import { ConfirmDialogService } from '../../shared/services/confirm-dialog.servi
                   </span>
                 </ng-template>
                 <ng-template #actionsTpl let-row>
-                  <button (click)="viewRun(row._id)" class="action-link">View</button>
+                  <button (click)="viewRun(row._id)" class="rounded px-2 py-1 text-sm font-semibold text-burgundy-700 transition-opacity hover:opacity-70 dark:text-rose-300">View</button>
                 </ng-template>
               </div>
             </ui-grid-tile>
 
             @if (pendingChanges().length > 0) {
               <ui-grid-tile title="Pending Sensitive Changes" variant="compact">
-                <span tile-actions class="df-count">{{ pendingChanges().length }} awaiting approval</span>
+                <span tile-actions class="text-xs text-stone-500 dark:text-stone-400">{{ pendingChanges().length }} awaiting approval</span>
                 <ui-data-table
                   [data]="pendingChanges()"
                   [columns]="pendingColumns"
@@ -124,8 +124,8 @@ import { ConfirmDialogService } from '../../shared/services/confirm-dialog.servi
                 ></ui-data-table>
                 <ng-template #pendingActionsTpl let-row>
                   <div class="flex items-center gap-2">
-                    <button (click)="approveChange(row._id)" class="action-link">Approve</button>
-                    <button (click)="rejectChange(row._id)" class="action-link text-red-600 dark:text-red-400">Reject</button>
+                    <button (click)="approveChange(row._id)" class="rounded px-2 py-1 text-sm font-semibold text-burgundy-700 transition-opacity hover:opacity-70 dark:text-rose-300">Approve</button>
+                    <button (click)="rejectChange(row._id)" class="rounded px-2 py-1 text-sm font-semibold text-red-600 transition-opacity hover:opacity-70 dark:text-red-400">Reject</button>
                   </div>
                 </ng-template>
               </ui-grid-tile>
@@ -153,178 +153,6 @@ import { ConfirmDialogService } from '../../shared/services/confirm-dialog.servi
       ></app-dynamic-form>
     </ui-modal>
   `,
-  styles: [`
-    :host {
-      display: block;
-      --red: #861821;
-    }
-
-    .payroll-list-container {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-    }
-
-    .tile-body {
-      padding: 1.25rem;
-    }
-
-    /* Header */
-    .page-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-
-    .page-title {
-      font-size: 1.875rem;
-      font-weight: 700;
-      color: #1c1917;
-      margin: 0;
-      line-height: 1.2;
-    }
-    :host-context(.dark) .page-title { color: white; }
-
-    .page-subtitle {
-      font-size: 0.9375rem;
-      color: #57534e;
-      margin: 0.5rem 0 0;
-    }
-    :host-context(.dark) .page-subtitle { color: #a8a29e; }
-
-    /* Stats Grid */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1rem;
-    }
-
-    .stat-card {
-      background: white;
-      border: 1px solid #e7e5e4;
-      border-radius: 14px;
-      padding: 1.25rem;
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    }
-    :host-context(.dark) .stat-card {
-      background: rgba(255,255,255,0.05);
-      backdrop-filter: blur(12px);
-      border-color: rgba(255,255,255,0.08);
-      box-shadow: none;
-    }
-
-    .stat-icon-wrapper {
-      padding: 0.75rem;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .stat-icon-wrapper.bg-blue {
-      background: rgba(59, 130, 246, 0.15);
-      color: #2563eb;
-    }
-    :host-context(.dark) .stat-icon-wrapper.bg-blue { color: #60a5fa; }
-
-    .stat-icon-wrapper.bg-green {
-      background: rgba(34, 197, 94, 0.15);
-      color: #16a34a;
-    }
-    :host-context(.dark) .stat-icon-wrapper.bg-green { color: #4ade80; }
-
-    .stat-icon-wrapper.bg-amber {
-      background: rgba(245, 158, 11, 0.15);
-      color: #d97706;
-    }
-    :host-context(.dark) .stat-icon-wrapper.bg-amber { color: #fbbf24; }
-
-    .stat-label {
-      font-size: 0.8125rem;
-      font-weight: 500;
-      color: #57534e;
-      margin: 0 0 0.25rem;
-    }
-    :host-context(.dark) .stat-label { color: #a8a29e; }
-
-    .stat-value {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: #1c1917;
-      margin: 0;
-    }
-    :host-context(.dark) .stat-value { color: white; }
-
-    /* Dash Frame Pattern */
-    .dash-frame {
-      background: white;
-      border: 1px solid #e7e5e4;
-      border-radius: 14px;
-      overflow: hidden;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    }
-    :host-context(.dark) .dash-frame {
-      background: rgba(255,255,255,0.05);
-      backdrop-filter: blur(12px);
-      border-color: rgba(255,255,255,0.08);
-      box-shadow: none;
-    }
-
-    .df-count {
-      font-size: 0.75rem;
-      color: #78716c;
-    }
-    :host-context(.dark) .df-count { color: #a8a29e; }
-
-    .period-cell {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .period-badge {
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 8px;
-      background: rgba(134,24,33,0.1);
-      color: #861821;
-      font-weight: 700;
-      font-size: 0.75rem;
-    }
-    :host-context(.dark) .period-badge {
-      background: rgba(134,24,33,0.25);
-      color: #ff6b77;
-    }
-
-    .period-name {
-      font-weight: 600;
-      color: #1c1917;
-    }
-    :host-context(.dark) .period-name { color: white; }
-
-    .action-link {
-      color: var(--red);
-      font-weight: 600;
-      font-size: 0.875rem;
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 0.25rem 0.5rem;
-      transition: opacity 0.2s;
-    }
-
-    .action-link:hover {
-      opacity: 0.7;
-    }
-  `]
 })
 export class PayrollListComponent implements OnInit {
   private convex = inject(ConvexClientService);

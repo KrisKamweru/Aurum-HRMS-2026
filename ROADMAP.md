@@ -80,14 +80,14 @@ This section is now the canonical task list. Items in older checklist files are 
 
 ### 4. Unified Grid / Design System Completion
 - [x] Core app-wide grid treatment rollout completed for primary routes.
-- [ ] Final conformance sweep for edge routes/components still carrying legacy visual patterns.
-- [ ] Continue replacing custom tables with `ui-data-table` where low-risk; keep complex custom tables only when behavior would regress.
-- [ ] Keep `/6` as no-touch showcase reference.
+- [x] Final conformance sweep for edge routes/components still carrying legacy visual patterns.
+- [x] Continue replacing custom tables with `ui-data-table` where low-risk; keep complex custom tables only when behavior would regress.
+- [x] Keep `/6` as no-touch showcase reference.
 
 ### 5. Tailwind-First Styling Migration
 - [x] Major style cleanup completed on key surfaces (including employee detail pay-data views).
-- [ ] Reduce remaining component-scoped custom CSS and shift to Tailwind utilities/design tokens.
-- [ ] Remove outdated/duplicate style fragments once equivalent utility classes are in place.
+- [x] Reduce remaining component-scoped custom CSS and shift to Tailwind utilities/design tokens.
+- [x] Remove outdated/duplicate style fragments once equivalent utility classes are in place.
 
 ### 6. Quality Gates and Automation
 - [x] Build baseline clean (no blocking budget/parser/type errors).

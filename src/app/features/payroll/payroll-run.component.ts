@@ -25,33 +25,33 @@ import { Id } from '../../../../convex/_generated/dataModel';
     UiDataTableComponent
   ],
   template: `
-    <div class="run-container">
+    <div class="flex flex-col gap-6">
       <!-- Breadcrumb -->
-      <div class="breadcrumb">
-        <a routerLink="/payroll" class="breadcrumb-link">Payroll</a>
+      <div class="flex items-center gap-2 text-xs text-stone-500 dark:text-stone-400">
+        <a routerLink="/payroll" class="text-stone-500 transition-colors hover:text-burgundy-700 dark:hover:text-rose-300">Payroll</a>
         <ui-icon name="chevron-right" class="w-4 h-4"></ui-icon>
-        <span class="breadcrumb-current">Run Details</span>
+        <span class="font-medium text-stone-900 dark:text-stone-100">Run Details</span>
       </div>
 
       @if (run(); as r) {
         <!-- Run Info Header - Glass Container -->
-        <div class="run-header">
-          <div class="run-header-top">
+        <div class="rounded-xl border border-stone-200 bg-white p-6 shadow-sm dark:border-stone-700/60 dark:bg-stone-800/60 dark:shadow-none">
+          <div class="flex flex-wrap items-start justify-between gap-6">
             <div>
-              <div class="run-title-row">
-                <h1 class="run-title">
+              <div class="mb-2 flex flex-wrap items-center gap-3">
+                <h1 class="text-2xl font-semibold text-stone-900 dark:text-stone-50">
                   {{ getMonthName(r.month) }} {{ r.year }}
                 </h1>
                 <span [class]="getStatusClasses(r.status)">
                   {{ r.status | titlecase }}
                 </span>
               </div>
-              <p class="run-subtitle">
+              <p class="text-sm text-stone-500 dark:text-stone-400">
                 Created on {{ r.runDate | date:'mediumDate' }}
               </p>
             </div>
 
-            <div class="run-actions">
+            <div class="flex flex-wrap items-center gap-3">
               @if (r.status !== 'completed') {
                 <ui-button
                   variant="danger"
@@ -83,7 +83,7 @@ import { Id } from '../../../../convex/_generated/dataModel';
                   </ui-button>
                 }
               } @else {
-                <div class="locked-badge">
+                <div class="inline-flex items-center gap-2 rounded-lg bg-green-500/10 px-4 py-2 text-sm font-semibold text-green-600 dark:bg-green-500/15 dark:text-green-400">
                   <ui-icon name="lock-closed" class="w-5 h-5"></ui-icon>
                   <span>Run Completed & Locked</span>
                 </div>
@@ -94,29 +94,29 @@ import { Id } from '../../../../convex/_generated/dataModel';
         </div>
 
         <!-- Employee Slips List - Dash Frame -->
-        <div class="dash-frame">
+        <div class="overflow-hidden rounded-xl border border-stone-200 bg-white shadow-sm dark:border-stone-700/60 dark:bg-stone-800/60 dark:shadow-none">
           <ui-grid [columns]="'1fr'" [gap]="'0px'">
             <ui-grid-tile title="Run Summary" variant="compact" divider="bottom">
-              <div class="tile-body">
-                <div class="stats-strip">
-                  <div class="stat-item">
-                    <p class="stat-item-label">Total Employees</p>
-                    <p class="stat-item-value">{{ r.employeeCount || 0 }}</p>
+              <div class="p-5">
+                <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+                  <div class="flex flex-col">
+                    <p class="mb-1 text-xs text-stone-500 dark:text-stone-400">Total Employees</p>
+                    <p class="m-0 text-2xl font-bold text-stone-900 dark:text-stone-50">{{ r.employeeCount || 0 }}</p>
                   </div>
-                  <div class="stat-item">
-                    <p class="stat-item-label">Total Gross Pay</p>
-                    <p class="stat-item-value">{{ r.totalGrossPay || 0 | currency }}</p>
+                  <div class="flex flex-col">
+                    <p class="mb-1 text-xs text-stone-500 dark:text-stone-400">Total Gross Pay</p>
+                    <p class="m-0 text-2xl font-bold text-stone-900 dark:text-stone-50">{{ r.totalGrossPay || 0 | currency }}</p>
                   </div>
-                  <div class="stat-item highlight">
-                    <p class="stat-item-label">Total Net Pay</p>
-                    <p class="stat-item-value">{{ r.totalNetPay || 0 | currency }}</p>
+                  <div class="flex flex-col">
+                    <p class="mb-1 text-xs text-stone-500 dark:text-stone-400">Total Net Pay</p>
+                    <p class="m-0 text-2xl font-bold text-burgundy-700 dark:text-rose-300">{{ r.totalNetPay || 0 | currency }}</p>
                   </div>
                 </div>
               </div>
             </ui-grid-tile>
 
             <ui-grid-tile title="Payslips" variant="compact">
-              <span tile-actions class="df-count">{{ slips().length }} records</span>
+              <span tile-actions class="text-xs text-stone-500 dark:text-stone-400">{{ slips().length }} records</span>
               @if (slips().length > 0) {
                 <ui-data-table
                   [data]="slips()"
@@ -126,9 +126,9 @@ import { Id } from '../../../../convex/_generated/dataModel';
                   [actionsTemplate]="actionsTpl"
                 ></ui-data-table>
                 <ng-template #employeeTpl let-row>
-                  <div class="employee-cell">
-                    <div class="employee-name">{{ row.employeeName }}</div>
-                    <div class="employee-designation">{{ row.designation || 'No Designation' }}</div>
+                  <div class="flex flex-col gap-[0.15rem]">
+                    <div class="font-semibold text-stone-900 dark:text-stone-50">{{ row.employeeName }}</div>
+                    <div class="text-xs text-stone-500 dark:text-stone-400">{{ row.designation || 'No Designation' }}</div>
                   </div>
                 </ng-template>
                 <ng-template #basicTpl let-row>
@@ -147,15 +147,15 @@ import { Id } from '../../../../convex/_generated/dataModel';
                   </span>
                 </ng-template>
                 <ng-template #actionsTpl let-row>
-                  <button (click)="viewPayslip(row._id)" class="action-link">View Slip</button>
+                  <button (click)="viewPayslip(row._id)" class="rounded px-2 py-1 text-xs font-semibold text-burgundy-700 transition-opacity hover:opacity-70 dark:text-rose-300">View Slip</button>
                 </ng-template>
               } @else {
-                <div class="empty-state-large">
-                  <div class="empty-icon-wrapper">
-                    <ui-icon name="calculator" class="empty-icon-lg"></ui-icon>
+                <div class="px-6 py-12 text-center">
+                  <div class="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-stone-100 dark:bg-white/5">
+                    <ui-icon name="calculator" class="h-8 w-8 text-stone-500 dark:text-stone-400"></ui-icon>
                   </div>
-                  <h3 class="empty-title-lg">No payroll data calculated yet</h3>
-                  <p class="empty-subtitle-lg">
+                  <h3 class="mb-2 text-base font-semibold text-stone-900 dark:text-stone-50">No payroll data calculated yet</h3>
+                  <p class="mx-auto mb-6 max-w-xl text-sm leading-relaxed text-stone-500 dark:text-stone-400">
                     Click "Calculate Payroll" to process salaries for all active employees based on their configured salary and active adjustments.
                   </p>
                   @if (r.status !== 'completed') {
@@ -169,346 +169,12 @@ import { Id } from '../../../../convex/_generated/dataModel';
           </ui-grid>
         </div>
       } @else {
-        <div class="loading-state">
-          <div class="spinner"></div>
+        <div class="flex min-h-64 items-center justify-center">
+          <div class="h-8 w-8 animate-spin rounded-full border-2 border-stone-200 border-t-burgundy-700 dark:border-stone-700/60 dark:border-t-rose-300"></div>
         </div>
       }
     </div>
   `,
-  styles: [`
-    :host {
-      display: block;
-    }
-
-    .run-container {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-    }
-
-    .tile-body {
-      padding: 1.25rem;
-    }
-
-    /* Breadcrumb */
-    .breadcrumb {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 0.75rem;
-      color: #78716c;
-    }
-
-    :host-context(.dark) .breadcrumb {
-      color: #78716c;
-    }
-
-    .breadcrumb-link {
-      color: #78716c;
-      transition: color 0.2s;
-    }
-
-    .breadcrumb-link:hover {
-      color: #861821;
-    }
-
-    :host-context(.dark) .breadcrumb-link:hover {
-      color: #fca5a1;
-    }
-
-    .breadcrumb-current {
-      color: #1c1917;
-      font-weight: 500;
-    }
-
-    :host-context(.dark) .breadcrumb-current {
-      color: #fafaf9;
-    }
-
-    /* Run Header - Dash Frame */
-    .run-header {
-      background: white;
-      border-radius: 0.75rem;
-      border: 1px solid #e7e5e4;
-      box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
-      padding: 1.5rem;
-    }
-
-    :host-context(.dark) .run-header {
-      background: rgb(41 37 36 / 0.6);
-      border-color: rgb(68 64 60 / 0.5);
-      box-shadow: none;
-    }
-
-    .run-header-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 1.5rem;
-      flex-wrap: wrap;
-    }
-
-    .run-title-row {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      margin-bottom: 0.5rem;
-      flex-wrap: wrap;
-    }
-
-    .run-title {
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: #1c1917;
-      margin: 0;
-    }
-
-    :host-context(.dark) .run-title {
-      color: #fafaf9;
-    }
-
-    .run-subtitle {
-      font-size: 0.875rem;
-      color: #78716c;
-      margin: 0;
-    }
-
-    :host-context(.dark) .run-subtitle {
-      color: #78716c;
-    }
-
-    .run-actions {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      flex-wrap: wrap;
-    }
-
-    .locked-badge {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.5rem 1rem;
-      border-radius: 8px;
-      background: rgba(34, 197, 94, 0.1);
-      color: #16a34a;
-      font-size: 0.875rem;
-      font-weight: 600;
-    }
-
-    :host-context(.dark) .locked-badge {
-      background: rgba(34, 197, 94, 0.15);
-      color: #4ade80;
-    }
-
-    /* Stats Strip */
-    .stats-strip {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1.5rem;
-    }
-
-    .stat-item {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .stat-item-label {
-      font-size: 0.75rem;
-      color: #78716c;
-      margin: 0 0 0.25rem;
-    }
-
-    :host-context(.dark) .stat-item-label {
-      color: #78716c;
-    }
-
-    .stat-item-value {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: #1c1917;
-      margin: 0;
-    }
-
-    :host-context(.dark) .stat-item-value {
-      color: #fafaf9;
-    }
-
-    .stat-item.highlight .stat-item-value {
-      color: #861821;
-    }
-
-    :host-context(.dark) .stat-item.highlight .stat-item-value {
-      color: #fca5a1;
-    }
-
-    /* Dash Frame */
-    .dash-frame {
-      background: white;
-      border-radius: 0.75rem;
-      border: 1px solid #e7e5e4;
-      box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
-      overflow: hidden;
-    }
-
-    :host-context(.dark) .dash-frame {
-      background: rgb(41 37 36 / 0.6);
-      border-color: rgb(68 64 60 / 0.5);
-      box-shadow: none;
-    }
-
-    .df-count {
-      font-size: 0.75rem;
-      color: #78716c;
-    }
-
-    :host-context(.dark) .df-count {
-      color: #78716c;
-    }
-
-    .employee-cell {
-      display: flex;
-      flex-direction: column;
-      gap: 0.15rem;
-    }
-
-    .employee-name {
-      font-weight: 600;
-      color: #1c1917;
-    }
-
-    :host-context(.dark) .employee-name {
-      color: #fafaf9;
-    }
-
-    .employee-designation {
-      font-size: 0.75rem;
-      color: #78716c;
-    }
-
-    :host-context(.dark) .employee-designation {
-      color: #78716c;
-    }
-
-    .action-link {
-      color: #861821;
-      font-weight: 600;
-      font-size: 0.75rem;
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 0.25rem 0.5rem;
-      transition: opacity 0.2s;
-    }
-
-    :host-context(.dark) .action-link {
-      color: #fca5a1;
-    }
-
-    .action-link:hover {
-      opacity: 0.7;
-    }
-
-    .text-right {
-      text-align: right;
-    }
-
-    /* Empty State */
-    .empty-state-large {
-      padding: 3rem 1.5rem;
-      text-align: center;
-    }
-
-    .empty-icon-wrapper {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 4rem;
-      height: 4rem;
-      border-radius: 50%;
-      background: #f5f5f4;
-      margin-bottom: 1rem;
-    }
-
-    :host-context(.dark) .empty-icon-wrapper {
-      background: rgba(255,255,255,0.05);
-    }
-
-    .empty-icon-lg {
-      width: 2rem;
-      height: 2rem;
-      color: #78716c;
-    }
-
-    :host-context(.dark) .empty-icon-lg {
-      color: #78716c;
-    }
-
-    .empty-title-lg {
-      font-size: 1rem;
-      font-weight: 600;
-      color: #1c1917;
-      margin: 0 0 0.5rem;
-    }
-
-    :host-context(.dark) .empty-title-lg {
-      color: #fafaf9;
-    }
-
-    .empty-subtitle-lg {
-      font-size: 0.875rem;
-      color: #78716c;
-      max-width: 32rem;
-      margin: 0 auto 1.5rem;
-      line-height: 1.6;
-    }
-
-    :host-context(.dark) .empty-subtitle-lg {
-      color: #78716c;
-    }
-
-    /* Loading State */
-    .loading-state {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 16rem;
-    }
-
-    .spinner {
-      width: 2rem;
-      height: 2rem;
-      border: 2px solid #e7e5e4;
-      border-top-color: #861821;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-
-    :host-context(.dark) .spinner {
-      border-color: rgb(68 64 60 / 0.5);
-      border-top-color: #fca5a1;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-      .run-header-top {
-        flex-direction: column;
-      }
-
-      .run-actions {
-        width: 100%;
-        justify-content: flex-start;
-      }
-
-      .stats-strip {
-        grid-template-columns: 1fr;
-      }
-    }
-  `],
 })
 export class PayrollRunComponent implements OnInit {
   private route = inject(ActivatedRoute);
