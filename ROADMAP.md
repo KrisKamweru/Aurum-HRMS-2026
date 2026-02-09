@@ -62,7 +62,83 @@ Status: Substantially completed on 2026-02-09.
   - leave and attendance edge cases
   - cross-role and cross-org negative authorization paths
 - Define risk-based quality gates for critical modules before release.
+- Execute a Tailwind-first custom CSS elimination sweep (one-time hardening pass):
+  - audit all Angular components for inline `styles` blocks and component stylesheet files
+  - migrate component-local styling to Tailwind utilities/design tokens in templates
+  - keep only explicitly justified exceptions (rare cases like print-only rules or unavoidable third-party overrides)
+  - Definition of done: every component has empty `styles` and empty component stylesheet content (or is on the explicit exception list)
+- Run an overflow-containment UX hardening sweep (tables, containers, modals):
+  - prevent child overflow from forcing page-level horizontal scroll
+  - ensure wide tables/grid content scroll within their owning container (`overflow-x-auto` at the correct boundary)
+  - ensure modals cap height to viewport and scroll internally instead of overflowing the page
+  - Definition of done: no unintended global horizontal scroll at supported breakpoints; modals remain fully usable with internal vertical scrolling on short viewports
 - Progress update (2026-02-09): visual regression workflow, multi-profile baseline, and comparison tooling added.
+
+**Audit Heatmaps (2026-02-09)**
+
+1. Tailwind-first custom CSS elimination sweep
+- Current footprint: `28` component style references (`styles` / `styleUrl`) in `src/app`.
+- Distribution:
+  - `features`: `14`
+  - `shared`: `12`
+  - `layouts`: `1`
+  - `app root`: `1` (currently empty `app.css`)
+- Hotspots to tackle first:
+  - `src/app/shared/components/ui-data-table/ui-data-table.component.ts`
+  - `src/app/shared/components/ui-modal/ui-modal.component.ts`
+  - `src/app/shared/components/ui-confirm-dialog/ui-confirm-dialog.component.ts`
+  - `src/app/features/payroll/payslip-view.component.ts`
+  - `src/app/features/recruitment/components/candidate-board/candidate-board.component.ts`
+
+2. Overflow-containment sweep (tables, containers, modals)
+- `ui-data-table` usage audit: `24` files found, only `2` explicitly wrapped with `overflow-x-auto`, `22` require boundary review.
+- Missing-wrapper hotspot groups:
+  - `core-hr`: `8`
+  - `features-other`: `8`
+  - `organization`: `3`
+  - `reports`: `3`
+- Custom modal/overlay hotspot files (non-`ui-modal`) needing viewport-height/internal-scroll verification:
+  - `src/app/shared/components/ui-confirm-dialog/ui-confirm-dialog.component.ts`
+  - `src/app/features/recruitment/components/candidate-board/candidate-board.component.ts`
+- Next checkpoint action: create a per-file fix list and mark each item as `done` / `exception` directly in this roadmap section.
+
+**Plan-Wide Audit Snapshot (2026-02-09)**
+
+1. `P0` Immediate stabilization/context hygiene
+- Status: mostly complete.
+- Evidence: seed compensation/backfill implemented; markdown context reduced and canonical docs retained.
+
+2. `P1` Reliability/regression safety
+- Status: in progress.
+- Evidence: visual regression workflow + baseline in place; CSS and overflow heatmaps now tracked.
+
+3. `P2` Compliance/data governance
+- Status: partial.
+- Evidence: `change_requests` + sensitive change controls exist.
+- Gaps: explicit retention policy, backup/restore drill runbooks, incident response/access review artifacts not yet codified in repo docs/config.
+
+4. `P3` Multi-org operator model
+- Status: not started (architecturally blocked by single-org binding).
+- Evidence: auth and domain logic consistently rely on `users.orgId` and org-scoped records; no membership table or active-org switch context yet.
+
+5. `P4` Attendance trust hardening (soft geofence/device signals)
+- Status: not started.
+- Evidence: no geofence/device fingerprint/risk scoring pipeline found; current location usage is organizational metadata, not attendance trust scoring.
+
+6. `P5` Workflow engine maturity
+- Status: partial.
+- Evidence: maker-checker and approval/rejection flows exist for sensitive payroll changes.
+- Gaps: configurable approval chains, delegation/escalation policies, and SLA-aware routing are not implemented as generalized workflow primitives.
+
+7. `P6` Reporting/analytics foundation
+- Status: early partial.
+- Evidence: attendance/payroll/tax reports exist; report surface mentions scheduled delivery.
+- Gaps: canonical metric model (headcount/attrition/leave liability/payroll variance) and scheduled distribution pipeline are not yet established as platform standards.
+
+8. `P7` Platform operations/documentation
+- Status: partial.
+- Evidence: roadmap and backend docs are now cleaner.
+- Gaps: explicit SLOs, release gates, operational runbooks, and incident playbooks still need to be formalized.
 
 ### P2. Compliance and Data Governance Baseline
 - Formalize and enforce:
