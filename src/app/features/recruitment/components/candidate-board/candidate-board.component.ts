@@ -10,15 +10,18 @@ import { api } from '../../../../../../convex/_generated/api';
 import { Id } from '../../../../../../convex/_generated/dataModel';
 import { UiGridComponent } from '../../../../shared/components/ui-grid/ui-grid.component';
 import { UiGridTileComponent } from '../../../../shared/components/ui-grid/ui-grid-tile.component';
+import { Router } from '@angular/router';
 
 interface Application {
   _id: string;
+  jobId: string;
   candidateName: string;
   candidateEmail: string;
   jobTitle: string;
   status: 'new' | 'screening' | 'interview' | 'offer' | 'hired' | 'rejected';
   appliedAt: string;
   rating?: number;
+  resumeUrl?: string | null;
 }
 
 interface Column {
@@ -131,8 +134,12 @@ interface Column {
                               <div class="flex items-center justify-between text-xs text-stone-400 border-t border-stone-100 dark:border-stone-700 pt-3 mt-1">
                                 <span>{{ item.appliedAt | date:'mediumDate' }}</span>
                                 <div class="opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
-                                    <!-- TODO: View Details Action -->
-                                    <button class="hover:text-primary-600">View</button>
+                                    <button
+                                      class="hover:text-primary-600"
+                                      (click)="openApplicationDetails(item)"
+                                    >
+                                      View
+                                    </button>
                                 </div>
                               </div>
 
@@ -150,6 +157,56 @@ interface Column {
           </ui-grid-tile>
         </ui-grid>
       </div>
+
+      @if (selectedApplication(); as selected) {
+        <div class="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm" (click)="closeApplicationDetails()"></div>
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div class="w-full max-w-lg rounded-2xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 shadow-2xl">
+            <div class="flex items-start justify-between p-5 border-b border-stone-200 dark:border-stone-700">
+              <div>
+                <h2 class="text-lg font-bold text-stone-900 dark:text-stone-100">{{ selected.candidateName }}</h2>
+                <p class="text-sm text-stone-500 dark:text-stone-400">{{ selected.jobTitle }}</p>
+              </div>
+              <button class="text-stone-500 hover:text-stone-700 dark:hover:text-stone-200" (click)="closeApplicationDetails()">
+                <ui-icon name="x-mark" class="w-5 h-5"></ui-icon>
+              </button>
+            </div>
+
+            <div class="p-5 grid grid-cols-2 gap-3 text-sm">
+              <div class="text-stone-500 dark:text-stone-400">Status</div>
+              <div class="text-stone-800 dark:text-stone-100 capitalize">{{ selected.status }}</div>
+
+              <div class="text-stone-500 dark:text-stone-400">Applied</div>
+              <div class="text-stone-800 dark:text-stone-100">{{ selected.appliedAt | date:'medium' }}</div>
+
+              <div class="text-stone-500 dark:text-stone-400">Email</div>
+              <div class="text-stone-800 dark:text-stone-100 break-all">{{ selected.candidateEmail || '-' }}</div>
+
+              <div class="text-stone-500 dark:text-stone-400">Rating</div>
+              <div class="text-stone-800 dark:text-stone-100">{{ selected.rating ?? '-' }}</div>
+            </div>
+
+            <div class="p-5 border-t border-stone-200 dark:border-stone-700 flex flex-wrap gap-2 justify-end">
+              <ui-button variant="outline" (onClick)="emailCandidate(selected)">
+                Email Candidate
+              </ui-button>
+              <ui-button variant="outline" (onClick)="openJob(selected)">
+                Open Job
+              </ui-button>
+              @if (selected.resumeUrl) {
+                <a
+                  [href]="selected.resumeUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center justify-center px-4 py-2 rounded-lg text-sm font-medium border border-stone-300 dark:border-stone-600 text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
+                >
+                  Resume
+                </a>
+              }
+            </div>
+          </div>
+        </div>
+      }
     </div>
   `,
   styles: [`
@@ -172,11 +229,13 @@ interface Column {
 export class CandidateBoardComponent implements OnInit {
   private convex = inject(ConvexClientService);
   private toast = inject(ToastService);
+  private router = inject(Router);
 
   jobs = signal<any[]>([]);
   applications = signal<Application[]>([]);
   loading = signal(true);
   selectedJobId = signal<string>('');
+  selectedApplication = signal<Application | null>(null);
 
   // Define columns structure
   columnsDef: Omit<Column, 'items'>[] = [
@@ -251,6 +310,27 @@ export class CandidateBoardComponent implements OnInit {
     // Just re-triggers loading UI essentially since onUpdate is live
     this.loading.set(true);
     setTimeout(() => this.loading.set(false), 500);
+  }
+
+  openApplicationDetails(app: Application) {
+    this.selectedApplication.set(app);
+  }
+
+  closeApplicationDetails() {
+    this.selectedApplication.set(null);
+  }
+
+  openJob(app: Application) {
+    this.closeApplicationDetails();
+    this.router.navigate(['/recruitment/jobs', app.jobId]);
+  }
+
+  emailCandidate(app: Application) {
+    if (!app.candidateEmail) {
+      this.toast.error('No email available for this candidate');
+      return;
+    }
+    window.location.href = `mailto:${app.candidateEmail}`;
   }
 
   async drop(event: CdkDragDrop<Application[]>, newStatus: string) {

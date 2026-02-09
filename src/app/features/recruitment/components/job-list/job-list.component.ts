@@ -141,16 +141,7 @@ export class JobListComponent implements OnInit {
   }
 
   viewJob(id: string) {
-    // For now, edit link for admins, maybe public view later?
-    // Actually, if canManage, go to edit or board filtered by job?
-    // Let's make it go to edit if manage, or a simple detail view?
-    // For MVP, just edit.
-    if (this.canManage()) {
-        this.router.navigate(['/recruitment/jobs', id, 'edit']);
-    } else {
-        // Simple view or apply modal?
-        // TODO: Implement apply flow for employees
-    }
+    this.router.navigate(['/recruitment/jobs', id]);
   }
 
   editJob(id: string) {
