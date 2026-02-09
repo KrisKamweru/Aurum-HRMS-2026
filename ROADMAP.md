@@ -32,87 +32,91 @@ Aurum HRMS is a modern, comprehensive, and scalable **SaaS** Human Resource Mana
 
 ---
 
-## Consolidated Active Backlog (Single Source of Truth)
-This section is now the canonical task list. Items in older checklist files are tracked here.
+## Completed Work Summary (Condensed)
+The following backlog themes are complete and now tracked in git history rather than maintained as long in-file checklists:
+- Security baseline: maker-checker, anti-self-approval, irreversible-action confirmation UX, sensitive-change audit trail.
+- Payroll/pay-data hardening: role boundaries validated, negative-path auth coverage added, compensation and adjustment flows implemented.
+- Form/design system upgrades: dynamic multi-column + stepper support, key flow migrations, grid/table/tailwind unification.
+- Quality gates and MVP closeout: build green, role/pay audits integrated, basic attendance/payroll reporting and CSV exports completed.
+- Backlog hygiene: older checklist docs demoted/archived to reduce duplicate planning surfaces.
 
-### 1. Security and Permission Model (Highest Priority)
-- [x] Implement maker-checker for sensitive pay operations:
-  - compensation edits (`baseSalary`, `currency`, `payFrequency`)
-  - payroll credits/debits add/edit/toggle
-  - payroll run finalize/delete where applicable
-- [x] Enforce anti-self-approval for org-scoped sensitive actions (`admin` <-> `manager` dual control).
-- [x] Add explicit irreversible-action communication everywhere:
-  - clear impact copy
-  - strong confirm dialogs
-  - actor + target summary before submit
-- [x] Design and implement a robust audit trail:
-  - before/after snapshots for sensitive changes
-  - requester/approver IDs
-  - timestamps and reason fields
+---
 
-### 2. Pay Data and Payroll UX Validation
-- [x] Role boundaries validated for pay-data controls (super_admin/admin editable, manager view-only, employee denied on other-employee detail).
-- [x] Add negative-path automated tests for unauthorized mutation attempts against Convex functions.
-- [x] Add Playwright regression suite for compensation + financial tab workflows (open/edit/cancel/save/deny paths).
+## Platform Execution Plan (Prioritized)
+This section is the active sequencing guide and supersedes ad-hoc backlog ordering.
 
-### 3. Reusable Forms Overhaul (Multi-Column + Stepper)
-- [x] Define `dynamic-form` layout API for responsive columns:
-  - field-level `colSpan`/`rowSpan`
-  - section-level grid config (`1/2/3` column breakpoints)
-  - consistent spacing, labels, validation messages
-- [x] Add first-class stepper flow support in reusable form layer:
-  - step definitions (title, description, fields)
-  - per-step validation gating
-  - next/back/jump behavior with completion state
-- [x] Ensure form can run in all containers:
-  - full-page
-  - modal
-  - drawer/panel
-- [x] Provide migration adapters for existing forms to avoid big-bang rewrites.
-- [x] Migrate high-impact flows first:
-  - organization wizard
-  - employee detail edit flows
-  - payroll adjustment/compensation flows
-- [x] Add regression tests for:
-  - multi-column responsiveness
-  - step validation behavior
-  - submit payload integrity across steps
+### P0. Immediate Stabilization and Context Hygiene (Now)
+- Ensure seeded environments are payroll-ready:
+  - compensation fields (`baseSalary`, `currency`, `payFrequency`) present for seeded employees
+  - idempotent compensation backfill when test org already exists
+- Reduce Markdown/doc sprawl to keep active context minimal:
+  - retain canonical docs (`README`, `ROADMAP`, `CLAUDE`, Design docs)
+  - remove non-essential status/checklist artifacts after confirmation
 
-### 4. Unified Grid / Design System Completion
-- [x] Core app-wide grid treatment rollout completed for primary routes.
-- [x] Final conformance sweep for edge routes/components still carrying legacy visual patterns.
-- [x] Continue replacing custom tables with `ui-data-table` where low-risk; keep complex custom tables only when behavior would regress.
-- [x] Keep `/6` as no-touch showcase reference.
+### P1. Reliability and Regression Safety (Highest Product Risk)
+- Expand automated coverage for high-risk flows:
+  - payroll calculations and finalization
+  - maker-checker approvals and anti-self-approval
+  - leave and attendance edge cases
+  - cross-role and cross-org negative authorization paths
+- Define risk-based quality gates for critical modules before release.
 
-### 5. Tailwind-First Styling Migration
-- [x] Major style cleanup completed on key surfaces (including employee detail pay-data views).
-- [x] Reduce remaining component-scoped custom CSS and shift to Tailwind utilities/design tokens.
-- [x] Remove outdated/duplicate style fragments once equivalent utility classes are in place.
+### P2. Compliance and Data Governance Baseline
+- Formalize and enforce:
+  - audit log retention and exportability
+  - PII handling policy and access logging
+  - backup/restore and disaster-recovery drills
+  - incident response and access review workflow
 
-### 6. Quality Gates and Automation
-- [x] Build baseline clean (no blocking budget/parser/type errors).
-- [x] Deep role-route audit baseline green (`148/148`).
-- [x] Pay-data role audit baseline green (`19/19`).
-- [x] Add CI execution for:
-  - deep role-route audit script
-  - pay-data audit script
-  - negative authorization tests
-- [x] Raise automated coverage toward full negative-path validation for critical routes/actions.
+### P3. Multi-Org Operator Model (Outsourced HR Requirement)
+- Move from single-org user binding to membership-based access:
+  - user can belong to multiple organizations with org-scoped roles
+  - explicit active-organization context in app session
+  - organization switcher UX with clear current-org indicator
+- Re-scope backend auth checks to membership + active org context.
+- Add regression tests for cross-org data isolation and role boundaries.
 
-### 7. MVP Closeout
-- [x] Complete Basic Reports MVP item:
-  - attendance list/report view polish
-  - payroll list/report view polish
-  - CSV export flows (including empty/error cases)
-- [x] Final release-readiness pass on UX consistency and route/action correctness across all roles.
+### P4. Attendance Trust Hardening: Soft Geofencing + Browser/Device Signals
+- Implement context-aware attendance trust as a phased rollout.
+- Treat browser/device identity as a risk signal (not identity proof) and combine with location and behavior telemetry.
 
-### 8. Backlog Hygiene
-- [x] Archive or mark informational-only the following docs after migration into this roadmap:
-  - `docs/GRID-TREATMENT-TODO.md` (not present in repository)
-  - `docs/DESIGN-SIX-TREATMENT-CHECKLIST.md` (not present in repository)
-  - `docs/UI-VALIDATION-LOG.md` (not present in repository)
-  - `docs/PAY-DATA-AUDIT-CHECKLIST.md`
-  - `docs/ROLE-ROUTE-AUDIT-CHECKLIST.md`
+**Phase A - Observe-only**
+- Capture geolocation, coarse IP/network metadata, and browser/device fingerprint telemetry.
+- Compute trust/risk score without blocking punches.
+- Build manager/admin review view and baseline false-positive rates.
+
+**Phase B - Warn and Require Reason**
+- Show user-facing warnings for suspicious punches:
+  - outside configured radius
+  - new/untrusted browser/device
+  - impossible travel patterns
+- Require reason codes for flagged punches.
+- Route flagged events to supervisor queue with full audit trail.
+
+**Phase C - Policy-Enforced Controls**
+- Enable org-configurable enforcement policies:
+  - allow with manager override
+  - temporary hold for review
+  - deny by policy for high-risk events
+- Add exception workflows, SLA/escalation handling, and compliance reporting.
+
+### P5. Workflow Engine Maturity
+- Move from static role checks to configurable approval chains:
+  - delegation
+  - escalation rules
+  - SLA-aware approval routing
+
+### P6. Reporting and Analytics Foundation
+- Standardize canonical metrics and reporting models:
+  - headcount
+  - attrition
+  - payroll variance
+  - leave liability
+- Add scheduled exports and role-safe distribution.
+
+### P7. Platform Operations and Documentation
+- Define service-level objectives, alerting, and release criteria.
+- Keep architecture, security model, and release playbooks current and actionable.
 
 ---
 
@@ -152,7 +156,7 @@ This section is now the canonical task list. Items in older checklist files are 
 - **Tax System**: Extensible architecture supporting multiple regions via database configuration.
 - **Output**: Salary slip generation with earnings, deductions, and employer contributions.
 
-#### 6. Basic Reports ⏳ PENDING
+#### 6. Basic Reports ✅ DONE
 - **Scope**: Simple list views and exportable CSVs for Attendance logs and Payroll history.
 
 ---
@@ -164,6 +168,10 @@ This section is now the canonical task list. Items in older checklist files are 
 - **Biometric Integration**: API endpoints to receive data from hardware devices.
 - **Web Attendance**: Browser-based clock-in with IP restriction.
 - **Geo-fencing**: Mobile/Browser location check for remote workers.
+- **Soft Geofencing + Browser/Device Trust Signals**:
+  - Phase A: Observe-only risk scoring and telemetry capture.
+  - Phase B: User warnings + reason codes + supervisor review queue.
+  - Phase C: Org-configurable policy enforcement with overrides/escalations.
 
 #### 2. Recruitment (ATS) ✅ DONE (Ahead of Schedule)
 - **Job Board**: Internal/External job posting management.
@@ -239,158 +247,9 @@ This section is now the canonical task list. Items in older checklist files are 
 
 ---
 
-## Current Sprint & Immediate Priorities
-
-### 🎯 Primary Focus
-1. **Design System Overhaul (App-wide UI Redesign)**
-   - Completely redesign all user-facing Angular templates and Tailwind classes to strictly follow `SHOWCASE-6-DESIGN.md` and the Design 6 visual language.
-   - Treat this as a full visual/UX overhaul: preserve existing behavior and business logic, rework templates and styling only, and avoid broad `.ts` refactors unless required to support the new UI or accessibility.
-   - Update shared layout and design primitives (`main-layout`, `auth-layout`, `ui-button`, `ui-card`, `ui-modal`, `ui-data-table`, `ui-form-field`, `ui-badge`, navigation, etc.) so they become canonical, reusable implementations of the design system.
-   - Remove all legacy visual artifacts (old color tokens, shadows, bespoke CSS, and component styles) so that only the new design system patterns remain across templates and global styles.
-   - Carefully audit UX for every screen (flows, empty states, loading states, errors, responsive behavior) to ensure the new design both looks premium and remains functionally equivalent to the current app.
-   - Evolve the forms system to support responsive, multi-column layouts that are not constrained to modal width (usable in full-page, drawer, and modal contexts), while preserving existing validation and business logic.
-   - Introduce a shared stepper/wizard pattern for long or complex forms so that large field sets can be broken into clear steps, with progress indication and per-step validation, without losing any existing capabilities.
-
-### ⏭ Secondary Focus (after design overhaul)
-1. **Basic Reports (MVP Final Item)**
-   - Implementation of CSV exports for Attendance and Payroll.
-   - Simple list views for critical data.
-2. **Payslip PDF Export**
-   - Generate downloadable/printable PDF payslips.
-3. **Tax Configuration UI**
-   - Admin interface to view/edit tax rules without database access.
-4. **System Polish & Bug Fixes**
-   - Review all forms for consistency with "Form Prerequisites" system.
-   - Ensure Dark Mode is consistent across all new modules.
-   - E2E Test coverage for new Recruitment and Training modules.
-
-### ✅ Recently Completed
-1. **Tax Configuration System**: Extensible, config-driven tax calculation engine.
-   - Kenya 2024 tax rules (PAYE, NSSF, NHIF, Housing Levy) seeded.
-   - Supports progressive brackets, capped percentages, tiered fixed amounts.
-   - Tracks employee vs employer contributions separately.
-2. **Time and Attendance**: Manual clock-in/clock-out and timesheet entry.
-3. **Payroll Foundation**: Salary structures, payslip generation, and run management.
-4. **Form Prerequisites**: System to block actions when dependencies are missing.
-5. **Recruitment & Training**: Full modules delivered ahead of schedule.
-6. **Notifications**: System-wide alert infrastructure.
-7. **Security Hardening**: Cross-org validation on all sensitive queries/mutations.
-
----
-
-## Previous Development Log
-1. ~~**Database Schema**: Update `convex/schema.ts` to support "Core HR" entities.~~ ✅ DONE
-2. ~~**Self-Service User Onboarding**:~~ ✅ DONE
-3. ~~**Core HR Module**: Build the UI/UX for recording Lifecycle events.~~ ✅ DONE
-4. ~~**Dashboard Role-Based Views**: Admin vs Employee dashboards.~~ ✅ DONE
-5. ~~**Organization Onboarding Wizard**: Guided setup for new orgs.~~ ✅ DONE
-6. ~~**User-Employee Linking**: UI at `/organization/user-linking`.~~ ✅ DONE
-7. ~~**Access Control**: Foundational RBAC.~~ ✅ DONE
-8. ~~**Super Admin Dashboard**: Management of multiple organizations.~~ ✅ DONE
-9. ~~**Test Environment**: Automated seeding.~~ ✅ DONE
-10. ~~**Time and Attendance**: Manual clock-in/clock-out.~~ ✅ DONE
-11. ~~**Form Prerequisites**: Disable action buttons when prerequisites are missing.~~ ✅ DONE
-
----
-
-## Known Issues & Improvements
-
-### Dashboard - Role-Based Views (Priority: High)
-*Status: ✅ Implemented*
-The dashboard now correctly displays Admin vs Employee views based on the user's role.
-
-### Form Prerequisites & Validation (Priority: Medium)
-*Status: ✅ Implemented*
-The `[prerequisitesMet]` system is now in place on `UiButtonComponent` and widely used.
-
-### Organization Management & Super Admin (Priority: High)
-*Status: ✅ Implemented*
-Super Admin dashboard and multi-tenancy invitation flows are complete.
-
-### First-Time Organization Onboarding (Priority: High)
-*Status: ✅ Implemented*
-Onboarding wizard is active for new organizations.
-
-### User-Employee Linking (Priority: High)
-*Status: ✅ Implemented*
-User linking interface is available.
-
----
-
-## Roadmap Audit - Identified Gaps
-
-### Missing from Current Roadmap (Previously Identified)
-
-#### 1. Employee Schema Expansion (Priority: Critical)
-*Status: ✅ Implemented*
-Full employee schema with personal, banking, education, documents, and skills has been implemented.
-
-#### 2. Notifications & Alerts System (Priority: High)
-*Status: ✅ Implemented*
-Backend and UI for notifications are now complete.
-
-#### 3. Document Management (Priority: Medium)
-*Status: 🚧 Partially Implemented*
-Employee document storage is available. Company-wide library and digital signatures are pending.
-
-#### 4. Audit Trail / Activity Logging (Priority: High)
-Critical for compliance and debugging.
-
-**Required:**
-- Track all data changes (who, when, what changed)
-- Login/logout history
-- Sensitive data access logs
-- Export audit reports
-- Retention policies
-
-#### 5. Data Import/Export (Priority: Medium)
-Not covered for initial setup or migration.
-
-**Required:**
-- Bulk employee import (CSV/Excel)
-- Data validation and error reporting
-- Export to CSV/Excel/PDF
-- Backup/restore capabilities
-
-#### 6. Settings & Configuration (Priority: Medium)
-*Status: ✅ Implemented*
-Organization settings and leave policies are now configurable.
-
-#### 7. Mobile Responsiveness (Priority: Medium)
-Not explicitly addressed.
-
-**Required:**
-- Responsive design audit for all screens
-- Mobile-optimized forms
-- Touch-friendly interactions
-- Consider PWA or native app (future)
-
-#### 8. Localization / i18n (Priority: Low - Future)
-Not addressed for international orgs.
-
-**Required:**
-- Multi-language UI support
-- Date/time format localization
-- Currency formatting
-- Right-to-left (RTL) language support
-
-#### 9. Integrations (Priority: Low - Future)
-Limited integration coverage.
-
-**Consider:**
-- SSO providers (Okta, Azure AD)
-- Calendar sync (Google Calendar, Outlook)
-- Slack/Teams notifications
-- Accounting software (QuickBooks, Xero)
-- Background check services
-- Job boards (LinkedIn, Indeed)
-
-#### 10. Expense Management (Priority: Medium)
-Referenced in dashboard but not in releases.
-
-**Required:**
-- Expense submission with receipt upload
-- Expense categories and policies
-- Approval workflow
-- Reimbursement tracking
-- Integration with payroll
+## Historical Notes (Condensed)
+- Completed implementation details, old sprint logs, and historical gap audits have been intentionally condensed.
+- The active source of truth is:
+  1. `Platform Execution Plan (Prioritized)` for near/mid-term execution.
+  2. `Strategic Roadmap` for release-level scope.
+- Historical detail remains available in commit history and archived docs where needed.

@@ -56,6 +56,9 @@ const TEST_EMPLOYEES = [
     departmentCode: "ENG",
     designationCode: "CEO",
     phone: "+1-555-0100",
+    baseSalary: 320000,
+    currency: "USD",
+    payFrequency: "monthly" as const,
   },
   {
     firstName: "Alice",
@@ -65,6 +68,9 @@ const TEST_EMPLOYEES = [
     departmentCode: "HR",
     designationCode: "HEAD",
     phone: "+1-555-0101",
+    baseSalary: 220000,
+    currency: "USD",
+    payFrequency: "monthly" as const,
   },
   {
     firstName: "Hannah",
@@ -74,6 +80,9 @@ const TEST_EMPLOYEES = [
     departmentCode: "HR",
     designationCode: "SR-MGR",
     phone: "+1-555-0102",
+    baseSalary: 165000,
+    currency: "USD",
+    payFrequency: "monthly" as const,
   },
   {
     firstName: "Michael",
@@ -83,6 +92,9 @@ const TEST_EMPLOYEES = [
     departmentCode: "ENG",
     designationCode: "MGR",
     phone: "+1-555-0103",
+    baseSalary: 180000,
+    currency: "USD",
+    payFrequency: "monthly" as const,
   },
   {
     firstName: "Emma",
@@ -92,6 +104,9 @@ const TEST_EMPLOYEES = [
     departmentCode: "ENG",
     designationCode: "ENG",
     phone: "+1-555-0104",
+    baseSalary: 98000,
+    currency: "USD",
+    payFrequency: "monthly" as const,
   },
   // Additional employees for testing team structures
   {
@@ -102,6 +117,9 @@ const TEST_EMPLOYEES = [
     departmentCode: "ENG",
     designationCode: "ASSOC",
     phone: "+1-555-0105",
+    baseSalary: 76000,
+    currency: "USD",
+    payFrequency: "monthly" as const,
   },
   {
     firstName: "Sarah",
@@ -111,6 +129,9 @@ const TEST_EMPLOYEES = [
     departmentCode: "SALES",
     designationCode: "SR-ENG",
     phone: "+1-555-0106",
+    baseSalary: 130000,
+    currency: "USD",
+    payFrequency: "monthly" as const,
   },
   {
     firstName: "Oliver",
@@ -120,8 +141,39 @@ const TEST_EMPLOYEES = [
     departmentCode: "OPS",
     designationCode: "MGR",
     phone: "+1-555-0107",
+    baseSalary: 150000,
+    currency: "USD",
+    payFrequency: "monthly" as const,
   },
 ];
+
+async function backfillTestCompensation(ctx: any, orgId: Id<"organizations">) {
+  let updated = 0;
+  for (const testEmp of TEST_EMPLOYEES) {
+    const employee = await ctx.db
+      .query("employees")
+      .withIndex("by_email", (q: any) => q.eq("email", testEmp.email))
+      .first();
+
+    if (!employee || employee.orgId !== orgId) continue;
+
+    const hasComp =
+      employee.baseSalary !== undefined &&
+      employee.currency !== undefined &&
+      employee.payFrequency !== undefined;
+
+    if (!hasComp) {
+      await ctx.db.patch(employee._id, {
+        baseSalary: testEmp.baseSalary,
+        currency: testEmp.currency,
+        payFrequency: testEmp.payFrequency,
+      });
+      updated++;
+    }
+  }
+
+  return updated;
+}
 
 /**
  * Main seed function - creates the test organization with all supporting data.
@@ -137,10 +189,12 @@ export const seedTestOrganization = mutation({
       .first();
 
     if (existingOrg) {
+      const compensationUpdated = await backfillTestCompensation(ctx, existingOrg._id);
       return {
-        success: false,
-        message: "Test organization already exists",
+        success: true,
+        message: "Test organization already exists; compensation backfill completed",
         orgId: existingOrg._id,
+        compensationUpdated,
       };
     }
 
@@ -201,6 +255,9 @@ export const seedTestOrganization = mutation({
         startDate: "2024-01-01",
         status: "active",
         phone: emp.phone,
+        baseSalary: emp.baseSalary,
+        currency: emp.currency,
+        payFrequency: emp.payFrequency,
       });
       employeeMap[emp.email] = employeeId;
     }

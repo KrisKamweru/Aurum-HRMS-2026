@@ -1,90 +1,65 @@
-# Welcome to your Convex functions directory!
+# Convex Backend Guide
 
-Write your Convex functions here.
-See https://docs.convex.dev/functions for more.
+This folder contains all backend functions, schema, and seed helpers used by Aurum HRMS.
 
-A query function that takes two arguments looks like:
+## Core Seed Workflow
 
-```ts
-// convex/myFunctions.ts
-import { query } from "./_generated/server";
-import { v } from "convex/values";
+### Fast path (recommended for local regression work)
 
-export const myQueryFunction = query({
-  // Validators for arguments.
-  args: {
-    first: v.number(),
-    second: v.string(),
-  },
-
-  // Function implementation.
-  handler: async (ctx, args) => {
-    // Read the database as many times as you need here.
-    // See https://docs.convex.dev/database/reading-data.
-    const documents = await ctx.db.query("tablename").collect();
-
-    // Arguments passed from the client are properties of the args object.
-    console.log(args.first, args.second);
-
-    // Write arbitrary JavaScript here: filter, aggregate, build derived data,
-    // remove non-public properties, or create new objects.
-    return documents;
-  },
-});
+```bash
+npm run seed:visual
 ```
 
-Using this query function in a React component looks like:
+This runs:
+- `seed:seedTestOrganization`
+- `seed:linkAllTestUsers`
+- `seed_tax:seedKenyaTaxRules`
+- `seed:getTestOrgStatus`
 
-```ts
-const data = useQuery(api.myFunctions.myQueryFunction, {
-  first: 10,
-  second: "hello",
-});
+### Manual path
+
+1. Create or refresh the seeded test organization:
+
+```bash
+npx convex run seed:seedTestOrganization
 ```
 
-A mutation function looks like:
+Note:
+- The seed mutation is idempotent.
+- If the org already exists, it now backfills missing employee compensation (`baseSalary`, `currency`, `payFrequency`) to keep payroll test data usable.
 
-```ts
-// convex/myFunctions.ts
-import { mutation } from "./_generated/server";
-import { v } from "convex/values";
+2. Register test users in the app UI (`/register`) using `.test-credentials`.
 
-export const myMutationFunction = mutation({
-  // Validators for arguments.
-  args: {
-    first: v.string(),
-    second: v.string(),
-  },
+3. Link registered users to seeded employees:
 
-  // Function implementation.
-  handler: async (ctx, args) => {
-    // Insert or modify documents in the database here.
-    // Mutations can also read from the database like queries.
-    // See https://docs.convex.dev/database/writing-data.
-    const message = { body: args.first, author: args.second };
-    const id = await ctx.db.insert("messages", message);
-
-    // Optionally, return a value from your mutation.
-    return await ctx.db.get("messages", id);
-  },
-});
+```bash
+npx convex run seed:linkAllTestUsers
 ```
 
-Using this mutation function in a React component looks like:
+4. Verify status:
 
-```ts
-const mutation = useMutation(api.myFunctions.myMutationFunction);
-function handleButtonPress() {
-  // fire and forget, the most common way to use mutations
-  mutation({ first: "Hello!", second: "me" });
-  // OR
-  // use the result once the mutation has completed
-  mutation({ first: "Hello!", second: "me" }).then((result) =>
-    console.log(result),
-  );
-}
+```bash
+npx convex run seed:getTestOrgStatus
 ```
 
-Use the Convex CLI to push your functions to a deployment. See everything
-the Convex CLI can do by running `npx convex -h` in your project root
-directory. To learn more, launch the docs with `npx convex docs`.
+## Reset Seeded Environment
+
+```bash
+npx convex run seed:deleteTestOrganization '{"confirmDeletion": true}'
+```
+
+This deletes seeded org data but does not remove auth user accounts; re-seeding + relinking restores test state.
+
+## Tax Rules Seed
+
+```bash
+npx convex run seed_tax:seedKenyaTaxRules
+```
+
+## Useful Convex Commands
+
+```bash
+npx convex dev
+npx convex run <module:function> '<jsonArgs>'
+npx convex codegen
+```
