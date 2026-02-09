@@ -27,15 +27,15 @@ import { api } from '../../../../convex/_generated/api';
     OrgBrowserDialogComponent
   ],
   template: `
-    <div class="min-h-screen bg-stone-50 flex flex-col items-center justify-center p-4">
+    <div class="min-h-screen bg-stone-50 dark:bg-stone-950 text-stone-800 dark:text-stone-100 flex flex-col items-center justify-center p-4">
       <div class="w-full max-w-2xl space-y-6">
         <!-- Header / Logo -->
         <div class="text-center">
           <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-[#8b1e3f] to-[#3f0d1c] mb-6 shadow-xl shadow-[#8b1e3f]/20">
             <span class="text-3xl font-bold text-white tracking-tighter">Ah</span>
           </div>
-          <h1 class="text-3xl font-bold text-stone-900 tracking-tight">Welcome to Aurum</h1>
-          <p class="mt-2 text-stone-600">You're almost there! Join an organization to get started.</p>
+          <h1 class="text-3xl font-bold text-stone-900 dark:text-stone-100 tracking-tight">Welcome to Aurum</h1>
+          <p class="mt-2 text-stone-600 dark:text-stone-400">You're almost there! Join an organization to get started.</p>
         </div>
 
         <!-- Main Card -->
@@ -44,8 +44,8 @@ import { api } from '../../../../convex/_generated/api';
             <ui-grid-tile title="Organization Access" variant="compact">
               <div class="tile-body space-y-8">
                 <!-- User Info -->
-                <div class="flex items-center gap-4 p-4 rounded-xl bg-stone-50 border border-stone-100">
-                  <div class="h-12 w-12 rounded-full bg-stone-200 flex items-center justify-center text-xl text-stone-500 overflow-hidden">
+                <div class="flex items-center gap-4 p-4 rounded-xl bg-stone-50 dark:bg-white/5 border border-stone-100 dark:border-white/8">
+                  <div class="h-12 w-12 rounded-full bg-stone-200 dark:bg-white/10 flex items-center justify-center text-xl text-stone-500 dark:text-stone-300 overflow-hidden">
                     @if (user()?.image) {
                       <img [src]="user()?.image" class="w-full h-full object-cover" alt="Profile">
                     } @else {
@@ -53,8 +53,8 @@ import { api } from '../../../../convex/_generated/api';
                     }
                   </div>
                   <div class="flex-1">
-                    <h3 class="font-semibold text-stone-900">{{ user()?.name }}</h3>
-                    <p class="text-sm text-stone-500">{{ user()?.email }}</p>
+                    <h3 class="font-semibold text-stone-900 dark:text-stone-100">{{ user()?.name }}</h3>
+                    <p class="text-sm text-stone-500 dark:text-stone-400">{{ user()?.email }}</p>
                   </div>
                   <ui-button variant="ghost" size="sm" (onClick)="logout()">
                     Sign Out
@@ -64,7 +64,7 @@ import { api } from '../../../../convex/_generated/api';
                 <!-- Join Requests -->
                 <div>
                   <div class="flex items-center justify-between mb-4">
-                    <h3 class="font-semibold text-stone-900">Your Requests</h3>
+                    <h3 class="font-semibold text-stone-900 dark:text-stone-100">Your Requests</h3>
                     <ui-button variant="secondary" size="sm" (onClick)="showBrowser.set(true)">
                       <ui-icon name="plus" class="w-4 h-4 mr-1"></ui-icon>
                       Join Organization
@@ -73,8 +73,8 @@ import { api } from '../../../../convex/_generated/api';
 
                   @if (requestsResource.isLoading()) {
                     <div class="space-y-3">
-                      <div class="h-16 bg-stone-100 rounded-xl animate-pulse"></div>
-                      <div class="h-16 bg-stone-100 rounded-xl animate-pulse"></div>
+                      <div class="h-16 bg-stone-100 dark:bg-white/8 rounded-xl animate-pulse"></div>
+                      <div class="h-16 bg-stone-100 dark:bg-white/8 rounded-xl animate-pulse"></div>
                     </div>
                   } @else if (requestsResource.error()) {
                     <div class="p-4 rounded-xl bg-red-50 text-red-600 text-sm">
@@ -84,22 +84,22 @@ import { api } from '../../../../convex/_generated/api';
                     @let requests = requestsResource.value();
 
                     @if (!requests || requests.length === 0) {
-                      <div class="text-center py-8 border-2 border-dashed border-stone-200 rounded-xl bg-stone-50/50">
+                      <div class="text-center py-8 border-2 border-dashed border-stone-200 dark:border-white/10 rounded-xl bg-stone-50/50 dark:bg-white/[0.03]">
                         <ui-icon name="building-office-2" class="w-8 h-8 mx-auto text-stone-400 mb-2"></ui-icon>
-                        <p class="text-stone-500 font-medium">No active requests</p>
-                        <p class="text-sm text-stone-400">Search for your organization to request access</p>
+                        <p class="text-stone-500 dark:text-stone-400 font-medium">No active requests</p>
+                        <p class="text-sm text-stone-400 dark:text-stone-500">Search for your organization to request access</p>
                       </div>
                     } @else {
                       <div class="space-y-3">
                         @for (req of requests; track req._id) {
-                          <div class="p-4 rounded-xl border border-stone-200 bg-white flex items-center justify-between group hover:border-[#8b1e3f]/20 transition-all">
+                          <div class="p-4 rounded-xl border border-stone-200 dark:border-white/8 bg-white dark:bg-white/5 flex items-center justify-between group hover:border-[#8b1e3f]/20 dark:hover:border-[#8b1e3f]/40 transition-all">
                             <div>
-                              <h4 class="font-semibold text-stone-900">{{ req.orgName }}</h4>
+                              <h4 class="font-semibold text-stone-900 dark:text-stone-100">{{ req.orgName }}</h4>
                               <div class="flex items-center gap-2 mt-1">
                                 <ui-badge [variant]="getStatusVariant(req.status)" size="sm">
                                   {{ req.status | titlecase }}
                                 </ui-badge>
-                                <span class="text-xs text-stone-400">
+                                <span class="text-xs text-stone-400 dark:text-stone-500">
                                   Requested {{ req.requestedAt | date:'mediumDate' }}
                                 </span>
                               </div>
@@ -125,13 +125,13 @@ import { api } from '../../../../convex/_generated/api';
 
                 <!-- Matching Orgs (Suggestions) -->
                 @if (matchingOrgsResource.value()?.length) {
-                  <div class="pt-6 border-t border-stone-100">
-                    <h3 class="font-semibold text-stone-900 mb-4">Suggested for You</h3>
+                  <div class="pt-6 border-t border-stone-100 dark:border-white/8">
+                    <h3 class="font-semibold text-stone-900 dark:text-stone-100 mb-4">Suggested for You</h3>
                     <div class="grid gap-3">
                       @for (org of matchingOrgsResource.value(); track org._id) {
-                        <div class="p-4 rounded-xl bg-gradient-to-r from-[#fdf2f4] to-white border border-[#fce7eb] flex items-center justify-between">
+                        <div class="p-4 rounded-xl bg-gradient-to-r from-[#fdf2f4] to-white dark:from-[#3f1320]/60 dark:to-[#1e1c1d] border border-[#fce7eb] dark:border-[#8b1e3f]/35 flex items-center justify-between">
                           <div>
-                            <h4 class="font-semibold text-stone-900">{{ org.name }}</h4>
+                            <h4 class="font-semibold text-stone-900 dark:text-stone-100">{{ org.name }}</h4>
                             <p class="text-xs text-[#8b1e3f]">Matches your email domain</p>
                           </div>
                           <ui-button variant="primary" size="sm" (onClick)="openBrowserWithOrg(org)">
@@ -144,12 +144,12 @@ import { api } from '../../../../convex/_generated/api';
                 }
 
                 <!-- Create New Organization -->
-                <div class="pt-6 border-t border-stone-100">
+                <div class="pt-6 border-t border-stone-100 dark:border-white/8">
                   <div class="text-center">
-                    <p class="text-sm text-stone-500 mb-3">Or, if you're setting up a new company:</p>
+                    <p class="text-sm text-stone-500 dark:text-stone-400 mb-3">Or, if you're setting up a new company:</p>
                     <a
                       routerLink="/create-organization"
-                      class="inline-flex items-center gap-2 px-4 py-2 rounded-xl border-2 border-dashed border-[#8b1e3f]/30 text-[#8b1e3f] hover:bg-[#fdf2f4] hover:border-[#8b1e3f]/50 transition-all font-medium text-sm"
+                      class="inline-flex items-center gap-2 px-4 py-2 rounded-xl border-2 border-dashed border-[#8b1e3f]/30 dark:border-[#8b1e3f]/50 text-[#8b1e3f] dark:text-[#d95a79] hover:bg-[#fdf2f4] dark:hover:bg-[#3f1320]/40 hover:border-[#8b1e3f]/50 transition-all font-medium text-sm"
                     >
                       <ui-icon name="building-office-2" class="w-5 h-5"></ui-icon>
                       Create New Organization

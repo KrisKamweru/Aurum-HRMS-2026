@@ -1,0 +1,165 @@
+{
+  "generatedAt": "2026-02-09T20:49:21.939Z",
+  "baseUrl": "http://localhost:4200",
+  "routes": [
+    "/dashboard",
+    "/employees",
+    "/attendance",
+    "/profile"
+  ],
+  "themes": [
+    "light",
+    "dark"
+  ],
+  "profiles": [
+    "admin",
+    "manager",
+    "employee"
+  ],
+  "captures": [
+    {
+      "profile": "admin",
+      "theme": "light",
+      "route": "/dashboard",
+      "file": "e2e\\visual-baseline\\admin\\light\\dashboard.png"
+    },
+    {
+      "profile": "admin",
+      "theme": "light",
+      "route": "/employees",
+      "file": "e2e\\visual-baseline\\admin\\light\\employees.png"
+    },
+    {
+      "profile": "admin",
+      "theme": "light",
+      "route": "/attendance",
+      "file": "e2e\\visual-baseline\\admin\\light\\attendance.png"
+    },
+    {
+      "profile": "admin",
+      "theme": "light",
+      "route": "/profile",
+      "file": "e2e\\visual-baseline\\admin\\light\\profile.png"
+    },
+    {
+      "profile": "admin",
+      "theme": "dark",
+      "route": "/dashboard",
+      "file": "e2e\\visual-baseline\\admin\\dark\\dashboard.png"
+    },
+    {
+      "profile": "admin",
+      "theme": "dark",
+      "route": "/employees",
+      "file": "e2e\\visual-baseline\\admin\\dark\\employees.png"
+    },
+    {
+      "profile": "admin",
+      "theme": "dark",
+      "route": "/attendance",
+      "file": "e2e\\visual-baseline\\admin\\dark\\attendance.png"
+    },
+    {
+      "profile": "admin",
+      "theme": "dark",
+      "route": "/profile",
+      "file": "e2e\\visual-baseline\\admin\\dark\\profile.png"
+    },
+    {
+      "profile": "manager",
+      "theme": "light",
+      "route": "/dashboard",
+      "file": "e2e\\visual-baseline\\manager\\light\\dashboard.png"
+    },
+    {
+      "profile": "manager",
+      "theme": "light",
+      "route": "/employees",
+      "file": "e2e\\visual-baseline\\manager\\light\\employees.png"
+    },
+    {
+      "profile": "manager",
+      "theme": "light",
+      "route": "/attendance",
+      "file": "e2e\\visual-baseline\\manager\\light\\attendance.png"
+    },
+    {
+      "profile": "manager",
+      "theme": "light",
+      "route": "/profile",
+      "file": "e2e\\visual-baseline\\manager\\light\\profile.png"
+    },
+    {
+      "profile": "manager",
+      "theme": "dark",
+      "route": "/dashboard",
+      "file": "e2e\\visual-baseline\\manager\\dark\\dashboard.png"
+    },
+    {
+      "profile": "manager",
+      "theme": "dark",
+      "route": "/employees",
+      "file": "e2e\\visual-baseline\\manager\\dark\\employees.png"
+    },
+    {
+      "profile": "manager",
+      "theme": "dark",
+      "route": "/attendance",
+      "file": "e2e\\visual-baseline\\manager\\dark\\attendance.png"
+    },
+    {
+      "profile": "manager",
+      "theme": "dark",
+      "route": "/profile",
+      "file": "e2e\\visual-baseline\\manager\\dark\\profile.png"
+    },
+    {
+      "profile": "employee",
+      "theme": "light",
+      "route": "/dashboard",
+      "file": "e2e\\visual-baseline\\employee\\light\\dashboard.png"
+    },
+    {
+      "profile": "employee",
+      "theme": "light",
+      "route": "/employees",
+      "file": "e2e\\visual-baseline\\employee\\light\\employees.png"
+    },
+    {
+      "profile": "employee",
+      "theme": "light",
+      "route": "/attendance",
+      "file": "e2e\\visual-baseline\\employee\\light\\attendance.png"
+    },
+    {
+      "profile": "employee",
+      "theme": "light",
+      "route": "/profile",
+      "file": "e2e\\visual-baseline\\employee\\light\\profile.png"
+    },
+    {
+      "profile": "employee",
+      "theme": "dark",
+      "route": "/dashboard",
+      "file": "e2e\\visual-baseline\\employee\\dark\\dashboard.png"
+    },
+    {
+      "profile": "employee",
+      "theme": "dark",
+      "route": "/employees",
+      "file": "e2e\\visual-baseline\\employee\\dark\\employees.png"
+    },
+    {
+      "profile": "employee",
+      "theme": "dark",
+      "route": "/attendance",
+      "file": "e2e\\visual-baseline\\employee\\dark\\attendance.png"
+    },
+    {
+      "profile": "employee",
+      "theme": "dark",
+      "route": "/profile",
+      "file": "e2e\\visual-baseline\\employee\\dark\\profile.png"
+    }
+  ]
+}

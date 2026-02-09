@@ -1,0 +1,65 @@
+name: Visual Regression
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  visual-regression:
+    runs-on: ubuntu-latest
+    env:
+      BASE_URL: http://127.0.0.1:4200
+      VISUAL_BASELINE_DIR: e2e/visual-baseline
+      VISUAL_SMOKE_PASSWORD: TestPass123!
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browser
+        run: npx playwright install chromium --with-deps
+
+      - name: Verify baseline exists
+        run: |
+          if [ ! -d "${VISUAL_BASELINE_DIR}" ]; then
+            echo "Missing baseline directory: ${VISUAL_BASELINE_DIR}"
+            echo "Generate it locally with: npm run visual:baseline:update"
+            exit 1
+          fi
+
+      - name: Start Angular app
+        run: |
+          npm start > /tmp/ng-serve.log 2>&1 &
+          for i in {1..90}; do
+            if curl -fsS "${BASE_URL}/auth/login" >/dev/null; then
+              echo "App is ready"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "App did not start in time"
+          cat /tmp/ng-serve.log
+          exit 1
+
+      - name: Capture candidate screenshots
+        run: npm run visual:smoke
+
+      - name: Compare against baseline
+        run: npm run visual:compare
+
+      - name: Upload candidate screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-smoke-current
+          path: artifacts/visual-smoke-current
+          if-no-files-found: warn

@@ -38,7 +38,7 @@ import { api } from '../../../../convex/_generated/api';
               type="text"
               [(ngModel)]="searchTerm"
               placeholder="Search by name..."
-              class="w-full pl-10 pr-4 py-2 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-[#8b1e3f] focus:border-transparent transition-all"
+              class="w-full pl-10 pr-4 py-2 rounded-xl border border-stone-200 dark:border-white/8 bg-white dark:bg-white/5 text-stone-800 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-[#8b1e3f] focus:border-transparent transition-all"
             />
             <div class="absolute left-3 top-2.5 text-stone-400">
               <ui-icon name="magnifying-glass" class="w-5 h-5"></ui-icon>
@@ -53,30 +53,30 @@ import { api } from '../../../../convex/_generated/api';
               <ui-icon name="arrow-path" class="w-6 h-6 animate-spin"></ui-icon>
             </div>
           } @else if (organizationsResource.error()) {
-            <div class="p-4 rounded-xl bg-red-50 text-red-600 text-center text-sm">
+            <div class="p-4 rounded-xl bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-300 text-center text-sm">
               Failed to load organizations
             </div>
           } @else {
             @let orgs = filteredOrgs();
 
             @if (orgs.length === 0) {
-              <div class="text-center py-8 text-stone-500">
+              <div class="text-center py-8 text-stone-500 dark:text-stone-400">
                 <p>No organizations found matching "{{ searchTerm() }}"</p>
               </div>
             }
 
             @for (org of orgs; track org._id) {
-              <div class="p-4 rounded-xl border border-stone-200 hover:border-[#8b1e3f]/30 hover:bg-[#fdf2f4]/30 transition-all group">
+              <div class="p-4 rounded-xl border border-stone-200 dark:border-white/8 hover:border-[#8b1e3f]/30 dark:hover:border-[#8b1e3f]/40 hover:bg-[#fdf2f4]/30 dark:hover:bg-[#3f1320]/30 transition-all group">
                 <div class="flex items-start justify-between gap-4">
                   <div class="flex-1">
                     <div class="flex items-center gap-2">
-                      <h4 class="font-semibold text-stone-900">{{ org.name }}</h4>
+                      <h4 class="font-semibold text-stone-900 dark:text-stone-100">{{ org.name }}</h4>
                       @if (isDomainMatch(org.domain)) {
                         <ui-badge variant="success" size="sm" [rounded]="true">Recommended</ui-badge>
                       }
                     </div>
                     @if (org.domain) {
-                      <p class="text-xs text-stone-500 mt-1">Domain: {{ org.domain }}</p>
+                      <p class="text-xs text-stone-500 dark:text-stone-400 mt-1">Domain: {{ org.domain }}</p>
                     }
                   </div>
 
@@ -91,12 +91,12 @@ import { api } from '../../../../convex/_generated/api';
 
                 <!-- Request Form (shown when selected) -->
                 @if (selectedOrgId() === org._id) {
-                  <div class="mt-4 pt-4 border-t border-stone-100 animate-fade-in">
+                  <div class="mt-4 pt-4 border-t border-stone-100 dark:border-white/8 animate-fade-in">
                     <ui-form-field label="Note (Optional)" hint="Introduce yourself to the admin">
                       <textarea
                         [(ngModel)]="requestNote"
                         rows="2"
-                        class="w-full px-3 py-2 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-[#8b1e3f] focus:border-transparent transition-all resize-none text-sm"
+                        class="w-full px-3 py-2 rounded-xl border border-stone-200 dark:border-white/8 bg-white dark:bg-white/5 text-stone-800 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-[#8b1e3f] focus:border-transparent transition-all resize-none text-sm"
                         placeholder="I'm a new employee in the Engineering department..."
                       ></textarea>
                     </ui-form-field>

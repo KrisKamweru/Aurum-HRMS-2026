@@ -533,7 +533,13 @@ export class PayslipViewComponent implements OnInit {
         this.slip.set(data);
         this.loading.set(false);
       })
-      .catch(() => {
+      .catch((err: any) => {
+        const message = String(err?.message || '');
+        if (message.toLowerCase().includes('unauthorized')) {
+          this.toast.error('You do not have permission to access this payslip.');
+          this.router.navigate(['/dashboard']);
+          return;
+        }
         this.loadError.set('Payslip is unavailable. It may still be processing or you may not have access.');
         this.loading.set(false);
       });

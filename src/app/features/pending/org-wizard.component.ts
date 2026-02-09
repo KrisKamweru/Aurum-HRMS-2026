@@ -34,15 +34,15 @@ interface WizardStep {
     UiGridTileComponent
   ],
   template: `
-    <div class="min-h-screen bg-stone-50 py-8 px-4">
+    <div class="min-h-screen bg-stone-50 dark:bg-stone-950 py-8 px-4">
       <div class="max-w-3xl mx-auto">
         <!-- Header -->
         <div class="text-center mb-8">
           <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-[#8b1e3f] to-[#3f0d1c] mb-4 shadow-lg shadow-[#8b1e3f]/20">
             <span class="text-2xl font-bold text-white tracking-tighter">Ah</span>
           </div>
-          <h1 class="text-2xl font-bold text-stone-900">Create Your Organization</h1>
-          <p class="text-stone-500 mt-1">Set up your organization in a few simple steps</p>
+          <h1 class="text-2xl font-bold text-stone-900 dark:text-stone-100">Create Your Organization</h1>
+          <p class="text-stone-500 dark:text-stone-400 mt-1">Set up your organization in a few simple steps</p>
         </div>
 
         <!-- Step Indicators -->
@@ -56,7 +56,9 @@ interface WizardStep {
                 [class.text-white]="i < currentStep()"
                 [class.text-[#8b1e3f]]="i === currentStep()"
                 [class.border-stone-300]="i > currentStep()"
+                [class.dark:border-stone-700]="i > currentStep()"
                 [class.text-stone-400]="i > currentStep()"
+                [class.dark:text-stone-500]="i > currentStep()"
               >
                 @if (i < currentStep()) {
                   <ui-icon name="check" class="w-5 h-5"></ui-icon>
@@ -69,6 +71,7 @@ interface WizardStep {
                   class="w-16 h-0.5 mx-2 transition-all"
                   [class.bg-[#8b1e3f]]="i < currentStep()"
                   [class.bg-stone-300]="i >= currentStep()"
+                  [class.dark:bg-stone-700]="i >= currentStep()"
                 ></div>
               }
             </div>
@@ -77,8 +80,8 @@ interface WizardStep {
 
         <!-- Step Title -->
         <div class="text-center mb-6">
-          <h2 class="text-lg font-semibold text-stone-900">{{ steps[currentStep()].title }}</h2>
-          <p class="text-sm text-stone-500">{{ steps[currentStep()].description }}</p>
+          <h2 class="text-lg font-semibold text-stone-900 dark:text-stone-100">{{ steps[currentStep()].title }}</h2>
+          <p class="text-sm text-stone-500 dark:text-stone-400">{{ steps[currentStep()].description }}</p>
         </div>
 
         <!-- Step Content -->
@@ -101,7 +104,7 @@ interface WizardStep {
                     id="orgName"
                     formControlName="name"
                     placeholder="e.g., Acme Corporation"
-                    class="block w-full rounded-xl border-stone-200 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-4 py-3 border bg-stone-50/50"
+                    class="block w-full rounded-xl border-stone-200 dark:border-white/8 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-4 py-3 border bg-stone-50/50 dark:bg-white/5 dark:text-stone-100"
                   />
                 </ui-form-field>
 
@@ -112,13 +115,13 @@ interface WizardStep {
                   hint="Users with this email domain will see your org as suggested"
                 >
                   <div class="flex items-center">
-                    <span class="text-stone-400 mr-2">@</span>
+                    <span class="text-stone-400 dark:text-stone-500 mr-2">@</span>
                     <input
                       type="text"
                       id="orgDomain"
                       formControlName="domain"
                       placeholder="e.g., acme.com"
-                      class="block w-full rounded-xl border-stone-200 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-4 py-3 border bg-stone-50/50"
+                      class="block w-full rounded-xl border-stone-200 dark:border-white/8 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-4 py-3 border bg-stone-50/50 dark:bg-white/5 dark:text-stone-100"
                     />
                   </div>
                 </ui-form-field>
@@ -129,7 +132,7 @@ interface WizardStep {
             @if (currentStep() === 1) {
               <div class="space-y-4" formArrayName="departments">
                 <div class="flex items-center justify-between mb-2">
-                  <span class="text-sm text-stone-500">Add your organization's departments</span>
+                  <span class="text-sm text-stone-500 dark:text-stone-400">Add your organization's departments</span>
                   <ui-button variant="secondary" size="sm" (onClick)="addDepartment()">
                     <ui-icon name="plus" class="w-4 h-4 mr-1"></ui-icon>
                     Add
@@ -137,9 +140,9 @@ interface WizardStep {
                 </div>
 
                 @for (dept of departmentsArray.controls; track $index; let i = $index) {
-                  <div class="p-4 rounded-xl border border-stone-200 bg-stone-50/30 space-y-3" [formGroupName]="i">
+                  <div class="p-4 rounded-xl border border-stone-200 dark:border-white/8 bg-stone-50/30 dark:bg-white/[0.03] space-y-3" [formGroupName]="i">
                     <div class="flex items-center justify-between">
-                      <span class="text-sm font-medium text-stone-700">Department {{ i + 1 }}</span>
+                      <span class="text-sm font-medium text-stone-700 dark:text-stone-200">Department {{ i + 1 }}</span>
                       @if (departmentsArray.length > 1) {
                         <button
                           type="button"
@@ -155,27 +158,27 @@ interface WizardStep {
                         type="text"
                         formControlName="name"
                         placeholder="Department Name"
-                        class="block w-full rounded-xl border-stone-200 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-3 py-2 border bg-white"
+                        class="block w-full rounded-xl border-stone-200 dark:border-white/8 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-3 py-2 border bg-white dark:bg-white/5 dark:text-stone-100"
                       />
                       <input
                         type="text"
                         formControlName="code"
                         placeholder="Code (e.g., ENG)"
-                        class="block w-full rounded-xl border-stone-200 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-3 py-2 border bg-white"
+                        class="block w-full rounded-xl border-stone-200 dark:border-white/8 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-3 py-2 border bg-white dark:bg-white/5 dark:text-stone-100"
                       />
                     </div>
                     <input
                       type="text"
                       formControlName="description"
                       placeholder="Description (optional)"
-                      class="block w-full rounded-xl border-stone-200 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-3 py-2 border bg-white"
+                      class="block w-full rounded-xl border-stone-200 dark:border-white/8 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-3 py-2 border bg-white dark:bg-white/5 dark:text-stone-100"
                     />
                   </div>
                 }
 
                 @if (departmentsArray.length === 0) {
-                  <div class="text-center py-8 border-2 border-dashed border-stone-200 rounded-xl">
-                    <p class="text-stone-500">No departments yet. Add your first department.</p>
+                  <div class="text-center py-8 border-2 border-dashed border-stone-200 dark:border-white/10 rounded-xl">
+                    <p class="text-stone-500 dark:text-stone-400">No departments yet. Add your first department.</p>
                   </div>
                 }
               </div>
@@ -185,7 +188,7 @@ interface WizardStep {
             @if (currentStep() === 2) {
               <div class="space-y-4" formArrayName="designations">
                 <div class="flex items-center justify-between mb-2">
-                  <span class="text-sm text-stone-500">Add job titles/designations</span>
+                  <span class="text-sm text-stone-500 dark:text-stone-400">Add job titles/designations</span>
                   <ui-button variant="secondary" size="sm" (onClick)="addDesignation()">
                     <ui-icon name="plus" class="w-4 h-4 mr-1"></ui-icon>
                     Add
@@ -193,9 +196,9 @@ interface WizardStep {
                 </div>
 
                 @for (desig of designationsArray.controls; track $index; let i = $index) {
-                  <div class="p-4 rounded-xl border border-stone-200 bg-stone-50/30 space-y-3" [formGroupName]="i">
+                  <div class="p-4 rounded-xl border border-stone-200 dark:border-white/8 bg-stone-50/30 dark:bg-white/[0.03] space-y-3" [formGroupName]="i">
                     <div class="flex items-center justify-between">
-                      <span class="text-sm font-medium text-stone-700">Designation {{ i + 1 }}</span>
+                      <span class="text-sm font-medium text-stone-700 dark:text-stone-200">Designation {{ i + 1 }}</span>
                       @if (designationsArray.length > 1) {
                         <button
                           type="button"
@@ -211,13 +214,13 @@ interface WizardStep {
                         type="text"
                         formControlName="title"
                         placeholder="Job Title"
-                        class="block w-full rounded-xl border-stone-200 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-3 py-2 border bg-white sm:col-span-2"
+                        class="block w-full rounded-xl border-stone-200 dark:border-white/8 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-3 py-2 border bg-white dark:bg-white/5 dark:text-stone-100 sm:col-span-2"
                       />
                       <input
                         type="text"
                         formControlName="code"
                         placeholder="Code"
-                        class="block w-full rounded-xl border-stone-200 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-3 py-2 border bg-white"
+                        class="block w-full rounded-xl border-stone-200 dark:border-white/8 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-3 py-2 border bg-white dark:bg-white/5 dark:text-stone-100"
                       />
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -225,21 +228,21 @@ interface WizardStep {
                         type="number"
                         formControlName="level"
                         placeholder="Level (1-10)"
-                        class="block w-full rounded-xl border-stone-200 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-3 py-2 border bg-white"
+                        class="block w-full rounded-xl border-stone-200 dark:border-white/8 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-3 py-2 border bg-white dark:bg-white/5 dark:text-stone-100"
                       />
                       <input
                         type="text"
                         formControlName="description"
                         placeholder="Description (optional)"
-                        class="block w-full rounded-xl border-stone-200 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-3 py-2 border bg-white"
+                        class="block w-full rounded-xl border-stone-200 dark:border-white/8 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-3 py-2 border bg-white dark:bg-white/5 dark:text-stone-100"
                       />
                     </div>
                   </div>
                 }
 
                 @if (designationsArray.length === 0) {
-                  <div class="text-center py-8 border-2 border-dashed border-stone-200 rounded-xl">
-                    <p class="text-stone-500">No designations yet. Add your first job title.</p>
+                  <div class="text-center py-8 border-2 border-dashed border-stone-200 dark:border-white/10 rounded-xl">
+                    <p class="text-stone-500 dark:text-stone-400">No designations yet. Add your first job title.</p>
                   </div>
                 }
               </div>
@@ -251,7 +254,7 @@ interface WizardStep {
                 <div class="p-4 rounded-xl bg-amber-50 border border-amber-200 mb-4">
                   <div class="flex items-start gap-3">
                     <ui-icon name="information-circle" class="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5"></ui-icon>
-                    <div class="text-sm text-amber-800">
+                    <div class="text-sm text-amber-800 dark:text-amber-200">
                       <p class="font-medium">You'll be the admin</p>
                       <p class="mt-1">Your account ({{ user()?.email }}) will be set as the organization admin with full access.</p>
                     </div>
@@ -269,7 +272,7 @@ interface WizardStep {
                       type="text"
                       id="firstName"
                       formControlName="firstName"
-                      class="block w-full rounded-xl border-stone-200 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-4 py-3 border bg-stone-50/50"
+                      class="block w-full rounded-xl border-stone-200 dark:border-white/8 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-4 py-3 border bg-stone-50/50 dark:bg-white/5 dark:text-stone-100"
                     />
                   </ui-form-field>
 
@@ -283,7 +286,7 @@ interface WizardStep {
                       type="text"
                       id="lastName"
                       formControlName="lastName"
-                      class="block w-full rounded-xl border-stone-200 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-4 py-3 border bg-stone-50/50"
+                      class="block w-full rounded-xl border-stone-200 dark:border-white/8 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-4 py-3 border bg-stone-50/50 dark:bg-white/5 dark:text-stone-100"
                     />
                   </ui-form-field>
                 </div>
@@ -298,7 +301,7 @@ interface WizardStep {
                     id="phone"
                     formControlName="phone"
                     placeholder="+1 (555) 000-0000"
-                    class="block w-full rounded-xl border-stone-200 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-4 py-3 border bg-stone-50/50"
+                    class="block w-full rounded-xl border-stone-200 dark:border-white/8 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-4 py-3 border bg-stone-50/50 dark:bg-white/5 dark:text-stone-100"
                   />
                 </ui-form-field>
 
@@ -311,7 +314,7 @@ interface WizardStep {
                     <select
                       id="deptIndex"
                       formControlName="departmentIndex"
-                      class="block w-full rounded-xl border-stone-200 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-4 py-3 border bg-stone-50/50"
+                      class="block w-full rounded-xl border-stone-200 dark:border-white/8 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-4 py-3 border bg-stone-50/50 dark:bg-white/5 dark:text-stone-100"
                     >
                       <option [ngValue]="null">Select department (optional)</option>
                       @for (dept of departmentsArray.controls; track $index; let i = $index) {
@@ -330,7 +333,7 @@ interface WizardStep {
                     <select
                       id="desigIndex"
                       formControlName="designationIndex"
-                      class="block w-full rounded-xl border-stone-200 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-4 py-3 border bg-stone-50/50"
+                      class="block w-full rounded-xl border-stone-200 dark:border-white/8 shadow-sm focus:border-[#8b1e3f] focus:ring-[#8b1e3f] sm:text-sm px-4 py-3 border bg-stone-50/50 dark:bg-white/5 dark:text-stone-100"
                     >
                       <option [ngValue]="null">Select designation (optional)</option>
                       @for (desig of designationsArray.controls; track $index; let i = $index) {
@@ -344,7 +347,7 @@ interface WizardStep {
                 </form>
 
                 <!-- Navigation Buttons -->
-                <div class="flex items-center justify-between mt-8 pt-6 border-t border-stone-100">
+                <div class="flex items-center justify-between mt-8 pt-6 border-t border-stone-100 dark:border-white/8">
                   <ui-button
                     variant="ghost"
                     [disabled]="currentStep() === 0"
@@ -384,7 +387,7 @@ interface WizardStep {
         <div class="text-center mt-6">
           <a
             routerLink="/pending"
-            class="text-sm text-stone-500 hover:text-[#8b1e3f] transition-colors"
+            class="text-sm text-stone-500 dark:text-stone-400 hover:text-[#8b1e3f] transition-colors"
           >
             ← Back to pending page
           </a>

@@ -2,8 +2,8 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 
-const BASELINE_DIR = getArg("--baseline") || "artifacts/visual-smoke-baseline-2026-02-09";
-const CANDIDATE_DIR = getArg("--candidate") || "artifacts/visual-smoke-current";
+const BASELINE_DIR = getArg("--baseline") || process.env.VISUAL_BASELINE_DIR || "e2e/visual-baseline";
+const CANDIDATE_DIR = getArg("--candidate") || process.env.VISUAL_CANDIDATE_DIR || "artifacts/visual-smoke-current";
 
 function getArg(name) {
   const idx = process.argv.indexOf(name);
@@ -29,6 +29,30 @@ async function listPngFiles(rootDir) {
   return out;
 }
 
+async function readManifestCaptureSet(rootDir) {
+  const manifestPath = path.join(rootDir, 'manifest.json');
+  if (!(await exists(manifestPath))) return null;
+  const raw = await fs.readFile(manifestPath, 'utf8');
+  const manifest = JSON.parse(raw);
+  if (!Array.isArray(manifest.captures) || manifest.captures.length === 0) return null;
+
+  const set = new Set();
+  for (const capture of manifest.captures) {
+    if (!capture?.file) continue;
+    const normalized = String(capture.file).replace(/\\/g, '/');
+    const marker = `${rootDir.replace(/\\/g, '/')}/`;
+    const idx = normalized.indexOf(marker);
+    if (idx >= 0) {
+      set.add(normalized.slice(idx + marker.length));
+      continue;
+    }
+    // Fallback for relative paths embedded in manifest.
+    const rel = path.relative(rootDir, path.resolve(capture.file)).replace(/\\/g, '/');
+    set.add(rel);
+  }
+  return set;
+}
+
 async function exists(filePath) {
   try {
     await fs.access(filePath);
@@ -48,7 +72,18 @@ async function run() {
 
   const baseFiles = await listPngFiles(BASELINE_DIR);
   const candFiles = await listPngFiles(CANDIDATE_DIR);
-  const all = Array.from(new Set([...baseFiles, ...candFiles])).sort();
+  const baselineManifestSet = await readManifestCaptureSet(BASELINE_DIR);
+  const candidateManifestSet = await readManifestCaptureSet(CANDIDATE_DIR);
+
+  let baseFiltered = baseFiles;
+  let candFiltered = candFiles;
+
+  if (baselineManifestSet && candidateManifestSet) {
+    baseFiltered = baseFiles.filter((f) => baselineManifestSet.has(f));
+    candFiltered = candFiles.filter((f) => candidateManifestSet.has(f));
+  }
+
+  const all = Array.from(new Set([...baseFiltered, ...candFiltered])).sort();
 
   const missingInCandidate = [];
   const missingInBaseline = [];
@@ -107,4 +142,3 @@ run().catch((err) => {
   console.error("visual-compare failed:", err?.message || err);
   process.exit(1);
 });
-

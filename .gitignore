@@ -58,3 +58,8 @@ SHOWCASE-6-DESIGN.md
 # Local tooling
 .claude/
 .playwright-mcp/
+
+# Local visual capture artifacts (root-level ad-hoc screenshots)
+/playwright-*.png
+/mcp-*.png
+/playwright-*.md
