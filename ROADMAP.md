@@ -73,11 +73,12 @@ Status: Substantially completed on 2026-02-09.
   - ensure modals cap height to viewport and scroll internally instead of overflowing the page
   - Definition of done: no unintended global horizontal scroll at supported breakpoints; modals remain fully usable with internal vertical scrolling on short viewports
 - Progress update (2026-02-09): visual regression workflow, multi-profile baseline, and comparison tooling added.
+- Progress update (2026-02-10): hotspot hardening pass completed for table/modal/dialog/payslip/recruitment board; `npm run build` and `npm run ci:security` passing.
 
 **Audit Heatmaps (2026-02-09)**
 
 1. Tailwind-first custom CSS elimination sweep
-- Current footprint: `28` component style references (`styles` / `styleUrl`) in `src/app`.
+- Current footprint: `23` component style references (`styles` / `styleUrl`) in `src/app` after the 2026-02-10 hotspot pass (down from `28`).
 - Distribution:
   - `features`: `14`
   - `shared`: `12`
@@ -89,6 +90,12 @@ Status: Substantially completed on 2026-02-09.
   - `src/app/shared/components/ui-confirm-dialog/ui-confirm-dialog.component.ts`
   - `src/app/features/payroll/payslip-view.component.ts`
   - `src/app/features/recruitment/components/candidate-board/candidate-board.component.ts`
+- Hotspot status (2026-02-10):
+  - `src/app/shared/components/ui-data-table/ui-data-table.component.ts`: `done` (component-local styles removed; Tailwind overflow boundary retained).
+  - `src/app/shared/components/ui-modal/ui-modal.component.ts`: `done` (component-local styles removed; viewport-capped modal with internal scroll).
+  - `src/app/shared/components/ui-confirm-dialog/ui-confirm-dialog.component.ts`: `done` (component-local styles removed; viewport-capped dialog with internal scroll).
+  - `src/app/features/payroll/payslip-view.component.ts`: `done` (migrated to Tailwind utility classes; local stylesheet removed).
+  - `src/app/features/recruitment/components/candidate-board/candidate-board.component.ts`: `done` (local scrollbar CSS removed; detail modal overflow hardened).
 
 2. Overflow-containment sweep (tables, containers, modals)
 - `ui-data-table` usage audit: `24` files found, only `2` explicitly wrapped with `overflow-x-auto`, `22` require boundary review.
@@ -100,7 +107,7 @@ Status: Substantially completed on 2026-02-09.
 - Custom modal/overlay hotspot files (non-`ui-modal`) needing viewport-height/internal-scroll verification:
   - `src/app/shared/components/ui-confirm-dialog/ui-confirm-dialog.component.ts`
   - `src/app/features/recruitment/components/candidate-board/candidate-board.component.ts`
-- Next checkpoint action: create a per-file fix list and mark each item as `done` / `exception` directly in this roadmap section.
+- Next checkpoint action: continue overflow wrapper verification across all `ui-data-table` embedding pages and record each page as `done` / `exception`.
 
 **Plan-Wide Audit Snapshot (2026-02-09)**
 
@@ -113,32 +120,55 @@ Status: Substantially completed on 2026-02-09.
 - Evidence: visual regression workflow + baseline in place; CSS and overflow heatmaps now tracked.
 
 3. `P2` Compliance/data governance
-- Status: partial.
+- Status: baseline completed.
 - Evidence: `change_requests` + sensitive change controls exist.
-- Gaps: explicit retention policy, backup/restore drill runbooks, incident response/access review artifacts not yet codified in repo docs/config.
+- New artifacts (2026-02-10):
+  - `convex/compliance.ts` (audit export, access review snapshot, retention preview/purge controls)
+  - `docs/COMPLIANCE-BASELINE.md` (retention, PII handling, backup/restore drill, incident workflow)
+- Gaps: retention/backup drills still require environment-specific runtime scheduling in hosted production.
 
 4. `P3` Multi-org operator model
-- Status: not started (architecturally blocked by single-org binding).
-- Evidence: auth and domain logic consistently rely on `users.orgId` and org-scoped records; no membership table or active-org switch context yet.
+- Status: baseline completed.
+- New artifacts (2026-02-10):
+  - `convex/schema.ts` adds optional `users.activeOrgId` for active-org context.
+  - `convex/org_context.ts` adds `getOrganizationContext` and `setActiveOrganization`.
+  - `convex/onboarding.ts` now sets `activeOrgId` when org membership is established.
+  - `src/app/core/services/org-context.service.ts` + `src/app/layouts/main-layout/main-layout.component.*` add active-org switcher UX in desktop/mobile layout.
+  - Core backend viewer helpers now resolve org context from `activeOrgId ?? orgId` to reduce single-org coupling during migration.
+- Gaps: remaining low-risk modules still use legacy helper patterns and should be consolidated onto shared org-membership helper.
 
 5. `P4` Attendance trust hardening (soft geofence/device signals)
-- Status: not started.
-- Evidence: no geofence/device fingerprint/risk scoring pipeline found; current location usage is organizational metadata, not attendance trust scoring.
+- Status: Phase A/B/C baseline completed.
+- New artifacts (2026-02-10):
+  - `convex/schema.ts` adds `attendance_trust_events` and `attendance_trusted_devices`.
+  - `convex/attendance.ts` captures observe-only trust signals on `clockIn`, `clockOut`, and `manualEntry`.
+  - `convex/attendance.ts` adds `listTrustEvents` for manager/admin review surfaces.
+  - `src/app/core/services/attendance-trust.service.ts` + attendance screens now send trust signals (device hash + user-agent hash + optional geolocation) into capture pipeline.
+- Gaps: org-level policy administration UI can be expanded with map-driven geofence editing.
 
 6. `P5` Workflow engine maturity
-- Status: partial.
+- Status: baseline completed.
 - Evidence: maker-checker and approval/rejection flows exist for sensitive payroll changes.
-- Gaps: configurable approval chains, delegation/escalation policies, and SLA-aware routing are not implemented as generalized workflow primitives.
+- New artifacts (2026-02-10):
+  - `convex/schema.ts` adds `approval_workflows`, `workflow_instances`, and `workflow_actions`.
+  - `convex/workflow_engine.ts` adds workflow definition, instance start, action routing, and timeline query APIs.
+- Gaps: escalation notifications can be extended to external channels.
 
 7. `P6` Reporting/analytics foundation
-- Status: early partial.
+- Status: baseline completed.
 - Evidence: attendance/payroll/tax reports exist; report surface mentions scheduled delivery.
-- Gaps: canonical metric model (headcount/attrition/leave liability/payroll variance) and scheduled distribution pipeline are not yet established as platform standards.
+- New artifacts (2026-02-10):
+  - `convex/schema.ts` adds `report_schedules` and `report_delivery_logs`.
+  - `convex/reporting_ops.ts` adds schedule CRUD/toggle and delivery-log APIs.
+- Gaps: scheduled delivery transport adapters (email/webhook) can be extended beyond current audit-log artifacts.
 
 8. `P7` Platform operations/documentation
-- Status: partial.
+- Status: baseline completed.
 - Evidence: roadmap and backend docs are now cleaner.
-- Gaps: explicit SLOs, release gates, operational runbooks, and incident playbooks still need to be formalized.
+- New artifacts (2026-02-10):
+  - `docs/PLATFORM-OPERATIONS-RUNBOOK.md` (SLOs, release gates, triage flow, alert priorities)
+  - `docs/ROADMAP-EXECUTION-TRACKS.md` (P3-P6 executable tracks)
+- Gaps: environment route values require final production target values and owner assignment.
 
 ### P2. Compliance and Data Governance Baseline
 - Formalize and enforce:

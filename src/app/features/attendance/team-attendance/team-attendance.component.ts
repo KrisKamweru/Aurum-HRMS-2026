@@ -10,6 +10,7 @@ import { ConvexClientService } from '../../../core/services/convex-client.servic
 import { api } from '../../../../../convex/_generated/api';
 import { UiGridComponent } from '../../../shared/components/ui-grid/ui-grid.component';
 import { UiGridTileComponent } from '../../../shared/components/ui-grid/ui-grid-tile.component';
+import { ToastService } from '../../../shared/services/toast.service';
 
 @Component({
   selector: 'app-team-attendance',
@@ -97,6 +98,32 @@ import { UiGridTileComponent } from '../../../shared/components/ui-grid/ui-grid-
             </div>
           </ui-grid-tile>
 
+          @if (heldLoading() || heldEvents().length > 0) {
+            <ui-grid-tile title="Held Punches Requiring Review" variant="compact" divider="bottom">
+              <div class="tile-body">
+                @if (heldLoading()) {
+                  <p class="text-sm text-stone-500 dark:text-stone-400">Loading held punches...</p>
+                } @else {
+                  <div class="space-y-3">
+                    @for (held of heldEvents(); track held._id) {
+                      <div class="rounded-lg border border-amber-200 dark:border-amber-700/40 bg-amber-50/70 dark:bg-amber-900/10 px-3 py-2.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                        <div>
+                          <p class="text-sm font-semibold text-stone-800 dark:text-stone-100">{{ held.employeeName }}</p>
+                          <p class="text-xs text-stone-600 dark:text-stone-400">{{ held.eventType }} • Risk {{ held.riskLevel }} ({{ held.riskScore }})</p>
+                          <p class="text-xs text-stone-500 dark:text-stone-400">{{ held.capturedAt | date:'medium' }}</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                          <ui-button size="sm" variant="outline" (onClick)="reviewHeldEvent(held._id, 'rejected')">Reject</ui-button>
+                          <ui-button size="sm" variant="primary" (onClick)="reviewHeldEvent(held._id, 'approved')">Approve</ui-button>
+                        </div>
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+            </ui-grid-tile>
+          }
+
           <ui-grid-tile title="Team Attendance" variant="compact">
             <div class="tile-body">
               <ui-data-table
@@ -148,6 +175,7 @@ import { UiGridTileComponent } from '../../../shared/components/ui-grid/ui-grid-
 export class TeamAttendanceComponent {
   private convex = inject(ConvexClientService);
   private datePipe = inject(DatePipe);
+  private toast = inject(ToastService);
 
   selectedDate = signal(new Date().toISOString().split('T')[0]);
   currentPage = signal(1);
@@ -160,11 +188,14 @@ export class TeamAttendanceComponent {
   // Data State
   teamData = signal<any[]>([]);
   isLoading = signal(false);
+  heldEvents = signal<any[]>([]);
+  heldLoading = signal(false);
 
   constructor() {
     effect(() => {
       const date = this.selectedDate();
       this.loadData(date);
+      this.loadHeldEvents();
     });
   }
 
@@ -244,6 +275,7 @@ export class TeamAttendanceComponent {
 
   refresh() {
     this.loadData(this.selectedDate());
+    this.loadHeldEvents();
   }
 
   openEditModal(row: any) {
@@ -274,6 +306,32 @@ export class TeamAttendanceComponent {
       case 'holiday': return 'neutral';
       case 'pending': return 'neutral';
       default: return 'neutral';
+    }
+  }
+
+  async loadHeldEvents() {
+    this.heldLoading.set(true);
+    try {
+      const held = await this.convex.getClient().query(api.attendance.listHeldTrustEvents, { limit: 25 });
+      this.heldEvents.set(held || []);
+    } catch (error) {
+      console.error('Failed to load held trust events:', error);
+      this.heldEvents.set([]);
+    } finally {
+      this.heldLoading.set(false);
+    }
+  }
+
+  async reviewHeldEvent(eventId: string, decision: 'approved' | 'rejected') {
+    try {
+      await this.convex.getClient().mutation(api.attendance.reviewHeldTrustEvent, {
+        eventId: eventId as any,
+        decision,
+      });
+      this.toast.success(decision === 'approved' ? 'Punch approved' : 'Punch rejected');
+      this.refresh();
+    } catch (error: any) {
+      this.toast.error(error?.message || 'Failed to review held punch');
     }
   }
 }

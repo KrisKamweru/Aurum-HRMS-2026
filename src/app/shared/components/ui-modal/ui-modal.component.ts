@@ -7,26 +7,29 @@ export type ModalSize = 'sm' | 'md' | 'lg' | 'xl' | 'full';
 @Component({
   selector: 'ui-modal',
   standalone: true,
+  host: {
+    class: 'contents'
+  },
   imports: [CommonModule, UiIconComponent],
   template: `
     @if (isOpenSignal()) {
       <div
-        class="modal-container"
+        class="fixed inset-0 z-[9999] overflow-y-auto overscroll-contain"
         aria-labelledby="modal-title"
         role="dialog"
         aria-modal="true"
       >
         <!-- Backdrop -->
         <div
-          class="modal-backdrop animate-fade-in"
+          class="fixed inset-0 bg-black/50 backdrop-blur-sm animate-fade-in"
           aria-hidden="true"
           (click)="handleBackdropClick()"
         ></div>
 
-        <div class="modal-content-wrapper">
+        <div class="fixed inset-0 flex items-end sm:items-center justify-center p-4 sm:p-6 text-center pointer-events-none">
           <!-- Modal Panel -->
           <div
-            class="relative transform overflow-hidden rounded-xl bg-white dark:bg-white/5 dark:backdrop-blur-xl dark:border dark:border-white/8 text-left shadow-2xl transition-all sm:my-8 w-full animate-modal-in"
+            class="pointer-events-auto relative flex max-h-[calc(100dvh-2rem)] sm:max-h-[calc(100dvh-3rem)] w-full flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white text-left shadow-2xl transition-all dark:border-white/8 dark:bg-white/5 dark:backdrop-blur-xl animate-scale-in"
             [class]="getSizeClasses()"
             (click)="$event.stopPropagation()"
           >
@@ -54,7 +57,7 @@ export type ModalSize = 'sm' | 'md' | 'lg' | 'xl' | 'full';
             </div>
 
             <!-- Body -->
-            <div class="px-4 sm:px-6 py-4 sm:py-6 max-h-[75vh] sm:max-h-[60vh] overflow-y-auto text-stone-700 dark:text-stone-300">
+            <div class="px-4 sm:px-6 py-4 sm:py-6 overflow-y-auto text-stone-700 dark:text-stone-300">
               <ng-content></ng-content>
             </div>
 
@@ -68,73 +71,7 @@ export type ModalSize = 'sm' | 'md' | 'lg' | 'xl' | 'full';
         </div>
       </div>
     }
-  `,
-  styles: [`
-    :host {
-      display: contents;
-    }
-
-    .modal-container {
-      position: fixed;
-      inset: 0;
-      z-index: 9999;
-      overflow-y: auto;
-      overscroll-behavior: contain;
-    }
-
-    .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      background-color: rgba(28, 25, 23, 0.6);
-      backdrop-filter: blur(4px);
-    }
-
-    .modal-content-wrapper {
-      position: fixed;
-      inset: 0;
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      padding: 1rem;
-      text-align: center;
-      pointer-events: none;
-    }
-
-    .modal-content-wrapper > * {
-      pointer-events: auto;
-    }
-
-    @media (min-width: 640px) {
-      .modal-content-wrapper {
-        align-items: center;
-        padding: 0;
-      }
-    }
-
-    .animate-fade-in {
-      animation: fadeIn 0.2s ease-out forwards;
-    }
-
-    .animate-modal-in {
-      animation: modalIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    @keyframes modalIn {
-      from {
-        opacity: 0;
-        transform: scale(0.95) translateY(10px);
-      }
-      to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-      }
-    }
-  `]
+  `
 })
 export class UiModalComponent implements OnDestroy {
   @Input() title = '';

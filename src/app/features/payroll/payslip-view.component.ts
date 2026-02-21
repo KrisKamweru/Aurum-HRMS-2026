@@ -11,6 +11,9 @@ import { ToastService } from '../../shared/services/toast.service';
 @Component({
   selector: 'app-payslip-view',
   standalone: true,
+  host: {
+    class: 'block'
+  },
   imports: [
     CommonModule,
     RouterModule,
@@ -18,12 +21,12 @@ import { ToastService } from '../../shared/services/toast.service';
     UiIconComponent
   ],
   template: `
-    <div class="payslip-container">
+    <div class="mx-auto flex max-w-4xl flex-col gap-6">
       <!-- Header Actions (Hidden in Print) -->
-      <div class="actions-bar print:hidden">
+      <div class="flex items-center justify-between print:hidden">
         <button
           (click)="goBack()"
-          class="back-btn"
+          class="inline-flex items-center rounded-lg px-2 py-2 text-xs font-medium text-stone-500 hover:text-stone-800 dark:text-stone-400 dark:hover:text-stone-100 transition-colors"
         >
           <ui-icon name="arrow-left" class="w-4 h-4 mr-2"></ui-icon>
           Back
@@ -38,76 +41,76 @@ import { ToastService } from '../../shared/services/toast.service';
       </div>
 
       @if (loading()) {
-        <div class="loading-state">
-          <div class="spinner"></div>
+        <div class="flex min-h-64 items-center justify-center">
+          <div class="h-8 w-8 animate-spin rounded-full border-2 border-stone-300 dark:border-white/15 border-t-burgundy-700"></div>
         </div>
       } @else if (loadError(); as err) {
-        <div class="error-state">
-          <div class="error-icon">!</div>
-          <h3 class="error-title">Payslip Unavailable</h3>
-          <p class="error-text">{{ err }}</p>
+        <div class="min-h-64 rounded-2xl border border-stone-200 dark:border-white/8 bg-white dark:bg-white/5 dark:backdrop-blur-xl p-6 flex flex-col items-center justify-center gap-3 text-center">
+          <div class="h-8 w-8 rounded-full bg-burgundy-700/20 text-burgundy-600 dark:text-burgundy-300 font-bold flex items-center justify-center">!</div>
+          <h3 class="m-0 text-base font-semibold text-stone-900 dark:text-stone-100">Payslip Unavailable</h3>
+          <p class="m-0 max-w-xl text-sm text-stone-500 dark:text-stone-400">{{ err }}</p>
           <ui-button variant="outline" (onClick)="goBack()">Back to Dashboard</ui-button>
         </div>
       } @else if (slip(); as s) {
         <!-- Payslip Card - Design Six Pattern -->
-        <div class="pay-card">
+        <div class="overflow-hidden rounded-2xl border border-stone-200 dark:border-white/8 bg-white shadow-sm dark:bg-white/5 dark:backdrop-blur-xl print:border-stone-300 print:shadow-none">
           <!-- Banner Header -->
-          <div class="pc-banner">SALARY SLIP</div>
+          <div class="bg-burgundy-700 px-5 py-2.5 text-xs font-bold tracking-[0.2em] text-white">SALARY SLIP</div>
 
           <!-- Meta Row -->
-          <div class="pc-meta">
+          <div class="flex items-center justify-between gap-2 border-b border-stone-200 dark:border-white/8 px-5 py-2 text-xs text-stone-500 dark:text-stone-400">
             <span>{{ getMonthName(s.month) }} {{ s.year }}</span>
             <span>Aurum HRMS</span>
           </div>
 
           <!-- Employee Section -->
-          <div class="pc-emp">
-            <span class="pc-avatar">{{ getInitials(s.employeeName) }}</span>
+          <div class="flex items-center gap-3 border-b border-stone-200 dark:border-white/8 px-5 py-4">
+            <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-burgundy-700/20 text-xs font-bold text-burgundy-700 dark:text-burgundy-300">{{ getInitials(s.employeeName) }}</span>
             <div>
-              <div class="pc-name">{{ s.employeeName }}</div>
-              <div class="pc-role">{{ s.designation || 'Staff' }} &middot; {{ s.department || 'N/A' }}</div>
+              <div class="text-sm font-semibold text-stone-900 dark:text-stone-100 print:text-black">{{ s.employeeName }}</div>
+              <div class="text-xs text-stone-500 dark:text-stone-400">{{ s.designation || 'Staff' }} &middot; {{ s.department || 'N/A' }}</div>
             </div>
           </div>
 
           <!-- Two Column Grid -->
-          <div class="pc-grid">
+          <div class="grid grid-cols-1 sm:grid-cols-2">
             <!-- Earnings Column -->
-            <div class="pc-col">
-              <div class="pc-col-title">Earnings</div>
+            <div class="px-5 py-4 sm:border-r border-stone-200 dark:border-white/8">
+              <div class="mb-2 text-xs font-semibold uppercase tracking-widest text-stone-500 dark:text-stone-400">Earnings</div>
               @for (item of s.earnings; track item.name) {
-                <div class="pc-row">
+                <div class="flex items-center justify-between py-1 text-xs text-stone-600 dark:text-stone-300 print:text-stone-700">
                   <span>{{ item.name }}</span>
                   <span>{{ item.amount | currency }}</span>
                 </div>
               }
               @if (s.earnings.length === 0) {
-                <div class="pc-row muted">
+                <div class="flex items-center justify-between py-1 text-xs italic text-stone-400 dark:text-stone-500">
                   <span>No earnings</span>
                   <span>--</span>
                 </div>
               }
-              <div class="pc-row total">
+              <div class="mt-2 flex items-center justify-between border-t border-stone-200 dark:border-white/8 pt-2 text-xs font-bold text-stone-900 dark:text-stone-100 print:text-black">
                 <span>Gross Pay</span>
                 <span>{{ s.grossSalary | currency }}</span>
               </div>
             </div>
 
             <!-- Deductions Column -->
-            <div class="pc-col">
-              <div class="pc-col-title">Deductions</div>
+            <div class="px-5 py-4 border-t sm:border-t-0 border-stone-200 dark:border-white/8">
+              <div class="mb-2 text-xs font-semibold uppercase tracking-widest text-stone-500 dark:text-stone-400">Deductions</div>
               @for (item of s.deductions; track item.name) {
-                <div class="pc-row">
+                <div class="flex items-center justify-between py-1 text-xs text-stone-600 dark:text-stone-300 print:text-stone-700">
                   <span>{{ item.name }}</span>
                   <span>{{ item.amount | currency }}</span>
                 </div>
               }
               @if (s.deductions.length === 0) {
-                <div class="pc-row muted">
+                <div class="flex items-center justify-between py-1 text-xs italic text-stone-400 dark:text-stone-500">
                   <span>No deductions</span>
                   <span>--</span>
                 </div>
               }
-              <div class="pc-row total">
+              <div class="mt-2 flex items-center justify-between border-t border-stone-200 dark:border-white/8 pt-2 text-xs font-bold text-stone-900 dark:text-stone-100 print:text-black">
                 <span>Net Pay</span>
                 <span>{{ s.netSalary | currency }}</span>
               </div>
@@ -116,19 +119,19 @@ import { ToastService } from '../../shared/services/toast.service';
 
           <!-- Employer Contributions Section -->
           @if (s.employerContributions?.length) {
-            <div class="pc-employer">
-              <div class="pc-employer-header">
-                <span class="pc-col-title">Employer Contributions</span>
-                <span class="pc-employer-note">Paid by company, not deducted from salary</span>
+            <div class="border-t border-stone-200 dark:border-white/8 bg-stone-50/60 dark:bg-white/[0.02] px-5 py-4">
+              <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
+                <span class="text-xs font-semibold uppercase tracking-widest text-stone-500 dark:text-stone-400">Employer Contributions</span>
+                <span class="text-xs italic text-stone-500 dark:text-stone-400">Paid by company, not deducted from salary</span>
               </div>
-              <div class="pc-employer-grid">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 @for (item of s.employerContributions; track item.name) {
-                  <div class="pc-row small">
+                  <div class="flex items-center justify-between py-1 text-xs text-stone-600 dark:text-stone-300 print:text-stone-700">
                     <span>{{ item.name }}</span>
                     <span>{{ item.amount | currency }}</span>
                   </div>
                 }
-                <div class="pc-row small total">
+                <div class="flex items-center justify-between border-t border-stone-200 dark:border-white/8 pt-2 text-xs font-bold text-stone-900 dark:text-stone-100 print:text-black">
                   <span>Total CTC</span>
                   <span>{{ (s.grossSalary + calculateTotalEmployerContributions(s)) | currency }}</span>
                 </div>
@@ -137,363 +140,20 @@ import { ToastService } from '../../shared/services/toast.service';
           }
 
           <!-- Footer -->
-          <div class="pc-footer">
-            <div class="pc-footer-note">
+          <div class="flex flex-col gap-4 border-t border-stone-200 dark:border-white/8 bg-stone-50/60 dark:bg-white/[0.02] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+            <div class="text-xs text-stone-500 dark:text-stone-400">
               <p>Payment Method: Bank Transfer</p>
-              <p class="pc-footer-disclaimer">** This is a computer generated document and does not require a signature.</p>
+              <p class="italic">** This is a computer generated document and does not require a signature.</p>
             </div>
-            <div class="pc-net-display">
-              <p class="pc-net-label">Net Payable Amount</p>
-              <p class="pc-net-value">{{ s.netSalary | currency }}</p>
+            <div class="text-left sm:text-right">
+              <p class="m-0 text-xs text-stone-500 dark:text-stone-400">Net Payable Amount</p>
+              <p class="m-0 text-2xl font-bold text-stone-900 dark:text-stone-100 print:text-black">{{ s.netSalary | currency }}</p>
             </div>
           </div>
         </div>
       }
     </div>
-  `,
-  styles: [`
-    :host {
-      display: block;
-      --red: #861821;
-      --text: #b8b8b8;
-      --muted: #666;
-      --glass: rgba(255,255,255,0.05);
-      --glass-border: rgba(255,255,255,0.08);
-    }
-
-    .payslip-container {
-      max-width: 52rem;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-    }
-
-    /* Actions Bar */
-    .actions-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .back-btn {
-      display: flex;
-      align-items: center;
-      color: var(--muted);
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-size: 0.75rem;
-      padding: 0.5rem;
-      transition: color 0.2s;
-    }
-
-    .back-btn:hover {
-      color: white;
-    }
-
-    /* Payslip Card - Design Six Pattern */
-    .pay-card {
-      background: var(--glass);
-      backdrop-filter: blur(12px);
-      border: 1px solid var(--glass-border);
-      border-radius: 14px;
-      overflow: hidden;
-    }
-
-    .pc-banner {
-      background: var(--red);
-      padding: 0.6rem 1.25rem;
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 0.2em;
-      color: white;
-    }
-
-    .pc-meta {
-      display: flex;
-      justify-content: space-between;
-      padding: 0.5rem 1.25rem;
-      border-bottom: 1px solid var(--glass-border);
-      font-size: 0.75rem;
-      color: var(--muted);
-    }
-
-    .pc-emp {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 1rem 1.25rem;
-      border-bottom: 1px solid var(--glass-border);
-    }
-
-    .pc-avatar {
-      width: 34px;
-      height: 34px;
-      border-radius: 8px;
-      background: rgba(134,24,33,0.25);
-      color: #ff6b77;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 0.75rem;
-    }
-
-    .pc-name {
-      font-weight: 600;
-      font-size: 0.875rem;
-      color: white;
-    }
-
-    .pc-role {
-      font-size: 0.75rem;
-      color: var(--muted);
-    }
-
-    /* Two Column Grid */
-    .pc-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-    }
-
-    .pc-col {
-      padding: 1rem 1.25rem;
-    }
-
-    .pc-col:first-child {
-      border-right: 1px solid var(--glass-border);
-    }
-
-    .pc-col-title {
-      font-size: 0.75rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 0.5rem;
-    }
-
-    .pc-row {
-      display: flex;
-      justify-content: space-between;
-      padding: 0.25rem 0;
-      font-size: 0.75rem;
-      color: var(--text);
-    }
-
-    .pc-row.muted {
-      font-style: italic;
-      opacity: 0.5;
-    }
-
-    .pc-row.total {
-      font-weight: 700;
-      border-top: 1px solid var(--glass-border);
-      padding-top: 0.5rem;
-      margin-top: 0.3rem;
-      color: white;
-    }
-
-    .pc-row.small {
-      font-size: 0.75rem;
-    }
-
-    /* Employer Contributions Section */
-    .pc-employer {
-      padding: 1rem 1.25rem;
-      background: rgba(255,255,255,0.02);
-      border-top: 1px solid var(--glass-border);
-    }
-
-    .pc-employer-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 0.75rem;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-    }
-
-    .pc-employer-note {
-      font-size: 0.75rem;
-      color: var(--muted);
-      font-style: italic;
-      font-weight: normal;
-    }
-
-    .pc-employer-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.5rem;
-    }
-
-    /* Footer */
-    .pc-footer {
-      padding: 1rem 1.25rem;
-      background: rgba(255,255,255,0.02);
-      border-top: 1px solid var(--glass-border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-
-    .pc-footer-note {
-      font-size: 0.75rem;
-      color: var(--muted);
-    }
-
-    .pc-footer-note p {
-      margin: 0;
-      line-height: 1.6;
-    }
-
-    .pc-footer-disclaimer {
-      font-style: italic;
-    }
-
-    .pc-net-display {
-      text-align: right;
-    }
-
-    .pc-net-label {
-      font-size: 0.75rem;
-      color: var(--muted);
-      margin: 0 0 0.25rem;
-    }
-
-    .pc-net-value {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: white;
-      margin: 0;
-    }
-
-    /* Loading State */
-    .loading-state {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 16rem;
-    }
-
-    .error-state {
-      min-height: 16rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 0.75rem;
-      text-align: center;
-      padding: 1.5rem;
-      background: var(--glass);
-      border: 1px solid var(--glass-border);
-      border-radius: 14px;
-    }
-
-    .error-icon {
-      width: 2rem;
-      height: 2rem;
-      border-radius: 999px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      color: #ff6b77;
-      background: rgba(134,24,33,0.22);
-    }
-
-    .error-title {
-      margin: 0;
-      font-size: 1rem;
-      font-weight: 600;
-      color: #f5f5f4;
-    }
-
-    .error-text {
-      margin: 0;
-      max-width: 28rem;
-      font-size: 0.875rem;
-      color: #a8a29e;
-    }
-
-    .spinner {
-      width: 2rem;
-      height: 2rem;
-      border: 2px solid var(--glass-border);
-      border-top-color: var(--red);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    /* Print Styles */
-    @media print {
-      @page {
-        margin: 0;
-        size: A4;
-      }
-
-      :host {
-        background: white;
-      }
-
-      .payslip-container {
-        max-width: 100%;
-      }
-
-      .pay-card {
-        background: white;
-        border: 1px solid #ddd;
-      }
-
-      .pc-banner {
-        background: #861821 !important;
-        color: white !important;
-      }
-
-      .pc-name,
-      .pc-row.total,
-      .pc-net-value {
-        color: black !important;
-      }
-
-      .pc-row {
-        color: #333 !important;
-      }
-    }
-
-    /* Responsive */
-    @media (max-width: 640px) {
-      .pc-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .pc-col:first-child {
-        border-right: none;
-        border-bottom: 1px solid var(--glass-border);
-      }
-
-      .pc-employer-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .pc-footer {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      .pc-net-display {
-        text-align: left;
-        width: 100%;
-      }
-    }
-  `]
+  `
 })
 export class PayslipViewComponent implements OnInit {
   private route = inject(ActivatedRoute);

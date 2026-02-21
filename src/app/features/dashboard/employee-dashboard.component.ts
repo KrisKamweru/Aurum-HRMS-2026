@@ -8,6 +8,7 @@ import { UiBadgeComponent } from '../../shared/components/ui-badge/ui-badge.comp
 import { UiGridComponent } from '../../shared/components/ui-grid/ui-grid.component';
 import { UiGridTileComponent } from '../../shared/components/ui-grid/ui-grid-tile.component';
 import { ToastService } from '../../shared/services/toast.service';
+import { AttendanceTrustService } from '../../core/services/attendance-trust.service';
 
 @Component({
   selector: 'app-employee-dashboard',
@@ -1615,6 +1616,7 @@ import { ToastService } from '../../shared/services/toast.service';
 export class EmployeeDashboardComponent implements OnInit, OnDestroy {
   private convexService = inject(ConvexClientService);
   private toastService = inject(ToastService);
+  private trustService = inject(AttendanceTrustService);
 
   today = new Date();
   isLoading = signal(true);
@@ -1658,14 +1660,42 @@ export class EmployeeDashboardComponent implements OnInit, OnDestroy {
     }
   }
 
+  private async executeClockMutation(type: 'clockIn' | 'clockOut', reasonCode: string) {
+    const client = this.convexService.getClient();
+    const mutationRef = type === 'clockIn' ? api.attendance.clockIn : api.attendance.clockOut;
+    const successMessage = type === 'clockIn' ? 'Clocked in successfully!' : 'Clocked out successfully!';
+    const failureMessage = type === 'clockIn' ? 'Failed to clock in' : 'Failed to clock out';
+
+    try {
+      const trustSignals = await this.trustService.getTrustSignals(reasonCode);
+      await client.mutation(mutationRef, { trustSignals } as any);
+      this.toastService.success(successMessage);
+      return;
+    } catch (error: any) {
+      const message = String(error?.message || '');
+      if (message.includes('ATTENDANCE_REASON_REQUIRED')) {
+        const reason = window.prompt('This punch was flagged. Provide a short reason to continue:');
+        if (!reason || reason.trim().length === 0) {
+          this.toastService.warning('Punch was not submitted because no reason was provided');
+          return;
+        }
+        const trustSignals = await this.trustService.getTrustSignals(reasonCode, reason.trim());
+        await client.mutation(mutationRef, { trustSignals } as any);
+        this.toastService.success(successMessage);
+        return;
+      }
+      if (message.includes('ATTENDANCE_PUNCH_HELD')) {
+        this.toastService.warning('Punch is held for supervisor review');
+        return;
+      }
+      this.toastService.error(error?.message || failureMessage);
+    }
+  }
+
   async clockIn() {
     this.isClockingIn.set(true);
     try {
-      const client = this.convexService.getClient();
-      await client.mutation(api.attendance.clockIn, {});
-      this.toastService.success('Clocked in successfully!');
-    } catch (error: any) {
-      this.toastService.error(error.message || 'Failed to clock in');
+      await this.executeClockMutation('clockIn', 'clock_in_widget');
     } finally {
       this.isClockingIn.set(false);
     }
@@ -1674,11 +1704,7 @@ export class EmployeeDashboardComponent implements OnInit, OnDestroy {
   async clockOut() {
     this.isClockingOut.set(true);
     try {
-      const client = this.convexService.getClient();
-      await client.mutation(api.attendance.clockOut, {});
-      this.toastService.success('Clocked out successfully!');
-    } catch (error: any) {
-      this.toastService.error(error.message || 'Failed to clock out');
+      await this.executeClockMutation('clockOut', 'clock_out_widget');
     } finally {
       this.isClockingOut.set(false);
     }

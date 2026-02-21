@@ -14,6 +14,11 @@ export const REPORTS_ROUTES: Routes = [
     canActivate: [roleGuard(['super_admin', 'admin', 'hr_manager'])]
   },
   {
+    path: 'analytics',
+    loadComponent: () => import('./pages/analytics-report.component').then(m => m.AnalyticsReportComponent),
+    canActivate: [roleGuard(['super_admin', 'admin', 'hr_manager'])]
+  },
+  {
     path: 'payroll',
     loadComponent: () => import('./pages/payroll-report.component').then(m => m.PayrollReportComponent),
     canActivate: [roleGuard(['super_admin', 'admin', 'hr_manager'])]

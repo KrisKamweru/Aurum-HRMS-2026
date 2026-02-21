@@ -38,6 +38,24 @@ export interface ReportDefinition {
  */
 export const REPORT_DEFINITIONS: ReportDefinition[] = [
   {
+    id: 'analytics',
+    name: 'Workforce Analytics',
+    description: 'Canonical workforce KPIs: headcount, attrition, leave liability, and payroll variance',
+    category: 'core',
+    icon: 'chart-bar',
+    route: '/reports/analytics',
+    filters: [
+      { type: 'dateRange', required: false, label: 'Period Window' },
+    ],
+    columns: [
+      { key: 'headcount', header: 'Headcount', type: 'number' },
+      { key: 'attritionRate', header: 'Attrition Rate', type: 'number' },
+      { key: 'leaveLiabilityDays', header: 'Leave Liability', type: 'number' },
+      { key: 'payrollVarianceAmount', header: 'Payroll Variance', type: 'currency' },
+    ],
+    exportFormats: ['csv'],
+  },
+  {
     id: 'attendance',
     name: 'Attendance Report',
     description: 'Track employee attendance, clock-in/out times, and work hours for any date range',

@@ -9,9 +9,12 @@ async function getViewerInfo(ctx: any) {
   if (!userId) throw new Error("Unauthorized");
 
   const user = await ctx.db.get(userId);
-  if (!user || !user.orgId) throw new Error("User has no organization");
+  if (!user) throw new Error("Unauthorized");
 
-  return user;
+  const resolvedOrgId = user.activeOrgId ?? user.orgId;
+  if (!resolvedOrgId) throw new Error("User has no organization");
+
+  return { ...user, orgId: resolvedOrgId };
 }
 
 function isPrivileged(role: string) {

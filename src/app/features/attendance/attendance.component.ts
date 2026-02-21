@@ -12,6 +12,7 @@ import { ToastService } from '../../shared/services/toast.service';
 import { AuthService } from '../../core/auth/auth.service';
 import { ConfirmDialogService } from '../../shared/services/confirm-dialog.service';
 import { api } from '../../../../convex/_generated/api';
+import { AttendanceTrustService } from '../../core/services/attendance-trust.service';
 
 interface AttendanceSummary {
   presentDays: number;
@@ -507,6 +508,7 @@ export class AttendanceComponent implements OnDestroy {
   private datePipe = inject(DatePipe);
   private authService = inject(AuthService);
   private confirmDialog = inject(ConfirmDialogService);
+  private trustService = inject(AttendanceTrustService);
 
   // Expose Math for template usage
   Math = Math;
@@ -709,16 +711,51 @@ export class AttendanceComponent implements OnDestroy {
     this.sortConfig.set(event);
   }
 
-  async handleClockIn() {
-    this.isActionLoading.set(true);
+  private async executeClockMutation(type: 'clockIn' | 'clockOut', baseReasonCode: string) {
+    const mutationRef = type === 'clockIn' ? api.attendance.clockIn : api.attendance.clockOut;
+    const successMessage = type === 'clockIn' ? 'Successfully clocked in!' : 'Successfully clocked out!';
+    const failureMessage = type === 'clockIn' ? 'Failed to clock in' : 'Failed to clock out';
+
     try {
-      await this.convex.getClient().mutation(api.attendance.clockIn, {});
-      this.toast.success('Successfully clocked in!');
+      const trustSignals = await this.trustService.getTrustSignals(baseReasonCode);
+      await this.convex.getClient().mutation(mutationRef, { trustSignals } as any);
+      this.toast.success(successMessage);
       this.todayStatusResource.reload();
       this.historyResource.reload();
       this.summaryResource.reload();
+      return;
     } catch (error: any) {
-      this.toast.error(error.message || 'Failed to clock in');
+      const message = String(error?.message || '');
+
+      if (message.includes('ATTENDANCE_REASON_REQUIRED')) {
+        const reason = window.prompt('This punch was flagged. Provide a short reason to continue:');
+        if (!reason || reason.trim().length === 0) {
+          this.toast.warning('Punch was not submitted because no reason was provided');
+          return;
+        }
+
+        const trustSignals = await this.trustService.getTrustSignals(baseReasonCode, reason.trim());
+        await this.convex.getClient().mutation(mutationRef, { trustSignals } as any);
+        this.toast.success(successMessage);
+        this.todayStatusResource.reload();
+        this.historyResource.reload();
+        this.summaryResource.reload();
+        return;
+      }
+
+      if (message.includes('ATTENDANCE_PUNCH_HELD')) {
+        this.toast.warning('Punch is held for supervisor review');
+        return;
+      }
+
+      this.toast.error(error?.message || failureMessage);
+    }
+  }
+
+  async handleClockIn() {
+    this.isActionLoading.set(true);
+    try {
+      await this.executeClockMutation('clockIn', 'clock_in_ui');
     } finally {
       this.isActionLoading.set(false);
     }
@@ -737,13 +774,7 @@ export class AttendanceComponent implements OnDestroy {
 
     this.isActionLoading.set(true);
     try {
-      await this.convex.getClient().mutation(api.attendance.clockOut, {});
-      this.toast.success('Successfully clocked out!');
-      this.todayStatusResource.reload();
-      this.historyResource.reload();
-      this.summaryResource.reload();
-    } catch (error: any) {
-      this.toast.error(error.message || 'Failed to clock out');
+      await this.executeClockMutation('clockOut', 'clock_out_ui');
     } finally {
       this.isActionLoading.set(false);
     }

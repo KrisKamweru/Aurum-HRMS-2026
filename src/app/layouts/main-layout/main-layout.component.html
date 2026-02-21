@@ -102,6 +102,25 @@
 
     <!-- User Profile Section -->
     <div class="border-t border-stone-100 dark:border-white/8 p-4 space-y-3">
+      @if (orgContext()) {
+        <div class="rounded-xl border border-stone-200 dark:border-white/8 bg-stone-50/70 dark:bg-white/5 p-3">
+          <p class="text-[11px] font-semibold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-1">Active Organization</p>
+          <p class="text-sm font-semibold text-stone-800 dark:text-stone-100 truncate">{{ activeOrgName() }}</p>
+          @if (canSwitchOrg() && memberships().length > 1) {
+            <select
+              class="mt-2 w-full rounded-lg border border-stone-200 dark:border-white/8 bg-white dark:bg-white/5 px-2.5 py-2 text-xs font-medium text-stone-700 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-burgundy-500"
+              [value]="activeOrgId() || ''"
+              [disabled]="isSwitchingOrg()"
+              (change)="switchOrganization($any($event.target).value)"
+            >
+              @for (org of memberships(); track org.orgId) {
+                <option [value]="org.orgId">{{ org.orgName }}</option>
+              }
+            </select>
+          }
+        </div>
+      }
+
       <!-- Profile Card - Clickable to go to profile -->
       <a routerLink="/profile" class="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-burgundy-900 to-burgundy-950 border border-burgundy-800/50 hover:border-burgundy-700/50 hover:shadow-lg hover:shadow-burgundy-900/20 transition-all cursor-pointer group">
         <div class="w-10 h-10 rounded-lg bg-burgundy-800 flex items-center justify-center text-white font-bold text-sm">
@@ -195,6 +214,20 @@
     <!-- Desktop Header (Notifications & Utilities) -->
     <div class="hidden md:flex h-16 items-center justify-end px-4 sm:px-6 lg:px-10 bg-transparent sticky top-0 z-20">
       <div class="flex items-center gap-4">
+        @if (canSwitchOrg() && memberships().length > 1) {
+          <select
+            class="h-9 min-w-56 rounded-lg border border-stone-200 dark:border-white/8 bg-white/95 dark:bg-white/5 px-3 text-sm font-medium text-stone-700 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-burgundy-500"
+            [value]="activeOrgId() || ''"
+            [disabled]="isSwitchingOrg()"
+            (change)="switchOrganization($any($event.target).value)"
+            title="Active organization"
+          >
+            @for (org of memberships(); track org.orgId) {
+              <option [value]="org.orgId">{{ org.orgName }}</option>
+            }
+          </select>
+        }
+
         <!-- Desktop Notification Bell -->
         <div class="relative">
           <button
@@ -340,6 +373,25 @@
 
           <!-- User Profile Section (Mobile) -->
           <div class="border-t border-stone-100 dark:border-white/8 p-4 bg-stone-50 dark:bg-stone-900 space-y-3">
+            @if (orgContext()) {
+              <div class="rounded-xl border border-stone-200 dark:border-white/8 bg-white dark:bg-stone-800 p-3">
+                <p class="text-[11px] font-semibold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-1">Active Organization</p>
+                <p class="text-sm font-semibold text-stone-800 dark:text-stone-100 truncate">{{ activeOrgName() }}</p>
+                @if (canSwitchOrg() && memberships().length > 1) {
+                  <select
+                    class="mt-2 w-full rounded-lg border border-stone-200 dark:border-white/8 bg-white dark:bg-white/5 px-2.5 py-2 text-xs font-medium text-stone-700 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-burgundy-500"
+                    [value]="activeOrgId() || ''"
+                    [disabled]="isSwitchingOrg()"
+                    (change)="switchOrganization($any($event.target).value)"
+                  >
+                    @for (org of memberships(); track org.orgId) {
+                      <option [value]="org.orgId">{{ org.orgName }}</option>
+                    }
+                  </select>
+                }
+              </div>
+            }
+
             <!-- Profile Card -->
             <a routerLink="/profile" (click)="toggleSidebar()" class="flex items-center gap-3 p-3 rounded-xl bg-white dark:bg-stone-800 border border-stone-100 dark:border-white/8 hover:border-burgundy-800/20 hover:shadow-md transition-all cursor-pointer group">
               <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-burgundy-100 to-burgundy-50 dark:from-burgundy-900 dark:to-burgundy-950 flex items-center justify-center text-burgundy-800 dark:text-burgundy-100 font-bold text-sm border border-burgundy-200 dark:border-burgundy-800 group-hover:shadow-lg group-hover:shadow-burgundy-800/10 transition-all">

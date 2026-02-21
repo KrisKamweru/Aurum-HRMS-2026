@@ -85,13 +85,14 @@ export const getPendingJoinRequests = query({
     if (!userId) throw new Error("Unauthorized");
 
     const user = await ctx.db.get(userId);
-    if (!user || !user.orgId || !isPrivileged(user.role ?? "")) {
+    const adminOrgId = user?.activeOrgId ?? user?.orgId;
+    if (!user || !adminOrgId || !isPrivileged(user.role ?? "")) {
         return [];
     }
 
     const requests = await ctx.db
       .query("org_join_requests")
-      .withIndex("by_org_status", (q) => q.eq("orgId", user.orgId!).eq("status", "pending"))
+      .withIndex("by_org_status", (q) => q.eq("orgId", adminOrgId).eq("status", "pending"))
       .collect();
 
     const enriched = await Promise.all(requests.map(async (req) => {
@@ -171,14 +172,15 @@ export const approveJoinRequest = mutation({
         if (!adminId) throw new Error("Unauthorized");
 
         const admin = await ctx.db.get(adminId);
-        if (!admin || !admin.orgId || !isPrivileged(admin.role ?? "")) {
+        const adminOrgId = admin?.activeOrgId ?? admin?.orgId;
+        if (!admin || !adminOrgId || !isPrivileged(admin.role ?? "")) {
             throw new Error("Unauthorized: Insufficient permissions");
         }
 
         const request = await ctx.db.get(args.requestId);
         if (!request) throw new Error("Request not found");
 
-        if (request.orgId !== admin.orgId) {
+        if (request.orgId !== adminOrgId) {
             throw new Error("Unauthorized: Request is for a different organization");
         }
 
@@ -197,7 +199,8 @@ export const approveJoinRequest = mutation({
 
         // 2. Update User
         await ctx.db.patch(request.userId, {
-            orgId: admin.orgId,
+            orgId: adminOrgId,
+            activeOrgId: adminOrgId,
             role: args.role ?? "employee"
         });
 
@@ -224,14 +227,15 @@ export const rejectJoinRequest = mutation({
         if (!adminId) throw new Error("Unauthorized");
 
         const admin = await ctx.db.get(adminId);
-        if (!admin || !admin.orgId || !isPrivileged(admin.role ?? "")) {
+        const adminOrgId = admin?.activeOrgId ?? admin?.orgId;
+        if (!admin || !adminOrgId || !isPrivileged(admin.role ?? "")) {
             throw new Error("Unauthorized: Insufficient permissions");
         }
 
         const request = await ctx.db.get(args.requestId);
         if (!request) throw new Error("Request not found");
 
-        if (request.orgId !== admin.orgId) {
+        if (request.orgId !== adminOrgId) {
             throw new Error("Unauthorized: Request is for a different organization");
         }
 
@@ -351,6 +355,7 @@ export const createOrganizationWithSetup = mutation({
         // 5. Update User to be admin of this org
         await ctx.db.patch(userId, {
             orgId,
+            activeOrgId: orgId,
             role: "admin",
             employeeId,
         });

@@ -58,7 +58,7 @@ interface Column {
             <select
               [ngModel]="selectedJobId()"
               (ngModelChange)="selectedJobId.set($event)"
-              class="pl-3 pr-10 py-2 rounded-xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-800 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-[#8b1e3f] focus:border-transparent transition-all shadow-sm text-sm"
+              class="pl-3 pr-10 py-2 rounded-xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-800 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-burgundy-500 focus:border-transparent transition-all shadow-sm text-sm"
             >
               <option value="">All Jobs</option>
               @for (job of jobs(); track job._id) {
@@ -161,8 +161,8 @@ interface Column {
       @if (selectedApplication(); as selected) {
         <div class="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm" (click)="closeApplicationDetails()"></div>
         <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div class="w-full max-w-lg rounded-2xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 shadow-2xl">
-            <div class="flex items-start justify-between p-5 border-b border-stone-200 dark:border-stone-700">
+          <div class="w-full max-w-lg max-h-[calc(100dvh-2rem)] overflow-hidden rounded-2xl border border-stone-200 dark:border-white/8 bg-white dark:bg-white/5 dark:backdrop-blur-xl shadow-2xl">
+            <div class="flex items-start justify-between p-5 border-b border-stone-200 dark:border-white/8">
               <div>
                 <h2 class="text-lg font-bold text-stone-900 dark:text-stone-100">{{ selected.candidateName }}</h2>
                 <p class="text-sm text-stone-500 dark:text-stone-400">{{ selected.jobTitle }}</p>
@@ -172,7 +172,7 @@ interface Column {
               </button>
             </div>
 
-            <div class="p-5 grid grid-cols-2 gap-3 text-sm">
+            <div class="overflow-y-auto p-5 grid grid-cols-2 gap-3 text-sm">
               <div class="text-stone-500 dark:text-stone-400">Status</div>
               <div class="text-stone-800 dark:text-stone-100 capitalize">{{ selected.status }}</div>
 
@@ -186,7 +186,7 @@ interface Column {
               <div class="text-stone-800 dark:text-stone-100">{{ selected.rating ?? '-' }}</div>
             </div>
 
-            <div class="p-5 border-t border-stone-200 dark:border-stone-700 flex flex-wrap gap-2 justify-end">
+            <div class="p-5 border-t border-stone-200 dark:border-white/8 flex flex-wrap gap-2 justify-end">
               <ui-button variant="outline" (onClick)="emailCandidate(selected)">
                 Email Candidate
               </ui-button>
@@ -208,23 +208,7 @@ interface Column {
         </div>
       }
     </div>
-  `,
-  styles: [`
-    /* Custom scrollbar for horizontal scrolling */
-    .overflow-x-auto::-webkit-scrollbar {
-      height: 8px;
-    }
-    .overflow-x-auto::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    .overflow-x-auto::-webkit-scrollbar-thumb {
-      background-color: rgba(156, 163, 175, 0.3);
-      border-radius: 4px;
-    }
-    .overflow-x-auto::-webkit-scrollbar-thumb:hover {
-      background-color: rgba(156, 163, 175, 0.5);
-    }
-  `]
+  `
 })
 export class CandidateBoardComponent implements OnInit {
   private convex = inject(ConvexClientService);

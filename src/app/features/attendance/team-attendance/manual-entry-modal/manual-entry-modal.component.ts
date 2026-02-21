@@ -6,6 +6,7 @@ import { UiButtonComponent } from '../../../../shared/components/ui-button/ui-bu
 import { UiIconComponent } from '../../../../shared/components/ui-icon/ui-icon.component';
 import { UiFormFieldComponent } from '../../../../shared/components/ui-form-field/ui-form-field.component';
 import { ConvexClientService } from '../../../../core/services/convex-client.service';
+import { AttendanceTrustService } from '../../../../core/services/attendance-trust.service';
 import { ToastService } from '../../../../shared/services/toast.service';
 import { api } from '../../../../../../convex/_generated/api';
 
@@ -119,6 +120,7 @@ import { api } from '../../../../../../convex/_generated/api';
 export class ManualEntryModalComponent {
   private fb = inject(FormBuilder);
   private convex = inject(ConvexClientService);
+  private trustService = inject(AttendanceTrustService);
   private toast = inject(ToastService);
 
   isOpen = input(false);
@@ -194,6 +196,7 @@ export class ManualEntryModalComponent {
     };
 
     try {
+      const trustSignals = await this.trustService.getTrustSignals('manual_entry_ui', formValue.notes || undefined);
       await this.convex.getClient().mutation(api.attendance.manualEntry, {
         employeeId: this.employee()!.id as any,
         date: dateStr,
@@ -201,7 +204,8 @@ export class ManualEntryModalComponent {
         clockOut: toISO(formValue.clockOut),
         status: formValue.status as any,
         breakMinutes: formValue.breakMinutes || 0,
-        notes: formValue.notes || undefined
+        notes: formValue.notes || undefined,
+        trustSignals,
       });
 
       this.toast.success('Attendance record updated');

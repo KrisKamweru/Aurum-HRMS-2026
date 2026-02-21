@@ -24,6 +24,9 @@ export interface SortEvent {
 @Component({
   selector: 'ui-data-table',
   standalone: true,
+  host: {
+    class: 'block'
+  },
   imports: [CommonModule, UiButtonComponent, UiBadgeComponent, UiIconComponent],
   providers: [DatePipe, CurrencyPipe],
   template: `
@@ -32,13 +35,13 @@ export interface SortEvent {
       [class.rounded-2xl]="cornerStyle === 'rounded'"
       [class.rounded-none]="cornerStyle === 'square'"
     >
-      <div class="table-wrapper">
-        <table class="w-full text-left text-sm">
+      <div class="max-w-full overflow-x-auto overscroll-x-contain">
+        <table class="min-w-[600px] w-full text-left text-sm">
           <thead [class]="headerClasses()">
             <tr>
               @for (col of columns; track col.key) {
                 <th
-                  class="px-6 py-4 text-xs font-bold uppercase tracking-wider whitespace-nowrap"
+                  class="group px-6 py-4 text-xs font-bold uppercase tracking-wider whitespace-nowrap"
                   [class.cursor-pointer]="col.sortable"
                   [class.hover:text-burgundy-900]="col.sortable && headerVariant === 'accent'"
                   [class.dark:hover:text-burgundy-100]="col.sortable && headerVariant === 'accent'"
@@ -216,71 +219,7 @@ export interface SortEvent {
         </div>
       }
     </div>
-  `,
-  styles: [`
-    :host {
-      display: block;
-    }
-
-    .table-head-neutral {
-      background: var(--surface-header);
-    }
-    :host-context(.dark) .table-head-neutral {
-      background: rgba(255,255,255,0.02);
-    }
-
-    .table-wrapper {
-      max-width: 100%;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    .table-wrapper::-webkit-scrollbar {
-      height: 8px;
-    }
-
-    .table-wrapper::-webkit-scrollbar-track {
-      background: transparent;
-      border-radius: 4px;
-    }
-
-    .table-wrapper::-webkit-scrollbar-thumb {
-      background: #d6d3d1;
-      border-radius: 4px;
-    }
-
-    .table-wrapper::-webkit-scrollbar-thumb:hover {
-      background: #a8a29e;
-    }
-
-    :host-context(.dark) .table-wrapper::-webkit-scrollbar-thumb {
-      background: #57534e;
-    }
-
-    :host-context(.dark) .table-wrapper::-webkit-scrollbar-thumb:hover {
-      background: #78716c;
-    }
-
-    table {
-      min-width: 600px;
-    }
-
-    .animate-fade-in-up {
-      animation: fadeInUp 0.3s ease-out forwards;
-      opacity: 0;
-    }
-
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(8px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-  `]
+  `
 })
 export class UiDataTableComponent {
   @Input() data: any[] = [];
@@ -340,7 +279,7 @@ export class UiDataTableComponent {
       return 'border-b border-stone-200 dark:border-white/8';
     }
     if (this.headerVariant === 'neutral') {
-      return 'table-head-neutral border-b border-stone-200 dark:border-white/8';
+      return 'bg-[#eeedf0] dark:bg-white/[0.02] border-b border-stone-200 dark:border-white/8';
     }
     return 'bg-burgundy-50 dark:bg-burgundy-900/20 border-b border-burgundy-100 dark:border-burgundy-800/30';
   }

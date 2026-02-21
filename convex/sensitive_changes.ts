@@ -16,11 +16,30 @@ export async function getViewerInfo(ctx: AppCtx) {
   }
 
   const user = await ctx.db.get(userId);
-  if (!user || !user.orgId) {
+  if (!user) {
+    throw new Error("Unauthorized");
+  }
+
+  const resolvedOrgId = user.activeOrgId ?? user.orgId;
+  if (!resolvedOrgId) {
     throw new Error("User has no organization");
   }
 
-  return user;
+  const memberships = await ctx.db
+    .query("user_org_permissions")
+    .withIndex("by_user", (q) => q.eq("userId", user._id))
+    .collect();
+  const activeMembership = memberships.find((membership) => membership.orgId === resolvedOrgId) ?? null;
+  const isLegacyPrimaryOrg = user.orgId === resolvedOrgId;
+  if (!activeMembership && !isLegacyPrimaryOrg) {
+    throw new Error("Unauthorized: Active organization is not assigned to this user");
+  }
+
+  return {
+    ...user,
+    orgId: resolvedOrgId,
+    membershipRole: activeMembership?.role ?? null,
+  };
 }
 
 export function canMutatePayroll(role: string) {
@@ -49,9 +68,56 @@ type QueueChangeArgs = {
   approverUserId?: Id<"users">;
 };
 
+function addHours(baseIso: string, hours?: number) {
+  if (!hours || !Number.isFinite(hours) || hours <= 0) return undefined;
+  const dt = new Date(baseIso);
+  dt.setTime(dt.getTime() + Math.floor(hours * 60 * 60 * 1000));
+  return dt.toISOString();
+}
+
+async function maybeStartWorkflowForChangeRequest(
+  ctx: MutationCtx,
+  changeRequestId: Id<"change_requests">,
+  args: QueueChangeArgs,
+) {
+  const candidates = await ctx.db
+    .query("approval_workflows")
+    .withIndex("by_org", (q) => q.eq("orgId", args.orgId))
+    .collect();
+
+  const active = candidates.filter((workflow) => workflow.isActive);
+  if (active.length === 0) return null;
+
+  const exactKey = `change_request:${args.targetTable}:${args.operation}`;
+  const workflow =
+    active.find((item) => item.key === exactKey) ||
+    active.find((item) => item.targetTable === "change_requests") ||
+    active.find((item) => item.targetTable === args.targetTable);
+  if (!workflow) return null;
+
+  const nowIso = new Date().toISOString();
+  const dueAt = addHours(nowIso, workflow.resolutionHours);
+  const escalationDueAt = addHours(nowIso, workflow.escalationHours);
+  return await ctx.db.insert("workflow_instances", {
+    orgId: args.orgId,
+    workflowId: workflow._id,
+    targetTable: "change_requests",
+    targetId: String(changeRequestId),
+    status: "pending",
+    pendingStep: 1,
+    dueAt,
+    escalationDueAt,
+    escalationCount: 0,
+    currentAssigneeUserId: args.approverUserId,
+    requestedBy: args.requesterUserId,
+    requestedAt: nowIso,
+    updatedAt: nowIso,
+  });
+}
+
 export async function queueChangeRequest(ctx: MutationCtx, args: QueueChangeArgs) {
   const now = new Date().toISOString();
-  return await ctx.db.insert("change_requests", {
+  const changeRequestId = await ctx.db.insert("change_requests", {
     orgId: args.orgId,
     requesterUserId: args.requesterUserId,
     targetTable: args.targetTable,
@@ -65,6 +131,12 @@ export async function queueChangeRequest(ctx: MutationCtx, args: QueueChangeArgs
     updatedAt: now,
     approverUserId: args.approverUserId,
   });
+
+  if ((args.status ?? "pending") === "pending") {
+    await maybeStartWorkflowForChangeRequest(ctx, changeRequestId, args);
+  }
+
+  return changeRequestId;
 }
 
 export function canApproveRequester(requesterRole: string, approverRole: string) {

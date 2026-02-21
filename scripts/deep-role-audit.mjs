@@ -18,74 +18,79 @@ const roles = [
   { key: 'employee', email: 'employee@aurumtest.local' },
 ];
 
-const routes = [
-  '/dashboard',
-  '/profile',
-  '/leave-requests',
-  '/attendance',
-  '/attendance/team',
-  '/employees',
-  `/employees/${FIXTURES.employeeId}`,
-  '/recruitment/jobs',
-  '/recruitment/jobs/new',
-  '/recruitment/board',
-  '/training/catalog',
-  '/training/my-learning',
-  '/training/courses/new',
-  '/settings/general',
-  '/settings/leave-policies',
-  '/core-hr/promotions',
-  '/core-hr/transfers',
-  '/core-hr/awards',
-  '/core-hr/warnings',
-  '/core-hr/resignations',
-  '/core-hr/terminations',
-  '/core-hr/complaints',
-  '/core-hr/travel',
-  '/organization/departments',
-  '/organization/designations',
-  '/organization/locations',
-  '/organization/user-linking',
-  '/organization/chart',
-  '/organization/settings',
-  '/payroll',
-  `/payroll/${FIXTURES.payrollRunId}`,
-  `/payroll/slip/${FIXTURES.slipId}`,
-  '/reports',
-  '/reports/attendance',
-  '/reports/payroll',
-  '/reports/tax',
-  '/super-admin',
-];
-
-const allow = {
-  super_admin: new Set(routes),
-  admin: new Set(routes.filter((r) => r !== '/super-admin')),
-  manager: new Set([
+function buildRoutes(fixtures) {
+  return [
     '/dashboard',
     '/profile',
     '/leave-requests',
     '/attendance',
     '/attendance/team',
     '/employees',
-    `/employees/${FIXTURES.employeeId}`,
+    `/employees/${fixtures.employeeId}`,
     '/recruitment/jobs',
     '/recruitment/jobs/new',
     '/recruitment/board',
     '/training/catalog',
     '/training/my-learning',
     '/training/courses/new',
-  ]),
-  employee: new Set([
-    '/dashboard',
-    '/profile',
-    '/leave-requests',
-    '/attendance',
-    '/training/catalog',
-    '/training/my-learning',
-    `/payroll/slip/${FIXTURES.slipId}`,
-  ]),
-};
+    '/settings/general',
+    '/settings/leave-policies',
+    '/core-hr/promotions',
+    '/core-hr/transfers',
+    '/core-hr/awards',
+    '/core-hr/warnings',
+    '/core-hr/resignations',
+    '/core-hr/terminations',
+    '/core-hr/complaints',
+    '/core-hr/travel',
+    '/organization/departments',
+    '/organization/designations',
+    '/organization/locations',
+    '/organization/user-linking',
+    '/organization/chart',
+    '/organization/settings',
+    '/payroll',
+    `/payroll/${fixtures.payrollRunId}`,
+    `/payroll/slip/${fixtures.slipId}`,
+    '/reports',
+    '/reports/attendance',
+    '/reports/payroll',
+    '/reports/tax',
+    '/super-admin',
+  ];
+}
+
+function buildAllow(routes, fixtures) {
+  return {
+    super_admin: new Set(routes),
+    admin: new Set(routes.filter((r) => r !== '/super-admin')),
+    manager: new Set([
+      '/dashboard',
+      '/profile',
+      '/leave-requests',
+      '/attendance',
+      '/attendance/team',
+      '/employees',
+      `/employees/${fixtures.employeeId}`,
+      '/recruitment/jobs',
+      '/recruitment/jobs/new',
+      '/recruitment/board',
+      '/training/catalog',
+      '/training/my-learning',
+      '/training/courses/new',
+      `/payroll/slip/${fixtures.slipId}`,
+    ]),
+    employee: new Set([
+      '/dashboard',
+      '/profile',
+      '/leave-requests',
+      '/attendance',
+      '/training/catalog',
+      '/training/my-learning',
+      `/payroll/slip/${fixtures.slipId}`,
+    ]),
+  };
+}
 
 function stripUrl(url) {
   return url.replace(BASE_URL, '');
@@ -157,10 +162,65 @@ async function login(page, email) {
   await settle(page);
 }
 
-function expectedAllowed(roleKey, routePath) {
+async function resolveFixtures(page) {
+  const resolved = { ...FIXTURES };
+
+  await page.goto(`${BASE_URL}/employees`, { waitUntil: 'domcontentloaded' });
+  await settle(page);
+  const employeeId = await page.evaluate(() => {
+    const links = Array.from(document.querySelectorAll('a[href]'))
+      .map((el) => el.getAttribute('href') || '');
+    const match = links.find((href) => /^\/employees\/[a-z0-9]+$/i.test(href));
+    return match ? match.split('/').pop() : null;
+  });
+  if (employeeId) {
+    resolved.employeeId = employeeId;
+  }
+
+  await page.goto(`${BASE_URL}/payroll`, { waitUntil: 'domcontentloaded' });
+  await settle(page);
+  const payrollRunId = await page.evaluate(() => {
+    const links = Array.from(document.querySelectorAll('a[href]'))
+      .map((el) => el.getAttribute('href') || '');
+    const match = links.find((href) => /^\/payroll\/[a-z0-9]+$/i.test(href));
+    return match ? match.split('/').pop() : null;
+  });
+  if (payrollRunId) {
+    resolved.payrollRunId = payrollRunId;
+  }
+
+  if (resolved.payrollRunId) {
+    await page.goto(`${BASE_URL}/payroll/${resolved.payrollRunId}`, { waitUntil: 'domcontentloaded' });
+    await settle(page);
+    const slipId = await page.evaluate(() => {
+      const links = Array.from(document.querySelectorAll('a[href]'))
+        .map((el) => el.getAttribute('href') || '');
+      const match = links.find((href) => /^\/payroll\/slip\/[a-z0-9]+$/i.test(href));
+      return match ? match.split('/').pop() : null;
+    });
+    if (slipId) {
+      resolved.slipId = slipId;
+    }
+  }
+
+  return resolved;
+}
+
+async function resolveEmployeeSlipFixture(page) {
+  await page.goto(`${BASE_URL}/dashboard`, { waitUntil: 'domcontentloaded' });
+  await settle(page);
+  return await page.evaluate(() => {
+    const links = Array.from(document.querySelectorAll('a[href]'))
+      .map((el) => el.getAttribute('href') || '');
+    const match = links.find((href) => /^\/payroll\/slip\/[a-z0-9]+$/i.test(href));
+    return match ? match.split('/').pop() : null;
+  });
+}
+
+function expectedAllowed(allow, fixtures, roleKey, routePath) {
   if (allow[roleKey].has(routePath)) return true;
   if (routePath.startsWith('/employees/') && allow[roleKey].has('/employees')) return true;
-  if (routePath.startsWith('/payroll/slip/')) return allow[roleKey].has(`/payroll/slip/${FIXTURES.slipId}`);
+  if (routePath.startsWith('/payroll/slip/')) return allow[roleKey].has(`/payroll/slip/${fixtures.slipId}`);
   if (routePath.startsWith('/payroll/') && !routePath.startsWith('/payroll/slip/')) return allow[roleKey].has('/payroll');
   return false;
 }
@@ -206,9 +266,23 @@ async function run() {
     await d.accept().catch(() => {});
   });
 
+  await login(page, roles[0].email);
+  const fixtures = await resolveFixtures(page);
+  await logout(page);
+
+  await login(page, 'employee@aurumtest.local');
+  const employeeSlipId = await resolveEmployeeSlipFixture(page);
+  if (employeeSlipId) {
+    fixtures.slipId = employeeSlipId;
+  }
+  await logout(page);
+
+  const routes = buildRoutes(fixtures);
+  const allow = buildAllow(routes, fixtures);
+
   const audit = {
     generatedAt: new Date().toISOString(),
-    fixtures: FIXTURES,
+    fixtures,
     roles: {},
     summary: {},
   };
@@ -221,7 +295,7 @@ async function run() {
 
     const routeChecks = [];
     for (const routePath of routes) {
-      const expected = expectedAllowed(role.key, routePath);
+      const expected = expectedAllowed(allow, fixtures, role.key, routePath);
       let { finalPath, ready } = await gotoReady(page, routePath);
 
       if (!expected && finalPath !== '/dashboard' && finalPath !== '/auth/login') {
@@ -246,7 +320,7 @@ async function run() {
     };
 
     if (role.key !== 'employee') {
-      const det = await gotoReady(page, `/employees/${FIXTURES.employeeId}`);
+      const det = await gotoReady(page, `/employees/${fixtures.employeeId}`);
       if (det.finalPath.startsWith('/employees/')) {
         payData.employeeDetailReachable = true;
         await page.getByRole('button', { name: /overview/i }).first().waitFor({ state: 'visible', timeout: 5000 }).catch(() => {});

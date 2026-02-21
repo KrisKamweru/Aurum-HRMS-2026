@@ -18,6 +18,7 @@ export default defineSchema({
     image: v.optional(v.string()),
     role: v.union(v.literal("super_admin"), v.literal("admin"), v.literal("hr_manager"), v.literal("employee"), v.literal("manager"), v.literal("pending")),
     orgId: v.optional(v.id("organizations")),
+    activeOrgId: v.optional(v.id("organizations")),
     employeeId: v.optional(v.id("employees")),
   }).index("email", ["email"]).index("by_org", ["orgId"]),
 
@@ -437,6 +438,89 @@ export default defineSchema({
     .index("by_date", ["date"])
     .index("by_employee_date", ["employeeId", "date"]),
 
+  attendance_trust_events: defineTable({
+    orgId: v.id("organizations"),
+    employeeId: v.id("employees"),
+    attendanceRecordId: v.optional(v.id("attendance_records")),
+    eventType: v.union(
+      v.literal("clock_in"),
+      v.literal("clock_out"),
+      v.literal("manual_entry")
+    ),
+    capturedAt: v.string(),
+    riskScore: v.number(),
+    riskLevel: v.union(v.literal("low"), v.literal("medium"), v.literal("high")),
+    policyMode: v.union(
+      v.literal("observe"),
+      v.literal("warn"),
+      v.literal("hold"),
+      v.literal("deny")
+    ),
+    decision: v.union(
+      v.literal("observed"),
+      v.literal("allowed"),
+      v.literal("warned"),
+      v.literal("held"),
+      v.literal("denied"),
+      v.literal("approved"),
+      v.literal("rejected")
+    ),
+    requiresReason: v.boolean(),
+    reasonCode: v.optional(v.string()),
+    reasonText: v.optional(v.string()),
+    reviewedBy: v.optional(v.id("users")),
+    reviewedAt: v.optional(v.string()),
+    reviewNote: v.optional(v.string()),
+    pendingAction: v.optional(v.object({
+      type: v.string(),
+      payload: v.any(),
+    })),
+    reasons: v.array(v.string()),
+    signals: v.object({
+      deviceIdHash: v.optional(v.string()),
+      ipHash: v.optional(v.string()),
+      userAgentHash: v.optional(v.string()),
+      latitude: v.optional(v.number()),
+      longitude: v.optional(v.number()),
+      accuracyMeters: v.optional(v.number()),
+      reasonCode: v.optional(v.string()),
+    }),
+  })
+    .index("by_org", ["orgId"])
+    .index("by_employee", ["employeeId"])
+    .index("by_org_event_type", ["orgId", "eventType"])
+    .index("by_org_decision", ["orgId", "decision"]),
+
+  attendance_trusted_devices: defineTable({
+    orgId: v.id("organizations"),
+    employeeId: v.id("employees"),
+    deviceIdHash: v.string(),
+    firstSeenAt: v.string(),
+    lastSeenAt: v.string(),
+    punchCount: v.number(),
+    status: v.union(v.literal("active"), v.literal("revoked")),
+  })
+    .index("by_org_employee", ["orgId", "employeeId"])
+    .index("by_employee_device", ["employeeId", "deviceIdHash"]),
+
+  attendance_trust_policies: defineTable({
+    orgId: v.id("organizations"),
+    mode: v.union(v.literal("observe"), v.literal("warn"), v.literal("hold"), v.literal("deny")),
+    warnThreshold: v.number(),
+    holdThreshold: v.number(),
+    denyThreshold: v.number(),
+    requireReasonAtRisk: v.union(v.literal("medium"), v.literal("high")),
+    impossibleTravelSpeedKph: v.number(),
+    geofence: v.optional(v.object({
+      latitude: v.number(),
+      longitude: v.number(),
+      radiusMeters: v.number(),
+    })),
+    enabled: v.boolean(),
+    updatedBy: v.id("users"),
+    updatedAt: v.string(),
+  }).index("by_org", ["orgId"]),
+
   // Work schedule configuration per employee (optional override of org defaults)
   work_schedules: defineTable({
     orgId: v.id("organizations"),
@@ -530,6 +614,133 @@ export default defineSchema({
   .index("by_org_status", ["orgId", "status"])
   .index("by_target", ["orgId", "targetTable", "targetId"])
   .index("by_requester", ["orgId", "requesterUserId"]),
+
+  approval_workflows: defineTable({
+    orgId: v.id("organizations"),
+    key: v.string(),
+    name: v.string(),
+    targetTable: v.string(),
+    minApprovals: v.number(),
+    steps: v.any(),
+    escalationHours: v.optional(v.number()),
+    resolutionHours: v.optional(v.number()),
+    isActive: v.boolean(),
+    createdAt: v.string(),
+    updatedAt: v.string(),
+    createdBy: v.id("users"),
+  })
+    .index("by_org", ["orgId"])
+    .index("by_org_key", ["orgId", "key"]),
+
+  workflow_instances: defineTable({
+    orgId: v.id("organizations"),
+    workflowId: v.id("approval_workflows"),
+    targetTable: v.string(),
+    targetId: v.string(),
+    status: v.union(v.literal("pending"), v.literal("approved"), v.literal("rejected"), v.literal("cancelled")),
+    pendingStep: v.optional(v.number()),
+    dueAt: v.optional(v.string()),
+    escalationDueAt: v.optional(v.string()),
+    escalatedAt: v.optional(v.string()),
+    escalationCount: v.optional(v.number()),
+    currentAssigneeUserId: v.optional(v.id("users")),
+    requestedBy: v.id("users"),
+    requestedAt: v.string(),
+    resolvedAt: v.optional(v.string()),
+    updatedAt: v.string(),
+  })
+    .index("by_org", ["orgId"])
+    .index("by_org_status", ["orgId", "status"])
+    .index("by_target", ["orgId", "targetTable", "targetId"])
+    .index("by_org_status_due", ["orgId", "status", "dueAt"]),
+
+  workflow_actions: defineTable({
+    orgId: v.id("organizations"),
+    instanceId: v.id("workflow_instances"),
+    actorUserId: v.id("users"),
+    action: v.union(v.literal("approve"), v.literal("reject"), v.literal("delegate"), v.literal("escalate")),
+    stepNumber: v.optional(v.number()),
+    comment: v.optional(v.string()),
+    delegatedToUserId: v.optional(v.id("users")),
+    actedAt: v.string(),
+  })
+    .index("by_instance", ["instanceId"])
+    .index("by_org_actor", ["orgId", "actorUserId"]),
+
+  report_schedules: defineTable({
+    orgId: v.id("organizations"),
+    name: v.string(),
+    reportType: v.union(
+      v.literal("attendance"),
+      v.literal("payroll"),
+      v.literal("tax"),
+      v.literal("headcount"),
+      v.literal("attrition"),
+      v.literal("leave_liability"),
+      v.literal("payroll_variance")
+    ),
+    cadence: v.union(v.literal("daily"), v.literal("weekly"), v.literal("monthly")),
+    format: v.union(v.literal("csv"), v.literal("json")),
+    recipients: v.array(v.string()),
+    isActive: v.boolean(),
+    filters: v.optional(v.any()),
+    lastRunAt: v.optional(v.string()),
+    lastAttemptAt: v.optional(v.string()),
+    nextRunAt: v.optional(v.string()),
+    timezone: v.optional(v.string()),
+    createdBy: v.id("users"),
+    createdAt: v.string(),
+    updatedAt: v.string(),
+  })
+    .index("by_org", ["orgId"])
+    .index("by_org_active", ["orgId", "isActive"]),
+
+  report_delivery_logs: defineTable({
+    orgId: v.id("organizations"),
+    scheduleId: v.optional(v.id("report_schedules")),
+    reportType: v.string(),
+    status: v.union(v.literal("success"), v.literal("failed")),
+    trigger: v.union(v.literal("manual"), v.literal("scheduled"), v.literal("retry")),
+    periodKey: v.optional(v.string()),
+    generatedAt: v.string(),
+    generatedBy: v.id("users"),
+    recipientCount: v.number(),
+    artifactPath: v.optional(v.string()),
+    error: v.optional(v.string()),
+  })
+    .index("by_org", ["orgId"])
+    .index("by_org_status", ["orgId", "status"]),
+
+  ops_alert_routes: defineTable({
+    environment: v.union(v.literal("development"), v.literal("staging"), v.literal("production")),
+    severity: v.union(v.literal("p1"), v.literal("p2"), v.literal("p3")),
+    service: v.string(),
+    channel: v.union(v.literal("email"), v.literal("slack"), v.literal("pagerduty"), v.literal("webhook")),
+    target: v.string(),
+    isActive: v.boolean(),
+    updatedBy: v.id("users"),
+    updatedAt: v.string(),
+  })
+    .index("by_environment", ["environment"])
+    .index("by_environment_severity", ["environment", "severity"]),
+
+  incident_templates: defineTable({
+    incidentKey: v.string(),
+    environment: v.union(v.literal("development"), v.literal("staging"), v.literal("production")),
+    severity: v.union(v.literal("p1"), v.literal("p2"), v.literal("p3")),
+    title: v.string(),
+    status: v.union(v.literal("open"), v.literal("mitigated"), v.literal("resolved")),
+    detectedAt: v.string(),
+    affectedModules: v.array(v.string()),
+    affectedOrgs: v.optional(v.array(v.id("organizations"))),
+    ownerUserId: v.id("users"),
+    markdown: v.string(),
+    createdAt: v.string(),
+    updatedAt: v.string(),
+  })
+    .index("by_environment_status", ["environment", "status"])
+    .index("by_detected_at", ["detectedAt"])
+    .index("by_incident_key", ["incidentKey"]),
 
   // --- Notifications ---
 
