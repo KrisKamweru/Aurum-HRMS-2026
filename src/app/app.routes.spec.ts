@@ -16,6 +16,15 @@ describe('app routes', () => {
     expect(paths).toContain('leave-requests');
     expect(paths).toContain('attendance');
     expect(paths).toContain('attendance/team');
+    expect(paths).toContain('core-hr');
+    expect(paths).toContain('core-hr/promotions');
+    expect(paths).toContain('core-hr/transfers');
+    expect(paths).toContain('core-hr/awards');
+    expect(paths).toContain('core-hr/warnings');
+    expect(paths).toContain('core-hr/resignations');
+    expect(paths).toContain('core-hr/terminations');
+    expect(paths).toContain('core-hr/complaints');
+    expect(paths).toContain('core-hr/travel');
     expect(paths).toContain('auth/login');
   });
 
@@ -70,5 +79,30 @@ describe('app routes', () => {
     expect(payroll?.loadComponent).toBeTypeOf('function');
     expect(payrollRun?.loadComponent).toBeTypeOf('function');
     expect(payslip?.loadComponent).toBeTypeOf('function');
+  });
+
+  it('maps core-hr routes to rebuilt components with route data contracts', () => {
+    const coreHr = routes.find((route) => route.path === 'core-hr');
+    const promotions = routes.find((route) => route.path === 'core-hr/promotions');
+    const transfers = routes.find((route) => route.path === 'core-hr/transfers');
+    const awards = routes.find((route) => route.path === 'core-hr/awards');
+    const warnings = routes.find((route) => route.path === 'core-hr/warnings');
+    const resignations = routes.find((route) => route.path === 'core-hr/resignations');
+    const terminations = routes.find((route) => route.path === 'core-hr/terminations');
+    const complaints = routes.find((route) => route.path === 'core-hr/complaints');
+    const travel = routes.find((route) => route.path === 'core-hr/travel');
+
+    expect(coreHr?.data?.['title']).toBe('Core HR');
+    expect(promotions?.data?.['recordType']).toBe('promotions');
+    expect(transfers?.data?.['recordType']).toBe('transfers');
+    expect(awards?.data?.['recordType']).toBe('awards');
+    expect(warnings?.data?.['recordType']).toBe('warnings');
+    expect(resignations?.data?.['recordType']).toBe('resignations');
+    expect(terminations?.data?.['recordType']).toBe('terminations');
+    expect(complaints?.data?.['recordType']).toBe('complaints');
+    expect(travel?.data?.['recordType']).toBe('travel');
+    expect(coreHr?.canActivate?.length).toBeGreaterThan(0);
+    expect(promotions?.loadComponent).toBeTypeOf('function');
+    expect(travel?.loadComponent).toBeTypeOf('function');
   });
 });

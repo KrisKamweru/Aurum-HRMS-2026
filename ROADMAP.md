@@ -158,6 +158,23 @@ Reference: `docs/rebuild-parity-plan.md`
     - TDD coverage added for payroll adapters, store, and rebuilt pages
     - validation: `npm test` and `npm run build` passing (`54` files, `246` tests)
     - report: `docs/rebuild-manifests/phase4-payroll-slice-report.md`
+  - Phase 4 core-HR baseline:
+    - rebuilt pages mapped for `core-hr` and all lifecycle subroutes (replacing placeholders):
+      - `core-hr/promotions`
+      - `core-hr/transfers`
+      - `core-hr/awards`
+      - `core-hr/warnings`
+      - `core-hr/resignations`
+      - `core-hr/terminations`
+      - `core-hr/complaints`
+      - `core-hr/travel`
+    - core-HR rebuild store + Convex data adapter added under `src/app/features/core-hr/data/`
+    - lifecycle create/list flows rebuilt for promotions, transfers, awards, warnings, resignations, terminations, complaints, and travel
+    - resignation pending-review actions (approve/reject) rebuilt with guardrailed status handling
+    - shared route-config-driven records surface introduced for lifecycle tables + modal dynamic-form flows
+    - TDD coverage added for core-HR adapters, store, and rebuilt pages
+    - validation: `npm test` and `npm run build` passing (`58` files, `260` tests)
+    - report: `docs/rebuild-manifests/phase4-core-hr-slice-report.md`
 
 ### P0. Immediate Stabilization and Context Hygiene (Now)
 Status: Substantially completed on 2026-02-09.

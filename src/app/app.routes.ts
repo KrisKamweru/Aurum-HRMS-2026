@@ -75,15 +75,68 @@ export const routes: Routes = [
     canActivate: [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager', 'manager'])],
     data: { title: 'Team Attendance' }
   },
-  placeholderRoute('core-hr', 'Core HR', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]),
-  placeholderRoute('core-hr/promotions', 'Promotions', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]),
-  placeholderRoute('core-hr/transfers', 'Transfers', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]),
-  placeholderRoute('core-hr/awards', 'Awards', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]),
-  placeholderRoute('core-hr/warnings', 'Warnings', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]),
-  placeholderRoute('core-hr/resignations', 'Resignations', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]),
-  placeholderRoute('core-hr/terminations', 'Terminations', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]),
-  placeholderRoute('core-hr/complaints', 'Complaints', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]),
-  placeholderRoute('core-hr/travel', 'Travel', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]),
+  {
+    path: 'core-hr',
+    loadComponent: () => import('./features/core-hr/pages/core-hr-rebuild.component').then((m) => m.CoreHrRebuildComponent),
+    canActivate: [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])],
+    data: { title: 'Core HR' }
+  },
+  {
+    path: 'core-hr/promotions',
+    loadComponent: () =>
+      import('./features/core-hr/pages/core-hr-records-rebuild.component').then((m) => m.CoreHrRecordsRebuildComponent),
+    canActivate: [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])],
+    data: { title: 'Promotions', recordType: 'promotions' }
+  },
+  {
+    path: 'core-hr/transfers',
+    loadComponent: () =>
+      import('./features/core-hr/pages/core-hr-records-rebuild.component').then((m) => m.CoreHrRecordsRebuildComponent),
+    canActivate: [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])],
+    data: { title: 'Transfers', recordType: 'transfers' }
+  },
+  {
+    path: 'core-hr/awards',
+    loadComponent: () =>
+      import('./features/core-hr/pages/core-hr-records-rebuild.component').then((m) => m.CoreHrRecordsRebuildComponent),
+    canActivate: [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])],
+    data: { title: 'Awards', recordType: 'awards' }
+  },
+  {
+    path: 'core-hr/warnings',
+    loadComponent: () =>
+      import('./features/core-hr/pages/core-hr-records-rebuild.component').then((m) => m.CoreHrRecordsRebuildComponent),
+    canActivate: [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])],
+    data: { title: 'Warnings', recordType: 'warnings' }
+  },
+  {
+    path: 'core-hr/resignations',
+    loadComponent: () =>
+      import('./features/core-hr/pages/core-hr-records-rebuild.component').then((m) => m.CoreHrRecordsRebuildComponent),
+    canActivate: [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])],
+    data: { title: 'Resignations', recordType: 'resignations' }
+  },
+  {
+    path: 'core-hr/terminations',
+    loadComponent: () =>
+      import('./features/core-hr/pages/core-hr-records-rebuild.component').then((m) => m.CoreHrRecordsRebuildComponent),
+    canActivate: [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])],
+    data: { title: 'Terminations', recordType: 'terminations' }
+  },
+  {
+    path: 'core-hr/complaints',
+    loadComponent: () =>
+      import('./features/core-hr/pages/core-hr-records-rebuild.component').then((m) => m.CoreHrRecordsRebuildComponent),
+    canActivate: [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])],
+    data: { title: 'Complaints', recordType: 'complaints' }
+  },
+  {
+    path: 'core-hr/travel',
+    loadComponent: () =>
+      import('./features/core-hr/pages/core-hr-records-rebuild.component').then((m) => m.CoreHrRecordsRebuildComponent),
+    canActivate: [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])],
+    data: { title: 'Travel', recordType: 'travel' }
+  },
   placeholderRoute('organization', 'Organization', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]),
   {
     path: 'organization/departments',
