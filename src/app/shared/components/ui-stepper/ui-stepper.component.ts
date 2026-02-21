@@ -10,7 +10,7 @@ export interface StepperStepConfig {
 @Component({
   selector: 'ui-stepper',
   standalone: true,
-  imports: [NgTemplateOutlet, UiStepComponent],
+  imports: [NgTemplateOutlet],
   template: `
     <div class="mb-6 flex items-center justify-center">
       @for (step of renderSteps(); track $index; let i = $index) {
@@ -131,4 +131,3 @@ export class UiStepperComponent {
     return index <= this.currentStep() ? 'text-stone-900 dark:text-stone-100' : 'text-stone-500 dark:text-stone-400';
   }
 }
-
