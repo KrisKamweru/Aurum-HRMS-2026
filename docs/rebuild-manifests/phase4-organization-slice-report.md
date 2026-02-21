@@ -1,7 +1,7 @@
 # Phase 4 Organization Slice Report
 
 Date: 2026-02-21  
-Status: In progress (Convex-backed organization module baseline expanded through settings conflict handling)
+Status: In progress (Convex-backed organization module baseline expanded through manager-validation guardrails)
 
 ## Slice Delivered
 - Replaced generic placeholders with rebuilt organization pages:
@@ -32,6 +32,8 @@ Status: In progress (Convex-backed organization module baseline expanded through
   - employee lookup sourced from `employees.list`
   - manager selection in create/edit modal flow
   - manager name projection in department table rows
+  - active-manager validation before write
+  - stale-manager fallback labels for orphaned manager ids in department rows
 - Organization page-state standardization now supports:
   - shared error treatment via `organization-page-state`
   - shared initial loading treatment (no-data load phase)
@@ -64,6 +66,7 @@ Status: In progress (Convex-backed organization module baseline expanded through
 - `src/app/features/organization/data/organization-rebuild.store.spec.ts`
   - verifies service-driven load behavior
   - verifies manager lookup load and manager-assignment write paths for departments
+  - verifies inactive manager and stale manager-id validation errors before writes
   - verifies unique-create and duplicate guards across all three entities
   - verifies update + remove actions by id across all three entities
   - verifies user-linking load, auto-suggested pairings, and link action behavior
@@ -71,6 +74,7 @@ Status: In progress (Convex-backed organization module baseline expanded through
 - `src/app/features/organization/pages/departments-rebuild.component.spec.ts`
   - verifies init load trigger and create/remove interactions
   - verifies manager lookup option projection for dynamic form select fields
+  - verifies manager label fallback treatment for inactive/stale manager references
 - `src/app/features/organization/pages/designations-rebuild.component.spec.ts`
   - verifies init load trigger and create/remove interactions
 - `src/app/features/organization/pages/locations-rebuild.component.spec.ts`
@@ -95,9 +99,9 @@ Status: In progress (Convex-backed organization module baseline expanded through
 
 ## Validation
 - `npm run build` passed.
-- `npm run test` passed (`33` files, `95` tests).
+- `npm run test` passed (`33` files, `98` tests).
 
 ## Next in This Track
-1. Add manager-assignment constraints/validation UX (inactive employee handling and stale-manager fallback).
-2. Extract shared table-action cell pattern to reduce page-template duplication across organization list screens.
-3. Add shared retry affordance on organization-page-state error surfaces for load failures.
+1. Extract shared table-action cell pattern to reduce page-template duplication across organization list screens.
+2. Add shared retry affordance on organization-page-state error surfaces for load failures.
+3. Add per-page skeleton loading variants (not just text states) for high-latency organization screens.

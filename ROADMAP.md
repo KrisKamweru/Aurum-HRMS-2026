@@ -96,13 +96,14 @@ Reference: `docs/rebuild-parity-plan.md`
     - organization data adapter now consumes the authenticated shared Convex HTTP client
     - organization flows upgraded to create/edit/remove with confirmation patterns for departments, designations, and locations
     - department create/edit modal now supports manager assignment via employee lookup and manager name rendering in list view
+    - manager assignment guardrails now enforce active-manager selection and stale-manager fallback messaging
     - standardized page-level load/error/empty handling introduced and applied across rebuilt organization screens
     - user-linking flow now uses `users.getUnlinkedUsers`, `users.getUnlinkedEmployees`, and `users.linkUserToEmployee`
     - organization chart now consumes `employees.getOrgChart` and renders depth-aware reporting rows
     - organization settings now consumes `organization.getOrganizationSettings` / `organization.updateOrganizationSettings` via modal stepper flows
     - organization settings writes now use optimistic UI updates plus `expectedUpdatedAt` conflict checks with latest-state reload on stale writes
     - TDD coverage expanded for async store behavior + rebuilt organization pages
-    - validation: `npm run build` and `npm test` passing (`33` files, `95` tests)
+    - validation: `npm run build` and `npm test` passing (`33` files, `98` tests)
     - report: `docs/rebuild-manifests/phase4-organization-slice-report.md`
   - Phase 4 shared form/modal baseline:
     - shared `dynamic-form` rebuilt with multi-column sections and stepper flows
@@ -114,7 +115,7 @@ Reference: `docs/rebuild-parity-plan.md`
   - Phase 4 shared component library port completed:
     - rebuilt shared components now present in active scope for: `notifications-panel`, `ui-avatar`, `ui-badge`, `ui-button`, `ui-card`, `ui-confirm-dialog`, `ui-data-table`, `ui-date-range`, `ui-form-field`, `ui-grid`, `ui-icon`, `ui-nav-item`, `ui-stepper`, `ui-toast`
     - TDD coverage added for the rebuilt shared component set
-    - validation: `npm test` passing with expanded coverage (`33` files, `95` tests)
+    - validation: `npm test` passing with expanded coverage (`33` files, `98` tests)
     - report: `docs/rebuild-manifests/phase4-shared-components-report.md`
 
 ### P0. Immediate Stabilization and Context Hygiene (Now)
