@@ -132,6 +132,14 @@ Reference: `docs/rebuild-parity-plan.md`
     - `changeDetection: ChangeDetectionStrategy.OnPush` enforced across rebuilt component surfaces
     - host decorator usage removed (`@HostListener` replaced with `host` binding metadata)
     - validation: `npm run build` and `npm test` passing (`38` files, `146` tests)
+  - Phase 4 employees module baseline:
+    - rebuilt pages mapped for `employees` and `employees/:id` (replacing placeholder routes)
+    - employee rebuild store + Convex data adapter added under `src/app/features/employees/data/`
+    - list flow now supports create/edit/delete with status-sync updates and multi-step modal form UX
+    - detail baseline now renders profile/compensation summary and parity counters for employee detail domains (`employee_details`)
+    - TDD coverage added for employees data adapter, store, and list/detail pages
+    - validation: `npm test` and `npm run build` passing (`42` files, `178` tests)
+    - report: `docs/rebuild-manifests/phase4-employees-slice-report.md`
 
 ### P0. Immediate Stabilization and Context Hygiene (Now)
 Status: Substantially completed on 2026-02-09.

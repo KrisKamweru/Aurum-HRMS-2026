@@ -36,8 +36,22 @@ export const routes: Routes = [
   placeholderRoute('training/my-learning', 'My Learning', [authGuard]),
   placeholderRoute('training/courses/new', 'Create Course', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager', 'manager'])]),
   placeholderRoute('training/courses/:id/edit', 'Edit Course', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager', 'manager'])]),
-  placeholderRoute('employees', 'Employees', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager', 'manager'])]),
-  placeholderRoute('employees/:id', 'Employee Detail', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager', 'manager'])]),
+  {
+    path: 'employees',
+    loadComponent: () =>
+      import('./features/employees/pages/employees-rebuild.component').then((m) => m.EmployeesRebuildComponent),
+    canActivate: [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager', 'manager'])],
+    data: { title: 'Employees' }
+  },
+  {
+    path: 'employees/:id',
+    loadComponent: () =>
+      import('./features/employees/pages/employee-detail-rebuild.component').then(
+        (m) => m.EmployeeDetailRebuildComponent
+      ),
+    canActivate: [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager', 'manager'])],
+    data: { title: 'Employee Detail' }
+  },
   placeholderRoute('leave-requests', 'Leave Requests', [authGuard]),
   placeholderRoute('attendance', 'Attendance', [authGuard]),
   placeholderRoute('attendance/team', 'Team Attendance', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager', 'manager'])]),

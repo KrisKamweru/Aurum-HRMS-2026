@@ -20,4 +20,16 @@ describe('app routes', () => {
     const wildcard = routes.find((route) => route.path === '**');
     expect(wildcard?.redirectTo).toBe('dashboard');
   });
+
+  it('maps employee routes to rebuilt components with guard contracts', () => {
+    const employeeList = routes.find((route) => route.path === 'employees');
+    const employeeDetail = routes.find((route) => route.path === 'employees/:id');
+
+    expect(employeeList?.data?.['title']).toBe('Employees');
+    expect(employeeDetail?.data?.['title']).toBe('Employee Detail');
+    expect(employeeList?.canActivate?.length).toBeGreaterThan(0);
+    expect(employeeDetail?.canActivate?.length).toBeGreaterThan(0);
+    expect(employeeList?.loadComponent).toBeTypeOf('function');
+    expect(employeeDetail?.loadComponent).toBeTypeOf('function');
+  });
 });
