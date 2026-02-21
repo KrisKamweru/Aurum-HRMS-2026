@@ -4,6 +4,7 @@ import { ConfirmDialogOptions, UiConfirmDialogComponent } from '../../../shared/
 import { UiBadgeComponent } from '../../../shared/components/ui-badge/ui-badge.component';
 import { UiModalComponent } from '../../../shared/components/ui-modal/ui-modal.component';
 import { OrganizationListShellComponent } from '../components/organization-list-shell.component';
+import { OrganizationListToolbarActionsComponent } from '../components/organization-list-toolbar-actions.component';
 import { OrganizationTableColumn, OrganizationTableHeaderRowComponent } from '../components/organization-table-header-row.component';
 import { OrganizationTableMetadataComponent } from '../components/organization-table-metadata.component';
 import { OrganizationTableActionsComponent } from '../components/organization-table-actions.component';
@@ -15,7 +16,7 @@ import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
 @Component({
   selector: 'app-designations-rebuild',
   standalone: true,
-  imports: [UiModalComponent, UiBadgeComponent, DynamicFormComponent, UiConfirmDialogComponent, OrganizationPageStateComponent, OrganizationListShellComponent, OrganizationTableHeaderRowComponent, OrganizationTableMetadataComponent, OrganizationTableActionsComponent],
+  imports: [UiModalComponent, UiBadgeComponent, DynamicFormComponent, UiConfirmDialogComponent, OrganizationPageStateComponent, OrganizationListShellComponent, OrganizationListToolbarActionsComponent, OrganizationTableHeaderRowComponent, OrganizationTableMetadataComponent, OrganizationTableActionsComponent],
   template: `
     <main class="h-full px-4 py-8 sm:px-6 lg:px-8">
       <app-organization-list-shell
@@ -47,24 +48,13 @@ import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
           Unleveled Designations {{ unleveledDesignationCount() }}
         </ui-badge>
 
-        <button
-          type="button"
+        <app-organization-list-toolbar-actions
           org-list-toolbar-actions
-          class="rounded-[10px] border border-stone-200 px-4 py-2 text-sm font-semibold text-stone-700 transition-colors hover:bg-stone-100 disabled:cursor-not-allowed disabled:opacity-60 dark:border-white/8 dark:text-stone-200 dark:hover:bg-white/10"
+          createLabel="Add Designation"
           [disabled]="designationsLoading() || isSaving()"
-          (click)="refreshDesignations()"
-        >
-          Refresh
-        </button>
-        <button
-          type="button"
-          org-list-toolbar-actions
-          class="rounded-[10px] bg-burgundy-700 px-6 py-2.5 text-sm font-semibold text-white shadow-[0_4px_20px_rgba(134,24,33,0.35)] transition-all hover:-translate-y-0.5 hover:bg-burgundy-600 disabled:cursor-not-allowed disabled:opacity-60"
-          [disabled]="designationsLoading() || isSaving()"
-          (click)="openCreateModal()"
-        >
-          Add Designation
-        </button>
+          (refreshRequested)="refreshDesignations()"
+          (createRequested)="openCreateModal()"
+        />
 
         @if (designations().length > 0) {
         <section org-list-table-content class="overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm dark:border-white/8 dark:bg-white/[0.04]">

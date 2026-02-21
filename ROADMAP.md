@@ -110,6 +110,7 @@ Reference: `docs/rebuild-parity-plan.md`
     - organization list pages now show uniform table metadata headers (record count + last refreshed timestamp)
     - organization list pages now use shared table-header row helpers for repeated column heading definitions
     - organization list shell now supports reusable status-chip slots consumed by list-level badges across departments/designations/locations
+    - organization list pages now share a common toolbar-action component for refresh/create button presets
     - TDD coverage expanded for async store behavior + rebuilt organization pages
     - validation: `npm run build` and `npm test` passing (`34` files, `118` tests)
     - report: `docs/rebuild-manifests/phase4-organization-slice-report.md`

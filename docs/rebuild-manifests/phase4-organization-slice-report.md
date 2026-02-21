@@ -73,6 +73,10 @@ Status: In progress (Convex-backed organization module baseline expanded through
   - departments now expose assigned/unassigned manager status badges
   - designations now expose leveled/unleveled role status badges
   - locations now expose unique country/city status badges
+- Organization list screens now use shared toolbar action presets:
+  - common `organization-list-toolbar-actions` component now owns refresh/create control styling
+  - page-level labels configure `Add Department`, `Add Designation`, and `Add Location` variants
+  - refresh/create events remain page-wired for load and modal-open actions
 - User-linking rebuilt flow now uses:
   - `users.getUnlinkedUsers`
   - `users.getUnlinkedEmployees`
@@ -185,12 +189,20 @@ Status: In progress (Convex-backed organization module baseline expanded through
 - `src/app/features/organization/pages/locations-rebuild.component.spec.ts`
   - verifies shared table-header helper wiring with location column definitions
   - verifies status-badge projection in list-shell status slot
+- `src/app/features/organization/components/organization-list-toolbar-actions.component.spec.ts`
+  - verifies configured labels, output emission, and disabled-state behavior
+- `src/app/features/organization/pages/departments-rebuild.component.spec.ts`
+  - verifies shared toolbar action component usage with page-specific labels
+- `src/app/features/organization/pages/designations-rebuild.component.spec.ts`
+  - verifies shared toolbar action component usage with page-specific labels
+- `src/app/features/organization/pages/locations-rebuild.component.spec.ts`
+  - verifies shared toolbar action component usage with page-specific labels
 
 ## Validation
 - `npm run build` passed.
-- `npm run test` passed (`37` files, `141` tests).
+- `npm run test` passed (`38` files, `146` tests).
 
 ## Next in This Track
-1. Extract common list-action button presets (refresh/create variants) to reduce per-page template duplication.
-2. Continue Phase 4 feature rollout beyond organization list normalization tasks.
-3. Evaluate a shared list-row hover/interaction token helper for consistent row behavior across modules.
+1. Continue Phase 4 feature rollout beyond organization list normalization tasks.
+2. Evaluate a shared list-row hover/interaction token helper for consistent row behavior across modules.
+3. Apply the normalized list-shell/table patterns to the next rebuilt feature slices in Phase 4.

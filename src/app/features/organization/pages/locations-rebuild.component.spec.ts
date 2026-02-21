@@ -3,6 +3,7 @@ import { By } from '@angular/platform-browser';
 import { signal } from '@angular/core';
 import { vi } from 'vitest';
 import { OrganizationListShellComponent } from '../components/organization-list-shell.component';
+import { OrganizationListToolbarActionsComponent } from '../components/organization-list-toolbar-actions.component';
 import { OrganizationPageStateComponent } from '../components/organization-page-state.component';
 import { OrganizationTableHeaderRowComponent } from '../components/organization-table-header-row.component';
 import { OrganizationTableMetadataComponent } from '../components/organization-table-metadata.component';
@@ -86,6 +87,15 @@ describe('LocationsRebuildComponent', () => {
     const host = fixture.nativeElement as HTMLElement;
     const actionCells = host.querySelectorAll('app-organization-table-actions');
     expect(actionCells.length).toBe(component.locations().length);
+  });
+
+  it('uses shared list toolbar action presets for refresh/create controls', () => {
+    const toolbar = fixture.debugElement.query(By.directive(OrganizationListToolbarActionsComponent));
+    expect(toolbar).not.toBeNull();
+
+    const toolbarComponent = toolbar.componentInstance as OrganizationListToolbarActionsComponent;
+    expect(toolbarComponent.refreshLabel).toBe('Refresh');
+    expect(toolbarComponent.createLabel).toBe('Add Location');
   });
 
   it('renders shared organization list shell with configured heading copy', () => {
