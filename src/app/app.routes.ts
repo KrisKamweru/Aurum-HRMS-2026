@@ -51,7 +51,13 @@ export const routes: Routes = [
   placeholderRoute('core-hr/complaints', 'Complaints', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]),
   placeholderRoute('core-hr/travel', 'Travel', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]),
   placeholderRoute('organization', 'Organization', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]),
-  placeholderRoute('organization/departments', 'Departments', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]),
+  {
+    path: 'organization/departments',
+    loadComponent: () =>
+      import('./features/organization/pages/departments-rebuild.component').then((m) => m.DepartmentsRebuildComponent),
+    canActivate: [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])],
+    data: { title: 'Departments' }
+  },
   placeholderRoute('organization/designations', 'Designations', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]),
   placeholderRoute('organization/locations', 'Locations', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]),
   placeholderRoute('organization/user-linking', 'User Linking', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]),

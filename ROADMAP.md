@@ -86,6 +86,10 @@ Reference: `docs/rebuild-parity-plan.md`
     - role-aware guard mapping applied to rebuilt route matrix (`src/app/app.routes.ts`)
     - vitest active-scope exclusion added for archive path (`vitest.config.ts`)
     - report: `docs/rebuild-manifests/phase3-foundation-report.md`
+  - Phase 4 first module slice (organization/departments):
+    - rebuilt page implemented and routed with existing guard contracts
+    - TDD coverage added for seed-data and add-department behavior
+    - report: `docs/rebuild-manifests/phase4-organization-slice-report.md`
 
 ### P0. Immediate Stabilization and Context Hygiene (Now)
 Status: Substantially completed on 2026-02-09.
