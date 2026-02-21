@@ -1,7 +1,7 @@
 # Phase 4 Organization Slice Report
 
 Date: 2026-02-21  
-Status: In progress (Convex-backed organization module baseline expanded through loading skeleton variants)
+Status: In progress (Convex-backed organization module baseline expanded through shared list-shell composition)
 
 ## Slice Delivered
 - Replaced generic placeholders with rebuilt organization pages:
@@ -52,6 +52,10 @@ Status: In progress (Convex-backed organization module baseline expanded through
   - `linking` variant for user-linking load surfaces
   - `chart` variant for organization chart hierarchy loading
   - `detail` variant for organization settings summary loading
+- Organization list screens now use a shared list-shell wrapper:
+  - common `organization-list-shell` component now owns heading + action-bar composition
+  - applied across departments, designations, and locations page layouts
+  - shared content slots preserve per-page page-state and table-content flexibility
 - User-linking rebuilt flow now uses:
   - `users.getUnlinkedUsers`
   - `users.getUnlinkedEmployees`
@@ -131,12 +135,21 @@ Status: In progress (Convex-backed organization module baseline expanded through
 - `src/app/features/organization/pages/organization-settings-rebuild.component.spec.ts`
   - verifies page-state retry event triggers settings reload
   - verifies page-level loading skeleton variant assignment
+- `src/app/features/organization/components/organization-list-shell.component.spec.ts`
+  - verifies heading + action copy rendering
+  - verifies slot projection for page-state, toolbar actions, and table content
+- `src/app/features/organization/pages/departments-rebuild.component.spec.ts`
+  - verifies shared list-shell usage for page heading/action composition
+- `src/app/features/organization/pages/designations-rebuild.component.spec.ts`
+  - verifies shared list-shell usage for page heading/action composition
+- `src/app/features/organization/pages/locations-rebuild.component.spec.ts`
+  - verifies shared list-shell usage for page heading/action composition
 
 ## Validation
 - `npm run build` passed.
-- `npm run test` passed (`34` files, `118` tests).
+- `npm run test` passed (`35` files, `123` tests).
 
 ## Next in This Track
-1. Apply shared organization table wrapper helpers for heading + action bar composition across list pages.
-2. Add shared inline empty-state actions (primary CTA + secondary refresh) for organization list pages.
-3. Add uniform table header metadata patterns (count + last refreshed) across organization list pages.
+1. Add shared inline empty-state actions (primary CTA + secondary refresh) for organization list pages.
+2. Add uniform table header metadata patterns (count + last refreshed) across organization list pages.
+3. Apply shared table-column metadata helpers for repeated list table heading definitions.

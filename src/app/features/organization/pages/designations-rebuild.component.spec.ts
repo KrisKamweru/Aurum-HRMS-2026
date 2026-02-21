@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { signal } from '@angular/core';
 import { vi } from 'vitest';
+import { OrganizationListShellComponent } from '../components/organization-list-shell.component';
 import { OrganizationPageStateComponent } from '../components/organization-page-state.component';
 import { RebuildDesignation } from '../data/organization-rebuild.models';
 import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
@@ -97,6 +98,14 @@ describe('DesignationsRebuildComponent', () => {
     const host = fixture.nativeElement as HTMLElement;
     const actionCells = host.querySelectorAll('app-organization-table-actions');
     expect(actionCells.length).toBe(component.designations().length);
+  });
+
+  it('renders shared organization list shell with configured heading copy', () => {
+    const shell = fixture.debugElement.query(By.directive(OrganizationListShellComponent));
+    expect(shell).not.toBeNull();
+
+    const shellComponent = shell.componentInstance as OrganizationListShellComponent;
+    expect(shellComponent.title).toBe('Designations');
   });
 
   it('retries designation loading when page-state retry is requested', () => {

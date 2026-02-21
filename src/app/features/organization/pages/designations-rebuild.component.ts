@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { DynamicFormComponent } from '../../../shared/components/dynamic-form/dynamic-form.component';
 import { ConfirmDialogOptions, UiConfirmDialogComponent } from '../../../shared/components/ui-confirm-dialog/ui-confirm-dialog.component';
 import { UiModalComponent } from '../../../shared/components/ui-modal/ui-modal.component';
+import { OrganizationListShellComponent } from '../components/organization-list-shell.component';
 import { OrganizationTableActionsComponent } from '../components/organization-table-actions.component';
 import { FieldConfig, FormSectionConfig, FormStepConfig } from '../../../shared/services/form-helper.service';
 import { OrganizationPageStateComponent } from '../components/organization-page-state.component';
@@ -11,19 +12,16 @@ import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
 @Component({
   selector: 'app-designations-rebuild',
   standalone: true,
-  imports: [UiModalComponent, DynamicFormComponent, UiConfirmDialogComponent, OrganizationPageStateComponent, OrganizationTableActionsComponent],
+  imports: [UiModalComponent, DynamicFormComponent, UiConfirmDialogComponent, OrganizationPageStateComponent, OrganizationListShellComponent, OrganizationTableActionsComponent],
   template: `
     <main class="h-full px-4 py-8 sm:px-6 lg:px-8">
-      <div class="mx-auto w-full max-w-5xl space-y-8">
-        <header class="space-y-2">
-          <p class="text-xs font-semibold uppercase tracking-wide text-burgundy-700 dark:text-burgundy-400">Organization Rebuild</p>
-          <h1 class="text-3xl font-semibold tracking-tight">Designations</h1>
-          <p class="text-[15px] leading-normal text-stone-600 dark:text-stone-400">
-            Convex-backed role ladder management with editable job architecture.
-          </p>
-        </header>
-
+      <app-organization-list-shell
+        title="Designations"
+        description="Convex-backed role ladder management with editable job architecture."
+        actionMessage="Use structured modal forms for designation setup and validation."
+      >
         <app-organization-page-state
+          org-list-page-state
           [error]="error()"
           [isLoading]="designationsLoading()"
           [hasData]="designations().length > 0"
@@ -34,32 +32,27 @@ import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
           (retryRequested)="refreshDesignations()"
         />
 
-        <section class="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm dark:border-white/8 dark:bg-white/[0.04]">
-          <div class="flex flex-wrap items-center justify-between gap-3">
-            <p class="text-sm text-stone-600 dark:text-stone-300">Use structured modal forms for designation setup and validation.</p>
-            <div class="flex items-center gap-2">
-              <button
-                type="button"
-                class="rounded-[10px] border border-stone-200 px-4 py-2 text-sm font-semibold text-stone-700 transition-colors hover:bg-stone-100 disabled:cursor-not-allowed disabled:opacity-60 dark:border-white/8 dark:text-stone-200 dark:hover:bg-white/10"
-                [disabled]="designationsLoading() || isSaving()"
-                (click)="refreshDesignations()"
-              >
-                Refresh
-              </button>
-              <button
-                type="button"
-                class="rounded-[10px] bg-burgundy-700 px-6 py-2.5 text-sm font-semibold text-white shadow-[0_4px_20px_rgba(134,24,33,0.35)] transition-all hover:-translate-y-0.5 hover:bg-burgundy-600 disabled:cursor-not-allowed disabled:opacity-60"
-                [disabled]="designationsLoading() || isSaving()"
-                (click)="openCreateModal()"
-              >
-                Add Designation
-              </button>
-            </div>
-          </div>
-        </section>
+        <button
+          type="button"
+          org-list-toolbar-actions
+          class="rounded-[10px] border border-stone-200 px-4 py-2 text-sm font-semibold text-stone-700 transition-colors hover:bg-stone-100 disabled:cursor-not-allowed disabled:opacity-60 dark:border-white/8 dark:text-stone-200 dark:hover:bg-white/10"
+          [disabled]="designationsLoading() || isSaving()"
+          (click)="refreshDesignations()"
+        >
+          Refresh
+        </button>
+        <button
+          type="button"
+          org-list-toolbar-actions
+          class="rounded-[10px] bg-burgundy-700 px-6 py-2.5 text-sm font-semibold text-white shadow-[0_4px_20px_rgba(134,24,33,0.35)] transition-all hover:-translate-y-0.5 hover:bg-burgundy-600 disabled:cursor-not-allowed disabled:opacity-60"
+          [disabled]="designationsLoading() || isSaving()"
+          (click)="openCreateModal()"
+        >
+          Add Designation
+        </button>
 
         @if (designations().length > 0) {
-        <section class="overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm dark:border-white/8 dark:bg-white/[0.04]">
+        <section org-list-table-content class="overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm dark:border-white/8 dark:bg-white/[0.04]">
           <div class="overflow-x-auto">
           <table class="min-w-full text-left">
             <thead class="bg-stone-50 dark:bg-white/[0.03]">
@@ -92,7 +85,7 @@ import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
           </div>
         </section>
         }
-      </div>
+      </app-organization-list-shell>
 
       <ui-modal
         [isOpen]="isCreateModalOpen()"
