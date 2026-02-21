@@ -105,4 +105,25 @@ describe('app routes', () => {
     expect(promotions?.loadComponent).toBeTypeOf('function');
     expect(travel?.loadComponent).toBeTypeOf('function');
   });
+
+  it('maps recruitment routes to rebuilt components with guard contracts', () => {
+    const recruitment = routes.find((route) => route.path === 'recruitment');
+    const jobs = routes.find((route) => route.path === 'recruitment/jobs');
+    const newJob = routes.find((route) => route.path === 'recruitment/jobs/new');
+    const detail = routes.find((route) => route.path === 'recruitment/jobs/:id');
+    const edit = routes.find((route) => route.path === 'recruitment/jobs/:id/edit');
+    const board = routes.find((route) => route.path === 'recruitment/board');
+
+    expect(recruitment?.data?.['title']).toBe('Recruitment');
+    expect(jobs?.data?.['title']).toBe('Recruitment Jobs');
+    expect(newJob?.data?.['title']).toBe('Create Job');
+    expect(detail?.data?.['title']).toBe('Job Detail');
+    expect(edit?.data?.['title']).toBe('Edit Job');
+    expect(board?.data?.['title']).toBe('Candidate Board');
+    expect(recruitment?.canActivate?.length).toBeGreaterThan(0);
+    expect(jobs?.loadComponent).toBeTypeOf('function');
+    expect(newJob?.loadComponent).toBeTypeOf('function');
+    expect(detail?.loadComponent).toBeTypeOf('function');
+    expect(board?.loadComponent).toBeTypeOf('function');
+  });
 });

@@ -25,12 +25,60 @@ export const routes: Routes = [
   placeholderRoute('settings', 'Settings', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]),
   placeholderRoute('settings/general', 'General Settings', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]),
   placeholderRoute('settings/leave-policies', 'Leave Policies', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]),
-  placeholderRoute('recruitment', 'Recruitment', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager', 'manager'])]),
-  placeholderRoute('recruitment/jobs', 'Recruitment Jobs', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager', 'manager'])]),
-  placeholderRoute('recruitment/jobs/new', 'Create Job', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager', 'manager'])]),
-  placeholderRoute('recruitment/jobs/:id', 'Job Detail', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager', 'manager'])]),
-  placeholderRoute('recruitment/jobs/:id/edit', 'Edit Job', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager', 'manager'])]),
-  placeholderRoute('recruitment/board', 'Candidate Board', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager', 'manager'])]),
+  {
+    path: 'recruitment',
+    loadComponent: () =>
+      import('./features/recruitment/pages/recruitment-jobs-rebuild.component').then(
+        (m) => m.RecruitmentJobsRebuildComponent
+      ),
+    canActivate: [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager', 'manager'])],
+    data: { title: 'Recruitment' }
+  },
+  {
+    path: 'recruitment/jobs',
+    loadComponent: () =>
+      import('./features/recruitment/pages/recruitment-jobs-rebuild.component').then(
+        (m) => m.RecruitmentJobsRebuildComponent
+      ),
+    canActivate: [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager', 'manager'])],
+    data: { title: 'Recruitment Jobs' }
+  },
+  {
+    path: 'recruitment/jobs/new',
+    loadComponent: () =>
+      import('./features/recruitment/pages/recruitment-job-editor-rebuild.component').then(
+        (m) => m.RecruitmentJobEditorRebuildComponent
+      ),
+    canActivate: [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager', 'manager'])],
+    data: { title: 'Create Job' }
+  },
+  {
+    path: 'recruitment/jobs/:id',
+    loadComponent: () =>
+      import('./features/recruitment/pages/recruitment-job-detail-rebuild.component').then(
+        (m) => m.RecruitmentJobDetailRebuildComponent
+      ),
+    canActivate: [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager', 'manager'])],
+    data: { title: 'Job Detail' }
+  },
+  {
+    path: 'recruitment/jobs/:id/edit',
+    loadComponent: () =>
+      import('./features/recruitment/pages/recruitment-job-editor-rebuild.component').then(
+        (m) => m.RecruitmentJobEditorRebuildComponent
+      ),
+    canActivate: [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager', 'manager'])],
+    data: { title: 'Edit Job' }
+  },
+  {
+    path: 'recruitment/board',
+    loadComponent: () =>
+      import('./features/recruitment/pages/recruitment-board-rebuild.component').then(
+        (m) => m.RecruitmentBoardRebuildComponent
+      ),
+    canActivate: [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager', 'manager'])],
+    data: { title: 'Candidate Board' }
+  },
   placeholderRoute('training', 'Training', [authGuard]),
   placeholderRoute('training/catalog', 'Training Catalog', [authGuard]),
   placeholderRoute('training/my-learning', 'My Learning', [authGuard]),

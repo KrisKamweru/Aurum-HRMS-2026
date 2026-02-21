@@ -175,6 +175,20 @@ Reference: `docs/rebuild-parity-plan.md`
     - TDD coverage added for core-HR adapters, store, and rebuilt pages
     - validation: `npm test` and `npm run build` passing (`58` files, `260` tests)
     - report: `docs/rebuild-manifests/phase4-core-hr-slice-report.md`
+  - Phase 4 recruitment baseline:
+    - rebuilt pages mapped for recruitment route surface (replacing placeholders):
+      - `recruitment`
+      - `recruitment/jobs`
+      - `recruitment/jobs/new`
+      - `recruitment/jobs/:id`
+      - `recruitment/jobs/:id/edit`
+      - `recruitment/board`
+    - recruitment rebuild store + Convex data adapter added under `src/app/features/recruitment/data/`
+    - rebuilt jobs list/editor/detail flows added for post/edit/view/apply actions
+    - rebuilt candidate board added for application pipeline review and status updates
+    - TDD coverage added for recruitment adapters, store, and rebuilt pages
+    - validation: `npm test` and `npm run build` passing (`64` files, `277` tests)
+    - report: `docs/rebuild-manifests/phase4-recruitment-slice-report.md`
 
 ### P0. Immediate Stabilization and Context Hygiene (Now)
 Status: Substantially completed on 2026-02-09.
