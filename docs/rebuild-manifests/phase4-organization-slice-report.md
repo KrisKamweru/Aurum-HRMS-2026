@@ -60,6 +60,10 @@ Status: In progress (Convex-backed organization module baseline expanded through
   - `organization-page-state` now supports configurable empty primary/secondary CTA labels
   - shared outputs wire list empty states to page-level create and refresh flows
   - applied across departments, designations, and locations pages
+- Organization list screens now use uniform table metadata headers:
+  - common `organization-table-metadata` component now renders count + last-refreshed status
+  - applied at the top of list tables for departments, designations, and locations
+  - refresh actions now stamp shared list-level `lastRefreshedAt` timestamps
 - User-linking rebuilt flow now uses:
   - `users.getUnlinkedUsers`
   - `users.getUnlinkedEmployees`
@@ -152,12 +156,21 @@ Status: In progress (Convex-backed organization module baseline expanded through
 - `src/app/features/organization/pages/locations-rebuild.component.spec.ts`
   - verifies shared list-shell usage for page heading/action composition
   - verifies empty-state action wiring for create + refresh
+- `src/app/features/organization/components/organization-table-metadata.component.spec.ts`
+  - verifies count/label rendering and default `Never` fallback
+  - verifies deterministic timestamp formatting output
+- `src/app/features/organization/pages/departments-rebuild.component.spec.ts`
+  - verifies shared table metadata wiring and populated refresh timestamp
+- `src/app/features/organization/pages/designations-rebuild.component.spec.ts`
+  - verifies shared table metadata wiring and populated refresh timestamp
+- `src/app/features/organization/pages/locations-rebuild.component.spec.ts`
+  - verifies shared table metadata wiring and populated refresh timestamp
 
 ## Validation
 - `npm run build` passed.
-- `npm run test` passed (`35` files, `128` tests).
+- `npm run test` passed (`36` files, `133` tests).
 
 ## Next in This Track
-1. Add uniform table header metadata patterns (count + last refreshed) across organization list pages.
-2. Apply shared table-column metadata helpers for repeated list table heading definitions.
-3. Extend shared list-shell slots to support reusable list-level status chips and badges.
+1. Apply shared table-column metadata helpers for repeated list table heading definitions.
+2. Extend shared list-shell slots to support reusable list-level status chips and badges.
+3. Extract common list-action button presets (refresh/create variants) to reduce per-page template duplication.

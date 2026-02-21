@@ -3,6 +3,7 @@ import { DynamicFormComponent } from '../../../shared/components/dynamic-form/dy
 import { ConfirmDialogOptions, UiConfirmDialogComponent } from '../../../shared/components/ui-confirm-dialog/ui-confirm-dialog.component';
 import { UiModalComponent } from '../../../shared/components/ui-modal/ui-modal.component';
 import { OrganizationListShellComponent } from '../components/organization-list-shell.component';
+import { OrganizationTableMetadataComponent } from '../components/organization-table-metadata.component';
 import { OrganizationTableActionsComponent } from '../components/organization-table-actions.component';
 import { FieldConfig, FormSectionConfig, FormStepConfig } from '../../../shared/services/form-helper.service';
 import { OrganizationPageStateComponent } from '../components/organization-page-state.component';
@@ -12,7 +13,7 @@ import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
 @Component({
   selector: 'app-designations-rebuild',
   standalone: true,
-  imports: [UiModalComponent, DynamicFormComponent, UiConfirmDialogComponent, OrganizationPageStateComponent, OrganizationListShellComponent, OrganizationTableActionsComponent],
+  imports: [UiModalComponent, DynamicFormComponent, UiConfirmDialogComponent, OrganizationPageStateComponent, OrganizationListShellComponent, OrganizationTableMetadataComponent, OrganizationTableActionsComponent],
   template: `
     <main class="h-full px-4 py-8 sm:px-6 lg:px-8">
       <app-organization-list-shell
@@ -58,6 +59,7 @@ import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
 
         @if (designations().length > 0) {
         <section org-list-table-content class="overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm dark:border-white/8 dark:bg-white/[0.04]">
+          <app-organization-table-metadata itemLabel="Designations" [count]="designations().length" [lastRefreshedAt]="lastRefreshedAt()" />
           <div class="overflow-x-auto">
           <table class="min-w-full text-left">
             <thead class="bg-stone-50 dark:bg-white/[0.03]">
@@ -151,6 +153,7 @@ export class DesignationsRebuildComponent implements OnInit {
   readonly designationsLoading = this.store.designationsLoading;
   readonly isSaving = this.store.isSaving;
   readonly error = this.store.error;
+  readonly lastRefreshedAt = signal<Date | null>(null);
   readonly isCreateModalOpen = signal(false);
   readonly isEditModalOpen = signal(false);
   readonly isDeleteDialogOpen = signal(false);
@@ -230,10 +233,11 @@ export class DesignationsRebuildComponent implements OnInit {
   ];
 
   ngOnInit(): void {
-    void this.store.loadDesignations();
+    this.refreshDesignations();
   }
 
   refreshDesignations(): void {
+    this.lastRefreshedAt.set(new Date());
     void this.store.loadDesignations();
   }
 

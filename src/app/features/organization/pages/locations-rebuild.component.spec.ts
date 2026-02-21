@@ -4,6 +4,7 @@ import { signal } from '@angular/core';
 import { vi } from 'vitest';
 import { OrganizationListShellComponent } from '../components/organization-list-shell.component';
 import { OrganizationPageStateComponent } from '../components/organization-page-state.component';
+import { OrganizationTableMetadataComponent } from '../components/organization-table-metadata.component';
 import { RebuildLocation } from '../data/organization-rebuild.models';
 import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
 import { LocationsRebuildComponent } from './locations-rebuild.component';
@@ -120,6 +121,16 @@ describe('LocationsRebuildComponent', () => {
   it('uses table loading skeleton variant', () => {
     const state = fixture.debugElement.query(By.directive(OrganizationPageStateComponent)).componentInstance as OrganizationPageStateComponent;
     expect(state.loadingVariant).toBe('table');
+  });
+
+  it('renders shared table metadata with count and refresh timestamp', () => {
+    const metadata = fixture.debugElement.query(By.directive(OrganizationTableMetadataComponent));
+    expect(metadata).not.toBeNull();
+
+    const metadataComponent = metadata.componentInstance as OrganizationTableMetadataComponent;
+    expect(metadataComponent.itemLabel).toBe('Locations');
+    expect(metadataComponent.count).toBe(component.locations().length);
+    expect(metadataComponent.lastRefreshedAt).not.toBeNull();
   });
 
   it('removes an existing location', async () => {
