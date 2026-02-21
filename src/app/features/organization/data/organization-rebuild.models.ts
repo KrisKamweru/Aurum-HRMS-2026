@@ -90,6 +90,7 @@ export interface RebuildOrganizationSettings {
   domain: string;
   subscriptionPlan: OrganizationPlan;
   status: OrganizationStatus;
+  updatedAt: string;
 }
 
 export interface UpdateOrganizationSettingsInput {
@@ -97,6 +98,7 @@ export interface UpdateOrganizationSettingsInput {
   domain?: string;
   subscriptionPlan: OrganizationPlan;
   status: OrganizationStatus;
+  expectedUpdatedAt?: string;
 }
 
 export interface RebuildOrgChartNode {

@@ -207,6 +207,7 @@ export class OrganizationRebuildDataService {
     const subscriptionPlan = record['subscriptionPlan'];
     const status = record['status'];
     const id = typeof record['_id'] === 'string' ? record['_id'] : '';
+    const updatedAt = this.readUpdatedAt(record);
     if (!name || !id) {
       return null;
     }
@@ -221,7 +222,8 @@ export class OrganizationRebuildDataService {
       name,
       domain,
       subscriptionPlan,
-      status
+      status,
+      updatedAt
     };
   }
 
@@ -230,7 +232,8 @@ export class OrganizationRebuildDataService {
       name: input.name,
       domain: input.domain,
       subscriptionPlan: input.subscriptionPlan,
-      status: input.status
+      status: input.status,
+      expectedUpdatedAt: input.expectedUpdatedAt
     });
   }
 
@@ -302,5 +305,15 @@ export class OrganizationRebuildDataService {
       status: value['status'],
       designationName: typeof value['position'] === 'string' ? value['position'] : undefined
     };
+  }
+
+  private readUpdatedAt(record: Record<string, unknown>): string {
+    if (typeof record['updatedAt'] === 'string' && record['updatedAt'].length > 0) {
+      return record['updatedAt'];
+    }
+    if (typeof record['_creationTime'] === 'number' && Number.isFinite(record['_creationTime'])) {
+      return new Date(record['_creationTime']).toISOString();
+    }
+    return new Date(0).toISOString();
   }
 }

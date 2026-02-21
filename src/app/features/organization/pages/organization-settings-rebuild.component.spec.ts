@@ -19,13 +19,19 @@ describe('OrganizationSettingsRebuildComponent', () => {
       name: 'Aurum HRMS',
       domain: 'aurum.dev',
       subscriptionPlan: 'pro',
-      status: 'active'
+      status: 'active',
+      updatedAt: '2026-02-21T10:00:00.000Z'
     };
     getOrganizationSettings.mockReset();
     updateOrganizationSettings.mockReset();
     getOrganizationSettings.mockImplementation(async () => settings);
     updateOrganizationSettings.mockImplementation(async (payload) => {
-      settings = { ...settings, ...payload, domain: payload.domain ?? '' };
+      settings = {
+        ...settings,
+        ...payload,
+        domain: payload.domain ?? '',
+        updatedAt: '2026-02-21T10:15:00.000Z'
+      };
     });
 
     await TestBed.configureTestingModule({
@@ -62,8 +68,61 @@ describe('OrganizationSettingsRebuildComponent', () => {
       name: 'Aurum Global',
       domain: 'global.aurum.dev',
       subscriptionPlan: 'enterprise',
-      status: 'active'
+      status: 'active',
+      expectedUpdatedAt: '2026-02-21T10:00:00.000Z'
     });
     expect(component.settings()?.name).toBe('Aurum Global');
+  });
+
+  it('applies optimistic settings immediately while save is in flight', async () => {
+    let resolveUpdate: (() => void) | null = null;
+    updateOrganizationSettings.mockImplementationOnce(
+      () =>
+        new Promise<void>((resolve) => {
+          resolveUpdate = () => {
+            settings = {
+              ...settings,
+              name: 'Aurum Optimistic',
+              domain: 'optimistic.aurum.dev',
+              subscriptionPlan: 'enterprise',
+              status: 'active',
+              updatedAt: '2026-02-21T10:30:00.000Z'
+            };
+            resolve();
+          };
+        })
+    );
+
+    const submitPromise = component.submitSettings({
+      name: 'Aurum Optimistic',
+      domain: 'optimistic.aurum.dev',
+      subscriptionPlan: 'enterprise',
+      status: 'active'
+    });
+
+    expect(component.settings()?.name).toBe('Aurum Optimistic');
+    resolveUpdate?.();
+    await submitPromise;
+  });
+
+  it('reloads latest values and reports conflict when stale payload is rejected', async () => {
+    updateOrganizationSettings.mockRejectedValueOnce(new Error('Conflict: stale settings snapshot'));
+    settings = {
+      ...settings,
+      name: 'Aurum Latest',
+      domain: 'latest.aurum.dev',
+      updatedAt: '2026-02-21T10:45:00.000Z'
+    };
+
+    await component.submitSettings({
+      name: 'Aurum Stale',
+      domain: 'stale.aurum.dev',
+      subscriptionPlan: 'enterprise',
+      status: 'active'
+    });
+
+    expect(getOrganizationSettings).toHaveBeenCalledTimes(2);
+    expect(component.settings()?.name).toBe('Aurum Latest');
+    expect(component.error()).toContain('updated in another session');
   });
 });

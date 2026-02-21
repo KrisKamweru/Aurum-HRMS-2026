@@ -43,6 +43,7 @@ export const updateOrganizationSettings = mutation({
     domain: v.optional(v.string()),
     subscriptionPlan: v.union(v.literal("free"), v.literal("pro"), v.literal("enterprise")),
     status: v.union(v.literal("active"), v.literal("suspended")),
+    expectedUpdatedAt: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const user = await getViewerInfo(ctx);
@@ -55,12 +56,22 @@ export const updateOrganizationSettings = mutation({
     if (!org) {
       throw new Error("Organization not found");
     }
+    const orgRecord = org as { updatedAt?: string; _creationTime: number };
+
+    const currentUpdatedAt =
+      typeof orgRecord.updatedAt === "string" && orgRecord.updatedAt.length > 0
+        ? orgRecord.updatedAt
+        : new Date(orgRecord._creationTime).toISOString();
+    if (args.expectedUpdatedAt && args.expectedUpdatedAt !== currentUpdatedAt) {
+      throw new Error("Conflict: organization settings changed by another session");
+    }
 
     await ctx.db.patch(orgId, {
       name: args.name,
       domain: args.domain,
       subscriptionPlan: args.subscriptionPlan,
       status: args.status,
+      updatedAt: new Date().toISOString(),
     });
   },
 });

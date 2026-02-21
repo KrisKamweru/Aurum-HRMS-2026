@@ -10,6 +10,7 @@ export default defineSchema({
     domain: v.optional(v.string()),
     subscriptionPlan: v.union(v.literal("free"), v.literal("pro"), v.literal("enterprise")),
     status: v.union(v.literal("active"), v.literal("suspended")),
+    updatedAt: v.optional(v.string()),
   }).index("by_domain", ["domain"]).index("by_status", ["status"]),
 
   users: defineTable({

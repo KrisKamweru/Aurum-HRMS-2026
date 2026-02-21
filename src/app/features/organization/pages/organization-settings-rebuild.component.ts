@@ -215,19 +215,41 @@ export class OrganizationSettingsRebuildComponent implements OnInit {
   }
 
   async submitSettings(payload: Record<string, unknown>): Promise<void> {
+    const current = this.settings();
+    if (!current) {
+      return;
+    }
+    const update = {
+      name: this.readText(payload, 'name'),
+      domain: this.readOptionalText(payload, 'domain'),
+      subscriptionPlan: this.readPlan(payload, 'subscriptionPlan'),
+      status: this.readStatus(payload, 'status')
+    } as const;
+    const optimistic: RebuildOrganizationSettings = {
+      ...current,
+      ...update,
+      domain: update.domain ?? ''
+    };
+
     this.isSaving.set(true);
     this.error.set(null);
+    this.settings.set(optimistic);
     try {
       await this.data.updateOrganizationSettings({
-        name: this.readText(payload, 'name'),
-        domain: this.readOptionalText(payload, 'domain'),
-        subscriptionPlan: this.readPlan(payload, 'subscriptionPlan'),
-        status: this.readStatus(payload, 'status')
+        ...update,
+        expectedUpdatedAt: current.updatedAt
       });
       await this.refresh();
       this.isEditModalOpen.set(false);
     } catch (error: unknown) {
-      this.error.set(error instanceof Error ? error.message : 'Unable to update organization settings.');
+      this.settings.set(current);
+      const message = error instanceof Error ? error.message : 'Unable to update organization settings.';
+      if (this.isConflictMessage(message)) {
+        await this.reloadLatestSettings();
+        this.error.set('Organization settings were updated in another session. Latest values were reloaded; review and retry.');
+      } else {
+        this.error.set(message);
+      }
     } finally {
       this.isSaving.set(false);
     }
@@ -260,5 +282,27 @@ export class OrganizationSettingsRebuildComponent implements OnInit {
       return value;
     }
     return 'active';
+  }
+
+  private isConflictMessage(message: string): boolean {
+    const normalized = message.toLowerCase();
+    return normalized.includes('conflict') || normalized.includes('stale');
+  }
+
+  private async reloadLatestSettings(): Promise<void> {
+    try {
+      const latest = await this.data.getOrganizationSettings();
+      this.settings.set(latest);
+      if (latest && this.isEditModalOpen()) {
+        this.editInitialValues.set({
+          name: latest.name,
+          domain: latest.domain,
+          subscriptionPlan: latest.subscriptionPlan,
+          status: latest.status
+        });
+      }
+    } catch {
+      // Ignore secondary refresh failure to avoid masking the original save error path.
+    }
   }
 }
