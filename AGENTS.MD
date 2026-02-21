@@ -41,5 +41,7 @@ While I'm trying to keep the project free of MD creep, here are some relevant on
 - Practice TDD. Write your test cases for new components, methods or classes before writing the code. Write these tests based on the desired outcome. Make sure they pass before committing.
 - Use `npm` as your package manager
 - Ask for confirmation before adding new deps
+- For any commands that require elevated access, include a short description of what the command does in the approval request.
+- Any and all changes to `AGENTS.md` must be explicitly approved by me first. Stop work to notify me and request permission before making edits to this file.
 - ALWAYS refer to the design guidelines when creating new HTML / CSS.
 - Keep commits atomic. Avoid thousand plus line diff commits. Break them up so progress is easy to follow, and reversion can be targeted as well
