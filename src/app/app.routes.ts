@@ -289,11 +289,42 @@ export const routes: Routes = [
     canActivate: [authGuard],
     data: { title: 'Payslip View' }
   },
-  placeholderRoute('reports', 'Reports', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]),
-  placeholderRoute('reports/attendance', 'Attendance Report', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]),
-  placeholderRoute('reports/analytics', 'Analytics Report', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]),
-  placeholderRoute('reports/payroll', 'Payroll Report', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]),
-  placeholderRoute('reports/tax', 'Tax Report', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]),
+  {
+    path: 'reports',
+    loadComponent: () => import('./features/reports/pages/reports-rebuild.component').then((m) => m.ReportsRebuildComponent),
+    canActivate: [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])],
+    data: { title: 'Reports' }
+  },
+  {
+    path: 'reports/attendance',
+    loadComponent: () =>
+      import('./features/reports/pages/reports-attendance-rebuild.component').then(
+        (m) => m.ReportsAttendanceRebuildComponent
+      ),
+    canActivate: [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])],
+    data: { title: 'Attendance Report' }
+  },
+  {
+    path: 'reports/analytics',
+    loadComponent: () =>
+      import('./features/reports/pages/reports-analytics-rebuild.component').then((m) => m.ReportsAnalyticsRebuildComponent),
+    canActivate: [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])],
+    data: { title: 'Analytics Report' }
+  },
+  {
+    path: 'reports/payroll',
+    loadComponent: () =>
+      import('./features/reports/pages/reports-payroll-rebuild.component').then((m) => m.ReportsPayrollRebuildComponent),
+    canActivate: [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])],
+    data: { title: 'Payroll Report' }
+  },
+  {
+    path: 'reports/tax',
+    loadComponent: () =>
+      import('./features/reports/pages/reports-tax-rebuild.component').then((m) => m.ReportsTaxRebuildComponent),
+    canActivate: [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])],
+    data: { title: 'Tax Report' }
+  },
   placeholderRoute('super-admin', 'Super Admin', [authGuard, roleGuard(['super_admin'])]),
   placeholderRoute('demo', 'Demo'),
   placeholderRoute('demo/buttons', 'Demo Buttons'),

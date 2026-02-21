@@ -203,6 +203,20 @@ Reference: `docs/rebuild-parity-plan.md`
     - TDD coverage added for training adapters, store, and rebuilt pages
     - validation: `npm test` and `npm run build` passing (`69` files, `293` tests)
     - report: `docs/rebuild-manifests/phase4-training-slice-report.md`
+  - Phase 4 reports baseline:
+    - rebuilt pages mapped for reports route surface (replacing placeholders):
+      - `reports`
+      - `reports/attendance`
+      - `reports/analytics`
+      - `reports/payroll`
+      - `reports/tax`
+    - reports rebuild store + Convex data adapter added under `src/app/features/reports/data/`
+    - rebuilt reports home now indexes canonical report surfaces and category navigation
+    - rebuilt attendance/payroll/tax reports now support filter-driven table flows plus CSV export
+    - rebuilt analytics report now supports period selection and schedule-run execution feedback
+    - TDD coverage added for reports adapters, store, and rebuilt pages
+    - validation: `npm test` and `npm run build` passing (`76` files, `309` tests)
+    - report: `docs/rebuild-manifests/phase4-reports-slice-report.md`
 
 ### P0. Immediate Stabilization and Context Hygiene (Now)
 Status: Substantially completed on 2026-02-09.

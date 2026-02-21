@@ -30,6 +30,11 @@ describe('app routes', () => {
     expect(paths).toContain('training/my-learning');
     expect(paths).toContain('training/courses/new');
     expect(paths).toContain('training/courses/:id/edit');
+    expect(paths).toContain('reports');
+    expect(paths).toContain('reports/attendance');
+    expect(paths).toContain('reports/analytics');
+    expect(paths).toContain('reports/payroll');
+    expect(paths).toContain('reports/tax');
     expect(paths).toContain('auth/login');
   });
 
@@ -154,5 +159,29 @@ describe('app routes', () => {
     expect(myLearning?.loadComponent).toBeTypeOf('function');
     expect(createCourse?.loadComponent).toBeTypeOf('function');
     expect(editCourse?.loadComponent).toBeTypeOf('function');
+  });
+
+  it('maps reports routes to rebuilt components with guard contracts', () => {
+    const reports = routes.find((route) => route.path === 'reports');
+    const attendance = routes.find((route) => route.path === 'reports/attendance');
+    const analytics = routes.find((route) => route.path === 'reports/analytics');
+    const payroll = routes.find((route) => route.path === 'reports/payroll');
+    const tax = routes.find((route) => route.path === 'reports/tax');
+
+    expect(reports?.data?.['title']).toBe('Reports');
+    expect(attendance?.data?.['title']).toBe('Attendance Report');
+    expect(analytics?.data?.['title']).toBe('Analytics Report');
+    expect(payroll?.data?.['title']).toBe('Payroll Report');
+    expect(tax?.data?.['title']).toBe('Tax Report');
+    expect(reports?.canActivate?.length).toBeGreaterThan(0);
+    expect(attendance?.canActivate?.length).toBeGreaterThan(0);
+    expect(analytics?.canActivate?.length).toBeGreaterThan(0);
+    expect(payroll?.canActivate?.length).toBeGreaterThan(0);
+    expect(tax?.canActivate?.length).toBeGreaterThan(0);
+    expect(reports?.loadComponent).toBeTypeOf('function');
+    expect(attendance?.loadComponent).toBeTypeOf('function');
+    expect(analytics?.loadComponent).toBeTypeOf('function');
+    expect(payroll?.loadComponent).toBeTypeOf('function');
+    expect(tax?.loadComponent).toBeTypeOf('function');
   });
 });
