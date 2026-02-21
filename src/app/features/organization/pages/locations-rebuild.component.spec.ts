@@ -21,10 +21,11 @@ describe('LocationsRebuildComponent', () => {
   });
 
   it('adds a new location', () => {
-    component.newLocationName.set('London Hub');
-    component.newLocationCity.set('London');
-    component.newLocationCountry.set('UK');
-    component.addLocation();
+    component.createLocationFromForm({
+      name: 'London Hub',
+      city: 'London',
+      country: 'UK'
+    });
 
     expect(component.locations().some((d) => d.name === 'London Hub' && d.city === 'London')).toBe(true);
   });
@@ -34,5 +35,13 @@ describe('LocationsRebuildComponent', () => {
     component.removeLocation(target.id);
 
     expect(component.locations().some((d) => d.id === target.id)).toBe(false);
+  });
+
+  it('opens and closes create modal', () => {
+    expect(component.isCreateModalOpen()).toBe(false);
+    component.openCreateModal();
+    expect(component.isCreateModalOpen()).toBe(true);
+    component.closeCreateModal();
+    expect(component.isCreateModalOpen()).toBe(false);
   });
 });

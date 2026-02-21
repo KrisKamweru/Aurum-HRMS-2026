@@ -1,11 +1,13 @@
 import { Component, inject, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { DynamicFormComponent } from '../../../shared/components/dynamic-form/dynamic-form.component';
+import { UiModalComponent } from '../../../shared/components/ui-modal/ui-modal.component';
+import { FieldConfig, FormSectionConfig, FormStepConfig } from '../../../shared/services/form-helper.service';
 import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
 
 @Component({
   selector: 'app-designations-rebuild',
   standalone: true,
-  imports: [FormsModule],
+  imports: [UiModalComponent, DynamicFormComponent],
   template: `
     <main class="min-h-screen bg-stone-50 px-4 py-8 text-stone-900 dark:bg-[#0b0b0b] dark:text-stone-100 sm:px-6 lg:px-8">
       <div class="mx-auto w-full max-w-5xl space-y-8">
@@ -18,25 +20,16 @@ import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
         </header>
 
         <section class="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-white/5 dark:backdrop-blur-xl">
-          <form class="grid gap-3 sm:grid-cols-[2fr_1fr_auto]" (submit)="addDesignation(); $event.preventDefault()">
-            <input
-              class="w-full rounded-lg border border-stone-200 bg-white px-4 py-2.5 text-sm outline-none transition-all placeholder:text-stone-400 focus:border-burgundy-500 focus:ring-2 focus:ring-burgundy-500/20 dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder:text-stone-500"
-              name="designationTitle"
-              [(ngModel)]="newDesignationTitleModel"
-              placeholder="Designation title"
-            />
-            <input
-              class="w-full rounded-lg border border-stone-200 bg-white px-4 py-2.5 text-sm outline-none transition-all placeholder:text-stone-400 focus:border-burgundy-500 focus:ring-2 focus:ring-burgundy-500/20 dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder:text-stone-500"
-              name="designationLevel"
-              [(ngModel)]="newDesignationLevelModel"
-              placeholder="Level"
-              type="number"
-              min="1"
-            />
-            <button type="submit" class="rounded-[10px] bg-burgundy-700 px-6 py-2.5 text-sm font-semibold text-white shadow-[0_4px_20px_rgba(134,24,33,0.35)] transition-all hover:-translate-y-0.5 hover:bg-burgundy-600">
-              Add
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <p class="text-sm text-stone-600 dark:text-stone-300">Use structured modal forms for designation setup and validation.</p>
+            <button
+              type="button"
+              class="rounded-[10px] bg-burgundy-700 px-6 py-2.5 text-sm font-semibold text-white shadow-[0_4px_20px_rgba(134,24,33,0.35)] transition-all hover:-translate-y-0.5 hover:bg-burgundy-600"
+              (click)="openCreateModal()"
+            >
+              Add Designation
             </button>
-          </form>
+          </div>
         </section>
 
         <section class="overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm dark:border-white/10 dark:bg-white/5 dark:backdrop-blur-xl">
@@ -68,6 +61,26 @@ import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
           </table>
         </section>
       </div>
+
+      <ui-modal
+        [isOpen]="isCreateModalOpen()"
+        (isOpenChange)="isCreateModalOpen.set($event)"
+        [canDismiss]="true"
+        [hasFooter]="false"
+        width="normal"
+        title="Create Designation"
+      >
+        <app-dynamic-form
+          container="modal"
+          [fields]="designationFields"
+          [sections]="designationSections"
+          [steps]="designationSteps"
+          [showCancel]="true"
+          submitLabel="Create Designation"
+          (cancel)="closeCreateModal()"
+          (formSubmit)="createDesignationFromForm($event)"
+        />
+      </ui-modal>
     </main>
   `
 })
@@ -75,31 +88,62 @@ export class DesignationsRebuildComponent {
   private readonly store = inject(OrganizationRebuildStore);
 
   readonly designations = this.store.designations;
-  readonly newDesignationTitle = signal('');
-  readonly newDesignationLevel = signal('1');
+  readonly isCreateModalOpen = signal(false);
 
-  get newDesignationTitleModel(): string {
-    return this.newDesignationTitle();
+  readonly designationFields: FieldConfig[] = [
+    {
+      name: 'title',
+      label: 'Designation Title',
+      type: 'text',
+      sectionId: 'identity',
+      required: true,
+      colSpan: 2,
+      placeholder: 'e.g. Senior Engineer'
+    },
+    {
+      name: 'level',
+      label: 'Level',
+      type: 'number',
+      sectionId: 'grading',
+      required: true,
+      placeholder: 'e.g. 3'
+    }
+  ];
+
+  readonly designationSections: FormSectionConfig[] = [
+    {
+      id: 'identity',
+      title: 'Title',
+      description: 'Designation naming and identity',
+      columns: { base: 1, md: 2, lg: 2 }
+    },
+    {
+      id: 'grading',
+      title: 'Grade',
+      description: 'Role hierarchy level',
+      columns: { base: 1, md: 2, lg: 2 }
+    }
+  ];
+
+  readonly designationSteps: FormStepConfig[] = [
+    { id: 'desig-step-1', title: 'Title', sectionIds: ['identity'] },
+    { id: 'desig-step-2', title: 'Grade', sectionIds: ['grading'] }
+  ];
+
+  openCreateModal(): void {
+    this.isCreateModalOpen.set(true);
   }
 
-  set newDesignationTitleModel(value: string) {
-    this.newDesignationTitle.set(value);
+  closeCreateModal(): void {
+    this.isCreateModalOpen.set(false);
   }
 
-  get newDesignationLevelModel(): string {
-    return this.newDesignationLevel();
-  }
-
-  set newDesignationLevelModel(value: string) {
-    this.newDesignationLevel.set(value);
-  }
-
-  addDesignation(): void {
-    const parsedLevel = Number(this.newDesignationLevel().trim());
+  createDesignationFromForm(payload: Record<string, unknown>): void {
+    const title = typeof payload['title'] === 'string' ? payload['title'] : '';
+    const parsedLevel = Number(payload['level']);
     const level = Number.isFinite(parsedLevel) && parsedLevel > 0 ? parsedLevel : 1;
-    this.store.addDesignation(this.newDesignationTitle(), level);
-    this.newDesignationTitle.set('');
-    this.newDesignationLevel.set('1');
+    this.store.addDesignation(title, level);
+    this.isCreateModalOpen.set(false);
   }
 
   removeDesignation(id: string): void {

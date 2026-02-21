@@ -26,7 +26,7 @@ Status: Completed for modal/form baseline
 4. Design language rule updated:
    - explicit internal-scroll rule added in `DESIGN LANGUAGE.md`.
 5. Shared component adoption started:
-   - `organization/departments` now uses `ui-modal` + `dynamic-form` (multi-column + stepper) instead of inline long-form input.
+   - `organization/departments`, `organization/designations`, and `organization/locations` now use `ui-modal` + `dynamic-form` (multi-column + stepper) instead of inline long-form inputs.
 
 ## Tests Added
 - `src/app/shared/components/dynamic-form/dynamic-form.component.spec.ts`
@@ -36,4 +36,4 @@ Status: Completed for modal/form baseline
 ## Validation
 - `npx tsc -p tsconfig.spec.json --noEmit` passed.
 - `npm run build` passed.
-- `npm run test` passed (`15` files, `43` tests).
+- `npm run test` passed (`15` files, `45` tests).

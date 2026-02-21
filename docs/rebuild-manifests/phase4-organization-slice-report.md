@@ -19,7 +19,7 @@ Status: In progress (organization module scaffold expanded)
   - Departments
   - Designations
   - Locations
-- Departments creation flow now uses shared modal + dynamic-form with stepper and multi-column sections.
+- Departments, designations, and locations creation flows now use shared modal + dynamic-form with stepper and multi-column sections.
 - User-linking scaffold:
   - pending link queue
   - per-row link action with linked-count telemetry
@@ -54,7 +54,7 @@ Status: In progress (organization module scaffold expanded)
 
 ## Validation
 - `npm run build` passed.
-- `npm run test` passed (`15` files, `43` tests).
+- `npm run test` passed (`15` files, `45` tests).
 
 ## Next in This Track
 1. Replace in-memory store with Convex-backed CRUD for departments/designations/locations.

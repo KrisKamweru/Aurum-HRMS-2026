@@ -21,9 +21,10 @@ describe('DesignationsRebuildComponent', () => {
   });
 
   it('adds a new designation', () => {
-    component.newDesignationTitle.set('Finance Manager');
-    component.newDesignationLevel.set('3');
-    component.addDesignation();
+    component.createDesignationFromForm({
+      title: 'Finance Manager',
+      level: 3
+    });
 
     expect(component.designations().some((d) => d.title === 'Finance Manager')).toBe(true);
   });
@@ -33,5 +34,13 @@ describe('DesignationsRebuildComponent', () => {
     component.removeDesignation(target.id);
 
     expect(component.designations().some((d) => d.id === target.id)).toBe(false);
+  });
+
+  it('opens and closes create modal', () => {
+    expect(component.isCreateModalOpen()).toBe(false);
+    component.openCreateModal();
+    expect(component.isCreateModalOpen()).toBe(true);
+    component.closeCreateModal();
+    expect(component.isCreateModalOpen()).toBe(false);
   });
 });

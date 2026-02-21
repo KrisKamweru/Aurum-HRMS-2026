@@ -96,7 +96,7 @@ Reference: `docs/rebuild-parity-plan.md`
     - shared `ui-modal` rebuilt with configurable widths (`thin|normal|wide`) and internal body scroll
     - app shell and global styles now enforce internal container scrolling over page scrolling
     - design rule added to `DESIGN LANGUAGE.md` for internal scroll boundaries
-    - first feature adoption completed: `organization/departments` create flow migrated to modal + dynamic-form
+    - first feature adoption completed: `organization/departments`, `organization/designations`, and `organization/locations` create flows migrated to modal + dynamic-form
     - report: `docs/rebuild-manifests/phase4-shared-foundation-report.md`
 
 ### P0. Immediate Stabilization and Context Hygiene (Now)
