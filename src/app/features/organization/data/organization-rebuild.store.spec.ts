@@ -6,6 +6,7 @@ import {
   CreateDesignationInput,
   CreateLocationInput,
   RebuildDepartment,
+  RebuildEmployeeLookup,
   RebuildDesignation,
   RebuildLocation,
   RebuildUnlinkedEmployee,
@@ -23,6 +24,7 @@ describe('OrganizationRebuildStore', () => {
   let locations: RebuildLocation[];
   let users: RebuildUnlinkedUser[];
   let employees: RebuildUnlinkedEmployee[];
+  let employeeLookup: RebuildEmployeeLookup[];
   let dataService: {
     listDepartments: ReturnType<typeof vi.fn<() => Promise<RebuildDepartment[]>>>;
     createDepartment: ReturnType<typeof vi.fn<(input: CreateDepartmentInput) => Promise<void>>>;
@@ -33,6 +35,7 @@ describe('OrganizationRebuildStore', () => {
     updateDesignation: ReturnType<typeof vi.fn<(input: UpdateDesignationInput) => Promise<void>>>;
     deleteDesignation: ReturnType<typeof vi.fn<(id: string) => Promise<void>>>;
     listLocations: ReturnType<typeof vi.fn<() => Promise<RebuildLocation[]>>>;
+    listEmployeesForManagerLookup: ReturnType<typeof vi.fn<() => Promise<RebuildEmployeeLookup[]>>>;
     createLocation: ReturnType<typeof vi.fn<(input: CreateLocationInput) => Promise<void>>>;
     updateLocation: ReturnType<typeof vi.fn<(input: UpdateLocationInput) => Promise<void>>>;
     deleteLocation: ReturnType<typeof vi.fn<(id: string) => Promise<void>>>;
@@ -43,8 +46,8 @@ describe('OrganizationRebuildStore', () => {
 
   beforeEach(() => {
     departments = [
-      { id: 'dept-hr', name: 'Human Resources', code: 'HR', description: 'People ops', headcount: 4 },
-      { id: 'dept-eng', name: 'Engineering', code: 'ENG', description: 'Product build', headcount: 8 }
+      { id: 'dept-hr', name: 'Human Resources', code: 'HR', description: 'People ops', managerId: 'emp-a', managerName: 'Amina Hassan', headcount: 4 },
+      { id: 'dept-eng', name: 'Engineering', code: 'ENG', description: 'Product build', managerId: 'emp-b', managerName: 'James Doe', headcount: 8 }
     ];
     designations = [
       { id: 'desig-hrg', title: 'HR Generalist', code: 'HRG', level: 2, description: 'Generalist track' },
@@ -62,19 +65,45 @@ describe('OrganizationRebuildStore', () => {
       { id: 'emp-a', firstName: 'Amina', lastName: 'Hassan', email: 'amina.hassan@aurum.dev', status: 'active' },
       { id: 'emp-b', firstName: 'James', lastName: 'Doe', email: 'james.doe@aurum.dev', status: 'active' }
     ];
+    employeeLookup = [
+      { id: 'emp-a', firstName: 'Amina', lastName: 'Hassan', email: 'amina.hassan@aurum.dev', status: 'active' },
+      { id: 'emp-b', firstName: 'James', lastName: 'Doe', email: 'james.doe@aurum.dev', status: 'active' }
+    ];
+    const managerNameFor = (managerId: string | undefined): string | undefined => {
+      if (!managerId) {
+        return undefined;
+      }
+      const manager = employeeLookup.find((employee) => employee.id === managerId);
+      return manager ? `${manager.firstName} ${manager.lastName}`.trim() : undefined;
+    };
 
     dataService = {
       listDepartments: vi.fn(async () => [...departments]),
       createDepartment: vi.fn(async (input) => {
         departments = [
           ...departments,
-          { id: `dept-${departments.length + 1}`, name: input.name, code: input.code, description: input.description ?? '', headcount: 0 }
+          {
+            id: `dept-${departments.length + 1}`,
+            name: input.name,
+            code: input.code,
+            description: input.description ?? '',
+            managerId: input.managerId,
+            managerName: managerNameFor(input.managerId),
+            headcount: 0
+          }
         ];
       }),
       updateDepartment: vi.fn(async (input) => {
         departments = departments.map((row) =>
           row.id === input.id
-            ? { ...row, name: input.name, code: input.code, description: input.description ?? '' }
+            ? {
+                ...row,
+                name: input.name,
+                code: input.code,
+                description: input.description ?? '',
+                managerId: input.managerId,
+                managerName: managerNameFor(input.managerId)
+              }
             : row
         );
       }),
@@ -105,6 +134,7 @@ describe('OrganizationRebuildStore', () => {
         designations = designations.filter((row) => row.id !== id);
       }),
       listLocations: vi.fn(async () => [...locations]),
+      listEmployeesForManagerLookup: vi.fn(async () => [...employeeLookup]),
       createLocation: vi.fn(async (input) => {
         locations = [...locations, { id: `loc-${locations.length + 1}`, ...input }];
       }),
@@ -131,9 +161,11 @@ describe('OrganizationRebuildStore', () => {
     await Promise.all([store.loadDepartments(), store.loadDesignations(), store.loadLocations()]);
 
     expect(store.departments().length).toBe(2);
+    expect(store.managerLookup().length).toBe(2);
     expect(store.designations().length).toBe(2);
     expect(store.locations().length).toBe(2);
     expect(dataService.listDepartments).toHaveBeenCalledTimes(1);
+    expect(dataService.listEmployeesForManagerLookup).toHaveBeenCalledTimes(1);
     expect(dataService.listDesignations).toHaveBeenCalledTimes(1);
     expect(dataService.listLocations).toHaveBeenCalledTimes(1);
   });
@@ -141,13 +173,14 @@ describe('OrganizationRebuildStore', () => {
   it('adds unique departments and blocks duplicates', async () => {
     await store.loadDepartments();
 
-    expect(await store.addDepartment({ name: 'Finance' })).toBe(true);
+    expect(await store.addDepartment({ name: 'Finance', managerId: 'emp-a' })).toBe(true);
     expect(await store.addDepartment({ name: 'finance' })).toBe(false);
     expect(store.departments().some((row) => row.name === 'Finance')).toBe(true);
     expect(dataService.createDepartment).toHaveBeenCalledWith({
       name: 'Finance',
       code: 'FINANCE',
-      description: undefined
+      description: undefined,
+      managerId: 'emp-a'
     });
     expect(store.error()).toBe('Department names must be unique.');
   });
@@ -160,10 +193,12 @@ describe('OrganizationRebuildStore', () => {
       id: first.id,
       name: 'People Operations',
       code: 'PEOPLE',
-      description: 'Updated'
+      description: 'Updated',
+      managerId: 'emp-b'
     });
     expect(updateResult).toBe(true);
     expect(store.departments().some((row) => row.name === 'People Operations')).toBe(true);
+    expect(store.departments().find((row) => row.id === first.id)?.managerId).toBe('emp-b');
 
     const target = store.departments()[0];
     expect(await store.removeDepartment(target.id)).toBe(true);

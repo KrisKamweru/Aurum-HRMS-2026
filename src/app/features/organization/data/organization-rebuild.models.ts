@@ -4,6 +4,7 @@ export interface RebuildDepartment {
   code: string;
   description: string;
   managerId?: string;
+  managerName?: string;
   headcount: number;
 }
 
@@ -36,6 +37,15 @@ export interface RebuildUnlinkedEmployee {
   lastName: string;
   email: string;
   status: string;
+}
+
+export interface RebuildEmployeeLookup {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  status: string;
+  designationName?: string;
 }
 
 export interface CreateDepartmentInput {

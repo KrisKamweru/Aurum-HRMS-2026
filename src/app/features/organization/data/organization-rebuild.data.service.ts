@@ -7,6 +7,7 @@ import {
   CreateDesignationInput,
   CreateLocationInput,
   RebuildDepartment,
+  RebuildEmployeeLookup,
   RebuildDesignation,
   RebuildLocation,
   RebuildOrgChartNode,
@@ -30,6 +31,10 @@ export class OrganizationRebuildDataService {
       this.convex.query(api.organization.listDepartments, {}),
       this.convex.query(api.employees.list, {})
     ]);
+    const managerLookup = this.mapEmployeeLookupList(employees);
+    const managerNameById = new Map(
+      managerLookup.map((employee) => [employee.id, `${employee.firstName} ${employee.lastName}`.trim()])
+    );
 
     const byDepartment = new Map<string, number>();
     for (const employee of employees) {
@@ -46,8 +51,14 @@ export class OrganizationRebuildDataService {
       code: department.code,
       description: department.description ?? '',
       managerId: department.managerId ? String(department.managerId) : undefined,
+      managerName: department.managerId ? managerNameById.get(String(department.managerId)) : undefined,
       headcount: byDepartment.get(String(department._id)) ?? 0
     }));
+  }
+
+  async listEmployeesForManagerLookup(): Promise<RebuildEmployeeLookup[]> {
+    const employees = await this.convex.query(api.employees.list, {});
+    return this.mapEmployeeLookupList(employees);
   }
 
   async createDepartment(input: CreateDepartmentInput): Promise<void> {
@@ -255,6 +266,41 @@ export class OrganizationRebuildDataService {
       directReports: children
         .map((child) => this.mapOrgChartNode(child))
         .filter((child): child is RebuildOrgChartNode => child !== null)
+    };
+  }
+
+  private mapEmployeeLookupList(records: unknown): RebuildEmployeeLookup[] {
+    if (!Array.isArray(records)) {
+      return [];
+    }
+
+    return records
+      .map((record) => this.mapEmployeeLookup(record))
+      .filter((record): record is RebuildEmployeeLookup => record !== null);
+  }
+
+  private mapEmployeeLookup(record: unknown): RebuildEmployeeLookup | null {
+    if (!record || typeof record !== 'object') {
+      return null;
+    }
+    const value = record as Record<string, unknown>;
+    if (
+      typeof value['_id'] !== 'string' ||
+      typeof value['firstName'] !== 'string' ||
+      typeof value['lastName'] !== 'string' ||
+      typeof value['email'] !== 'string' ||
+      typeof value['status'] !== 'string'
+    ) {
+      return null;
+    }
+
+    return {
+      id: value['_id'],
+      firstName: value['firstName'],
+      lastName: value['lastName'],
+      email: value['email'],
+      status: value['status'],
+      designationName: typeof value['position'] === 'string' ? value['position'] : undefined
     };
   }
 }

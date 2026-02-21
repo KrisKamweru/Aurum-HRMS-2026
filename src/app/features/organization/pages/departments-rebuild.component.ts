@@ -29,7 +29,7 @@ import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
 
         <section class="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm dark:border-white/8 dark:bg-white/[0.04]">
           <div class="flex flex-wrap items-center justify-between gap-3">
-            <p class="text-sm text-stone-600 dark:text-stone-300">Use structured modal forms with stepper flows for cleaner UX in constrained spaces.</p>
+            <p class="text-sm text-stone-600 dark:text-stone-300">Use structured modal forms with stepper flows and explicit manager assignment.</p>
             <div class="flex items-center gap-2">
               <button
                 type="button"
@@ -58,6 +58,7 @@ import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
               <tr>
                 <th class="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-stone-500 dark:text-stone-500">Department Name</th>
                 <th class="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-stone-500 dark:text-stone-500">Code</th>
+                <th class="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-stone-500 dark:text-stone-500">Manager</th>
                 <th class="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-stone-500 dark:text-stone-500">Headcount</th>
                 <th class="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-stone-500 dark:text-stone-500">Description</th>
                 <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-stone-500 dark:text-stone-500">Actions</th>
@@ -66,13 +67,14 @@ import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
             <tbody>
               @if (departmentsLoading() && departments().length === 0) {
                 <tr>
-                  <td colspan="5" class="px-4 py-8 text-center text-sm text-stone-500 dark:text-stone-400">Loading departments...</td>
+                  <td colspan="6" class="px-4 py-8 text-center text-sm text-stone-500 dark:text-stone-400">Loading departments...</td>
                 </tr>
               }
               @for (department of departments(); track department.id) {
                 <tr class="border-t border-stone-100 transition-colors hover:bg-burgundy-50/50 dark:border-white/[0.03] dark:hover:bg-burgundy-700/[0.06]">
                   <td class="px-4 py-3 text-sm font-medium text-stone-800 dark:text-stone-200">{{ department.name }}</td>
                   <td class="px-4 py-3 text-sm text-stone-600 dark:text-stone-300">{{ department.code }}</td>
+                  <td class="px-4 py-3 text-sm text-stone-600 dark:text-stone-300">{{ department.managerName || 'Unassigned' }}</td>
                   <td class="px-4 py-3 text-sm text-stone-600 dark:text-stone-300">{{ department.headcount }}</td>
                   <td class="px-4 py-3 text-sm text-stone-600 dark:text-stone-300">{{ department.description || 'n/a' }}</td>
                   <td class="px-4 py-3 text-right">
@@ -97,7 +99,7 @@ import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
               } @empty {
                 @if (!departmentsLoading()) {
                   <tr>
-                    <td colspan="5" class="px-4 py-8 text-center text-sm text-stone-500 dark:text-stone-400">No departments found.</td>
+                    <td colspan="6" class="px-4 py-8 text-center text-sm text-stone-500 dark:text-stone-400">No departments found.</td>
                   </tr>
                 }
               }
@@ -163,6 +165,7 @@ export class DepartmentsRebuildComponent implements OnInit {
   private readonly store = inject(OrganizationRebuildStore);
 
   readonly departments = this.store.departments;
+  readonly managerLookup = this.store.managerLookup;
   readonly departmentsLoading = this.store.departmentsLoading;
   readonly isSaving = this.store.isSaving;
   readonly error = this.store.error;
@@ -181,34 +184,47 @@ export class DepartmentsRebuildComponent implements OnInit {
     variant: 'danger'
   };
 
-  readonly departmentFields: FieldConfig[] = [
-    {
-      name: 'name',
-      label: 'Department Name',
-      type: 'text',
-      sectionId: 'identity',
-      required: true,
-      colSpan: 2,
-      placeholder: 'e.g. Finance'
-    },
-    {
-      name: 'code',
-      label: 'Department Code',
-      type: 'text',
-      sectionId: 'identity',
-      required: true,
-      placeholder: 'e.g. FIN'
-    },
-    {
-      name: 'description',
-      label: 'Description',
-      type: 'textarea',
-      sectionId: 'planning',
-      required: false,
-      colSpan: 2,
-      placeholder: 'Optional context about this department'
-    }
-  ];
+  get departmentFields(): FieldConfig[] {
+    return [
+      {
+        name: 'name',
+        label: 'Department Name',
+        type: 'text',
+        sectionId: 'identity',
+        required: true,
+        colSpan: 2,
+        placeholder: 'e.g. Finance'
+      },
+      {
+        name: 'code',
+        label: 'Department Code',
+        type: 'text',
+        sectionId: 'identity',
+        required: true,
+        placeholder: 'e.g. FIN'
+      },
+      {
+        name: 'managerId',
+        label: 'Department Manager',
+        type: 'select',
+        sectionId: 'planning',
+        required: false,
+        options: this.managerLookup().map((employee) => ({
+          label: `${employee.firstName} ${employee.lastName} (${employee.email})`,
+          value: employee.id
+        }))
+      },
+      {
+        name: 'description',
+        label: 'Description',
+        type: 'textarea',
+        sectionId: 'planning',
+        required: false,
+        colSpan: 2,
+        placeholder: 'Optional context about this department'
+      }
+    ];
+  }
 
   readonly departmentSections: FormSectionConfig[] = [
     {
@@ -252,6 +268,7 @@ export class DepartmentsRebuildComponent implements OnInit {
     this.editInitialValues.set({
       name: department.name,
       code: department.code,
+      managerId: department.managerId ?? '',
       description: department.description
     });
     this.isEditModalOpen.set(true);
@@ -267,6 +284,7 @@ export class DepartmentsRebuildComponent implements OnInit {
     const success = await this.store.addDepartment({
       name: this.readText(payload, 'name'),
       code: this.readText(payload, 'code'),
+      managerId: this.readText(payload, 'managerId'),
       description: this.readText(payload, 'description')
     });
     if (success) {
@@ -284,6 +302,7 @@ export class DepartmentsRebuildComponent implements OnInit {
       id,
       name: this.readText(payload, 'name'),
       code: this.readText(payload, 'code'),
+      managerId: this.readText(payload, 'managerId'),
       description: this.readText(payload, 'description')
     });
     if (success) {

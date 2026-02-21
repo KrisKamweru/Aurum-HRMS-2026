@@ -2,6 +2,7 @@ import { Injectable, signal } from '@angular/core';
 import { OrganizationRebuildDataService } from './organization-rebuild.data.service';
 import {
   RebuildDepartment,
+  RebuildEmployeeLookup,
   RebuildDesignation,
   RebuildLocation,
   RebuildUnlinkedEmployee,
@@ -13,6 +14,7 @@ export class OrganizationRebuildStore {
   private readonly departmentState = signal<RebuildDepartment[]>([]);
   private readonly designationState = signal<RebuildDesignation[]>([]);
   private readonly locationState = signal<RebuildLocation[]>([]);
+  private readonly managerLookupState = signal<RebuildEmployeeLookup[]>([]);
   private readonly pendingUserState = signal<RebuildUnlinkedUser[]>([]);
   private readonly unlinkedEmployeeState = signal<RebuildUnlinkedEmployee[]>([]);
   private readonly selectedLinkState = signal<Record<string, string>>({});
@@ -30,6 +32,7 @@ export class OrganizationRebuildStore {
   readonly departments = this.departmentState.asReadonly();
   readonly designations = this.designationState.asReadonly();
   readonly locations = this.locationState.asReadonly();
+  readonly managerLookup = this.managerLookupState.asReadonly();
   readonly pendingUserLinks = this.pendingUserState.asReadonly();
   readonly unlinkedEmployees = this.unlinkedEmployeeState.asReadonly();
   readonly linkedCount = this.linkedCountState.asReadonly();
@@ -45,7 +48,12 @@ export class OrganizationRebuildStore {
     this.departmentsLoadingState.set(true);
     this.clearError();
     try {
-      this.departmentState.set(await this.data.listDepartments());
+      const [departments, employees] = await Promise.all([
+        this.data.listDepartments(),
+        this.data.listEmployeesForManagerLookup()
+      ]);
+      this.departmentState.set(departments);
+      this.managerLookupState.set(employees);
     } catch (error: unknown) {
       this.setError(error, 'Unable to load departments.');
     } finally {
@@ -53,7 +61,12 @@ export class OrganizationRebuildStore {
     }
   }
 
-  async addDepartment(payload: { name: string; code?: string; description?: string }): Promise<boolean> {
+  async addDepartment(payload: {
+    name: string;
+    code?: string;
+    description?: string;
+    managerId?: string;
+  }): Promise<boolean> {
     const name = payload.name.trim();
     if (!name) {
       this.errorState.set('Department name is required.');
@@ -70,7 +83,8 @@ export class OrganizationRebuildStore {
       await this.data.createDepartment({
         name,
         code: this.normalizeCode(payload.code, name),
-        description: this.normalizeOptionalText(payload.description)
+        description: this.normalizeOptionalText(payload.description),
+        managerId: this.normalizeOptionalId(payload.managerId)
       });
       await this.loadDepartments();
       return true;
@@ -82,7 +96,13 @@ export class OrganizationRebuildStore {
     }
   }
 
-  async updateDepartment(payload: { id: string; name: string; code?: string; description?: string }): Promise<boolean> {
+  async updateDepartment(payload: {
+    id: string;
+    name: string;
+    code?: string;
+    description?: string;
+    managerId?: string;
+  }): Promise<boolean> {
     const name = payload.name.trim();
     if (!name) {
       this.errorState.set('Department name is required.');
@@ -104,7 +124,8 @@ export class OrganizationRebuildStore {
         id: payload.id,
         name,
         code: this.normalizeCode(payload.code, name),
-        description: this.normalizeOptionalText(payload.description)
+        description: this.normalizeOptionalText(payload.description),
+        managerId: this.normalizeOptionalId(payload.managerId)
       });
       await this.loadDepartments();
       return true;
@@ -409,6 +430,11 @@ export class OrganizationRebuildStore {
   }
 
   private normalizeOptionalText(value: string | undefined): string | undefined {
+    const normalized = value?.trim() ?? '';
+    return normalized.length > 0 ? normalized : undefined;
+  }
+
+  private normalizeOptionalId(value: string | undefined): string | undefined {
     const normalized = value?.trim() ?? '';
     return normalized.length > 0 ? normalized : undefined;
   }

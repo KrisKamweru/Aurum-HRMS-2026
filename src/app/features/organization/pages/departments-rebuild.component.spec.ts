@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
 import { vi } from 'vitest';
-import { RebuildDepartment } from '../data/organization-rebuild.models';
+import { RebuildDepartment, RebuildEmployeeLookup } from '../data/organization-rebuild.models';
 import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
 import { DepartmentsRebuildComponent } from './departments-rebuild.component';
 
@@ -9,15 +9,29 @@ describe('DepartmentsRebuildComponent', () => {
   let fixture: ComponentFixture<DepartmentsRebuildComponent>;
   let component: DepartmentsRebuildComponent;
   let departments: ReturnType<typeof signal<RebuildDepartment[]>>;
+  let managerLookup: ReturnType<typeof signal<RebuildEmployeeLookup[]>>;
   let storeMock: Pick<
     OrganizationRebuildStore,
-    'departments' | 'departmentsLoading' | 'isSaving' | 'error' | 'loadDepartments' | 'addDepartment' | 'updateDepartment' | 'removeDepartment' | 'clearError'
+    | 'departments'
+    | 'managerLookup'
+    | 'departmentsLoading'
+    | 'isSaving'
+    | 'error'
+    | 'loadDepartments'
+    | 'addDepartment'
+    | 'updateDepartment'
+    | 'removeDepartment'
+    | 'clearError'
   >;
 
   beforeEach(async () => {
     departments = signal<RebuildDepartment[]>([
-      { id: 'dept-hr', name: 'Human Resources', code: 'HR', description: 'People ops', headcount: 4 },
-      { id: 'dept-eng', name: 'Engineering', code: 'ENG', description: 'Product build', headcount: 8 }
+      { id: 'dept-hr', name: 'Human Resources', code: 'HR', description: 'People ops', managerId: 'emp-a', managerName: 'Amina Hassan', headcount: 4 },
+      { id: 'dept-eng', name: 'Engineering', code: 'ENG', description: 'Product build', managerId: 'emp-b', managerName: 'James Doe', headcount: 8 }
+    ]);
+    managerLookup = signal<RebuildEmployeeLookup[]>([
+      { id: 'emp-a', firstName: 'Amina', lastName: 'Hassan', email: 'amina.hassan@aurum.dev', status: 'active' },
+      { id: 'emp-b', firstName: 'James', lastName: 'Doe', email: 'james.doe@aurum.dev', status: 'active' }
     ]);
     const loading = signal(false);
     const saving = signal(false);
@@ -25,6 +39,7 @@ describe('DepartmentsRebuildComponent', () => {
 
     storeMock = {
       departments: departments.asReadonly(),
+      managerLookup: managerLookup.asReadonly(),
       departmentsLoading: loading.asReadonly(),
       isSaving: saving.asReadonly(),
       error: error.asReadonly(),
@@ -37,6 +52,8 @@ describe('DepartmentsRebuildComponent', () => {
             name: payload.name,
             code: payload.code ?? 'NEW',
             description: payload.description ?? '',
+            managerId: payload.managerId,
+            managerName: payload.managerId === 'emp-a' ? 'Amina Hassan' : payload.managerId === 'emp-b' ? 'James Doe' : undefined,
             headcount: 0
           }
         ]);
@@ -77,12 +94,25 @@ describe('DepartmentsRebuildComponent', () => {
   it('adds a new department from modal form', async () => {
     component.openCreateModal();
     await component.createDepartmentFromForm({
-      name: 'Finance'
+      name: 'Finance',
+      managerId: 'emp-a'
     });
 
     expect(storeMock.addDepartment).toHaveBeenCalledTimes(1);
+    expect(storeMock.addDepartment).toHaveBeenCalledWith({
+      name: 'Finance',
+      code: '',
+      managerId: 'emp-a',
+      description: ''
+    });
     expect(component.departments().some((d) => d.name === 'Finance')).toBe(true);
     expect(component.isCreateModalOpen()).toBe(false);
+  });
+
+  it('maps manager lookup into form select options', () => {
+    const managerField = component.departmentFields.find((field) => field.name === 'managerId');
+    expect(managerField?.options?.length).toBe(2);
+    expect(managerField?.options?.[0]?.label).toContain('Amina Hassan');
   });
 
   it('removes an existing department after confirmation', async () => {
