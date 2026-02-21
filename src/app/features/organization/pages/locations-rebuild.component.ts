@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { DynamicFormComponent } from '../../../shared/components/dynamic-form/dynamic-form.component';
 import { ConfirmDialogOptions, UiConfirmDialogComponent } from '../../../shared/components/ui-confirm-dialog/ui-confirm-dialog.component';
 import { UiModalComponent } from '../../../shared/components/ui-modal/ui-modal.component';
+import { OrganizationTableActionsComponent } from '../components/organization-table-actions.component';
 import { FieldConfig, FormSectionConfig, FormStepConfig } from '../../../shared/services/form-helper.service';
 import { OrganizationPageStateComponent } from '../components/organization-page-state.component';
 import { RebuildLocation } from '../data/organization-rebuild.models';
@@ -10,7 +11,7 @@ import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
 @Component({
   selector: 'app-locations-rebuild',
   standalone: true,
-  imports: [UiModalComponent, DynamicFormComponent, UiConfirmDialogComponent, OrganizationPageStateComponent],
+  imports: [UiModalComponent, DynamicFormComponent, UiConfirmDialogComponent, OrganizationPageStateComponent, OrganizationTableActionsComponent],
   template: `
     <main class="h-full px-4 py-8 sm:px-6 lg:px-8">
       <div class="mx-auto w-full max-w-5xl space-y-8">
@@ -76,22 +77,11 @@ import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
                   <td class="px-4 py-3 text-sm text-stone-600 dark:text-stone-300">{{ location.city }}</td>
                   <td class="px-4 py-3 text-sm text-stone-600 dark:text-stone-300">{{ location.country }}</td>
                   <td class="px-4 py-3 text-right">
-                    <button
-                      type="button"
-                      class="mr-2 rounded-lg border border-stone-200 px-3 py-1.5 text-xs font-semibold text-stone-600 transition-colors hover:border-burgundy-300 hover:bg-burgundy-50 hover:text-burgundy-700 dark:border-white/8 dark:text-stone-300 dark:hover:border-burgundy-500/40 dark:hover:bg-burgundy-700/10 dark:hover:text-burgundy-300"
+                    <app-organization-table-actions
                       [disabled]="isSaving()"
-                      (click)="openEditModal(location)"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      type="button"
-                      class="rounded-lg border border-stone-200 px-3 py-1.5 text-xs font-semibold text-stone-600 transition-colors hover:border-red-300 hover:bg-red-50 hover:text-red-700 dark:border-white/8 dark:text-stone-300 dark:hover:border-red-500/40 dark:hover:bg-red-500/10 dark:hover:text-red-300"
-                      [disabled]="isSaving()"
-                      (click)="requestLocationRemoval(location.id)"
-                    >
-                      Remove
-                    </button>
+                      (editRequested)="openEditModal(location)"
+                      (removeRequested)="requestLocationRemoval(location.id)"
+                    />
                   </td>
                 </tr>
               }

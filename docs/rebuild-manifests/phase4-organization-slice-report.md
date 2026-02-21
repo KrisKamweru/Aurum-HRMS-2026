@@ -1,7 +1,7 @@
 # Phase 4 Organization Slice Report
 
 Date: 2026-02-21  
-Status: In progress (Convex-backed organization module baseline expanded through manager-validation guardrails)
+Status: In progress (Convex-backed organization module baseline expanded through shared table-action extraction)
 
 ## Slice Delivered
 - Replaced generic placeholders with rebuilt organization pages:
@@ -39,6 +39,10 @@ Status: In progress (Convex-backed organization module baseline expanded through
   - shared initial loading treatment (no-data load phase)
   - shared empty-state treatment for no-data screens
   - applied across departments, designations, locations, user-linking, org chart, and org settings
+- Organization list screens now use shared action controls:
+  - common `organization-table-actions` component used for edit/remove cell controls
+  - applied across departments, designations, and locations page tables
+  - shared disabled-state handling for in-flight save operations
 - User-linking rebuilt flow now uses:
   - `users.getUnlinkedUsers`
   - `users.getUnlinkedEmployees`
@@ -75,10 +79,16 @@ Status: In progress (Convex-backed organization module baseline expanded through
   - verifies init load trigger and create/remove interactions
   - verifies manager lookup option projection for dynamic form select fields
   - verifies manager label fallback treatment for inactive/stale manager references
+  - verifies shared table action control rendering per row
 - `src/app/features/organization/pages/designations-rebuild.component.spec.ts`
   - verifies init load trigger and create/remove interactions
+  - verifies shared table action control rendering per row
 - `src/app/features/organization/pages/locations-rebuild.component.spec.ts`
   - verifies init load trigger and create/remove interactions
+  - verifies shared table action control rendering per row
+- `src/app/features/organization/components/organization-table-actions.component.spec.ts`
+  - verifies edit/remove event emission
+  - verifies disabled-state behavior for both action buttons
 - `src/app/features/organization/pages/user-linking-rebuild.component.spec.ts`
   - verifies init load trigger
   - verifies link action and linked-count increment
@@ -99,9 +109,9 @@ Status: In progress (Convex-backed organization module baseline expanded through
 
 ## Validation
 - `npm run build` passed.
-- `npm run test` passed (`33` files, `98` tests).
+- `npm run test` passed (`34` files, `103` tests).
 
 ## Next in This Track
-1. Extract shared table-action cell pattern to reduce page-template duplication across organization list screens.
-2. Add shared retry affordance on organization-page-state error surfaces for load failures.
-3. Add per-page skeleton loading variants (not just text states) for high-latency organization screens.
+1. Add shared retry affordance on organization-page-state error surfaces for load failures.
+2. Add per-page skeleton loading variants (not just text states) for high-latency organization screens.
+3. Apply shared organization table wrapper helpers for heading + action bar composition across list pages.

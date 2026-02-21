@@ -91,6 +91,12 @@ describe('DesignationsRebuildComponent', () => {
     expect(component.isCreateModalOpen()).toBe(false);
   });
 
+  it('renders shared table action controls for each designation row', () => {
+    const host = fixture.nativeElement as HTMLElement;
+    const actionCells = host.querySelectorAll('app-organization-table-actions');
+    expect(actionCells.length).toBe(component.designations().length);
+  });
+
   it('removes an existing designation', async () => {
     const target = component.designations()[0];
     component.requestDesignationRemoval(target.id);

@@ -102,8 +102,9 @@ Reference: `docs/rebuild-parity-plan.md`
     - organization chart now consumes `employees.getOrgChart` and renders depth-aware reporting rows
     - organization settings now consumes `organization.getOrganizationSettings` / `organization.updateOrganizationSettings` via modal stepper flows
     - organization settings writes now use optimistic UI updates plus `expectedUpdatedAt` conflict checks with latest-state reload on stale writes
+    - organization list screens now share a single table-action control component for edit/remove cells (departments, designations, locations)
     - TDD coverage expanded for async store behavior + rebuilt organization pages
-    - validation: `npm run build` and `npm test` passing (`33` files, `98` tests)
+    - validation: `npm run build` and `npm test` passing (`34` files, `103` tests)
     - report: `docs/rebuild-manifests/phase4-organization-slice-report.md`
   - Phase 4 shared form/modal baseline:
     - shared `dynamic-form` rebuilt with multi-column sections and stepper flows

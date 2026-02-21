@@ -143,6 +143,12 @@ describe('DepartmentsRebuildComponent', () => {
     ).toContain('inactive');
   });
 
+  it('renders shared table action controls for each department row', () => {
+    const host = fixture.nativeElement as HTMLElement;
+    const actionCells = host.querySelectorAll('app-organization-table-actions');
+    expect(actionCells.length).toBe(component.departments().length);
+  });
+
   it('removes an existing department after confirmation', async () => {
     const target = component.departments()[0];
     component.requestDepartmentRemoval(target.id);
