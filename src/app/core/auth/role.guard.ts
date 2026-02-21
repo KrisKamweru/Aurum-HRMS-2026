@@ -7,6 +7,7 @@ export const roleGuard = (allowedRoles: AppRole[]): CanActivateFn => {
   return async () => {
     const auth = inject(AuthSessionService);
     const router = inject(Router);
+    await auth.waitUntilReady();
     const user = auth.user();
 
     if (!user) {

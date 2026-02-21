@@ -79,8 +79,24 @@ export const routes: Routes = [
     canActivate: [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])],
     data: { title: 'User Linking' }
   },
-  placeholderRoute('organization/chart', 'Organization Chart', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]),
-  placeholderRoute('organization/settings', 'Organization Settings', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]),
+  {
+    path: 'organization/chart',
+    loadComponent: () =>
+      import('./features/organization/pages/organization-chart-rebuild.component').then(
+        (m) => m.OrganizationChartRebuildComponent
+      ),
+    canActivate: [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])],
+    data: { title: 'Organization Chart' }
+  },
+  {
+    path: 'organization/settings',
+    loadComponent: () =>
+      import('./features/organization/pages/organization-settings-rebuild.component').then(
+        (m) => m.OrganizationSettingsRebuildComponent
+      ),
+    canActivate: [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])],
+    data: { title: 'Organization Settings' }
+  },
   placeholderRoute('payroll', 'Payroll', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]),
   placeholderRoute('payroll/:id', 'Payroll Run', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]),
   placeholderRoute('payroll/slip/:id', 'Payslip View', [authGuard]),

@@ -70,3 +70,32 @@ export interface CreateLocationInput {
 export interface UpdateLocationInput extends CreateLocationInput {
   id: string;
 }
+
+export type OrganizationPlan = 'free' | 'pro' | 'enterprise';
+export type OrganizationStatus = 'active' | 'suspended';
+
+export interface RebuildOrganizationSettings {
+  id: string;
+  name: string;
+  domain: string;
+  subscriptionPlan: OrganizationPlan;
+  status: OrganizationStatus;
+}
+
+export interface UpdateOrganizationSettingsInput {
+  name: string;
+  domain?: string;
+  subscriptionPlan: OrganizationPlan;
+  status: OrganizationStatus;
+}
+
+export interface RebuildOrgChartNode {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  designationName: string;
+  status: string;
+  managerId?: string;
+  directReports: RebuildOrgChartNode[];
+}

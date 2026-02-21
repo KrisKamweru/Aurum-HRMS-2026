@@ -20,6 +20,51 @@ function isPrivileged(role: string) {
   return ["super_admin", "admin", "hr_manager"].includes(role);
 }
 
+export const getOrganizationSettings = query({
+  args: {},
+  handler: async (ctx) => {
+    const user = await getViewerInfo(ctx);
+    if (!isPrivileged(user.role)) {
+      return null;
+    }
+
+    const org = await ctx.db.get(user.orgId!);
+    if (!org) {
+      return null;
+    }
+
+    return org;
+  },
+});
+
+export const updateOrganizationSettings = mutation({
+  args: {
+    name: v.string(),
+    domain: v.optional(v.string()),
+    subscriptionPlan: v.union(v.literal("free"), v.literal("pro"), v.literal("enterprise")),
+    status: v.union(v.literal("active"), v.literal("suspended")),
+  },
+  handler: async (ctx, args) => {
+    const user = await getViewerInfo(ctx);
+    if (!isPrivileged(user.role)) {
+      throw new Error("Unauthorized: Insufficient permissions");
+    }
+
+    const orgId = user.orgId!;
+    const org = await ctx.db.get(orgId);
+    if (!org) {
+      throw new Error("Organization not found");
+    }
+
+    await ctx.db.patch(orgId, {
+      name: args.name,
+      domain: args.domain,
+      subscriptionPlan: args.subscriptionPlan,
+      status: args.status,
+    });
+  },
+});
+
 // --- Departments ---
 
 export const listDepartments = query({

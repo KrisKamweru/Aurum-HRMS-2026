@@ -5,6 +5,7 @@ import { AuthSessionService } from './auth-session.service';
 export const authGuard: CanActivateFn = async (_route, state) => {
   const auth = inject(AuthSessionService);
   const router = inject(Router);
+  await auth.waitUntilReady();
   const user = auth.user();
 
   if (!user) {

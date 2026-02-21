@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
-import { ConvexHttpClient } from 'convex/browser';
 import { api } from '../../../../../convex/_generated/api';
 import { Id, TableNames } from '../../../../../convex/_generated/dataModel';
-import { environment } from '../../../../environments/environment';
+import { ConvexClientService } from '../../../core/services/convex-client.service';
 import {
   CreateDepartmentInput,
   CreateDesignationInput,
@@ -10,16 +9,21 @@ import {
   RebuildDepartment,
   RebuildDesignation,
   RebuildLocation,
+  RebuildOrgChartNode,
+  RebuildOrganizationSettings,
   RebuildUnlinkedEmployee,
   RebuildUnlinkedUser,
   UpdateDepartmentInput,
   UpdateDesignationInput,
+  UpdateOrganizationSettingsInput,
   UpdateLocationInput
 } from './organization-rebuild.models';
 
 @Injectable({ providedIn: 'root' })
 export class OrganizationRebuildDataService {
-  private readonly convex = new ConvexHttpClient(environment.convexUrl);
+  private readonly convex = this.convexClient.getHttpClient();
+
+  constructor(private readonly convexClient: ConvexClientService) {}
 
   async listDepartments(): Promise<RebuildDepartment[]> {
     const [departments, employees] = await Promise.all([
@@ -171,8 +175,86 @@ export class OrganizationRebuildDataService {
     });
   }
 
+  async getOrganizationChart(): Promise<RebuildOrgChartNode[]> {
+    const nodes = await this.convex.query(api.employees.getOrgChart, {});
+    if (!Array.isArray(nodes)) {
+      return [];
+    }
+    return nodes
+      .map((node) => this.mapOrgChartNode(node))
+      .filter((node): node is RebuildOrgChartNode => node !== null);
+  }
+
+  async getOrganizationSettings(): Promise<RebuildOrganizationSettings | null> {
+    const org = await this.convex.query(api.organization.getOrganizationSettings, {});
+    if (!org || typeof org !== 'object') {
+      return null;
+    }
+    const record = org as Record<string, unknown>;
+    const name = typeof record['name'] === 'string' ? record['name'] : '';
+    const domain = typeof record['domain'] === 'string' ? record['domain'] : '';
+    const subscriptionPlan = record['subscriptionPlan'];
+    const status = record['status'];
+    const id = typeof record['_id'] === 'string' ? record['_id'] : '';
+    if (!name || !id) {
+      return null;
+    }
+    if (subscriptionPlan !== 'free' && subscriptionPlan !== 'pro' && subscriptionPlan !== 'enterprise') {
+      return null;
+    }
+    if (status !== 'active' && status !== 'suspended') {
+      return null;
+    }
+    return {
+      id,
+      name,
+      domain,
+      subscriptionPlan,
+      status
+    };
+  }
+
+  async updateOrganizationSettings(input: UpdateOrganizationSettingsInput): Promise<void> {
+    await this.convex.mutation(api.organization.updateOrganizationSettings, {
+      name: input.name,
+      domain: input.domain,
+      subscriptionPlan: input.subscriptionPlan,
+      status: input.status
+    });
+  }
+
   private toId<T extends TableNames>(table: T, id: string): Id<T> {
     void table;
     return id as Id<T>;
+  }
+
+  private mapOrgChartNode(node: unknown): RebuildOrgChartNode | null {
+    if (!node || typeof node !== 'object') {
+      return null;
+    }
+    const record = node as Record<string, unknown>;
+    if (
+      typeof record['_id'] !== 'string' ||
+      typeof record['firstName'] !== 'string' ||
+      typeof record['lastName'] !== 'string' ||
+      typeof record['email'] !== 'string' ||
+      typeof record['status'] !== 'string'
+    ) {
+      return null;
+    }
+    const children = Array.isArray(record['directReports']) ? record['directReports'] : [];
+
+    return {
+      id: record['_id'],
+      firstName: record['firstName'],
+      lastName: record['lastName'],
+      email: record['email'],
+      status: record['status'],
+      managerId: typeof record['managerId'] === 'string' ? record['managerId'] : undefined,
+      designationName: typeof record['designationName'] === 'string' ? record['designationName'] : 'Unassigned',
+      directReports: children
+        .map((child) => this.mapOrgChartNode(child))
+        .filter((child): child is RebuildOrgChartNode => child !== null)
+    };
   }
 }

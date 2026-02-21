@@ -1,19 +1,33 @@
 import { TestBed } from '@angular/core/testing';
+import { signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthSessionService } from './auth-session.service';
+import { SessionUser } from './auth.types';
 import { roleGuard } from './role.guard';
 
 describe('roleGuard', () => {
-  let auth: AuthSessionService;
+  let user: ReturnType<typeof signal<SessionUser | null>>;
+  let authLoading: ReturnType<typeof signal<boolean>>;
+  const waitUntilReady = vi.fn();
   const createUrlTree = vi.fn((commands: string[]) => commands[0]);
 
   beforeEach(() => {
-    sessionStorage.clear();
+    user = signal<SessionUser | null>(null);
+    authLoading = signal(false);
     createUrlTree.mockClear();
+    waitUntilReady.mockClear();
+    waitUntilReady.mockResolvedValue(undefined);
 
     TestBed.configureTestingModule({
       providers: [
-        AuthSessionService,
+        {
+          provide: AuthSessionService,
+          useValue: {
+            user: user.asReadonly(),
+            isLoading: authLoading.asReadonly(),
+            waitUntilReady
+          }
+        },
         {
           provide: Router,
           useValue: {
@@ -22,8 +36,6 @@ describe('roleGuard', () => {
         }
       ]
     });
-
-    auth = TestBed.inject(AuthSessionService);
   });
 
   const run = (allowed: Array<'super_admin' | 'admin' | 'hr_manager' | 'manager' | 'employee' | 'pending'>) =>
@@ -35,13 +47,13 @@ describe('roleGuard', () => {
   });
 
   it('allows matching roles', async () => {
-    auth.signInAs('manager');
+    user.set({ id: 'user-m', name: 'Manager User', role: 'manager' });
     const result = await run(['manager', 'admin']);
     expect(result).toBe(true);
   });
 
   it('redirects non-authorized roles to dashboard', async () => {
-    auth.signInAs('employee');
+    user.set({ id: 'user-e', name: 'Employee User', role: 'employee' });
     const result = await run(['admin', 'hr_manager']);
     expect(result).toBe('/dashboard');
   });
