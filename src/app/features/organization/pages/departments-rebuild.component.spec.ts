@@ -21,8 +21,9 @@ describe('DepartmentsRebuildComponent', () => {
   });
 
   it('adds a new department', () => {
-    component.newDepartmentName.set('Finance');
-    component.addDepartment();
+    component.createDepartmentFromForm({
+      name: 'Finance'
+    });
 
     expect(component.departments().some((d) => d.name === 'Finance')).toBe(true);
   });
@@ -32,5 +33,13 @@ describe('DepartmentsRebuildComponent', () => {
     component.removeDepartment(target.id);
 
     expect(component.departments().some((d) => d.id === target.id)).toBe(false);
+  });
+
+  it('opens and closes create modal', () => {
+    expect(component.isCreateModalOpen()).toBe(false);
+    component.openCreateModal();
+    expect(component.isCreateModalOpen()).toBe(true);
+    component.closeCreateModal();
+    expect(component.isCreateModalOpen()).toBe(false);
   });
 });

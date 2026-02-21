@@ -25,6 +25,8 @@ Status: Completed for modal/form baseline
    - global viewport overflow control added in `src/styles.css`.
 4. Design language rule updated:
    - explicit internal-scroll rule added in `DESIGN LANGUAGE.md`.
+5. Shared component adoption started:
+   - `organization/departments` now uses `ui-modal` + `dynamic-form` (multi-column + stepper) instead of inline long-form input.
 
 ## Tests Added
 - `src/app/shared/components/dynamic-form/dynamic-form.component.spec.ts`
@@ -34,5 +36,4 @@ Status: Completed for modal/form baseline
 ## Validation
 - `npx tsc -p tsconfig.spec.json --noEmit` passed.
 - `npm run build` passed.
-- `npm run test` passed (`15` files, `42` tests).
-
+- `npm run test` passed (`15` files, `43` tests).
