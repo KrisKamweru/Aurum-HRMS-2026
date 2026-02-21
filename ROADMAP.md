@@ -106,6 +106,7 @@ Reference: `docs/rebuild-parity-plan.md`
     - organization page-state now provides a shared retry affordance for load failures, wired across all rebuilt organization pages
     - organization page-state now supports per-page loading skeleton variants (`table`, `linking`, `chart`, `detail`) for high-latency screens
     - organization list pages now share a single list-shell wrapper for heading + action bar composition (departments, designations, locations)
+    - organization list pages now use shared inline empty-state actions (primary create + secondary refresh) via page-state outputs
     - TDD coverage expanded for async store behavior + rebuilt organization pages
     - validation: `npm run build` and `npm test` passing (`34` files, `118` tests)
     - report: `docs/rebuild-manifests/phase4-organization-slice-report.md`

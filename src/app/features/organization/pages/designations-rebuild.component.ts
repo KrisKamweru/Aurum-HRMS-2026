@@ -29,7 +29,12 @@ import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
           loadingVariant="table"
           emptyTitle="No designations found"
           emptyMessage="Add at least one designation to define your role ladder."
+          [showEmptyActions]="true"
+          emptyPrimaryLabel="Add Designation"
+          emptySecondaryLabel="Refresh"
           (retryRequested)="refreshDesignations()"
+          (emptyPrimaryRequested)="openCreateModal()"
+          (emptySecondaryRequested)="refreshDesignations()"
         />
 
         <button

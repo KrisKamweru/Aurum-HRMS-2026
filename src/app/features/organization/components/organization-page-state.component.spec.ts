@@ -77,4 +77,35 @@ describe('OrganizationPageStateComponent', () => {
     expect(root.textContent).toContain('No departments found');
     expect(root.textContent).toContain('Create a department to get started.');
   });
+
+  it('renders empty-state actions when enabled', () => {
+    fixture.componentRef.setInput('hasData', false);
+    fixture.componentRef.setInput('showEmptyActions', true);
+    fixture.componentRef.setInput('emptyPrimaryLabel', 'Add Department');
+    fixture.componentRef.setInput('emptySecondaryLabel', 'Refresh');
+    fixture.detectChanges();
+
+    const root = fixture.nativeElement as HTMLElement;
+    const buttons = root.querySelectorAll('[data-testid="org-empty-action"]');
+
+    expect(buttons.length).toBe(2);
+    expect((buttons[0] as HTMLButtonElement).textContent).toContain('Add Department');
+    expect((buttons[1] as HTMLButtonElement).textContent).toContain('Refresh');
+  });
+
+  it('emits empty-state actions when buttons are clicked', () => {
+    fixture.componentRef.setInput('hasData', false);
+    fixture.componentRef.setInput('showEmptyActions', true);
+    fixture.detectChanges();
+    const primarySpy = vi.spyOn(component.emptyPrimaryRequested, 'emit');
+    const secondarySpy = vi.spyOn(component.emptySecondaryRequested, 'emit');
+    const root = fixture.nativeElement as HTMLElement;
+    const buttons = root.querySelectorAll('[data-testid="org-empty-action"]');
+
+    (buttons[0] as HTMLButtonElement).click();
+    (buttons[1] as HTMLButtonElement).click();
+
+    expect(primarySpy).toHaveBeenCalledTimes(1);
+    expect(secondarySpy).toHaveBeenCalledTimes(1);
+  });
 });

@@ -79,6 +79,26 @@ export type OrganizationLoadingVariant = 'table' | 'linking' | 'chart' | 'detail
       <section class="rounded-2xl border border-dashed border-stone-300 bg-white/90 px-4 py-8 text-center shadow-sm dark:border-white/12 dark:bg-white/[0.04]">
         <h2 class="text-sm font-semibold text-stone-700 dark:text-stone-200">{{ emptyTitle }}</h2>
         <p class="mt-1 text-sm text-stone-500 dark:text-stone-400">{{ emptyMessage }}</p>
+        @if (showEmptyActions) {
+          <div class="mt-4 flex flex-wrap items-center justify-center gap-2">
+            <button
+              type="button"
+              data-testid="org-empty-action"
+              class="rounded-[10px] bg-burgundy-700 px-4 py-2 text-sm font-semibold text-white shadow-[0_4px_20px_rgba(134,24,33,0.35)] transition-all hover:-translate-y-0.5 hover:bg-burgundy-600"
+              (click)="emptyPrimaryRequested.emit()"
+            >
+              {{ emptyPrimaryLabel }}
+            </button>
+            <button
+              type="button"
+              data-testid="org-empty-action"
+              class="rounded-[10px] border border-stone-200 px-4 py-2 text-sm font-semibold text-stone-700 transition-colors hover:bg-stone-100 dark:border-white/8 dark:text-stone-200 dark:hover:bg-white/10"
+              (click)="emptySecondaryRequested.emit()"
+            >
+              {{ emptySecondaryLabel }}
+            </button>
+          </div>
+        }
       </section>
     }
   `
@@ -93,6 +113,11 @@ export class OrganizationPageStateComponent {
   @Input() showRetry = true;
   @Input() retryLabel = 'Retry';
   @Input() loadingVariant: OrganizationLoadingVariant = 'table';
+  @Input() showEmptyActions = false;
+  @Input() emptyPrimaryLabel = 'Create';
+  @Input() emptySecondaryLabel = 'Refresh';
 
   @Output() retryRequested = new EventEmitter<void>();
+  @Output() emptyPrimaryRequested = new EventEmitter<void>();
+  @Output() emptySecondaryRequested = new EventEmitter<void>();
 }

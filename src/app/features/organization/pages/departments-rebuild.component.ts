@@ -29,7 +29,12 @@ import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
           loadingVariant="table"
           emptyTitle="No departments found"
           emptyMessage="Create a department to begin structuring teams."
+          [showEmptyActions]="true"
+          emptyPrimaryLabel="Add Department"
+          emptySecondaryLabel="Refresh"
           (retryRequested)="refreshDepartments()"
+          (emptyPrimaryRequested)="openCreateModal()"
+          (emptySecondaryRequested)="refreshDepartments()"
         />
 
         <button

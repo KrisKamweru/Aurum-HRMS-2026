@@ -168,6 +168,21 @@ describe('DepartmentsRebuildComponent', () => {
     expect(storeMock.loadDepartments).toHaveBeenCalledTimes(2);
   });
 
+  it('wires empty-state primary and secondary actions to create and refresh', () => {
+    departments.set([]);
+    fixture.detectChanges();
+    const state = fixture.debugElement.query(By.directive(OrganizationPageStateComponent)).componentInstance as OrganizationPageStateComponent;
+
+    expect(state.showEmptyActions).toBe(true);
+    expect(state.emptyPrimaryLabel).toBe('Add Department');
+
+    state.emptyPrimaryRequested.emit();
+    expect(component.isCreateModalOpen()).toBe(true);
+
+    state.emptySecondaryRequested.emit();
+    expect(storeMock.loadDepartments).toHaveBeenCalledTimes(2);
+  });
+
   it('uses table loading skeleton variant', () => {
     const state = fixture.debugElement.query(By.directive(OrganizationPageStateComponent)).componentInstance as OrganizationPageStateComponent;
     expect(state.loadingVariant).toBe('table');

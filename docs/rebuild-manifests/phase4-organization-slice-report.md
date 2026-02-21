@@ -56,6 +56,10 @@ Status: In progress (Convex-backed organization module baseline expanded through
   - common `organization-list-shell` component now owns heading + action-bar composition
   - applied across departments, designations, and locations page layouts
   - shared content slots preserve per-page page-state and table-content flexibility
+- Organization list screens now use shared inline empty-state actions:
+  - `organization-page-state` now supports configurable empty primary/secondary CTA labels
+  - shared outputs wire list empty states to page-level create and refresh flows
+  - applied across departments, designations, and locations pages
 - User-linking rebuilt flow now uses:
   - `users.getUnlinkedUsers`
   - `users.getUnlinkedEmployees`
@@ -122,6 +126,7 @@ Status: In progress (Convex-backed organization module baseline expanded through
   - verifies loading skeleton variants (`table`, `chart`)
   - verifies no-data loading-state rendering
   - verifies empty-state rendering
+  - verifies empty-state action rendering and action output emissions
 - `src/app/features/organization/pages/departments-rebuild.component.spec.ts`
   - verifies page-state retry event triggers data reload
 - `src/app/features/organization/pages/designations-rebuild.component.spec.ts`
@@ -140,16 +145,19 @@ Status: In progress (Convex-backed organization module baseline expanded through
   - verifies slot projection for page-state, toolbar actions, and table content
 - `src/app/features/organization/pages/departments-rebuild.component.spec.ts`
   - verifies shared list-shell usage for page heading/action composition
+  - verifies empty-state action wiring for create + refresh
 - `src/app/features/organization/pages/designations-rebuild.component.spec.ts`
   - verifies shared list-shell usage for page heading/action composition
+  - verifies empty-state action wiring for create + refresh
 - `src/app/features/organization/pages/locations-rebuild.component.spec.ts`
   - verifies shared list-shell usage for page heading/action composition
+  - verifies empty-state action wiring for create + refresh
 
 ## Validation
 - `npm run build` passed.
-- `npm run test` passed (`35` files, `123` tests).
+- `npm run test` passed (`35` files, `128` tests).
 
 ## Next in This Track
-1. Add shared inline empty-state actions (primary CTA + secondary refresh) for organization list pages.
-2. Add uniform table header metadata patterns (count + last refreshed) across organization list pages.
-3. Apply shared table-column metadata helpers for repeated list table heading definitions.
+1. Add uniform table header metadata patterns (count + last refreshed) across organization list pages.
+2. Apply shared table-column metadata helpers for repeated list table heading definitions.
+3. Extend shared list-shell slots to support reusable list-level status chips and badges.

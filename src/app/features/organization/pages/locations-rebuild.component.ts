@@ -29,7 +29,12 @@ import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
           loadingVariant="table"
           emptyTitle="No locations found"
           emptyMessage="Add a location to define operational sites."
+          [showEmptyActions]="true"
+          emptyPrimaryLabel="Add Location"
+          emptySecondaryLabel="Refresh"
           (retryRequested)="refreshLocations()"
+          (emptyPrimaryRequested)="openCreateModal()"
+          (emptySecondaryRequested)="refreshLocations()"
         />
 
         <button
