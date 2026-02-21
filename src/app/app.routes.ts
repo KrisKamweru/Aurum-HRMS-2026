@@ -72,7 +72,13 @@ export const routes: Routes = [
     canActivate: [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])],
     data: { title: 'Locations' }
   },
-  placeholderRoute('organization/user-linking', 'User Linking', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]),
+  {
+    path: 'organization/user-linking',
+    loadComponent: () =>
+      import('./features/organization/pages/user-linking-rebuild.component').then((m) => m.UserLinkingRebuildComponent),
+    canActivate: [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])],
+    data: { title: 'User Linking' }
+  },
   placeholderRoute('organization/chart', 'Organization Chart', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]),
   placeholderRoute('organization/settings', 'Organization Settings', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]),
   placeholderRoute('payroll', 'Payroll', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]),

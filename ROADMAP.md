@@ -87,9 +87,9 @@ Reference: `docs/rebuild-parity-plan.md`
     - vitest active-scope exclusion added for archive path (`vitest.config.ts`)
     - report: `docs/rebuild-manifests/phase3-foundation-report.md`
   - Phase 4 organization module expansion:
-    - rebuilt pages mapped for `organization/departments`, `organization/designations`, and `organization/locations`
+    - rebuilt pages mapped for `organization/departments`, `organization/designations`, `organization/locations`, and `organization/user-linking`
     - shared in-memory organization rebuild store added for cross-page scaffold state
-    - add/remove interactions implemented with TDD coverage for store + three organization rebuild pages
+    - add/remove interactions implemented with TDD coverage for store + organization rebuild pages
     - report: `docs/rebuild-manifests/phase4-organization-slice-report.md`
 
 ### P0. Immediate Stabilization and Context Hygiene (Now)

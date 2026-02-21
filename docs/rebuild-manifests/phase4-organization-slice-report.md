@@ -8,6 +8,7 @@ Status: In progress (organization module scaffold expanded)
   - `src/app/features/organization/pages/departments-rebuild.component.ts`
   - `src/app/features/organization/pages/designations-rebuild.component.ts`
   - `src/app/features/organization/pages/locations-rebuild.component.ts`
+  - `src/app/features/organization/pages/user-linking-rebuild.component.ts`
 - Route wired with existing auth and role guards in:
   - `src/app/app.routes.ts`
 - Introduced shared in-memory feature state:
@@ -18,6 +19,9 @@ Status: In progress (organization module scaffold expanded)
   - Departments
   - Designations
   - Locations
+- User-linking scaffold:
+  - pending link queue
+  - per-row link action with linked-count telemetry
 - Row-level remove actions for:
   - Departments
   - Designations
@@ -43,12 +47,15 @@ Status: In progress (organization module scaffold expanded)
 - `src/app/features/organization/pages/locations-rebuild.component.spec.ts`
   - verifies seeded location render baseline
   - verifies add/remove behavior
+- `src/app/features/organization/pages/user-linking-rebuild.component.spec.ts`
+  - verifies seeded pending queue
+  - verifies link action and linked-count increment
 
 ## Validation
 - `npm run build` passed.
-- `npm run test` passed (`11` files, `34` tests).
+- `npm run test` passed (`12` files, `36` tests).
 
 ## Next in This Track
 1. Replace in-memory store with Convex-backed CRUD for departments/designations/locations.
-2. Add edit/delete interactions and confirmation patterns.
-3. Start `organization/user-linking` rebuilt slice and map it to role-bound route parity.
+2. Add edit interactions and confirmation patterns.
+3. Replace user-linking scaffold with real `users.getUnlinkedUsers` / `users.linkUserToEmployee` backed flow.

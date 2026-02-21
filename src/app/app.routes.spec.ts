@@ -10,6 +10,7 @@ describe('app routes', () => {
     expect(paths).toContain('organization/departments');
     expect(paths).toContain('organization/designations');
     expect(paths).toContain('organization/locations');
+    expect(paths).toContain('organization/user-linking');
     expect(paths).toContain('auth/login');
   });
 
