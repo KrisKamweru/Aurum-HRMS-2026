@@ -74,7 +74,7 @@ import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
                 <tr class="border-t border-stone-100 transition-colors hover:bg-burgundy-50/50 dark:border-white/[0.03] dark:hover:bg-burgundy-700/[0.06]">
                   <td class="px-4 py-3 text-sm font-medium text-stone-800 dark:text-stone-200">{{ department.name }}</td>
                   <td class="px-4 py-3 text-sm text-stone-600 dark:text-stone-300">{{ department.code }}</td>
-                  <td class="px-4 py-3 text-sm text-stone-600 dark:text-stone-300">{{ department.managerName || 'Unassigned' }}</td>
+                  <td class="px-4 py-3 text-sm text-stone-600 dark:text-stone-300">{{ managerLabel(department) }}</td>
                   <td class="px-4 py-3 text-sm text-stone-600 dark:text-stone-300">{{ department.headcount }}</td>
                   <td class="px-4 py-3 text-sm text-stone-600 dark:text-stone-300">{{ department.description || 'n/a' }}</td>
                   <td class="px-4 py-3 text-right">
@@ -204,7 +204,9 @@ export class DepartmentsRebuildComponent implements OnInit {
         type: 'select',
         sectionId: 'planning',
         required: false,
-        options: this.managerLookup().map((employee) => ({
+        options: this.managerLookup()
+          .filter((employee) => employee.status.trim().toLowerCase() === 'active')
+          .map((employee) => ({
           label: `${employee.firstName} ${employee.lastName} (${employee.email})`,
           value: employee.id
         }))
@@ -309,6 +311,19 @@ export class DepartmentsRebuildComponent implements OnInit {
     this.pendingDeleteDepartmentId.set(id);
     this.isDeleteDialogOpen.set(true);
     this.store.clearError();
+  }
+
+  managerLabel(department: RebuildDepartment): string {
+    if (!department.managerId) {
+      return 'Unassigned';
+    }
+    if (!department.managerName) {
+      return 'Unavailable manager';
+    }
+    if (department.managerStatus?.trim().toLowerCase() !== 'active') {
+      return `${department.managerName} (inactive)`;
+    }
+    return department.managerName;
   }
 
   async confirmDepartmentRemoval(): Promise<void> {

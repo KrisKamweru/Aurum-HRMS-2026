@@ -5,6 +5,7 @@ export interface RebuildDepartment {
   description: string;
   managerId?: string;
   managerName?: string;
+  managerStatus?: string;
   headcount: number;
 }
 

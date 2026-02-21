@@ -68,8 +68,12 @@ export class OrganizationRebuildStore {
     managerId?: string;
   }): Promise<boolean> {
     const name = payload.name.trim();
+    const managerId = this.normalizeOptionalId(payload.managerId);
     if (!name) {
       this.errorState.set('Department name is required.');
+      return false;
+    }
+    if (!this.validateManagerSelection(managerId)) {
       return false;
     }
     if (this.departments().some((row) => row.name.toLowerCase() === name.toLowerCase())) {
@@ -84,7 +88,7 @@ export class OrganizationRebuildStore {
         name,
         code: this.normalizeCode(payload.code, name),
         description: this.normalizeOptionalText(payload.description),
-        managerId: this.normalizeOptionalId(payload.managerId)
+        managerId
       });
       await this.loadDepartments();
       return true;
@@ -104,8 +108,12 @@ export class OrganizationRebuildStore {
     managerId?: string;
   }): Promise<boolean> {
     const name = payload.name.trim();
+    const managerId = this.normalizeOptionalId(payload.managerId);
     if (!name) {
       this.errorState.set('Department name is required.');
+      return false;
+    }
+    if (!this.validateManagerSelection(managerId)) {
       return false;
     }
     if (
@@ -125,7 +133,7 @@ export class OrganizationRebuildStore {
         name,
         code: this.normalizeCode(payload.code, name),
         description: this.normalizeOptionalText(payload.description),
-        managerId: this.normalizeOptionalId(payload.managerId)
+        managerId
       });
       await this.loadDepartments();
       return true;
@@ -437,6 +445,22 @@ export class OrganizationRebuildStore {
   private normalizeOptionalId(value: string | undefined): string | undefined {
     const normalized = value?.trim() ?? '';
     return normalized.length > 0 ? normalized : undefined;
+  }
+
+  private validateManagerSelection(managerId: string | undefined): boolean {
+    if (!managerId) {
+      return true;
+    }
+    const manager = this.managerLookup().find((employee) => employee.id === managerId);
+    if (!manager) {
+      this.errorState.set('Selected manager is no longer available. Refresh and try again.');
+      return false;
+    }
+    if (manager.status.trim().toLowerCase() !== 'active') {
+      this.errorState.set('Selected manager must be active.');
+      return false;
+    }
+    return true;
   }
 
   private normalizeLevel(level: number | null | undefined): number | undefined {

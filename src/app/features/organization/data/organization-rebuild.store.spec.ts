@@ -46,8 +46,26 @@ describe('OrganizationRebuildStore', () => {
 
   beforeEach(() => {
     departments = [
-      { id: 'dept-hr', name: 'Human Resources', code: 'HR', description: 'People ops', managerId: 'emp-a', managerName: 'Amina Hassan', headcount: 4 },
-      { id: 'dept-eng', name: 'Engineering', code: 'ENG', description: 'Product build', managerId: 'emp-b', managerName: 'James Doe', headcount: 8 }
+      {
+        id: 'dept-hr',
+        name: 'Human Resources',
+        code: 'HR',
+        description: 'People ops',
+        managerId: 'emp-a',
+        managerName: 'Amina Hassan',
+        managerStatus: 'active',
+        headcount: 4
+      },
+      {
+        id: 'dept-eng',
+        name: 'Engineering',
+        code: 'ENG',
+        description: 'Product build',
+        managerId: 'emp-b',
+        managerName: 'James Doe',
+        managerStatus: 'active',
+        headcount: 8
+      }
     ];
     designations = [
       { id: 'desig-hrg', title: 'HR Generalist', code: 'HRG', level: 2, description: 'Generalist track' },
@@ -67,7 +85,8 @@ describe('OrganizationRebuildStore', () => {
     ];
     employeeLookup = [
       { id: 'emp-a', firstName: 'Amina', lastName: 'Hassan', email: 'amina.hassan@aurum.dev', status: 'active' },
-      { id: 'emp-b', firstName: 'James', lastName: 'Doe', email: 'james.doe@aurum.dev', status: 'active' }
+      { id: 'emp-b', firstName: 'James', lastName: 'Doe', email: 'james.doe@aurum.dev', status: 'active' },
+      { id: 'emp-c', firstName: 'Leah', lastName: 'Mutiso', email: 'leah.mutiso@aurum.dev', status: 'inactive' }
     ];
     const managerNameFor = (managerId: string | undefined): string | undefined => {
       if (!managerId) {
@@ -89,6 +108,7 @@ describe('OrganizationRebuildStore', () => {
             description: input.description ?? '',
             managerId: input.managerId,
             managerName: managerNameFor(input.managerId),
+            managerStatus: employeeLookup.find((employee) => employee.id === input.managerId)?.status,
             headcount: 0
           }
         ];
@@ -102,7 +122,8 @@ describe('OrganizationRebuildStore', () => {
                 code: input.code,
                 description: input.description ?? '',
                 managerId: input.managerId,
-                managerName: managerNameFor(input.managerId)
+                managerName: managerNameFor(input.managerId),
+                managerStatus: employeeLookup.find((employee) => employee.id === input.managerId)?.status
               }
             : row
         );
@@ -161,7 +182,7 @@ describe('OrganizationRebuildStore', () => {
     await Promise.all([store.loadDepartments(), store.loadDesignations(), store.loadLocations()]);
 
     expect(store.departments().length).toBe(2);
-    expect(store.managerLookup().length).toBe(2);
+    expect(store.managerLookup().length).toBe(3);
     expect(store.designations().length).toBe(2);
     expect(store.locations().length).toBe(2);
     expect(dataService.listDepartments).toHaveBeenCalledTimes(1);
@@ -183,6 +204,33 @@ describe('OrganizationRebuildStore', () => {
       managerId: 'emp-a'
     });
     expect(store.error()).toBe('Department names must be unique.');
+  });
+
+  it('blocks department manager selection when selected manager is inactive', async () => {
+    await store.loadDepartments();
+
+    const result = await store.addDepartment({
+      name: 'Operations',
+      managerId: 'emp-c'
+    });
+
+    expect(result).toBe(false);
+    expect(store.error()).toBe('Selected manager must be active.');
+    expect(dataService.createDepartment).not.toHaveBeenCalled();
+  });
+
+  it('blocks department manager selection when manager id is stale', async () => {
+    await store.loadDepartments();
+
+    const result = await store.updateDepartment({
+      id: 'dept-hr',
+      name: 'Human Resources',
+      managerId: 'emp-missing'
+    });
+
+    expect(result).toBe(false);
+    expect(store.error()).toBe('Selected manager is no longer available. Refresh and try again.');
+    expect(dataService.updateDepartment).not.toHaveBeenCalled();
   });
 
   it('updates and removes departments by id', async () => {

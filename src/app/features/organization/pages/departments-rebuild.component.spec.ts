@@ -26,12 +26,13 @@ describe('DepartmentsRebuildComponent', () => {
 
   beforeEach(async () => {
     departments = signal<RebuildDepartment[]>([
-      { id: 'dept-hr', name: 'Human Resources', code: 'HR', description: 'People ops', managerId: 'emp-a', managerName: 'Amina Hassan', headcount: 4 },
-      { id: 'dept-eng', name: 'Engineering', code: 'ENG', description: 'Product build', managerId: 'emp-b', managerName: 'James Doe', headcount: 8 }
+      { id: 'dept-hr', name: 'Human Resources', code: 'HR', description: 'People ops', managerId: 'emp-a', managerName: 'Amina Hassan', managerStatus: 'active', headcount: 4 },
+      { id: 'dept-eng', name: 'Engineering', code: 'ENG', description: 'Product build', managerId: 'emp-b', managerName: 'James Doe', managerStatus: 'active', headcount: 8 }
     ]);
     managerLookup = signal<RebuildEmployeeLookup[]>([
       { id: 'emp-a', firstName: 'Amina', lastName: 'Hassan', email: 'amina.hassan@aurum.dev', status: 'active' },
-      { id: 'emp-b', firstName: 'James', lastName: 'Doe', email: 'james.doe@aurum.dev', status: 'active' }
+      { id: 'emp-b', firstName: 'James', lastName: 'Doe', email: 'james.doe@aurum.dev', status: 'active' },
+      { id: 'emp-c', firstName: 'Leah', lastName: 'Mutiso', email: 'leah.mutiso@aurum.dev', status: 'inactive' }
     ]);
     const loading = signal(false);
     const saving = signal(false);
@@ -53,7 +54,8 @@ describe('DepartmentsRebuildComponent', () => {
             code: payload.code ?? 'NEW',
             description: payload.description ?? '',
             managerId: payload.managerId,
-            managerName: payload.managerId === 'emp-a' ? 'Amina Hassan' : payload.managerId === 'emp-b' ? 'James Doe' : undefined,
+            managerName: payload.managerId === 'emp-a' ? 'Amina Hassan' : payload.managerId === 'emp-b' ? 'James Doe' : payload.managerId === 'emp-c' ? 'Leah Mutiso' : undefined,
+            managerStatus: payload.managerId === 'emp-c' ? 'inactive' : 'active',
             headcount: 0
           }
         ]);
@@ -113,6 +115,32 @@ describe('DepartmentsRebuildComponent', () => {
     const managerField = component.departmentFields.find((field) => field.name === 'managerId');
     expect(managerField?.options?.length).toBe(2);
     expect(managerField?.options?.[0]?.label).toContain('Amina Hassan');
+  });
+
+  it('maps stale or inactive manager labels for display fallback', () => {
+    expect(component.managerLabel(component.departments()[0])).toBe('Amina Hassan');
+    expect(
+      component.managerLabel({
+        id: 'dept-stale',
+        name: 'Stale',
+        code: 'STL',
+        description: '',
+        managerId: 'emp-z',
+        headcount: 0
+      })
+    ).toBe('Unavailable manager');
+    expect(
+      component.managerLabel({
+        id: 'dept-inactive',
+        name: 'Legacy',
+        code: 'LGC',
+        description: '',
+        managerId: 'emp-c',
+        managerName: 'Leah Mutiso',
+        managerStatus: 'inactive',
+        headcount: 0
+      })
+    ).toContain('inactive');
   });
 
   it('removes an existing department after confirmation', async () => {

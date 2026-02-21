@@ -32,8 +32,14 @@ export class OrganizationRebuildDataService {
       this.convex.query(api.employees.list, {})
     ]);
     const managerLookup = this.mapEmployeeLookupList(employees);
-    const managerNameById = new Map(
-      managerLookup.map((employee) => [employee.id, `${employee.firstName} ${employee.lastName}`.trim()])
+    const managerById = new Map(
+      managerLookup.map((employee) => [
+        employee.id,
+        {
+          name: `${employee.firstName} ${employee.lastName}`.trim(),
+          status: employee.status
+        }
+      ])
     );
 
     const byDepartment = new Map<string, number>();
@@ -51,7 +57,8 @@ export class OrganizationRebuildDataService {
       code: department.code,
       description: department.description ?? '',
       managerId: department.managerId ? String(department.managerId) : undefined,
-      managerName: department.managerId ? managerNameById.get(String(department.managerId)) : undefined,
+      managerName: department.managerId ? managerById.get(String(department.managerId))?.name : undefined,
+      managerStatus: department.managerId ? managerById.get(String(department.managerId))?.status : undefined,
       headcount: byDepartment.get(String(department._id)) ?? 0
     }));
   }
