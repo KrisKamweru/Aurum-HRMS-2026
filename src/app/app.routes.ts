@@ -1,13 +1,77 @@
-import { Routes } from '@angular/router';
+import { Route, Routes } from '@angular/router';
+
+const placeholderLoader = () =>
+  import('./features/placeholder/placeholder-page.component').then((m) => m.PlaceholderPageComponent);
+
+const placeholderRoute = (path: string, title: string): Route => ({
+  path,
+  loadComponent: placeholderLoader,
+  data: { title }
+});
 
 export const routes: Routes = [
+  { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
   {
-    path: '',
-    loadComponent: () =>
-      import('./features/rebuild-home/rebuild-home.component').then((m) => m.RebuildHomeComponent)
+    path: 'dashboard',
+    loadComponent: () => import('./features/rebuild-home/rebuild-home.component').then((m) => m.RebuildHomeComponent)
   },
-  {
-    path: '**',
-    redirectTo: ''
-  }
+  placeholderRoute('pending', 'Pending Onboarding'),
+  placeholderRoute('create-organization', 'Organization Setup Wizard'),
+  placeholderRoute('profile', 'Profile'),
+  placeholderRoute('settings', 'Settings'),
+  placeholderRoute('settings/general', 'General Settings'),
+  placeholderRoute('settings/leave-policies', 'Leave Policies'),
+  placeholderRoute('recruitment', 'Recruitment'),
+  placeholderRoute('recruitment/jobs', 'Recruitment Jobs'),
+  placeholderRoute('recruitment/jobs/new', 'Create Job'),
+  placeholderRoute('recruitment/jobs/:id', 'Job Detail'),
+  placeholderRoute('recruitment/jobs/:id/edit', 'Edit Job'),
+  placeholderRoute('recruitment/board', 'Candidate Board'),
+  placeholderRoute('training', 'Training'),
+  placeholderRoute('training/catalog', 'Training Catalog'),
+  placeholderRoute('training/my-learning', 'My Learning'),
+  placeholderRoute('training/courses/new', 'Create Course'),
+  placeholderRoute('training/courses/:id/edit', 'Edit Course'),
+  placeholderRoute('employees', 'Employees'),
+  placeholderRoute('employees/:id', 'Employee Detail'),
+  placeholderRoute('leave-requests', 'Leave Requests'),
+  placeholderRoute('attendance', 'Attendance'),
+  placeholderRoute('attendance/team', 'Team Attendance'),
+  placeholderRoute('core-hr', 'Core HR'),
+  placeholderRoute('core-hr/promotions', 'Promotions'),
+  placeholderRoute('core-hr/transfers', 'Transfers'),
+  placeholderRoute('core-hr/awards', 'Awards'),
+  placeholderRoute('core-hr/warnings', 'Warnings'),
+  placeholderRoute('core-hr/resignations', 'Resignations'),
+  placeholderRoute('core-hr/terminations', 'Terminations'),
+  placeholderRoute('core-hr/complaints', 'Complaints'),
+  placeholderRoute('core-hr/travel', 'Travel'),
+  placeholderRoute('organization', 'Organization'),
+  placeholderRoute('organization/departments', 'Departments'),
+  placeholderRoute('organization/designations', 'Designations'),
+  placeholderRoute('organization/locations', 'Locations'),
+  placeholderRoute('organization/user-linking', 'User Linking'),
+  placeholderRoute('organization/chart', 'Organization Chart'),
+  placeholderRoute('organization/settings', 'Organization Settings'),
+  placeholderRoute('payroll', 'Payroll'),
+  placeholderRoute('payroll/:id', 'Payroll Run'),
+  placeholderRoute('payroll/slip/:id', 'Payslip View'),
+  placeholderRoute('reports', 'Reports'),
+  placeholderRoute('reports/attendance', 'Attendance Report'),
+  placeholderRoute('reports/analytics', 'Analytics Report'),
+  placeholderRoute('reports/payroll', 'Payroll Report'),
+  placeholderRoute('reports/tax', 'Tax Report'),
+  placeholderRoute('super-admin', 'Super Admin'),
+  placeholderRoute('demo', 'Demo'),
+  placeholderRoute('demo/buttons', 'Demo Buttons'),
+  placeholderRoute('demo/forms', 'Demo Forms'),
+  placeholderRoute('demo/tables', 'Demo Tables'),
+  placeholderRoute('demo/modals', 'Demo Modals'),
+  placeholderRoute('demo/date-picker', 'Demo Date Picker'),
+  placeholderRoute('6', 'Showcase Six'),
+  placeholderRoute('auth', 'Authentication'),
+  placeholderRoute('auth/login', 'Login'),
+  placeholderRoute('auth/register', 'Register'),
+  placeholderRoute('auth/forgot-password', 'Forgot Password'),
+  { path: '**', redirectTo: 'dashboard' }
 ];

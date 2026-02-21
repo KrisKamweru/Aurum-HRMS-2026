@@ -77,6 +77,9 @@ Reference: `docs/rebuild-parity-plan.md`
     - new clean shell created in `src/app/`
     - compile/test isolation set via `tsconfig.app.json` and `tsconfig.spec.json` excludes
     - execution report: `docs/rebuild-manifests/phase2-archive-report.md`
+  - Phase 3 foundation started:
+    - rebuild router now maps legacy path surface in the new shell using placeholder pages
+    - route contract test added in `src/app/app.routes.spec.ts`
 
 ### P0. Immediate Stabilization and Context Hygiene (Now)
 Status: Substantially completed on 2026-02-09.
