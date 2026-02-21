@@ -131,9 +131,27 @@ export const routes: Routes = [
     canActivate: [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])],
     data: { title: 'Organization Settings' }
   },
-  placeholderRoute('payroll', 'Payroll', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]),
-  placeholderRoute('payroll/:id', 'Payroll Run', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]),
-  placeholderRoute('payroll/slip/:id', 'Payslip View', [authGuard]),
+  {
+    path: 'payroll',
+    loadComponent: () =>
+      import('./features/payroll/pages/payroll-rebuild.component').then((m) => m.PayrollRebuildComponent),
+    canActivate: [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])],
+    data: { title: 'Payroll' }
+  },
+  {
+    path: 'payroll/:id',
+    loadComponent: () =>
+      import('./features/payroll/pages/payroll-run-rebuild.component').then((m) => m.PayrollRunRebuildComponent),
+    canActivate: [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])],
+    data: { title: 'Payroll Run' }
+  },
+  {
+    path: 'payroll/slip/:id',
+    loadComponent: () =>
+      import('./features/payroll/pages/payslip-view-rebuild.component').then((m) => m.PayslipViewRebuildComponent),
+    canActivate: [authGuard],
+    data: { title: 'Payslip View' }
+  },
   placeholderRoute('reports', 'Reports', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]),
   placeholderRoute('reports/attendance', 'Attendance Report', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]),
   placeholderRoute('reports/analytics', 'Analytics Report', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]),

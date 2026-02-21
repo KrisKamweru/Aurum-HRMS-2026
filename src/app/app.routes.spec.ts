@@ -55,4 +55,20 @@ describe('app routes', () => {
     expect(attendance?.loadComponent).toBeTypeOf('function');
     expect(attendanceTeam?.loadComponent).toBeTypeOf('function');
   });
+
+  it('maps payroll routes to rebuilt components with guard contracts', () => {
+    const payroll = routes.find((route) => route.path === 'payroll');
+    const payrollRun = routes.find((route) => route.path === 'payroll/:id');
+    const payslip = routes.find((route) => route.path === 'payroll/slip/:id');
+
+    expect(payroll?.data?.['title']).toBe('Payroll');
+    expect(payrollRun?.data?.['title']).toBe('Payroll Run');
+    expect(payslip?.data?.['title']).toBe('Payslip View');
+    expect(payroll?.canActivate?.length).toBeGreaterThan(0);
+    expect(payrollRun?.canActivate?.length).toBeGreaterThan(0);
+    expect(payslip?.canActivate?.length).toBeGreaterThan(0);
+    expect(payroll?.loadComponent).toBeTypeOf('function');
+    expect(payrollRun?.loadComponent).toBeTypeOf('function');
+    expect(payslip?.loadComponent).toBeTypeOf('function');
+  });
 });

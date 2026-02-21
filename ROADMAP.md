@@ -149,6 +149,15 @@ Reference: `docs/rebuild-parity-plan.md`
     - attendance team flow now supports daily roster review, manual attendance corrections, and held trust-event approval/rejection actions
     - TDD coverage added for leave + attendance adapters, stores, and rebuilt pages
     - report: `docs/rebuild-manifests/phase4-leave-attendance-slice-report.md`
+  - Phase 4 payroll baseline:
+    - rebuilt pages mapped for `payroll`, `payroll/:id`, and `payroll/slip/:id` (replacing placeholders)
+    - payroll rebuild store + Convex data adapter added under `src/app/features/payroll/data/`
+    - payroll list flow now supports run creation, summary cards, and sensitive-change approval/rejection actions
+    - payroll run detail now supports process/recalculate, finalize, delete, and payslip drill-down flows
+    - payslip view now supports ownership-aware loading, unauthorized redirect handling, and print-friendly rendering
+    - TDD coverage added for payroll adapters, store, and rebuilt pages
+    - validation: `npm test` and `npm run build` passing (`54` files, `246` tests)
+    - report: `docs/rebuild-manifests/phase4-payroll-slice-report.md`
 
 ### P0. Immediate Stabilization and Context Hygiene (Now)
 Status: Substantially completed on 2026-02-09.
