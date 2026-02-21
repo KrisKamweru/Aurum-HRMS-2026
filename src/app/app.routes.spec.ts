@@ -25,6 +25,11 @@ describe('app routes', () => {
     expect(paths).toContain('core-hr/terminations');
     expect(paths).toContain('core-hr/complaints');
     expect(paths).toContain('core-hr/travel');
+    expect(paths).toContain('training');
+    expect(paths).toContain('training/catalog');
+    expect(paths).toContain('training/my-learning');
+    expect(paths).toContain('training/courses/new');
+    expect(paths).toContain('training/courses/:id/edit');
     expect(paths).toContain('auth/login');
   });
 
@@ -125,5 +130,29 @@ describe('app routes', () => {
     expect(newJob?.loadComponent).toBeTypeOf('function');
     expect(detail?.loadComponent).toBeTypeOf('function');
     expect(board?.loadComponent).toBeTypeOf('function');
+  });
+
+  it('maps training routes to rebuilt components with guard contracts', () => {
+    const training = routes.find((route) => route.path === 'training');
+    const catalog = routes.find((route) => route.path === 'training/catalog');
+    const myLearning = routes.find((route) => route.path === 'training/my-learning');
+    const createCourse = routes.find((route) => route.path === 'training/courses/new');
+    const editCourse = routes.find((route) => route.path === 'training/courses/:id/edit');
+
+    expect(training?.data?.['title']).toBe('Training');
+    expect(catalog?.data?.['title']).toBe('Training Catalog');
+    expect(myLearning?.data?.['title']).toBe('My Learning');
+    expect(createCourse?.data?.['title']).toBe('Create Course');
+    expect(editCourse?.data?.['title']).toBe('Edit Course');
+    expect(training?.canActivate?.length).toBeGreaterThan(0);
+    expect(catalog?.canActivate?.length).toBeGreaterThan(0);
+    expect(myLearning?.canActivate?.length).toBeGreaterThan(0);
+    expect(createCourse?.canActivate?.length).toBeGreaterThan(0);
+    expect(editCourse?.canActivate?.length).toBeGreaterThan(0);
+    expect(training?.loadComponent).toBeTypeOf('function');
+    expect(catalog?.loadComponent).toBeTypeOf('function');
+    expect(myLearning?.loadComponent).toBeTypeOf('function');
+    expect(createCourse?.loadComponent).toBeTypeOf('function');
+    expect(editCourse?.loadComponent).toBeTypeOf('function');
   });
 });

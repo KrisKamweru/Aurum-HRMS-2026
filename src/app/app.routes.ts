@@ -79,11 +79,47 @@ export const routes: Routes = [
     canActivate: [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager', 'manager'])],
     data: { title: 'Candidate Board' }
   },
-  placeholderRoute('training', 'Training', [authGuard]),
-  placeholderRoute('training/catalog', 'Training Catalog', [authGuard]),
-  placeholderRoute('training/my-learning', 'My Learning', [authGuard]),
-  placeholderRoute('training/courses/new', 'Create Course', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager', 'manager'])]),
-  placeholderRoute('training/courses/:id/edit', 'Edit Course', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager', 'manager'])]),
+  {
+    path: 'training',
+    loadComponent: () =>
+      import('./features/training/pages/training-catalog-rebuild.component').then((m) => m.TrainingCatalogRebuildComponent),
+    canActivate: [authGuard],
+    data: { title: 'Training' }
+  },
+  {
+    path: 'training/catalog',
+    loadComponent: () =>
+      import('./features/training/pages/training-catalog-rebuild.component').then((m) => m.TrainingCatalogRebuildComponent),
+    canActivate: [authGuard],
+    data: { title: 'Training Catalog' }
+  },
+  {
+    path: 'training/my-learning',
+    loadComponent: () =>
+      import('./features/training/pages/training-my-learning-rebuild.component').then(
+        (m) => m.TrainingMyLearningRebuildComponent
+      ),
+    canActivate: [authGuard],
+    data: { title: 'My Learning' }
+  },
+  {
+    path: 'training/courses/new',
+    loadComponent: () =>
+      import('./features/training/pages/training-course-editor-rebuild.component').then(
+        (m) => m.TrainingCourseEditorRebuildComponent
+      ),
+    canActivate: [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager', 'manager'])],
+    data: { title: 'Create Course' }
+  },
+  {
+    path: 'training/courses/:id/edit',
+    loadComponent: () =>
+      import('./features/training/pages/training-course-editor-rebuild.component').then(
+        (m) => m.TrainingCourseEditorRebuildComponent
+      ),
+    canActivate: [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager', 'manager'])],
+    data: { title: 'Edit Course' }
+  },
   {
     path: 'employees',
     loadComponent: () =>

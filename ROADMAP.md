@@ -189,6 +189,20 @@ Reference: `docs/rebuild-parity-plan.md`
     - TDD coverage added for recruitment adapters, store, and rebuilt pages
     - validation: `npm test` and `npm run build` passing (`64` files, `277` tests)
     - report: `docs/rebuild-manifests/phase4-recruitment-slice-report.md`
+  - Phase 4 training baseline:
+    - rebuilt pages mapped for training route surface (replacing placeholders):
+      - `training`
+      - `training/catalog`
+      - `training/my-learning`
+      - `training/courses/new`
+      - `training/courses/:id/edit`
+    - training rebuild store + Convex data adapter added under `src/app/features/training/data/`
+    - rebuilt catalog flow now supports course listing, role-aware create/edit actions, and enrollment handoff to my-learning
+    - rebuilt my-learning flow now supports enrollment status tracking and progress rendering
+    - rebuilt course editor now supports stepper-based multi-column create/edit flows via shared dynamic-form
+    - TDD coverage added for training adapters, store, and rebuilt pages
+    - validation: `npm test` and `npm run build` passing (`69` files, `293` tests)
+    - report: `docs/rebuild-manifests/phase4-training-slice-report.md`
 
 ### P0. Immediate Stabilization and Context Hygiene (Now)
 Status: Substantially completed on 2026-02-09.
