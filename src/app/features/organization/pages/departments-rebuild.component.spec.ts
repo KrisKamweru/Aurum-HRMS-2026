@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { signal } from '@angular/core';
 import { vi } from 'vitest';
+import { OrganizationPageStateComponent } from '../components/organization-page-state.component';
 import { RebuildDepartment, RebuildEmployeeLookup } from '../data/organization-rebuild.models';
 import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
 import { DepartmentsRebuildComponent } from './departments-rebuild.component';
@@ -147,6 +149,14 @@ describe('DepartmentsRebuildComponent', () => {
     const host = fixture.nativeElement as HTMLElement;
     const actionCells = host.querySelectorAll('app-organization-table-actions');
     expect(actionCells.length).toBe(component.departments().length);
+  });
+
+  it('retries department loading when page-state retry is requested', () => {
+    const state = fixture.debugElement.query(By.directive(OrganizationPageStateComponent)).componentInstance as OrganizationPageStateComponent;
+
+    state.retryRequested.emit();
+
+    expect(storeMock.loadDepartments).toHaveBeenCalledTimes(2);
   });
 
   it('removes an existing department after confirmation', async () => {

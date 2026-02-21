@@ -1,5 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { vi } from 'vitest';
+import { OrganizationPageStateComponent } from '../components/organization-page-state.component';
 import { OrganizationRebuildDataService } from '../data/organization-rebuild.data.service';
 import { RebuildOrganizationSettings } from '../data/organization-rebuild.models';
 import { OrganizationSettingsRebuildComponent } from './organization-settings-rebuild.component';
@@ -124,5 +126,13 @@ describe('OrganizationSettingsRebuildComponent', () => {
     expect(getOrganizationSettings).toHaveBeenCalledTimes(2);
     expect(component.settings()?.name).toBe('Aurum Latest');
     expect(component.error()).toContain('updated in another session');
+  });
+
+  it('retries settings load when page-state retry is requested', () => {
+    const state = fixture.debugElement.query(By.directive(OrganizationPageStateComponent)).componentInstance as OrganizationPageStateComponent;
+
+    state.retryRequested.emit();
+
+    expect(getOrganizationSettings).toHaveBeenCalledTimes(2);
   });
 });

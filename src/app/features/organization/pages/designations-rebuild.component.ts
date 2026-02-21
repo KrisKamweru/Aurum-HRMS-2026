@@ -30,6 +30,7 @@ import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
           loadingLabel="Loading designations..."
           emptyTitle="No designations found"
           emptyMessage="Add at least one designation to define your role ladder."
+          (retryRequested)="refreshDesignations()"
         />
 
         <section class="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm dark:border-white/8 dark:bg-white/[0.04]">

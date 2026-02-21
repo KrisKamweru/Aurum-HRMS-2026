@@ -24,6 +24,7 @@ import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
           loadingLabel="Loading pending links..."
           emptyTitle="No pending links"
           emptyMessage="All unlinked users are currently resolved."
+          (retryRequested)="refresh()"
         />
 
         <section class="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm dark:border-white/8 dark:bg-white/[0.04]">

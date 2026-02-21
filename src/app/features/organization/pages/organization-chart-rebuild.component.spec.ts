@@ -1,5 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { vi } from 'vitest';
+import { OrganizationPageStateComponent } from '../components/organization-page-state.component';
 import { OrganizationRebuildDataService } from '../data/organization-rebuild.data.service';
 import { RebuildOrgChartNode } from '../data/organization-rebuild.models';
 import { OrganizationChartRebuildComponent } from './organization-chart-rebuild.component';
@@ -60,5 +62,13 @@ describe('OrganizationChartRebuildComponent', () => {
     await component.refresh();
 
     expect(component.error()).toBe('Chart unavailable');
+  });
+
+  it('retries chart loading when page-state retry is requested', () => {
+    const state = fixture.debugElement.query(By.directive(OrganizationPageStateComponent)).componentInstance as OrganizationPageStateComponent;
+
+    state.retryRequested.emit();
+
+    expect(getOrganizationChart).toHaveBeenCalledTimes(2);
   });
 });

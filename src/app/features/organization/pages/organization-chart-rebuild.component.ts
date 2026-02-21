@@ -35,6 +35,7 @@ interface OrgChartRow {
           loadingLabel="Loading organization chart..."
           emptyTitle="No chart data available"
           emptyMessage="No reporting relationships were found for this organization."
+          (retryRequested)="refresh()"
         />
 
         <section class="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm dark:border-white/8 dark:bg-white/[0.04]">

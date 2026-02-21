@@ -32,6 +32,7 @@ import { OrganizationRebuildDataService } from '../data/organization-rebuild.dat
           loadingLabel="Loading organization settings..."
           emptyTitle="No organization settings available"
           emptyMessage="No organization record was found for this account."
+          (retryRequested)="refresh()"
         />
 
         <section class="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm dark:border-white/8 dark:bg-white/[0.04]">

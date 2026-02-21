@@ -1,7 +1,7 @@
 # Phase 4 Organization Slice Report
 
 Date: 2026-02-21  
-Status: In progress (Convex-backed organization module baseline expanded through shared table-action extraction)
+Status: In progress (Convex-backed organization module baseline expanded through shared retry affordance)
 
 ## Slice Delivered
 - Replaced generic placeholders with rebuilt organization pages:
@@ -43,6 +43,10 @@ Status: In progress (Convex-backed organization module baseline expanded through
   - common `organization-table-actions` component used for edit/remove cell controls
   - applied across departments, designations, and locations page tables
   - shared disabled-state handling for in-flight save operations
+- Organization page-state now supports shared retry actions:
+  - common retry button on error surfaces
+  - reusable `retryRequested` output for parent-driven reload behavior
+  - wired for departments, designations, locations, user-linking, org chart, and org settings
 - User-linking rebuilt flow now uses:
   - `users.getUnlinkedUsers`
   - `users.getUnlinkedEmployees`
@@ -104,14 +108,28 @@ Status: In progress (Convex-backed organization module baseline expanded through
   - verifies stale-write conflict fallback and reload behavior
 - `src/app/features/organization/components/organization-page-state.component.spec.ts`
   - verifies error-state rendering
+  - verifies retry action rendering and retry event emission
+  - verifies optional retry suppression (`showRetry = false`)
   - verifies no-data loading-state rendering
   - verifies empty-state rendering
+- `src/app/features/organization/pages/departments-rebuild.component.spec.ts`
+  - verifies page-state retry event triggers data reload
+- `src/app/features/organization/pages/designations-rebuild.component.spec.ts`
+  - verifies page-state retry event triggers data reload
+- `src/app/features/organization/pages/locations-rebuild.component.spec.ts`
+  - verifies page-state retry event triggers data reload
+- `src/app/features/organization/pages/user-linking-rebuild.component.spec.ts`
+  - verifies page-state retry event triggers data reload
+- `src/app/features/organization/pages/organization-chart-rebuild.component.spec.ts`
+  - verifies page-state retry event triggers chart reload
+- `src/app/features/organization/pages/organization-settings-rebuild.component.spec.ts`
+  - verifies page-state retry event triggers settings reload
 
 ## Validation
 - `npm run build` passed.
-- `npm run test` passed (`34` files, `103` tests).
+- `npm run test` passed (`34` files, `111` tests).
 
 ## Next in This Track
-1. Add shared retry affordance on organization-page-state error surfaces for load failures.
-2. Add per-page skeleton loading variants (not just text states) for high-latency organization screens.
-3. Apply shared organization table wrapper helpers for heading + action bar composition across list pages.
+1. Add per-page skeleton loading variants (not just text states) for high-latency organization screens.
+2. Apply shared organization table wrapper helpers for heading + action bar composition across list pages.
+3. Add shared inline empty-state actions (primary CTA + secondary refresh) for organization list pages.

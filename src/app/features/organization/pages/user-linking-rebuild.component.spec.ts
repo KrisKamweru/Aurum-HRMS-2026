@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { signal } from '@angular/core';
 import { vi } from 'vitest';
+import { OrganizationPageStateComponent } from '../components/organization-page-state.component';
 import { RebuildUnlinkedEmployee, RebuildUnlinkedUser } from '../data/organization-rebuild.models';
 import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
 import { UserLinkingRebuildComponent } from './user-linking-rebuild.component';
@@ -102,5 +104,13 @@ describe('UserLinkingRebuildComponent', () => {
     component.onEmployeeSelectionChange('user-b', event);
 
     expect(storeMock.setSelectedEmployeeForUser).toHaveBeenCalledWith('user-b', 'emp-b');
+  });
+
+  it('retries user-linking load when page-state retry is requested', () => {
+    const state = fixture.debugElement.query(By.directive(OrganizationPageStateComponent)).componentInstance as OrganizationPageStateComponent;
+
+    state.retryRequested.emit();
+
+    expect(storeMock.loadUserLinkingData).toHaveBeenCalledTimes(2);
   });
 });

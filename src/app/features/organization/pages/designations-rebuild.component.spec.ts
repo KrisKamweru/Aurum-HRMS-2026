@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { signal } from '@angular/core';
 import { vi } from 'vitest';
+import { OrganizationPageStateComponent } from '../components/organization-page-state.component';
 import { RebuildDesignation } from '../data/organization-rebuild.models';
 import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
 import { DesignationsRebuildComponent } from './designations-rebuild.component';
@@ -95,6 +97,14 @@ describe('DesignationsRebuildComponent', () => {
     const host = fixture.nativeElement as HTMLElement;
     const actionCells = host.querySelectorAll('app-organization-table-actions');
     expect(actionCells.length).toBe(component.designations().length);
+  });
+
+  it('retries designation loading when page-state retry is requested', () => {
+    const state = fixture.debugElement.query(By.directive(OrganizationPageStateComponent)).componentInstance as OrganizationPageStateComponent;
+
+    state.retryRequested.emit();
+
+    expect(storeMock.loadDesignations).toHaveBeenCalledTimes(2);
   });
 
   it('removes an existing designation', async () => {

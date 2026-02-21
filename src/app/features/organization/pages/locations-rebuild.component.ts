@@ -30,6 +30,7 @@ import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
           loadingLabel="Loading locations..."
           emptyTitle="No locations found"
           emptyMessage="Add a location to define operational sites."
+          (retryRequested)="refreshLocations()"
         />
 
         <section class="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm dark:border-white/8 dark:bg-white/[0.04]">

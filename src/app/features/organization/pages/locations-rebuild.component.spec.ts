@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { signal } from '@angular/core';
 import { vi } from 'vitest';
+import { OrganizationPageStateComponent } from '../components/organization-page-state.component';
 import { RebuildLocation } from '../data/organization-rebuild.models';
 import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
 import { LocationsRebuildComponent } from './locations-rebuild.component';
@@ -81,6 +83,14 @@ describe('LocationsRebuildComponent', () => {
     const host = fixture.nativeElement as HTMLElement;
     const actionCells = host.querySelectorAll('app-organization-table-actions');
     expect(actionCells.length).toBe(component.locations().length);
+  });
+
+  it('retries location loading when page-state retry is requested', () => {
+    const state = fixture.debugElement.query(By.directive(OrganizationPageStateComponent)).componentInstance as OrganizationPageStateComponent;
+
+    state.retryRequested.emit();
+
+    expect(storeMock.loadLocations).toHaveBeenCalledTimes(2);
   });
 
   it('removes an existing location', async () => {
