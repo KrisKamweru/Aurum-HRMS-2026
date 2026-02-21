@@ -1,7 +1,7 @@
 # Phase 4 Organization Slice Report
 
 Date: 2026-02-21  
-Status: In progress (Convex-backed organization module baseline expanded through chart/settings)
+Status: In progress (Convex-backed organization module baseline expanded through manager assignment)
 
 ## Slice Delivered
 - Replaced generic placeholders with rebuilt organization pages:
@@ -28,6 +28,10 @@ Status: In progress (Convex-backed organization module baseline expanded through
   - create modal flow
   - edit modal flow
   - destructive confirmation dialog on remove
+- Department manager assignment now supports:
+  - employee lookup sourced from `employees.list`
+  - manager selection in create/edit modal flow
+  - manager name projection in department table rows
 - User-linking rebuilt flow now uses:
   - `users.getUnlinkedUsers`
   - `users.getUnlinkedEmployees`
@@ -52,12 +56,14 @@ Status: In progress (Convex-backed organization module baseline expanded through
 ## TDD Coverage
 - `src/app/features/organization/data/organization-rebuild.store.spec.ts`
   - verifies service-driven load behavior
+  - verifies manager lookup load and manager-assignment write paths for departments
   - verifies unique-create and duplicate guards across all three entities
   - verifies update + remove actions by id across all three entities
   - verifies user-linking load, auto-suggested pairings, and link action behavior
   - verifies error-state propagation
 - `src/app/features/organization/pages/departments-rebuild.component.spec.ts`
   - verifies init load trigger and create/remove interactions
+  - verifies manager lookup option projection for dynamic form select fields
 - `src/app/features/organization/pages/designations-rebuild.component.spec.ts`
   - verifies init load trigger and create/remove interactions
 - `src/app/features/organization/pages/locations-rebuild.component.spec.ts`
@@ -76,9 +82,9 @@ Status: In progress (Convex-backed organization module baseline expanded through
 
 ## Validation
 - `npm run build` passed.
-- `npm run test` passed (`32` files, `89` tests).
+- `npm run test` passed (`32` files, `90` tests).
 
 ## Next in This Track
-1. Add manager/employee lookup support for department manager assignment in the department edit/create modal.
-2. Add page-level load/error/empty-state standardization helper for organization screens.
-3. Add optimistic update and conflict handling patterns for organization settings writes.
+1. Add page-level load/error/empty-state standardization helper for organization screens.
+2. Add optimistic update and conflict handling patterns for organization settings writes.
+3. Add manager-assignment constraints/validation UX (inactive employee handling and stale-manager fallback).
