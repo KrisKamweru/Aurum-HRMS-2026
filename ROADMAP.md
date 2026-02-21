@@ -100,8 +100,9 @@ Reference: `docs/rebuild-parity-plan.md`
     - user-linking flow now uses `users.getUnlinkedUsers`, `users.getUnlinkedEmployees`, and `users.linkUserToEmployee`
     - organization chart now consumes `employees.getOrgChart` and renders depth-aware reporting rows
     - organization settings now consumes `organization.getOrganizationSettings` / `organization.updateOrganizationSettings` via modal stepper flows
+    - organization settings writes now use optimistic UI updates plus `expectedUpdatedAt` conflict checks with latest-state reload on stale writes
     - TDD coverage expanded for async store behavior + rebuilt organization pages
-    - validation: `npm run build` and `npm test` passing (`33` files, `93` tests)
+    - validation: `npm run build` and `npm test` passing (`33` files, `95` tests)
     - report: `docs/rebuild-manifests/phase4-organization-slice-report.md`
   - Phase 4 shared form/modal baseline:
     - shared `dynamic-form` rebuilt with multi-column sections and stepper flows
@@ -113,7 +114,7 @@ Reference: `docs/rebuild-parity-plan.md`
   - Phase 4 shared component library port completed:
     - rebuilt shared components now present in active scope for: `notifications-panel`, `ui-avatar`, `ui-badge`, `ui-button`, `ui-card`, `ui-confirm-dialog`, `ui-data-table`, `ui-date-range`, `ui-form-field`, `ui-grid`, `ui-icon`, `ui-nav-item`, `ui-stepper`, `ui-toast`
     - TDD coverage added for the rebuilt shared component set
-    - validation: `npm test` passing with expanded coverage (`33` files, `93` tests)
+    - validation: `npm test` passing with expanded coverage (`33` files, `95` tests)
     - report: `docs/rebuild-manifests/phase4-shared-components-report.md`
 
 ### P0. Immediate Stabilization and Context Hygiene (Now)

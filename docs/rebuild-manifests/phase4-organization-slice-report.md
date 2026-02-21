@@ -1,7 +1,7 @@
 # Phase 4 Organization Slice Report
 
 Date: 2026-02-21  
-Status: In progress (Convex-backed organization module baseline expanded through manager assignment)
+Status: In progress (Convex-backed organization module baseline expanded through settings conflict handling)
 
 ## Slice Delivered
 - Replaced generic placeholders with rebuilt organization pages:
@@ -52,6 +52,8 @@ Status: In progress (Convex-backed organization module baseline expanded through
   - live organization snapshot from `organization.getOrganizationSettings`
   - modal-based edit flow via `organization.updateOrganizationSettings`
   - step-based form sections for identity and subscription controls
+  - optimistic settings projection during in-flight saves
+  - stale-write conflict handling via `expectedUpdatedAt` and latest-state reload
 - Duplicate guardrails active:
   - Department: unique by name.
   - Designation: unique by title.
@@ -84,6 +86,8 @@ Status: In progress (Convex-backed organization module baseline expanded through
   - verifies init load trigger
   - verifies modal initialization from current settings
   - verifies settings update submission path
+  - verifies optimistic in-flight projection behavior
+  - verifies stale-write conflict fallback and reload behavior
 - `src/app/features/organization/components/organization-page-state.component.spec.ts`
   - verifies error-state rendering
   - verifies no-data loading-state rendering
@@ -91,9 +95,9 @@ Status: In progress (Convex-backed organization module baseline expanded through
 
 ## Validation
 - `npm run build` passed.
-- `npm run test` passed (`33` files, `93` tests).
+- `npm run test` passed (`33` files, `95` tests).
 
 ## Next in This Track
-1. Add optimistic update and conflict handling patterns for organization settings writes.
-2. Add manager-assignment constraints/validation UX (inactive employee handling and stale-manager fallback).
-3. Extract shared table-action cell pattern to reduce page-template duplication across organization list screens.
+1. Add manager-assignment constraints/validation UX (inactive employee handling and stale-manager fallback).
+2. Extract shared table-action cell pattern to reduce page-template duplication across organization list screens.
+3. Add shared retry affordance on organization-page-state error surfaces for load failures.
