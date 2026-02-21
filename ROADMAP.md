@@ -80,6 +80,12 @@ Reference: `docs/rebuild-parity-plan.md`
   - Phase 3 foundation started:
     - rebuild router now maps legacy path surface in the new shell using placeholder pages
     - route contract test added in `src/app/app.routes.spec.ts`
+  - Phase 3 foundation progress (auth/routing baseline):
+    - auth session service and role/auth guards added in `src/app/core/auth/`
+    - login bootstrap route added (`src/app/features/auth/login/login.component.ts`)
+    - role-aware guard mapping applied to rebuilt route matrix (`src/app/app.routes.ts`)
+    - vitest active-scope exclusion added for archive path (`vitest.config.ts`)
+    - report: `docs/rebuild-manifests/phase3-foundation-report.md`
 
 ### P0. Immediate Stabilization and Context Hygiene (Now)
 Status: Substantially completed on 2026-02-09.
