@@ -6,7 +6,7 @@ import { RouterOutlet } from '@angular/router';
   standalone: true,
   imports: [RouterOutlet],
   template: `
-    <div data-testid="app-viewport" class="h-dvh overflow-hidden bg-stone-50 dark:bg-[#0b0b0b]">
+    <div data-testid="app-viewport" class="app-shell h-dvh overflow-hidden text-stone-900 dark:text-stone-100">
       <div data-testid="app-scroller" class="h-full overflow-y-auto overscroll-contain">
         <router-outlet />
       </div>

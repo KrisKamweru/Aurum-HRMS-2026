@@ -9,7 +9,7 @@ import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
   standalone: true,
   imports: [UiModalComponent, DynamicFormComponent],
   template: `
-    <main class="min-h-screen bg-stone-50 px-4 py-8 text-stone-900 dark:bg-[#0b0b0b] dark:text-stone-100 sm:px-6 lg:px-8">
+    <main class="h-full px-4 py-8 sm:px-6 lg:px-8">
       <div class="mx-auto w-full max-w-5xl space-y-8">
         <header class="space-y-2">
           <p class="text-xs font-semibold uppercase tracking-wide text-burgundy-700 dark:text-burgundy-400">Organization Rebuild</p>
@@ -19,7 +19,7 @@ import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
           </p>
         </header>
 
-        <section class="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-white/5 dark:backdrop-blur-xl">
+        <section class="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm dark:border-white/8 dark:bg-white/[0.04]">
           <div class="flex flex-wrap items-center justify-between gap-3">
             <p class="text-sm text-stone-600 dark:text-stone-300">Use structured modal forms with stepper flows for cleaner UX in constrained spaces.</p>
             <button
@@ -32,7 +32,8 @@ import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
           </div>
         </section>
 
-        <section class="overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm dark:border-white/10 dark:bg-white/5 dark:backdrop-blur-xl">
+        <section class="overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm dark:border-white/8 dark:bg-white/[0.04]">
+          <div class="overflow-x-auto">
           <table class="min-w-full text-left">
             <thead class="bg-stone-50 dark:bg-white/[0.03]">
               <tr>
@@ -49,7 +50,7 @@ import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
                   <td class="px-4 py-3 text-right">
                     <button
                       type="button"
-                      class="rounded-lg border border-stone-200 px-3 py-1.5 text-xs font-semibold text-stone-600 transition-colors hover:border-red-300 hover:bg-red-50 hover:text-red-700 dark:border-white/10 dark:text-stone-300 dark:hover:border-red-500/40 dark:hover:bg-red-500/10 dark:hover:text-red-300"
+                      class="rounded-lg border border-stone-200 px-3 py-1.5 text-xs font-semibold text-stone-600 transition-colors hover:border-red-300 hover:bg-red-50 hover:text-red-700 dark:border-white/8 dark:text-stone-300 dark:hover:border-red-500/40 dark:hover:bg-red-500/10 dark:hover:text-red-300"
                       (click)="removeDepartment(department.id)"
                     >
                       Remove
@@ -59,6 +60,7 @@ import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
               }
             </tbody>
           </table>
+          </div>
         </section>
       </div>
 

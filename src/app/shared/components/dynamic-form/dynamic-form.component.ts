@@ -27,7 +27,7 @@ interface ResolvedSection {
                 <button
                   type="button"
                   class="rounded-xl border px-3 py-2 text-left text-sm transition-colors"
-                  [class]="i <= activeStepIndex ? 'border-burgundy-300 bg-burgundy-50 text-burgundy-700 dark:border-burgundy-500/40 dark:bg-burgundy-700/15 dark:text-burgundy-300' : 'border-stone-200 bg-white text-stone-600 dark:border-white/10 dark:bg-white/5 dark:text-stone-300'"
+                  [class]="i <= activeStepIndex ? 'border-burgundy-300 bg-burgundy-50 text-burgundy-700 dark:border-burgundy-500/40 dark:bg-burgundy-700/15 dark:text-burgundy-300' : 'border-stone-200 bg-white text-stone-600 dark:border-white/8 dark:bg-white/[0.04] dark:text-stone-300'"
                   [disabled]="i > activeStepIndex + 1 || loading"
                   (click)="setStep(i)"
                 >
@@ -36,7 +36,7 @@ interface ResolvedSection {
                 </button>
               }
             </div>
-            <div class="rounded-xl border border-stone-200 bg-white p-4 text-sm dark:border-white/10 dark:bg-white/5">
+            <div class="rounded-xl border border-stone-200 bg-white p-4 text-sm dark:border-white/8 dark:bg-white/[0.04]">
               <p class="font-semibold text-stone-800 dark:text-stone-100">{{ currentStep()?.title }}</p>
               @if (currentStep()?.description) {
                 <p class="mt-1 text-stone-600 dark:text-stone-400">{{ currentStep()?.description }}</p>
@@ -46,7 +46,7 @@ interface ResolvedSection {
         }
 
         @for (section of visibleSections(); track section.id) {
-          <section class="space-y-3 rounded-2xl border border-stone-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-white/5 dark:backdrop-blur-xl">
+          <section class="space-y-3 rounded-2xl border border-stone-200 bg-white p-5 shadow-sm dark:border-white/8 dark:bg-white/[0.04]">
             @if (section.title) {
               <header class="space-y-1">
                 <h3 class="text-lg font-semibold text-stone-900 dark:text-stone-100">{{ section.title }}</h3>
@@ -67,7 +67,7 @@ interface ResolvedSection {
                       <select
                         [id]="field.name"
                         [formControlName]="field.name"
-                        class="w-full rounded-lg border border-stone-200 bg-white px-4 py-2.5 text-sm transition-all focus:border-burgundy-500 focus:ring-2 focus:ring-burgundy-500/20 dark:border-white/10 dark:bg-white/5 dark:text-white"
+                        class="w-full rounded-lg border border-stone-200 bg-white px-4 py-2.5 text-sm transition-all focus:border-burgundy-500 focus:ring-2 focus:ring-burgundy-500/20 dark:border-white/8 dark:bg-white/[0.03] dark:text-white"
                       >
                         <option value="">Select {{ field.label }}</option>
                         @for (opt of field.options ?? []; track opt.label) {
@@ -81,7 +81,7 @@ interface ResolvedSection {
                         rows="4"
                         [formControlName]="field.name"
                         [placeholder]="field.placeholder ?? ''"
-                        class="w-full rounded-lg border border-stone-200 bg-white px-4 py-2.5 text-sm transition-all focus:border-burgundy-500 focus:ring-2 focus:ring-burgundy-500/20 dark:border-white/10 dark:bg-white/5 dark:text-white"
+                        class="w-full rounded-lg border border-stone-200 bg-white px-4 py-2.5 text-sm transition-all focus:border-burgundy-500 focus:ring-2 focus:ring-burgundy-500/20 dark:border-white/8 dark:bg-white/[0.03] dark:text-white"
                       ></textarea>
                     }
                     @case ('checkbox') {
@@ -101,7 +101,7 @@ interface ResolvedSection {
                         [type]="field.type"
                         [formControlName]="field.name"
                         [placeholder]="field.placeholder ?? ''"
-                        class="w-full rounded-lg border border-stone-200 bg-white px-4 py-2.5 text-sm transition-all focus:border-burgundy-500 focus:ring-2 focus:ring-burgundy-500/20 dark:border-white/10 dark:bg-white/5 dark:text-white"
+                        class="w-full rounded-lg border border-stone-200 bg-white px-4 py-2.5 text-sm transition-all focus:border-burgundy-500 focus:ring-2 focus:ring-burgundy-500/20 dark:border-white/8 dark:bg-white/[0.03] dark:text-white"
                       />
                     }
                   }
@@ -116,10 +116,10 @@ interface ResolvedSection {
           </section>
         }
 
-        <div class="flex items-center justify-between gap-3 border-t border-stone-200 pt-4 dark:border-white/10">
+        <div class="flex items-center justify-between gap-3 border-t border-stone-200 pt-4 dark:border-white/8">
           <button
             type="button"
-            class="rounded-[10px] border border-stone-200 px-4 py-2 text-sm font-semibold text-stone-700 transition-colors hover:bg-stone-100 dark:border-white/10 dark:text-stone-200 dark:hover:bg-white/10"
+            class="rounded-[10px] border border-stone-200 px-4 py-2 text-sm font-semibold text-stone-700 transition-colors hover:bg-stone-100 dark:border-white/8 dark:text-stone-200 dark:hover:bg-white/10"
             [disabled]="activeStepIndex === 0 || loading"
             (click)="goPrevStep()"
           >
@@ -129,7 +129,7 @@ interface ResolvedSection {
             @if (showCancel) {
               <button
                 type="button"
-                class="rounded-[10px] border border-stone-200 px-4 py-2 text-sm font-semibold text-stone-700 transition-colors hover:bg-stone-100 dark:border-white/10 dark:text-stone-200 dark:hover:bg-white/10"
+                class="rounded-[10px] border border-stone-200 px-4 py-2 text-sm font-semibold text-stone-700 transition-colors hover:bg-stone-100 dark:border-white/8 dark:text-stone-200 dark:hover:bg-white/10"
                 [disabled]="loading"
                 (click)="cancel.emit()"
               >

@@ -16,20 +16,20 @@ export type ModalWidth = 'thin' | 'normal' | 'wide';
         <button
           type="button"
           aria-label="Close modal backdrop"
-          class="absolute inset-0 bg-black/55 backdrop-blur-sm"
+          class="absolute inset-0 bg-black/40 backdrop-blur-sm"
           (click)="handleBackdrop()"
         ></button>
 
         <div class="pointer-events-none absolute inset-0 flex items-center justify-center p-4 sm:p-6">
           <section
-            class="pointer-events-auto flex max-h-[calc(100dvh-2rem)] w-full flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-xl dark:border-white/10 dark:bg-white/5 dark:backdrop-blur-xl"
+            class="pointer-events-auto flex max-h-[calc(100dvh-2rem)] w-full flex-col overflow-hidden rounded-2xl border border-white/[0.55] bg-white/[0.72] shadow-lg backdrop-blur-xl dark:border-white/8 dark:bg-white/5 dark:shadow-none dark:backdrop-blur-xl"
             [class]="getWidthClass()"
           >
-            <header class="flex items-center justify-between border-b border-stone-200 px-5 py-4 dark:border-white/10">
+            <header class="flex items-center justify-between border-b border-stone-200/80 px-5 py-4 dark:border-white/8">
               <h3 class="text-lg font-semibold text-stone-900 dark:text-stone-100">{{ title }}</h3>
               <button
                 type="button"
-                class="rounded-lg border border-stone-200 px-3 py-1.5 text-xs font-semibold text-stone-600 transition-colors hover:bg-stone-100 dark:border-white/10 dark:text-stone-300 dark:hover:bg-white/10"
+                class="rounded-lg border border-stone-200 px-3 py-1.5 text-xs font-semibold text-stone-600 transition-colors hover:bg-stone-100 dark:border-white/8 dark:text-stone-300 dark:hover:bg-white/10"
                 (click)="closeModal()"
               >
                 Close
@@ -41,7 +41,7 @@ export type ModalWidth = 'thin' | 'normal' | 'wide';
             </div>
 
             @if (hasFooter) {
-              <footer class="border-t border-stone-200 px-5 py-4 dark:border-white/10">
+              <footer class="border-t border-stone-200/80 px-5 py-4 dark:border-white/8">
                 <ng-content select="[footer]"></ng-content>
               </footer>
             }
@@ -65,12 +65,12 @@ export class UiModalComponent implements OnChanges, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['isOpen']) {
-      this.document.body.style.overflow = this.isOpen ? 'hidden' : 'hidden';
+      this.document.body.style.overflow = this.isOpen ? 'hidden' : '';
     }
   }
 
   ngOnDestroy(): void {
-    this.document.body.style.overflow = 'hidden';
+    this.document.body.style.overflow = '';
   }
 
   @HostListener('document:keydown.escape')
