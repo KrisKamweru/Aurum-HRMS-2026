@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, input, ChangeDetectionStrategy } from '@angular/core';
 
 interface IconDefinition {
   viewBox: string;
@@ -33,8 +33,8 @@ const ICONS: Record<string, IconDefinition> = {
 };
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'ui-icon',
-  standalone: true,
   template: `
     <svg
       [attr.viewBox]="icon().viewBox"
@@ -55,11 +55,11 @@ const ICONS: Record<string, IconDefinition> = {
   }
 })
 export class UiIconComponent {
-  @Input({ required: true }) name = 'information-circle';
+  readonly name = input.required<string>();
 
   icon(): IconDefinition {
     return (
-      ICONS[this.name] ?? {
+      ICONS[this.name()] ?? {
         viewBox: '0 0 24 24',
         paths: ['M12 6v6m0 6h.01M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18'],
         stroke: true
@@ -67,3 +67,5 @@ export class UiIconComponent {
     );
   }
 }
+
+

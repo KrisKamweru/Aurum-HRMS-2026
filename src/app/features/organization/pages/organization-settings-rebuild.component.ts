@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { DynamicFormComponent } from '../../../shared/components/dynamic-form/dynamic-form.component';
 import { UiModalComponent } from '../../../shared/components/ui-modal/ui-modal.component';
 import { FieldConfig, FormSectionConfig, FormStepConfig } from '../../../shared/services/form-helper.service';
@@ -11,8 +11,8 @@ import {
 import { OrganizationRebuildDataService } from '../data/organization-rebuild.data.service';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-organization-settings-rebuild',
-  standalone: true,
   imports: [UiModalComponent, DynamicFormComponent, OrganizationPageStateComponent],
   template: `
     <main class="h-full px-4 py-8 sm:px-6 lg:px-8">
@@ -308,3 +308,5 @@ export class OrganizationSettingsRebuildComponent implements OnInit {
     }
   }
 }
+
+

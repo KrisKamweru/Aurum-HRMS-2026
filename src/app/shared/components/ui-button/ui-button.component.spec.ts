@@ -24,7 +24,8 @@ describe('UiButtonComponent', () => {
     const clicked = vi.fn();
     component.blocked.subscribe(blocked);
     component.onClick.subscribe(clicked);
-    component.prerequisitesMet = false;
+    fixture.componentRef.setInput('prerequisitesMet', false);
+    fixture.detectChanges();
 
     component.handleClick(new MouseEvent('click'));
 

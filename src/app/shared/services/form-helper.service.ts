@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 
 export type FieldType = 'text' | 'email' | 'password' | 'number' | 'select' | 'date' | 'textarea' | 'checkbox';
@@ -44,7 +44,8 @@ export interface FormStepConfig {
 
 @Injectable({ providedIn: 'root' })
 export class FormHelperService {
-  constructor(private readonly fb: FormBuilder) {}
+  private readonly fb = inject(FormBuilder);
+
 
   createForm(fields: FieldConfig[]): FormGroup {
     const controls: Record<string, FormControl> = {};

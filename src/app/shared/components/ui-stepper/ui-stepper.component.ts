@@ -1,4 +1,4 @@
-import { Component, ContentChildren, EventEmitter, Input, Output, QueryList, signal } from '@angular/core';
+import { Component, ContentChildren, QueryList, signal, input, output, ChangeDetectionStrategy } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { UiStepComponent } from './ui-step.component';
 
@@ -8,8 +8,8 @@ export interface StepperStepConfig {
 }
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'ui-stepper',
-  standalone: true,
   imports: [NgTemplateOutlet],
   template: `
     <div class="mb-6 flex items-center justify-center">
@@ -36,7 +36,7 @@ export interface StepperStepConfig {
     </div>
 
     <div class="mb-6">
-      @if (stepsData.length === 0) {
+      @if (stepsData().length === 0) {
         @for (step of steps.toArray(); track $index; let i = $index) {
           @if (i === currentStep()) {
             <ng-container [ngTemplateOutlet]="step.contentTemplate"></ng-container>
@@ -45,27 +45,27 @@ export interface StepperStepConfig {
       }
     </div>
 
-    @if (showNavigation) {
+    @if (showNavigation()) {
       <div class="flex items-center justify-between border-t border-stone-200 pt-4 dark:border-white/8">
-        <button type="button" class="rounded-lg border border-stone-200 px-4 py-2 text-sm font-medium text-stone-700 dark:border-white/8 dark:text-stone-200" [disabled]="currentStep() === 0 || disabled" (click)="previous()">Back</button>
+        <button type="button" class="rounded-lg border border-stone-200 px-4 py-2 text-sm font-medium text-stone-700 dark:border-white/8 dark:text-stone-200" [disabled]="currentStep() === 0 || disabled()" (click)="previous()">Back</button>
         @if (currentStep() < renderSteps().length - 1) {
-          <button type="button" class="rounded-lg bg-burgundy-700 px-5 py-2 text-sm font-medium text-white" [disabled]="disabled" (click)="next()">Next</button>
+          <button type="button" class="rounded-lg bg-burgundy-700 px-5 py-2 text-sm font-medium text-white" [disabled]="disabled()" (click)="next()">Next</button>
         } @else {
-          <button type="button" class="rounded-lg bg-burgundy-700 px-5 py-2 text-sm font-medium text-white" [disabled]="disabled" (click)="submit()">{{ submitText }}</button>
+          <button type="button" class="rounded-lg bg-burgundy-700 px-5 py-2 text-sm font-medium text-white" [disabled]="disabled()" (click)="submit()">{{ submitText() }}</button>
         }
       </div>
     }
   `
 })
 export class UiStepperComponent {
-  @Input() stepsData: StepperStepConfig[] = [];
-  @Input() showNavigation = true;
-  @Input() disabled = false;
-  @Input() submitText = 'Submit';
-  @Input() linear = true;
+  readonly stepsData = input<StepperStepConfig[]>([]);
+  readonly showNavigation = input(true);
+  readonly disabled = input(false);
+  readonly submitText = input('Submit');
+  readonly linear = input(true);
 
-  @Output() stepChange = new EventEmitter<number>();
-  @Output() submitEvent = new EventEmitter<void>();
+  readonly stepChange = output<number>();
+  readonly submitEvent = output<void>();
 
   @ContentChildren(UiStepComponent) steps!: QueryList<UiStepComponent>;
 
@@ -76,10 +76,10 @@ export class UiStepperComponent {
   }
 
   renderSteps(): StepperStepConfig[] {
-    if (this.stepsData.length > 0) {
-      return this.stepsData;
+    if (this.stepsData().length > 0) {
+      return this.stepsData();
     }
-    return this.steps?.toArray().map((step) => ({ title: step.title, subtitle: step.subtitle })) ?? [];
+    return this.steps?.toArray().map((step) => ({ title: step.title(), subtitle: step.subtitle() })) ?? [];
   }
 
   next(): void {
@@ -107,14 +107,14 @@ export class UiStepperComponent {
   }
 
   canNavigateToStep(index: number): boolean {
-    if (!this.linear) {
+    if (!this.linear()) {
       return true;
     }
     return index <= this.currentStep();
   }
 
   submit(): void {
-    this.submitEvent.emit();
+    this.submitEvent.emit(undefined);
   }
 
   getStepCircleClass(index: number): string {
@@ -131,3 +131,5 @@ export class UiStepperComponent {
     return index <= this.currentStep() ? 'text-stone-900 dark:text-stone-100' : 'text-stone-500 dark:text-stone-400';
   }
 }
+
+

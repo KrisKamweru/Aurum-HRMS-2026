@@ -108,8 +108,8 @@ describe('DesignationsRebuildComponent', () => {
     expect(toolbar).not.toBeNull();
 
     const toolbarComponent = toolbar.componentInstance as OrganizationListToolbarActionsComponent;
-    expect(toolbarComponent.refreshLabel).toBe('Refresh');
-    expect(toolbarComponent.createLabel).toBe('Add Designation');
+    expect(toolbarComponent.refreshLabel()).toBe('Refresh');
+    expect(toolbarComponent.createLabel()).toBe('Add Designation');
   });
 
   it('renders shared organization list shell with configured heading copy', () => {
@@ -117,7 +117,7 @@ describe('DesignationsRebuildComponent', () => {
     expect(shell).not.toBeNull();
 
     const shellComponent = shell.componentInstance as OrganizationListShellComponent;
-    expect(shellComponent.title).toBe('Designations');
+    expect(shellComponent.title()).toBe('Designations');
   });
 
   it('projects designation status badges into shared list-shell status slot', () => {
@@ -141,8 +141,8 @@ describe('DesignationsRebuildComponent', () => {
     fixture.detectChanges();
     const state = fixture.debugElement.query(By.directive(OrganizationPageStateComponent)).componentInstance as OrganizationPageStateComponent;
 
-    expect(state.showEmptyActions).toBe(true);
-    expect(state.emptyPrimaryLabel).toBe('Add Designation');
+    expect(state.showEmptyActions()).toBe(true);
+    expect(state.emptyPrimaryLabel()).toBe('Add Designation');
 
     state.emptyPrimaryRequested.emit();
     expect(component.isCreateModalOpen()).toBe(true);
@@ -153,7 +153,7 @@ describe('DesignationsRebuildComponent', () => {
 
   it('uses table loading skeleton variant', () => {
     const state = fixture.debugElement.query(By.directive(OrganizationPageStateComponent)).componentInstance as OrganizationPageStateComponent;
-    expect(state.loadingVariant).toBe('table');
+    expect(state.loadingVariant()).toBe('table');
   });
 
   it('renders shared table metadata with count and refresh timestamp', () => {
@@ -161,9 +161,9 @@ describe('DesignationsRebuildComponent', () => {
     expect(metadata).not.toBeNull();
 
     const metadataComponent = metadata.componentInstance as OrganizationTableMetadataComponent;
-    expect(metadataComponent.itemLabel).toBe('Designations');
-    expect(metadataComponent.count).toBe(component.designations().length);
-    expect(metadataComponent.lastRefreshedAt).not.toBeNull();
+    expect(metadataComponent.itemLabel()).toBe('Designations');
+    expect(metadataComponent.count()).toBe(component.designations().length);
+    expect(metadataComponent.lastRefreshedAt()).not.toBeNull();
   });
 
   it('uses shared table-header helper with designation column definitions', () => {
@@ -171,7 +171,7 @@ describe('DesignationsRebuildComponent', () => {
     expect(header).not.toBeNull();
 
     const headerComponent = header.componentInstance as OrganizationTableHeaderRowComponent;
-    expect(headerComponent.columns.map((column) => column.label)).toEqual([
+    expect(headerComponent.columns().map((column) => column.label)).toEqual([
       'Designation',
       'Code',
       'Level',

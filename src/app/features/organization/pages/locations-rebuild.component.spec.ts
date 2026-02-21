@@ -94,8 +94,8 @@ describe('LocationsRebuildComponent', () => {
     expect(toolbar).not.toBeNull();
 
     const toolbarComponent = toolbar.componentInstance as OrganizationListToolbarActionsComponent;
-    expect(toolbarComponent.refreshLabel).toBe('Refresh');
-    expect(toolbarComponent.createLabel).toBe('Add Location');
+    expect(toolbarComponent.refreshLabel()).toBe('Refresh');
+    expect(toolbarComponent.createLabel()).toBe('Add Location');
   });
 
   it('renders shared organization list shell with configured heading copy', () => {
@@ -103,7 +103,7 @@ describe('LocationsRebuildComponent', () => {
     expect(shell).not.toBeNull();
 
     const shellComponent = shell.componentInstance as OrganizationListShellComponent;
-    expect(shellComponent.title).toBe('Locations');
+    expect(shellComponent.title()).toBe('Locations');
   });
 
   it('projects location status badges into shared list-shell status slot', () => {
@@ -127,8 +127,8 @@ describe('LocationsRebuildComponent', () => {
     fixture.detectChanges();
     const state = fixture.debugElement.query(By.directive(OrganizationPageStateComponent)).componentInstance as OrganizationPageStateComponent;
 
-    expect(state.showEmptyActions).toBe(true);
-    expect(state.emptyPrimaryLabel).toBe('Add Location');
+    expect(state.showEmptyActions()).toBe(true);
+    expect(state.emptyPrimaryLabel()).toBe('Add Location');
 
     state.emptyPrimaryRequested.emit();
     expect(component.isCreateModalOpen()).toBe(true);
@@ -139,7 +139,7 @@ describe('LocationsRebuildComponent', () => {
 
   it('uses table loading skeleton variant', () => {
     const state = fixture.debugElement.query(By.directive(OrganizationPageStateComponent)).componentInstance as OrganizationPageStateComponent;
-    expect(state.loadingVariant).toBe('table');
+    expect(state.loadingVariant()).toBe('table');
   });
 
   it('renders shared table metadata with count and refresh timestamp', () => {
@@ -147,9 +147,9 @@ describe('LocationsRebuildComponent', () => {
     expect(metadata).not.toBeNull();
 
     const metadataComponent = metadata.componentInstance as OrganizationTableMetadataComponent;
-    expect(metadataComponent.itemLabel).toBe('Locations');
-    expect(metadataComponent.count).toBe(component.locations().length);
-    expect(metadataComponent.lastRefreshedAt).not.toBeNull();
+    expect(metadataComponent.itemLabel()).toBe('Locations');
+    expect(metadataComponent.count()).toBe(component.locations().length);
+    expect(metadataComponent.lastRefreshedAt()).not.toBeNull();
   });
 
   it('uses shared table-header helper with location column definitions', () => {
@@ -157,7 +157,7 @@ describe('LocationsRebuildComponent', () => {
     expect(header).not.toBeNull();
 
     const headerComponent = header.componentInstance as OrganizationTableHeaderRowComponent;
-    expect(headerComponent.columns.map((column) => column.label)).toEqual([
+    expect(headerComponent.columns().map((column) => column.label)).toEqual([
       'Location',
       'Address',
       'City',

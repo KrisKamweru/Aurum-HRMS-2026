@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, inject } from '@angular/core';
 import { OrganizationRebuildDataService } from './organization-rebuild.data.service';
 import {
   RebuildDepartment,
@@ -11,6 +11,8 @@ import {
 
 @Injectable({ providedIn: 'root' })
 export class OrganizationRebuildStore {
+  private readonly data = inject(OrganizationRebuildDataService);
+
   private readonly departmentState = signal<RebuildDepartment[]>([]);
   private readonly designationState = signal<RebuildDesignation[]>([]);
   private readonly locationState = signal<RebuildLocation[]>([]);
@@ -26,8 +28,6 @@ export class OrganizationRebuildStore {
   private readonly userLinkingLoadingState = signal(false);
   private readonly savingState = signal(false);
   private readonly errorState = signal<string | null>(null);
-
-  constructor(private readonly data: OrganizationRebuildDataService) {}
 
   readonly departments = this.departmentState.asReadonly();
   readonly designations = this.designationState.asReadonly();

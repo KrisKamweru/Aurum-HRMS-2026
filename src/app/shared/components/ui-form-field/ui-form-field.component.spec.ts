@@ -13,7 +13,7 @@ describe('UiFormFieldComponent', () => {
 
     fixture = TestBed.createComponent(UiFormFieldComponent);
     component = fixture.componentInstance;
-    component.label = 'Email';
+    fixture.componentRef.setInput('label', 'Email');
     fixture.detectChanges();
   });
 

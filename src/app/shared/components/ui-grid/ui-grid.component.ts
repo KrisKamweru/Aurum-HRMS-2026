@@ -1,13 +1,13 @@
-import { Component, Input } from '@angular/core';
+import { Component, input, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'ui-grid',
-  standalone: true,
   template: `
     <div
       class="grid min-h-0"
-      [style.--ui-grid-columns]="columns"
-      [style.--ui-grid-gap]="gap"
+      [style.--ui-grid-columns]="columns()"
+      [style.--ui-grid-gap]="gap()"
       [style.grid-template-columns]="'var(--ui-grid-columns)'"
       [style.gap]="'var(--ui-grid-gap)'"
     >
@@ -16,7 +16,9 @@ import { Component, Input } from '@angular/core';
   `
 })
 export class UiGridComponent {
-  @Input() columns = '1fr';
-  @Input() gap = '1rem';
+  readonly columns = input('1fr');
+  readonly gap = input('1rem');
 }
+
+
 

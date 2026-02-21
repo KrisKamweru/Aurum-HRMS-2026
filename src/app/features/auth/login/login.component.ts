@@ -1,11 +1,11 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthSessionService } from '../../../core/auth/auth-session.service';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-login',
-  standalone: true,
   imports: [ReactiveFormsModule],
   template: `
     <main class="h-full px-4 py-8 sm:px-6 lg:px-8">
@@ -66,6 +66,8 @@ import { AuthSessionService } from '../../../core/auth/auth-session.service';
   `
 })
 export class LoginComponent {
+  private readonly router = inject(Router);
+
   private readonly fb = inject(FormBuilder);
   readonly auth = inject(AuthSessionService);
 
@@ -75,10 +77,6 @@ export class LoginComponent {
   });
   readonly isSubmitting = signal(false);
   readonly error = signal<string | null>(null);
-
-  constructor(
-    private readonly router: Router
-  ) {}
 
   async submit(): Promise<void> {
     if (this.loginForm.invalid) {
@@ -110,3 +108,5 @@ export class LoginComponent {
     }
   }
 }
+
+

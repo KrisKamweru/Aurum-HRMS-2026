@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output, signal } from '@angular/core';
 
 export interface DateRange {
   start: Date;
@@ -8,8 +8,8 @@ export interface DateRange {
 export type PresetKey = 'thisMonth' | 'lastMonth' | 'last30' | 'thisYear';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'ui-date-range',
-  standalone: true,
   template: `
     <section class="space-y-4 rounded-2xl border border-stone-200 bg-white p-4 shadow-sm dark:border-white/8 dark:bg-white/[0.04]">
       <div class="flex flex-wrap gap-2">
@@ -25,14 +25,16 @@ export type PresetKey = 'thisMonth' | 'lastMonth' | 'last30' | 'thisYear';
   `
 })
 export class UiDateRangeComponent {
-  @Input() startDate: Date | null = null;
-  @Input() endDate: Date | null = null;
-  @Input() minDate: Date | null = null;
-  @Input() maxDate: Date | null = null;
+  readonly startDate = input<Date | null>(null);
+  readonly endDate = input<Date | null>(null);
+  readonly minDate = input<Date | null>(null);
+  readonly maxDate = input<Date | null>(null);
 
-  @Output() rangeChange = new EventEmitter<DateRange>();
+  readonly rangeChange = output<DateRange>();
 
   private readonly activePreset = signal<PresetKey | null>(null);
+  private readonly selectedStart = signal<Date | null>(null);
+  private readonly selectedEnd = signal<Date | null>(null);
 
   readonly presets: ReadonlyArray<{ key: PresetKey; label: string }> = [
     { key: 'thisMonth', label: 'This Month' },
@@ -61,24 +63,27 @@ export class UiDateRangeComponent {
       start.setDate(start.getDate() - 30);
     }
 
-    this.startDate = start;
-    this.endDate = end;
+    this.selectedStart.set(start);
+    this.selectedEnd.set(end);
     this.activePreset.set(preset);
     this.rangeChange.emit({ start, end });
   }
 
   formatRange(): string {
-    if (!this.startDate && !this.endDate) {
+    const start = this.selectedStart() ?? this.startDate();
+    const end = this.selectedEnd() ?? this.endDate();
+
+    if (!start && !end) {
       return 'Select a date range';
     }
-    if (this.startDate && !this.endDate) {
-      return `${this.formatDate(this.startDate)} - ...`;
+    if (start && !end) {
+      return `${this.formatDate(start)} - ...`;
     }
-    if (this.startDate && this.endDate) {
-      if (this.isSameDay(this.startDate, this.endDate)) {
-        return this.formatDate(this.startDate);
+    if (start && end) {
+      if (this.isSameDay(start, end)) {
+        return this.formatDate(start);
       }
-      return `${this.formatDate(this.startDate)} - ${this.formatDate(this.endDate)}`;
+      return `${this.formatDate(start)} - ${this.formatDate(end)}`;
     }
     return 'Select a date range';
   }
@@ -102,4 +107,6 @@ export class UiDateRangeComponent {
     return new Date(value.getFullYear(), value.getMonth(), value.getDate());
   }
 }
+
+
 

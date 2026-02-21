@@ -116,6 +116,6 @@ describe('UserLinkingRebuildComponent', () => {
 
   it('uses linking loading skeleton variant', () => {
     const state = fixture.debugElement.query(By.directive(OrganizationPageStateComponent)).componentInstance as OrganizationPageStateComponent;
-    expect(state.loadingVariant).toBe('linking');
+    expect(state.loadingVariant()).toBe('linking');
   });
 });

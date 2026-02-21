@@ -12,7 +12,7 @@ describe('UiIconComponent', () => {
 
     fixture = TestBed.createComponent(UiIconComponent);
     component = fixture.componentInstance;
-    component.name = 'check';
+    fixture.componentRef.setInput('name', 'check');
     fixture.detectChanges();
   });
 

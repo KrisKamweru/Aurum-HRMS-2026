@@ -12,7 +12,7 @@ describe('UiGridTileComponent', () => {
 
     fixture = TestBed.createComponent(UiGridTileComponent);
     component = fixture.componentInstance;
-    component.title = 'Tile';
+    fixture.componentRef.setInput('title', 'Tile');
     fixture.detectChanges();
   });
 

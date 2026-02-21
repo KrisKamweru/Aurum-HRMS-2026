@@ -12,7 +12,7 @@ describe('UiConfirmDialogComponent', () => {
 
     fixture = TestBed.createComponent(UiConfirmDialogComponent);
     component = fixture.componentInstance;
-    component.isOpen = true;
+    fixture.componentRef.setInput('isOpen', true);
     fixture.detectChanges();
   });
 
@@ -33,6 +33,6 @@ describe('UiConfirmDialogComponent', () => {
     component.dismiss();
 
     expect(close).toHaveBeenCalledWith(false);
-    expect(cancel).toHaveBeenCalled();
+    expect(cancel).toHaveBeenCalledWith(undefined);
   });
 });

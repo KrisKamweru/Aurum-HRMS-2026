@@ -1,9 +1,9 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-root',
-  standalone: true,
   imports: [RouterOutlet],
   template: `
     <div data-testid="app-viewport" class="app-shell h-dvh overflow-hidden text-stone-900 dark:text-stone-100">
@@ -14,3 +14,5 @@ import { RouterOutlet } from '@angular/router';
   `
 })
 export class App {}
+
+

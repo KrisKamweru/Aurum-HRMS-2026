@@ -16,7 +16,7 @@ describe('UiToastComponent', () => {
 
     fixture = TestBed.createComponent(UiToastComponent);
     component = fixture.componentInstance;
-    component.toasts = toasts;
+    fixture.componentRef.setInput('toasts', toasts);
     fixture.detectChanges();
   });
 

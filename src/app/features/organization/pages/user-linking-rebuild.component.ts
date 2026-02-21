@@ -1,10 +1,10 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { OrganizationPageStateComponent } from '../components/organization-page-state.component';
 import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-user-linking-rebuild',
-  standalone: true,
   imports: [OrganizationPageStateComponent],
   template: `
     <main class="h-full px-4 py-8 sm:px-6 lg:px-8">
@@ -143,3 +143,5 @@ export class UserLinkingRebuildComponent implements OnInit {
     void this.store.linkUserToEmployee(id);
   }
 }
+
+

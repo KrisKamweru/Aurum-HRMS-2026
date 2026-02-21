@@ -1,11 +1,11 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { map } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-placeholder-page',
-  standalone: true,
   template: `
     <main class="h-full px-4 py-8 sm:px-6 lg:px-8">
       <div class="mx-auto w-full max-w-5xl space-y-6">
@@ -37,3 +37,5 @@ export class PlaceholderPageComponent {
     { initialValue: '/' }
   );
 }
+
+

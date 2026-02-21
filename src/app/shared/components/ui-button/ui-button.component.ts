@@ -1,19 +1,19 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, input, output, ChangeDetectionStrategy } from '@angular/core';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost' | 'outline' | 'gold';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'ui-button',
-  standalone: true,
   template: `
     <button
-      [type]="type"
-      [disabled]="disabled || loading"
+      [type]="type()"
+      [disabled]="disabled() || loading()"
       [class]="getClasses()"
       (click)="handleClick($event)"
     >
-      @if (loading) {
+      @if (loading()) {
         <span class="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white"></span>
       }
       <span><ng-content></ng-content></span>
@@ -21,27 +21,27 @@ export type ButtonSize = 'sm' | 'md' | 'lg';
   `
 })
 export class UiButtonComponent {
-  @Input() variant: ButtonVariant = 'primary';
-  @Input() size: ButtonSize = 'md';
-  @Input() type: 'button' | 'submit' | 'reset' = 'button';
-  @Input() disabled = false;
-  @Input() loading = false;
-  @Input() fullWidth = false;
-  @Input() customClass = '';
-  @Input() prerequisitesMet = true;
+  readonly variant = input<ButtonVariant>('primary');
+  readonly size = input<ButtonSize>('md');
+  readonly type = input<'button' | 'submit' | 'reset'>('button');
+  readonly disabled = input(false);
+  readonly loading = input(false);
+  readonly fullWidth = input(false);
+  readonly customClass = input('');
+  readonly prerequisitesMet = input(true);
 
-  @Output() onClick = new EventEmitter<MouseEvent>();
-  @Output() blocked = new EventEmitter<void>();
+  readonly onClick = output<MouseEvent>();
+  readonly blocked = output<void>();
 
   handleClick(event: MouseEvent): void {
-    if (this.disabled || this.loading) {
+    if (this.disabled() || this.loading()) {
       event.preventDefault();
       return;
     }
-    if (!this.prerequisitesMet) {
+    if (!this.prerequisitesMet()) {
       event.preventDefault();
       event.stopPropagation();
-      this.blocked.emit();
+      this.blocked.emit(undefined);
       return;
     }
     this.onClick.emit(event);
@@ -50,8 +50,8 @@ export class UiButtonComponent {
   getClasses(): string {
     const base =
       'inline-flex items-center justify-center gap-2 rounded-[10px] text-sm font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-burgundy-500';
-    const width = this.fullWidth ? 'w-full' : '';
-    const state = this.disabled || this.loading ? 'cursor-not-allowed opacity-60' : 'cursor-pointer';
+    const width = this.fullWidth() ? 'w-full' : '';
+    const state = this.disabled() || this.loading() ? 'cursor-not-allowed opacity-60' : 'cursor-pointer';
 
     const sizeMap: Record<ButtonSize, string> = {
       sm: 'px-4 py-2 text-xs',
@@ -69,7 +69,9 @@ export class UiButtonComponent {
       gold: 'bg-amber-400 text-amber-950 hover:bg-amber-500'
     };
 
-    return `${base} ${sizeMap[this.size]} ${variantMap[this.variant]} ${width} ${state} ${this.customClass}`.trim();
+    return `${base} ${sizeMap[this.size()]} ${variantMap[this.variant()]} ${width} ${state} ${this.customClass()}`.trim();
   }
 }
+
+
 

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { api } from '../../../../../convex/_generated/api';
 import { Id, TableNames } from '../../../../../convex/_generated/dataModel';
 import { ConvexClientService } from '../../../core/services/convex-client.service';
@@ -22,9 +22,9 @@ import {
 
 @Injectable({ providedIn: 'root' })
 export class OrganizationRebuildDataService {
-  private readonly convex = this.convexClient.getHttpClient();
+  private readonly convexClient = inject(ConvexClientService);
 
-  constructor(private readonly convexClient: ConvexClientService) {}
+  private readonly convex = this.convexClient.getHttpClient();
 
   async listDepartments(): Promise<RebuildDepartment[]> {
     const [departments, employees] = await Promise.all([

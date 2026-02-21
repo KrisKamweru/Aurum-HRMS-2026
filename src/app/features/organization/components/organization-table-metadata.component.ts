@@ -1,13 +1,13 @@
-import { Component, Input } from '@angular/core';
+import { Component, input, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-organization-table-metadata',
-  standalone: true,
   template: `
     <div class="flex flex-wrap items-center justify-between gap-2 border-b border-stone-100 px-4 py-3 dark:border-white/[0.05]">
       <p class="text-xs text-stone-500 dark:text-stone-400">
-        <span class="font-semibold text-stone-700 dark:text-stone-200">{{ count }}</span>
-        {{ itemLabel }}
+        <span class="font-semibold text-stone-700 dark:text-stone-200">{{ count() }}</span>
+        {{ itemLabel() }}
       </p>
       <p class="text-xs text-stone-500 dark:text-stone-400">
         Last refreshed:
@@ -17,15 +17,16 @@ import { Component, Input } from '@angular/core';
   `
 })
 export class OrganizationTableMetadataComponent {
-  @Input({ required: true }) itemLabel = '';
-  @Input() count = 0;
-  @Input() lastRefreshedAt: Date | null = null;
+  readonly itemLabel = input.required<string>();
+  readonly count = input(0);
+  readonly lastRefreshedAt = input<Date | null>(null);
 
   get lastRefreshedLabel(): string {
-    if (!this.lastRefreshedAt) {
+    const lastRefreshedAt = this.lastRefreshedAt();
+    if (!lastRefreshedAt) {
       return 'Never';
     }
-    return this.formatTimestamp(this.lastRefreshedAt);
+    return this.formatTimestamp(lastRefreshedAt);
   }
 
   private formatTimestamp(value: Date): string {
@@ -37,3 +38,5 @@ export class OrganizationTableMetadataComponent {
     return `${year}-${month}-${day} ${hours}:${minutes}`;
   }
 }
+
+

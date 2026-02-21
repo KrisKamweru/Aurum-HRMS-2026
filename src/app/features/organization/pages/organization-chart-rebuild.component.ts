@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { OrganizationPageStateComponent } from '../components/organization-page-state.component';
 import { OrganizationRebuildDataService } from '../data/organization-rebuild.data.service';
 import { RebuildOrgChartNode } from '../data/organization-rebuild.models';
@@ -14,8 +14,8 @@ interface OrgChartRow {
 }
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-organization-chart-rebuild',
-  standalone: true,
   imports: [OrganizationPageStateComponent],
   template: `
     <main class="h-full px-4 py-8 sm:px-6 lg:px-8">
@@ -130,3 +130,5 @@ export class OrganizationChartRebuildComponent implements OnInit {
     return rows;
   }
 }
+
+

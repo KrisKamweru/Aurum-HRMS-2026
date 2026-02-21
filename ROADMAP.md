@@ -126,6 +126,12 @@ Reference: `docs/rebuild-parity-plan.md`
     - TDD coverage added for the rebuilt shared component set
     - validation: `npm test` passing with expanded coverage (`33` files, `98` tests)
     - report: `docs/rebuild-manifests/phase4-shared-components-report.md`
+  - Phase 4 Angular best-practices compliance pass completed for active scope (`src/app`, excluding `src/app.old`):
+    - signal API migrations applied (`@Input` -> `input()`, `@Output` -> `output()`, constructor DI -> `inject()`)
+    - explicit `standalone: true` removed for Angular 21 defaults
+    - `changeDetection: ChangeDetectionStrategy.OnPush` enforced across rebuilt component surfaces
+    - host decorator usage removed (`@HostListener` replaced with `host` binding metadata)
+    - validation: `npm run build` and `npm test` passing (`38` files, `146` tests)
 
 ### P0. Immediate Stabilization and Context Hygiene (Now)
 Status: Substantially completed on 2026-02-09.

@@ -45,6 +45,20 @@ Rebuilt the remaining shared component surface under `src/app/shared/components/
 - `npm test` passed.
 - Active suite status after port: `30` test files, `74` tests passing.
 
+## Post-Port Standards Hardening (2026-02-21)
+- Ran Angular best-practices compliance pass for active app scope (`src/app`, excluding archive `src/app.old`).
+- Applied framework migrations:
+  - `@Input` -> `input()`
+  - `@Output` -> `output()`
+  - constructor dependency injection -> `inject()`
+- Removed explicit `standalone: true` declarations (Angular 21 default behavior).
+- Enforced `changeDetection: ChangeDetectionStrategy.OnPush` across rebuilt components.
+- Replaced host decorators with metadata bindings where needed (`@HostListener` removal in `ui-modal`).
+- Updated affected specs to use signal-input semantics (`fixture.componentRef.setInput(...)`) and signal accessor assertions.
+- Revalidated:
+  - `npm run build` passed.
+  - `npm test` passed (`38` files, `146` tests).
+
 ## Notes
 - Component contracts are intentionally clean and local to the rebuilt app scope.
 - Integration across feature slices will be phased as each module migrates from placeholder/rebuild scaffold to Convex-backed flows.

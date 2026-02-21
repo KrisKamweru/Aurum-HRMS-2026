@@ -1,8 +1,8 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-rebuild-home',
-  standalone: true,
   template: `
     <main class="h-full px-4 py-8 sm:px-6 lg:px-8">
       <div class="mx-auto w-full max-w-5xl space-y-8">
@@ -32,3 +32,5 @@ import { Component } from '@angular/core';
 export class RebuildHomeComponent {
   readonly phaseLabel = 'Phase 2: Legacy archived';
 }
+
+

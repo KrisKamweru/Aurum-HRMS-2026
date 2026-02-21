@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnChanges, SimpleChanges, inject, input, output } from '@angular/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { FieldConfig, FormHelperService, FormSectionConfig, FormStepConfig } from '../../services/form-helper.service';
 
@@ -14,21 +14,21 @@ interface ResolvedSection {
 }
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-dynamic-form',
-  standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   template: `
     @if (form) {
       <form [formGroup]="form" [class]="containerClass()" (ngSubmit)="submit()">
-        @if (steps.length > 0) {
+        @if (steps().length > 0) {
           <div class="space-y-3">
             <div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-              @for (step of steps; track step.id; let i = $index) {
+              @for (step of steps(); track step.id; let i = $index) {
                 <button
                   type="button"
                   class="rounded-xl border px-3 py-2 text-left text-sm transition-colors"
                   [class]="i <= activeStepIndex ? 'border-burgundy-300 bg-burgundy-50 text-burgundy-700 dark:border-burgundy-500/40 dark:bg-burgundy-700/15 dark:text-burgundy-300' : 'border-stone-200 bg-white text-stone-600 dark:border-white/8 dark:bg-white/[0.04] dark:text-stone-300'"
-                  [disabled]="i > activeStepIndex + 1 || loading"
+                  [disabled]="i > activeStepIndex + 1 || loading()"
                   (click)="setStep(i)"
                 >
                   <p class="text-xs font-semibold uppercase tracking-wide">Step {{ i + 1 }}</p>
@@ -120,27 +120,27 @@ interface ResolvedSection {
           <button
             type="button"
             class="rounded-[10px] border border-stone-200 px-4 py-2 text-sm font-semibold text-stone-700 transition-colors hover:bg-stone-100 dark:border-white/8 dark:text-stone-200 dark:hover:bg-white/10"
-            [disabled]="activeStepIndex === 0 || loading"
+            [disabled]="activeStepIndex === 0 || loading()"
             (click)="goPrevStep()"
           >
             Back
           </button>
           <div class="flex items-center gap-3">
-            @if (showCancel) {
+            @if (showCancel()) {
               <button
                 type="button"
                 class="rounded-[10px] border border-stone-200 px-4 py-2 text-sm font-semibold text-stone-700 transition-colors hover:bg-stone-100 dark:border-white/8 dark:text-stone-200 dark:hover:bg-white/10"
-                [disabled]="loading"
+                [disabled]="loading()"
                 (click)="cancel.emit()"
               >
                 Cancel
               </button>
             }
-            @if (steps.length > 0 && !isLastStep()) {
+            @if (steps().length > 0 && !isLastStep()) {
               <button
                 type="button"
                 class="rounded-[10px] bg-burgundy-700 px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-burgundy-600"
-                [disabled]="!canAdvanceCurrentStep() || loading"
+                [disabled]="!canAdvanceCurrentStep() || loading()"
                 (click)="goNextStep()"
               >
                 Next
@@ -149,9 +149,9 @@ interface ResolvedSection {
               <button
                 type="submit"
                 class="rounded-[10px] bg-burgundy-700 px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-burgundy-600 disabled:opacity-60"
-                [disabled]="form.invalid || loading"
+                [disabled]="form.invalid || loading()"
               >
-                {{ submitLabel }}
+                {{ submitLabel() }}
               </button>
             }
           </div>
@@ -161,61 +161,63 @@ interface ResolvedSection {
   `
 })
 export class DynamicFormComponent implements OnChanges {
-  @Input({ required: true }) fields: FieldConfig[] = [];
-  @Input() sections: FormSectionConfig[] = [];
-  @Input() steps: FormStepConfig[] = [];
-  @Input() container: FormContainer = 'page';
-  @Input() submitLabel = 'Save';
-  @Input() showCancel = false;
-  @Input() loading = false;
-  @Input() initialValues: Record<string, unknown> = {};
+  private readonly formHelper = inject(FormHelperService);
 
-  @Output() formSubmit = new EventEmitter<Record<string, unknown>>();
-  @Output() cancel = new EventEmitter<void>();
+  readonly fields = input.required<FieldConfig[]>();
+  readonly sections = input<FormSectionConfig[]>([]);
+  readonly steps = input<FormStepConfig[]>([]);
+  readonly container = input<FormContainer>('page');
+  readonly submitLabel = input('Save');
+  readonly showCancel = input(false);
+  readonly loading = input(false);
+  readonly initialValues = input<Record<string, unknown>>({});
+
+  readonly formSubmit = output<Record<string, unknown>>();
+  readonly cancel = output<void>();
 
   form!: FormGroup;
   activeStepIndex = 0;
 
-  constructor(private readonly formHelper: FormHelperService) {}
-
   ngOnChanges(changes: SimpleChanges): void {
     if (!this.form || changes['fields']) {
-      this.form = this.formHelper.createForm(this.fields);
+      this.form = this.formHelper.createForm(this.fields());
       this.activeStepIndex = 0;
     }
-    if (changes['initialValues'] && this.initialValues) {
-      this.form.patchValue(this.initialValues, { emitEvent: false });
+    const initialValues = this.initialValues();
+    if (changes['initialValues'] && initialValues) {
+      this.form.patchValue(initialValues, { emitEvent: false });
     }
   }
 
   containerClass(): string {
-    if (this.container === 'modal') {
+    const container = this.container();
+    if (container === 'modal') {
       return 'space-y-5';
     }
-    if (this.container === 'drawer') {
+    if (container === 'drawer') {
       return 'space-y-6';
     }
     return 'space-y-6';
   }
 
   currentStep(): FormStepConfig | undefined {
-    return this.steps[this.activeStepIndex];
+    return this.steps()[this.activeStepIndex];
   }
 
   resolvedSections(): ResolvedSection[] {
     const sectionMap = new Map<string, ResolvedSection>();
-    for (const field of this.fields) {
+    for (const field of this.fields()) {
       const id = field.sectionId ?? 'default';
       if (!sectionMap.has(id)) {
-        const config = this.sections.find((section) => section.id === id);
+        const config = this.sections().find((section) => section.id === id);
         sectionMap.set(id, {
           id,
           title: config?.title,
           description: config?.description,
           columns: {
             base: config?.columns?.base ?? 1,
-            md: config?.columns?.md ?? (this.container === 'modal' ? 2 : 2),
-            lg: config?.columns?.lg ?? (this.container === 'page' ? 3 : 2)
+            md: config?.columns?.md ?? (this.container() === 'modal' ? 2 : 2),
+            lg: config?.columns?.lg ?? (this.container() === 'page' ? 3 : 2)
           },
           fields: []
         });
@@ -226,7 +228,7 @@ export class DynamicFormComponent implements OnChanges {
   }
 
   visibleSections(): ResolvedSection[] {
-    if (this.steps.length === 0) {
+    if (this.steps().length === 0) {
       return this.resolvedSections();
     }
     const step = this.currentStep();
@@ -293,7 +295,7 @@ export class DynamicFormComponent implements OnChanges {
       this.markCurrentStepTouched();
       return;
     }
-    this.activeStepIndex = Math.min(this.activeStepIndex + 1, this.steps.length - 1);
+    this.activeStepIndex = Math.min(this.activeStepIndex + 1, this.steps().length - 1);
   }
 
   goPrevStep(): void {
@@ -301,7 +303,7 @@ export class DynamicFormComponent implements OnChanges {
   }
 
   isLastStep(): boolean {
-    return this.steps.length === 0 || this.activeStepIndex >= this.steps.length - 1;
+    return this.steps().length === 0 || this.activeStepIndex >= this.steps().length - 1;
   }
 
   canAdvanceCurrentStep(): boolean {
@@ -322,8 +324,8 @@ export class DynamicFormComponent implements OnChanges {
   }
 
   private currentStepFieldNames(): string[] {
-    if (this.steps.length === 0) {
-      return this.fields.map((field) => field.name);
+    if (this.steps().length === 0) {
+      return this.fields().map((field) => field.name);
     }
     const step = this.currentStep();
     if (!step) {
@@ -343,3 +345,5 @@ export class DynamicFormComponent implements OnChanges {
     }
   }
 }
+
+

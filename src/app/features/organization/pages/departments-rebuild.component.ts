@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { DynamicFormComponent } from '../../../shared/components/dynamic-form/dynamic-form.component';
 import { ConfirmDialogOptions, UiConfirmDialogComponent } from '../../../shared/components/ui-confirm-dialog/ui-confirm-dialog.component';
 import { UiBadgeComponent } from '../../../shared/components/ui-badge/ui-badge.component';
@@ -14,8 +14,8 @@ import { RebuildDepartment } from '../data/organization-rebuild.models';
 import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-departments-rebuild',
-  standalone: true,
   imports: [UiModalComponent, UiBadgeComponent, DynamicFormComponent, UiConfirmDialogComponent, OrganizationPageStateComponent, OrganizationListShellComponent, OrganizationListToolbarActionsComponent, OrganizationTableHeaderRowComponent, OrganizationTableMetadataComponent, OrganizationTableActionsComponent],
   template: `
     <main class="h-full px-4 py-8 sm:px-6 lg:px-8">
@@ -344,3 +344,5 @@ export class DepartmentsRebuildComponent implements OnInit {
     return typeof value === 'string' ? value : '';
   }
 }
+
+

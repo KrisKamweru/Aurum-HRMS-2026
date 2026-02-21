@@ -23,8 +23,8 @@ describe('NotificationsPanelComponent', () => {
 
     fixture = TestBed.createComponent(NotificationsPanelComponent);
     component = fixture.componentInstance;
-    component.isOpen = true;
-    component.notifications = notifications;
+    fixture.componentRef.setInput('isOpen', true);
+    fixture.componentRef.setInput('notifications', notifications);
     fixture.detectChanges();
   });
 

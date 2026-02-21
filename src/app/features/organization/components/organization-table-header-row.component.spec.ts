@@ -1,9 +1,9 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { OrganizationTableColumn, OrganizationTableHeaderRowComponent } from './organization-table-header-row.component';
 
 @Component({
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [OrganizationTableHeaderRowComponent],
   template: `
     <table>
@@ -46,3 +46,5 @@ describe('OrganizationTableHeaderRowComponent', () => {
     expect((headers[2] as HTMLTableCellElement).classList.contains('text-right')).toBe(true);
   });
 });
+
+

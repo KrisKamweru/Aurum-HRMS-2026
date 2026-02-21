@@ -1,36 +1,36 @@
-import { Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
 export type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 export type AvatarStatus = 'online' | 'offline' | 'busy' | 'away' | null;
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'ui-avatar',
-  standalone: true,
   template: `
     <span [class]="containerClasses()">
-      @if (src && !hasError) {
-        <img [src]="src" [alt]="alt" class="h-full w-full object-cover" (error)="hasError = true" />
+      @if (src() && !hasError) {
+        <img [src]="src()" [alt]="alt()" class="h-full w-full object-cover" (error)="hasError = true" />
       } @else {
         <span [class]="textClasses()">{{ initials() }}</span>
       }
 
-      @if (status) {
+      @if (status()) {
         <span [class]="statusClasses()"></span>
       }
     </span>
   `
 })
 export class UiAvatarComponent {
-  @Input() src: string | null = null;
-  @Input() alt = 'Avatar';
-  @Input() name = '';
-  @Input() size: AvatarSize = 'md';
-  @Input() status: AvatarStatus = null;
+  readonly src = input<string | null>(null);
+  readonly alt = input('Avatar');
+  readonly name = input('');
+  readonly size = input<AvatarSize>('md');
+  readonly status = input<AvatarStatus>(null);
 
   hasError = false;
 
   initials(): string {
-    const trimmed = this.name.trim();
+    const trimmed = this.name().trim();
     if (!trimmed) {
       return '?';
     }
@@ -49,7 +49,7 @@ export class UiAvatarComponent {
       lg: 'h-12 w-12',
       xl: 'h-16 w-16'
     };
-    return `relative inline-flex items-center justify-center overflow-hidden rounded-full border border-stone-200 bg-stone-100 text-stone-700 dark:border-white/10 dark:bg-white/10 dark:text-stone-200 ${sizeMap[this.size]}`;
+    return `relative inline-flex items-center justify-center overflow-hidden rounded-full border border-stone-200 bg-stone-100 text-stone-700 dark:border-white/10 dark:bg-white/10 dark:text-stone-200 ${sizeMap[this.size()]}`;
   }
 
   textClasses(): string {
@@ -60,7 +60,7 @@ export class UiAvatarComponent {
       lg: 'text-base font-semibold',
       xl: 'text-xl font-bold'
     };
-    return sizeMap[this.size];
+    return sizeMap[this.size()];
   }
 
   statusClasses(): string {
@@ -77,8 +77,10 @@ export class UiAvatarComponent {
       busy: 'bg-red-400',
       away: 'bg-amber-400'
     };
-    const status = this.status ?? 'offline';
-    return `absolute bottom-0 right-0 rounded-full ring-2 ring-white dark:ring-[#0b0b0b] ${sizeMap[this.size]} ${colorMap[status]}`;
+    const status = this.status() ?? 'offline';
+    return `absolute bottom-0 right-0 rounded-full ring-2 ring-white dark:ring-[#0b0b0b] ${sizeMap[this.size()]} ${colorMap[status]}`;
   }
 }
+
+
 

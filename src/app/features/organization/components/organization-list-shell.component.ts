@@ -1,15 +1,15 @@
-import { Component, Input } from '@angular/core';
+import { Component, input, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-organization-list-shell',
-  standalone: true,
   template: `
     <div class="mx-auto w-full max-w-5xl space-y-8">
       <header class="space-y-2">
-        <p class="text-xs font-semibold uppercase tracking-wide text-burgundy-700 dark:text-burgundy-400">{{ eyebrow }}</p>
-        <h1 class="text-3xl font-semibold tracking-tight">{{ title }}</h1>
+        <p class="text-xs font-semibold uppercase tracking-wide text-burgundy-700 dark:text-burgundy-400">{{ eyebrow() }}</p>
+        <h1 class="text-3xl font-semibold tracking-tight">{{ title() }}</h1>
         <p class="text-[15px] leading-normal text-stone-600 dark:text-stone-400">
-          {{ description }}
+          {{ description() }}
         </p>
       </header>
 
@@ -18,7 +18,7 @@ import { Component, Input } from '@angular/core';
       <section class="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm dark:border-white/8 dark:bg-white/[0.04]">
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div class="space-y-2">
-            <p class="text-sm text-stone-600 dark:text-stone-300">{{ actionMessage }}</p>
+            <p class="text-sm text-stone-600 dark:text-stone-300">{{ actionMessage() }}</p>
             <div data-testid="org-list-shell-status" class="flex flex-wrap items-center gap-2">
               <ng-content select="[org-list-status]" />
             </div>
@@ -34,8 +34,10 @@ import { Component, Input } from '@angular/core';
   `
 })
 export class OrganizationListShellComponent {
-  @Input() eyebrow = 'Organization Rebuild';
-  @Input({ required: true }) title = '';
-  @Input({ required: true }) description = '';
-  @Input({ required: true }) actionMessage = '';
+  readonly eyebrow = input('Organization Rebuild');
+  readonly title = input.required<string>();
+  readonly description = input.required<string>();
+  readonly actionMessage = input.required<string>();
 }
+
+

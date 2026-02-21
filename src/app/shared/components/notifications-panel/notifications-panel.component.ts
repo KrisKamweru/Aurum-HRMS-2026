@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, input, output, ChangeDetectionStrategy } from '@angular/core';
 
 export type NotificationType = 'success' | 'warning' | 'error' | 'info';
 
@@ -14,11 +14,11 @@ export interface NotificationItem {
 }
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-notifications-panel',
-  standalone: true,
   imports: [CommonModule],
   template: `
-    @if (isOpen) {
+    @if (isOpen()) {
       <div class="fixed inset-0 z-[900]" (click)="close.emit()"></div>
       <section class="absolute right-0 z-[901] mt-2 w-80 overflow-hidden rounded-2xl border border-white/[0.55] bg-white/[0.82] shadow-xl backdrop-blur-xl dark:border-white/8 dark:bg-white/10 sm:w-96">
         <header class="flex items-center justify-between border-b border-stone-200 px-4 py-3 dark:border-white/8">
@@ -30,11 +30,11 @@ export interface NotificationItem {
         </header>
 
         <div class="max-h-[420px] overflow-y-auto">
-          @if (notifications.length === 0) {
+          @if (notifications().length === 0) {
             <p class="px-4 py-8 text-center text-sm text-stone-500 dark:text-stone-400">No notifications yet</p>
           } @else {
             <div class="divide-y divide-stone-100 dark:divide-white/10">
-              @for (notification of notifications; track notification.id) {
+              @for (notification of notifications(); track notification.id) {
                 <button type="button" class="w-full px-4 py-3 text-left hover:bg-stone-50 dark:hover:bg-white/10" (click)="select.emit(notification.id)">
                   <div class="mb-1 flex items-center justify-between gap-2">
                     <p class="text-sm font-semibold text-stone-900 dark:text-stone-100">{{ notification.title }}</p>
@@ -54,17 +54,19 @@ export interface NotificationItem {
   `
 })
 export class NotificationsPanelComponent {
-  @Input() isOpen = false;
-  @Input() notifications: NotificationItem[] = [];
+  readonly isOpen = input(false);
+  readonly notifications = input<NotificationItem[]>([]);
 
-  @Output() close = new EventEmitter<void>();
-  @Output() clearAll = new EventEmitter<void>();
-  @Output() markAllRead = new EventEmitter<void>();
-  @Output() markRead = new EventEmitter<string>();
-  @Output() select = new EventEmitter<string>();
+  readonly close = output<void>();
+  readonly clearAll = output<void>();
+  readonly markAllRead = output<void>();
+  readonly markRead = output<string>();
+  readonly select = output<string>();
 
   handleMarkRead(id: string): void {
     this.markRead.emit(id);
   }
 }
+
+
 

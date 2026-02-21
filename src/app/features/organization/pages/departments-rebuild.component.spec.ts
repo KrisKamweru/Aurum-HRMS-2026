@@ -160,8 +160,8 @@ describe('DepartmentsRebuildComponent', () => {
     expect(toolbar).not.toBeNull();
 
     const toolbarComponent = toolbar.componentInstance as OrganizationListToolbarActionsComponent;
-    expect(toolbarComponent.refreshLabel).toBe('Refresh');
-    expect(toolbarComponent.createLabel).toBe('Add Department');
+    expect(toolbarComponent.refreshLabel()).toBe('Refresh');
+    expect(toolbarComponent.createLabel()).toBe('Add Department');
   });
 
   it('renders shared organization list shell with configured heading copy', () => {
@@ -169,7 +169,7 @@ describe('DepartmentsRebuildComponent', () => {
     expect(shell).not.toBeNull();
 
     const shellComponent = shell.componentInstance as OrganizationListShellComponent;
-    expect(shellComponent.title).toBe('Departments');
+    expect(shellComponent.title()).toBe('Departments');
   });
 
   it('projects department status badges into shared list-shell status slot', () => {
@@ -193,8 +193,8 @@ describe('DepartmentsRebuildComponent', () => {
     fixture.detectChanges();
     const state = fixture.debugElement.query(By.directive(OrganizationPageStateComponent)).componentInstance as OrganizationPageStateComponent;
 
-    expect(state.showEmptyActions).toBe(true);
-    expect(state.emptyPrimaryLabel).toBe('Add Department');
+    expect(state.showEmptyActions()).toBe(true);
+    expect(state.emptyPrimaryLabel()).toBe('Add Department');
 
     state.emptyPrimaryRequested.emit();
     expect(component.isCreateModalOpen()).toBe(true);
@@ -205,7 +205,7 @@ describe('DepartmentsRebuildComponent', () => {
 
   it('uses table loading skeleton variant', () => {
     const state = fixture.debugElement.query(By.directive(OrganizationPageStateComponent)).componentInstance as OrganizationPageStateComponent;
-    expect(state.loadingVariant).toBe('table');
+    expect(state.loadingVariant()).toBe('table');
   });
 
   it('renders shared table metadata with count and refresh timestamp', () => {
@@ -213,9 +213,9 @@ describe('DepartmentsRebuildComponent', () => {
     expect(metadata).not.toBeNull();
 
     const metadataComponent = metadata.componentInstance as OrganizationTableMetadataComponent;
-    expect(metadataComponent.itemLabel).toBe('Departments');
-    expect(metadataComponent.count).toBe(component.departments().length);
-    expect(metadataComponent.lastRefreshedAt).not.toBeNull();
+    expect(metadataComponent.itemLabel()).toBe('Departments');
+    expect(metadataComponent.count()).toBe(component.departments().length);
+    expect(metadataComponent.lastRefreshedAt()).not.toBeNull();
   });
 
   it('uses shared table-header helper with department column definitions', () => {
@@ -223,7 +223,7 @@ describe('DepartmentsRebuildComponent', () => {
     expect(header).not.toBeNull();
 
     const headerComponent = header.componentInstance as OrganizationTableHeaderRowComponent;
-    expect(headerComponent.columns.map((column) => column.label)).toEqual([
+    expect(headerComponent.columns().map((column) => column.label)).toEqual([
       'Department Name',
       'Code',
       'Manager',

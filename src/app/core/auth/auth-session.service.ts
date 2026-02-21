@@ -1,4 +1,4 @@
-import { computed, effect, Injectable, signal } from '@angular/core';
+import { computed, effect, Injectable, signal, inject } from '@angular/core';
 import { api } from '../../../../convex/_generated/api';
 import { ConvexClientService } from '../services/convex-client.service';
 import { AppRole, SessionUser } from './auth.types';
@@ -12,6 +12,8 @@ type ViewerRecord = {
 
 @Injectable({ providedIn: 'root' })
 export class AuthSessionService {
+  private readonly convex = inject(ConvexClientService);
+
   private readonly currentUser = signal<SessionUser | null>(null);
   private readonly loadingState = signal(true);
 
@@ -19,7 +21,7 @@ export class AuthSessionService {
   readonly isLoading = this.loadingState.asReadonly();
   readonly isAuthenticated = computed(() => this.currentUser() !== null);
 
-  constructor(private readonly convex: ConvexClientService) {
+  constructor() {
     effect((onCleanup) => {
       const clientLoading = this.convex.isLoading();
       const authenticated = this.convex.isAuthenticated();

@@ -1,31 +1,31 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 
 export type OrganizationLoadingVariant = 'table' | 'linking' | 'chart' | 'detail';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-organization-page-state',
-  standalone: true,
   template: `
-    @if (error) {
+    @if (error()) {
       <section class="rounded-2xl border border-red-200 bg-red-50/80 px-4 py-3 text-sm text-red-700 dark:border-red-500/40 dark:bg-red-500/10 dark:text-red-300">
         <div class="flex flex-wrap items-center justify-between gap-3">
-          <p class="text-sm">{{ error }}</p>
-          @if (showRetry) {
+          <p class="text-sm">{{ error() }}</p>
+          @if (showRetry()) {
             <button
               type="button"
               class="rounded-[10px] border border-red-300 bg-white/80 px-3 py-1.5 text-xs font-semibold text-red-700 transition-colors hover:bg-red-100 dark:border-red-400/50 dark:bg-red-500/10 dark:text-red-200 dark:hover:bg-red-500/20"
               (click)="retryRequested.emit()"
             >
-              {{ retryLabel }}
+              {{ retryLabel() }}
             </button>
           }
         </div>
       </section>
-    } @else if (isLoading && !hasData) {
+    } @else if (isLoading() && !hasData()) {
       <section class="rounded-2xl border border-stone-200 bg-white px-4 py-6 text-sm text-stone-500 shadow-sm dark:border-white/8 dark:bg-white/[0.04] dark:text-stone-400">
-        <p class="text-sm">{{ loadingLabel }}</p>
+        <p class="text-sm">{{ loadingLabel() }}</p>
 
-        @switch (loadingVariant) {
+        @switch (loadingVariant()) {
           @case ('chart') {
             <div data-testid="org-loading-skeleton-chart" class="mt-4 space-y-3 animate-pulse">
               <div class="h-4 w-1/3 rounded bg-stone-200 dark:bg-white/10"></div>
@@ -75,11 +75,11 @@ export type OrganizationLoadingVariant = 'table' | 'linking' | 'chart' | 'detail
           }
         }
       </section>
-    } @else if (!isLoading && !hasData) {
+    } @else if (!isLoading() && !hasData()) {
       <section class="rounded-2xl border border-dashed border-stone-300 bg-white/90 px-4 py-8 text-center shadow-sm dark:border-white/12 dark:bg-white/[0.04]">
-        <h2 class="text-sm font-semibold text-stone-700 dark:text-stone-200">{{ emptyTitle }}</h2>
-        <p class="mt-1 text-sm text-stone-500 dark:text-stone-400">{{ emptyMessage }}</p>
-        @if (showEmptyActions) {
+        <h2 class="text-sm font-semibold text-stone-700 dark:text-stone-200">{{ emptyTitle() }}</h2>
+        <p class="mt-1 text-sm text-stone-500 dark:text-stone-400">{{ emptyMessage() }}</p>
+        @if (showEmptyActions()) {
           <div class="mt-4 flex flex-wrap items-center justify-center gap-2">
             <button
               type="button"
@@ -87,7 +87,7 @@ export type OrganizationLoadingVariant = 'table' | 'linking' | 'chart' | 'detail
               class="rounded-[10px] bg-burgundy-700 px-4 py-2 text-sm font-semibold text-white shadow-[0_4px_20px_rgba(134,24,33,0.35)] transition-all hover:-translate-y-0.5 hover:bg-burgundy-600"
               (click)="emptyPrimaryRequested.emit()"
             >
-              {{ emptyPrimaryLabel }}
+              {{ emptyPrimaryLabel() }}
             </button>
             <button
               type="button"
@@ -95,7 +95,7 @@ export type OrganizationLoadingVariant = 'table' | 'linking' | 'chart' | 'detail
               class="rounded-[10px] border border-stone-200 px-4 py-2 text-sm font-semibold text-stone-700 transition-colors hover:bg-stone-100 dark:border-white/8 dark:text-stone-200 dark:hover:bg-white/10"
               (click)="emptySecondaryRequested.emit()"
             >
-              {{ emptySecondaryLabel }}
+              {{ emptySecondaryLabel() }}
             </button>
           </div>
         }
@@ -104,20 +104,22 @@ export type OrganizationLoadingVariant = 'table' | 'linking' | 'chart' | 'detail
   `
 })
 export class OrganizationPageStateComponent {
-  @Input() error: string | null = null;
-  @Input() isLoading = false;
-  @Input() hasData = true;
-  @Input() loadingLabel = 'Loading data...';
-  @Input() emptyTitle = 'No records found';
-  @Input() emptyMessage = 'No records are available for this screen yet.';
-  @Input() showRetry = true;
-  @Input() retryLabel = 'Retry';
-  @Input() loadingVariant: OrganizationLoadingVariant = 'table';
-  @Input() showEmptyActions = false;
-  @Input() emptyPrimaryLabel = 'Create';
-  @Input() emptySecondaryLabel = 'Refresh';
+  readonly error = input<string | null>(null);
+  readonly isLoading = input(false);
+  readonly hasData = input(true);
+  readonly loadingLabel = input('Loading data...');
+  readonly emptyTitle = input('No records found');
+  readonly emptyMessage = input('No records are available for this screen yet.');
+  readonly showRetry = input(true);
+  readonly retryLabel = input('Retry');
+  readonly loadingVariant = input<OrganizationLoadingVariant>('table');
+  readonly showEmptyActions = input(false);
+  readonly emptyPrimaryLabel = input('Create');
+  readonly emptySecondaryLabel = input('Refresh');
 
-  @Output() retryRequested = new EventEmitter<void>();
-  @Output() emptyPrimaryRequested = new EventEmitter<void>();
-  @Output() emptySecondaryRequested = new EventEmitter<void>();
+  readonly retryRequested = output<void>();
+  readonly emptyPrimaryRequested = output<void>();
+  readonly emptySecondaryRequested = output<void>();
 }
+
+

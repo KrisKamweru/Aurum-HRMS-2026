@@ -1,15 +1,15 @@
-import { Component, Input } from '@angular/core';
+import { Component, input, ChangeDetectionStrategy } from '@angular/core';
 
 export type GridTileVariant = 'default' | 'compact' | 'glass' | 'flat';
 export type GridTileDivider = 'none' | 'right' | 'bottom';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'ui-grid-tile',
-  standalone: true,
   template: `
-    <section [class]="containerClasses()" [style.min-height]="minHeight">
+    <section [class]="containerClasses()" [style.min-height]="minHeight()">
       <header [class]="headerClasses()">
-        <span class="text-xs font-semibold uppercase tracking-wide text-stone-500 dark:text-stone-400">{{ title }}</span>
+        <span class="text-xs font-semibold uppercase tracking-wide text-stone-500 dark:text-stone-400">{{ title() }}</span>
         <span class="flex items-center gap-2"><ng-content select="[tile-actions]"></ng-content></span>
       </header>
       <div class="flex min-h-0 flex-1 flex-col"><ng-content></ng-content></div>
@@ -17,11 +17,11 @@ export type GridTileDivider = 'none' | 'right' | 'bottom';
   `
 })
 export class UiGridTileComponent {
-  @Input() title = '';
-  @Input() minHeight = 'auto';
-  @Input() minHeightMobile = '';
-  @Input() variant: GridTileVariant = 'default';
-  @Input() divider: GridTileDivider = 'none';
+  readonly title = input('');
+  readonly minHeight = input('auto');
+  readonly minHeightMobile = input('');
+  readonly variant = input<GridTileVariant>('default');
+  readonly divider = input<GridTileDivider>('none');
 
   containerClasses(): string {
     const dividerMap: Record<GridTileDivider, string> = {
@@ -29,7 +29,7 @@ export class UiGridTileComponent {
       right: 'border-r border-stone-200 dark:border-white/8',
       bottom: 'border-b border-stone-200 dark:border-white/8'
     };
-    return `flex min-h-0 flex-col overflow-hidden ${dividerMap[this.divider]}`.trim();
+    return `flex min-h-0 flex-col overflow-hidden ${dividerMap[this.divider()]}`.trim();
   }
 
   headerClasses(): string {
@@ -40,7 +40,9 @@ export class UiGridTileComponent {
       glass: 'bg-white/[0.72] backdrop-blur-xl dark:bg-white/5 dark:backdrop-blur-xl',
       flat: 'bg-transparent'
     };
-    return `${base} ${variantMap[this.variant]}`;
+    return `${base} ${variantMap[this.variant()]}`;
   }
 }
+
+
 

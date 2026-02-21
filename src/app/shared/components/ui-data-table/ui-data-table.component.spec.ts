@@ -16,8 +16,8 @@ describe('UiDataTableComponent', () => {
 
     fixture = TestBed.createComponent(UiDataTableComponent);
     component = fixture.componentInstance;
-    component.columns = columns;
-    component.data = [{ id: '1', name: 'Amina' }];
+    fixture.componentRef.setInput('columns', columns);
+    fixture.componentRef.setInput('data', [{ id: '1', name: 'Amina' }]);
     fixture.detectChanges();
   });
 

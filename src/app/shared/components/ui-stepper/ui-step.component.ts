@@ -1,14 +1,16 @@
-import { Component, Input, TemplateRef, ViewChild } from '@angular/core';
+import { Component, TemplateRef, ViewChild, input, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'ui-step',
-  standalone: true,
   template: `<ng-template #content><ng-content></ng-content></ng-template>`
 })
 export class UiStepComponent {
-  @Input({ required: true }) title = '';
-  @Input() subtitle?: string;
+  readonly title = input.required<string>();
+  readonly subtitle = input<string>();
 
   @ViewChild('content', { static: true }) contentTemplate!: TemplateRef<unknown>;
 }
+
+
 

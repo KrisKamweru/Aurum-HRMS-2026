@@ -74,6 +74,6 @@ describe('OrganizationChartRebuildComponent', () => {
 
   it('uses chart loading skeleton variant', () => {
     const state = fixture.debugElement.query(By.directive(OrganizationPageStateComponent)).componentInstance as OrganizationPageStateComponent;
-    expect(state.loadingVariant).toBe('chart');
+    expect(state.loadingVariant()).toBe('chart');
   });
 });

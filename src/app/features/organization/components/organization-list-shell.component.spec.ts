@@ -1,9 +1,9 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { OrganizationListShellComponent } from './organization-list-shell.component';
 
 @Component({
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [OrganizationListShellComponent],
   template: `
     <app-organization-list-shell
@@ -57,3 +57,5 @@ describe('OrganizationListShellComponent', () => {
     expect(actions?.textContent).toContain('Add Department');
   });
 });
+
+
