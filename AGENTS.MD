@@ -1,1 +1,44 @@
 # Project: Aurum HRMS
+This is an Angular 21 HRMS / ERP application which uses tailwind for styling, and convex as the backend / db
+
+## Code Style
+- TypScript strict mode, no 'any' types
+- CSS: Tailwind utility classes. CSS files may auto generate, but do not use them
+- For small components, inline templates are preferred over separate template files
+- `<class name>.spec.ts` is the naming convention for test files
+
+## Commands
+- `npm start`: Starts the angular development server (port 4200)
+- `npx convex dev`: Starts the convex server. Necessary in tandem with the angular server
+- `npm test`: Runs vitest tests
+- `e2e`: Runs playwright tests
+
+## Architecture
+
+- `/convex`: Holds all the convex logic, types and all other related things
+- `/src`: Contains all the angular code and assets
+  - `/app`: Contains code
+  - `/assets`: Where all icons and other assets are stored
+  - `/environments`: Contains the environment files
+- `/artifacts`: Untracked directory that contains artifacts from testing and regressions. Safe to clean up between runs
+- `/scripts`: Contains some `.mjs` files that can be used to validate certain app logic and permissions. Not guaranteed to be up to date with changes
+- `/public`: Contains the favicon.
+- `/playwright-report`: Contains the results of the playwright test suite runs
+- `/docs`: Holds temporary documentation or artifacts that are safe to clean up. Is not untracked, so be careful with it. If it is not present, it has simply been cleaned up between runs
+- `.test-credentials`: Untracked file that contains all the test credentials on the dev server
+
+### MD Files
+While I'm trying to keep the project free of MD creep, here are some relevant ones
+
+1. `ROADMAP.md`: Contains the overall project progress and next steps. Refer to this if unsure.
+2. `AGENTS.md`: This file. True above all other sources of truth. Where any differences are noted, let this file be your guide.
+3. `DESIGN LANGUAGE.md`: Contains the design language and ethos for the app, distilled from some design runs we did earlier. It is your bible when it comes to design implementation. Never stray from it.
+4. `CLAUDE.md`: OPTIONAL (not to be taken strictly), source of extra context and project history. 
+5. `README.md`: Default angular CLI generated README file
+
+## Working agreements
+
+- Practice TDD. Write your test cases for new components, methods or classes before writing the code. Write these tests based on the desired outcome. Make sure they pass before committing.
+- Use `npm` as your package manager
+- Ask for confirmation before adding new deps
+- ALWAYS refer to the design guidelines when creating new HTML / CSS.
