@@ -45,6 +45,26 @@ The following backlog themes are complete and now tracked in git history rather 
 ## Platform Execution Plan (Prioritized)
 This section is the active sequencing guide and supersedes ad-hoc backlog ordering.
 
+### P-1. Full Frontend Rebuild Reset Program (Planned)
+Status: Planned on 2026-02-21.  
+Reference: `docs/rebuild-parity-plan.md`
+
+- Objective:
+  - Archive the current frontend as legacy (`.old`) and rebuild from a clean structure while preserving functional/security parity.
+- Guardrails:
+  - No route, role rule, or critical mutation flow is removed without explicit deprecation tracking.
+  - Legacy archive must be excluded from active TypeScript compile and test runs.
+- Delivery phases:
+  - Phase 1: parity manifests (routes, guards, API usage, role matrix, high-risk flow map).
+  - Phase 2: archive current frontend to `.old`.
+  - Phase 3: rebuild shell + auth/guard/org-context foundations.
+  - Phase 4: rebuild modules in dependency order (org/people -> attendance/leave -> payroll -> core HR -> recruitment/training -> reports -> super admin).
+  - Phase 5: parity gates and cutover.
+- Required cutover gates:
+  - Route parity complete (or explicit deprecation entries approved).
+  - API parity complete for all currently used frontend Convex calls.
+  - Security parity complete (`negative-auth`, `compensation-security`, attendance/payroll regression paths).
+
 ### P0. Immediate Stabilization and Context Hygiene (Now)
 Status: Substantially completed on 2026-02-09.
 - [x] Ensure seeded environments are payroll-ready:
