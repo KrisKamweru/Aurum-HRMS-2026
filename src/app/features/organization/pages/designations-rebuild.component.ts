@@ -28,6 +28,7 @@ import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
           [isLoading]="designationsLoading()"
           [hasData]="designations().length > 0"
           loadingLabel="Loading designations..."
+          loadingVariant="table"
           emptyTitle="No designations found"
           emptyMessage="Add at least one designation to define your role ladder."
           (retryRequested)="refreshDesignations()"

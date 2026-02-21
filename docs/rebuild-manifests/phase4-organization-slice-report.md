@@ -1,7 +1,7 @@
 # Phase 4 Organization Slice Report
 
 Date: 2026-02-21  
-Status: In progress (Convex-backed organization module baseline expanded through shared retry affordance)
+Status: In progress (Convex-backed organization module baseline expanded through loading skeleton variants)
 
 ## Slice Delivered
 - Replaced generic placeholders with rebuilt organization pages:
@@ -47,6 +47,11 @@ Status: In progress (Convex-backed organization module baseline expanded through
   - common retry button on error surfaces
   - reusable `retryRequested` output for parent-driven reload behavior
   - wired for departments, designations, locations, user-linking, org chart, and org settings
+- Organization page-state now supports loading skeleton variants:
+  - `table` variant for departments, designations, and locations
+  - `linking` variant for user-linking load surfaces
+  - `chart` variant for organization chart hierarchy loading
+  - `detail` variant for organization settings summary loading
 - User-linking rebuilt flow now uses:
   - `users.getUnlinkedUsers`
   - `users.getUnlinkedEmployees`
@@ -110,6 +115,7 @@ Status: In progress (Convex-backed organization module baseline expanded through
   - verifies error-state rendering
   - verifies retry action rendering and retry event emission
   - verifies optional retry suppression (`showRetry = false`)
+  - verifies loading skeleton variants (`table`, `chart`)
   - verifies no-data loading-state rendering
   - verifies empty-state rendering
 - `src/app/features/organization/pages/departments-rebuild.component.spec.ts`
@@ -124,12 +130,13 @@ Status: In progress (Convex-backed organization module baseline expanded through
   - verifies page-state retry event triggers chart reload
 - `src/app/features/organization/pages/organization-settings-rebuild.component.spec.ts`
   - verifies page-state retry event triggers settings reload
+  - verifies page-level loading skeleton variant assignment
 
 ## Validation
 - `npm run build` passed.
-- `npm run test` passed (`34` files, `111` tests).
+- `npm run test` passed (`34` files, `118` tests).
 
 ## Next in This Track
-1. Add per-page skeleton loading variants (not just text states) for high-latency organization screens.
-2. Apply shared organization table wrapper helpers for heading + action bar composition across list pages.
-3. Add shared inline empty-state actions (primary CTA + secondary refresh) for organization list pages.
+1. Apply shared organization table wrapper helpers for heading + action bar composition across list pages.
+2. Add shared inline empty-state actions (primary CTA + secondary refresh) for organization list pages.
+3. Add uniform table header metadata patterns (count + last refreshed) across organization list pages.

@@ -30,6 +30,7 @@ import { OrganizationRebuildDataService } from '../data/organization-rebuild.dat
           [isLoading]="isLoading()"
           [hasData]="!!settings()"
           loadingLabel="Loading organization settings..."
+          loadingVariant="detail"
           emptyTitle="No organization settings available"
           emptyMessage="No organization record was found for this account."
           (retryRequested)="refresh()"

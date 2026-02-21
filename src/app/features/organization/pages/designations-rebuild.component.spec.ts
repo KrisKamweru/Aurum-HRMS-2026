@@ -107,6 +107,11 @@ describe('DesignationsRebuildComponent', () => {
     expect(storeMock.loadDesignations).toHaveBeenCalledTimes(2);
   });
 
+  it('uses table loading skeleton variant', () => {
+    const state = fixture.debugElement.query(By.directive(OrganizationPageStateComponent)).componentInstance as OrganizationPageStateComponent;
+    expect(state.loadingVariant).toBe('table');
+  });
+
   it('removes an existing designation', async () => {
     const target = component.designations()[0];
     component.requestDesignationRemoval(target.id);

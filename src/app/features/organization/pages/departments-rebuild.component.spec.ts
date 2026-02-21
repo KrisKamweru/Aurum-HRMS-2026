@@ -159,6 +159,11 @@ describe('DepartmentsRebuildComponent', () => {
     expect(storeMock.loadDepartments).toHaveBeenCalledTimes(2);
   });
 
+  it('uses table loading skeleton variant', () => {
+    const state = fixture.debugElement.query(By.directive(OrganizationPageStateComponent)).componentInstance as OrganizationPageStateComponent;
+    expect(state.loadingVariant).toBe('table');
+  });
+
   it('removes an existing department after confirmation', async () => {
     const target = component.departments()[0];
     component.requestDepartmentRemoval(target.id);

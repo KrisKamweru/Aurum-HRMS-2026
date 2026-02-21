@@ -33,6 +33,7 @@ interface OrgChartRow {
           [isLoading]="isLoading()"
           [hasData]="rows().length > 0"
           loadingLabel="Loading organization chart..."
+          loadingVariant="chart"
           emptyTitle="No chart data available"
           emptyMessage="No reporting relationships were found for this organization."
           (retryRequested)="refresh()"

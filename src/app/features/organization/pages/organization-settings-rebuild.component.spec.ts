@@ -135,4 +135,9 @@ describe('OrganizationSettingsRebuildComponent', () => {
 
     expect(getOrganizationSettings).toHaveBeenCalledTimes(2);
   });
+
+  it('uses detail loading skeleton variant', () => {
+    const state = fixture.debugElement.query(By.directive(OrganizationPageStateComponent)).componentInstance as OrganizationPageStateComponent;
+    expect(state.loadingVariant).toBe('detail');
+  });
 });

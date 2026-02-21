@@ -28,6 +28,7 @@ import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
           [isLoading]="locationsLoading()"
           [hasData]="locations().length > 0"
           loadingLabel="Loading locations..."
+          loadingVariant="table"
           emptyTitle="No locations found"
           emptyMessage="Add a location to define operational sites."
           (retryRequested)="refreshLocations()"

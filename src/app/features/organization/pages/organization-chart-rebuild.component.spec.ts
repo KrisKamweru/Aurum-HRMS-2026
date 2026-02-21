@@ -71,4 +71,9 @@ describe('OrganizationChartRebuildComponent', () => {
 
     expect(getOrganizationChart).toHaveBeenCalledTimes(2);
   });
+
+  it('uses chart loading skeleton variant', () => {
+    const state = fixture.debugElement.query(By.directive(OrganizationPageStateComponent)).componentInstance as OrganizationPageStateComponent;
+    expect(state.loadingVariant).toBe('chart');
+  });
 });

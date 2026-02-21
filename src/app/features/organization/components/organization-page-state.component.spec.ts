@@ -49,10 +49,22 @@ describe('OrganizationPageStateComponent', () => {
     fixture.componentRef.setInput('isLoading', true);
     fixture.componentRef.setInput('hasData', false);
     fixture.componentRef.setInput('loadingLabel', 'Loading departments...');
+    fixture.componentRef.setInput('loadingVariant', 'table');
     fixture.detectChanges();
 
     const root = fixture.nativeElement as HTMLElement;
     expect(root.textContent).toContain('Loading departments...');
+    expect(root.querySelector('[data-testid=\"org-loading-skeleton-table\"]')).not.toBeNull();
+  });
+
+  it('renders chart loading skeleton variant', () => {
+    fixture.componentRef.setInput('isLoading', true);
+    fixture.componentRef.setInput('hasData', false);
+    fixture.componentRef.setInput('loadingVariant', 'chart');
+    fixture.detectChanges();
+
+    const root = fixture.nativeElement as HTMLElement;
+    expect(root.querySelector('[data-testid=\"org-loading-skeleton-chart\"]')).not.toBeNull();
   });
 
   it('renders empty state when not loading and no data', () => {

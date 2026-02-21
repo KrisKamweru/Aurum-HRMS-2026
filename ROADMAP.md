@@ -104,8 +104,9 @@ Reference: `docs/rebuild-parity-plan.md`
     - organization settings writes now use optimistic UI updates plus `expectedUpdatedAt` conflict checks with latest-state reload on stale writes
     - organization list screens now share a single table-action control component for edit/remove cells (departments, designations, locations)
     - organization page-state now provides a shared retry affordance for load failures, wired across all rebuilt organization pages
+    - organization page-state now supports per-page loading skeleton variants (`table`, `linking`, `chart`, `detail`) for high-latency screens
     - TDD coverage expanded for async store behavior + rebuilt organization pages
-    - validation: `npm run build` and `npm test` passing (`34` files, `111` tests)
+    - validation: `npm run build` and `npm test` passing (`34` files, `118` tests)
     - report: `docs/rebuild-manifests/phase4-organization-slice-report.md`
   - Phase 4 shared form/modal baseline:
     - shared `dynamic-form` rebuilt with multi-column sections and stepper flows

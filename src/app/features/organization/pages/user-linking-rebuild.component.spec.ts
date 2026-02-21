@@ -113,4 +113,9 @@ describe('UserLinkingRebuildComponent', () => {
 
     expect(storeMock.loadUserLinkingData).toHaveBeenCalledTimes(2);
   });
+
+  it('uses linking loading skeleton variant', () => {
+    const state = fixture.debugElement.query(By.directive(OrganizationPageStateComponent)).componentInstance as OrganizationPageStateComponent;
+    expect(state.loadingVariant).toBe('linking');
+  });
 });

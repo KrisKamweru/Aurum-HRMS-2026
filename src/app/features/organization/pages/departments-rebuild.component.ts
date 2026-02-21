@@ -28,6 +28,7 @@ import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
           [isLoading]="departmentsLoading()"
           [hasData]="departments().length > 0"
           loadingLabel="Loading departments..."
+          loadingVariant="table"
           emptyTitle="No departments found"
           emptyMessage="Create a department to begin structuring teams."
           (retryRequested)="refreshDepartments()"

@@ -93,6 +93,11 @@ describe('LocationsRebuildComponent', () => {
     expect(storeMock.loadLocations).toHaveBeenCalledTimes(2);
   });
 
+  it('uses table loading skeleton variant', () => {
+    const state = fixture.debugElement.query(By.directive(OrganizationPageStateComponent)).componentInstance as OrganizationPageStateComponent;
+    expect(state.loadingVariant).toBe('table');
+  });
+
   it('removes an existing location', async () => {
     const target = component.locations()[0];
     component.requestLocationRemoval(target.id);

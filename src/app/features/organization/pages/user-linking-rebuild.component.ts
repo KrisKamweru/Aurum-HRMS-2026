@@ -22,6 +22,7 @@ import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
           [isLoading]="userLinkingLoading()"
           [hasData]="pendingLinks().length > 0"
           loadingLabel="Loading pending links..."
+          loadingVariant="linking"
           emptyTitle="No pending links"
           emptyMessage="All unlinked users are currently resolved."
           (retryRequested)="refresh()"
