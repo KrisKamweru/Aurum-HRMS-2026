@@ -72,6 +72,11 @@ Reference: `docs/rebuild-parity-plan.md`
     - `high-risk-flow-map.md`
     - `deprecation-register.md`
     - generated inventories: `api-usage-summary.csv`, `api-usage-by-file.csv`, `route-guard-snapshot.txt`, `convex-function-surface.csv`
+  - Phase 2 archive completed:
+    - legacy frontend moved to `src/app.old/`
+    - new clean shell created in `src/app/`
+    - compile/test isolation set via `tsconfig.app.json` and `tsconfig.spec.json` excludes
+    - execution report: `docs/rebuild-manifests/phase2-archive-report.md`
 
 ### P0. Immediate Stabilization and Context Hygiene (Now)
 Status: Substantially completed on 2026-02-09.
