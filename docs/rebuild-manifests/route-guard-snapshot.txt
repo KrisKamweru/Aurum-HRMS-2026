@@ -1,0 +1,102 @@
+src/app/features/training/training.routes.ts:10:    path: '',
+src/app/features/training/training.routes.ts:13:      { path: '', redirectTo: 'catalog', pathMatch: 'full' },
+src/app/features/training/training.routes.ts:15:        path: 'catalog',
+src/app/features/training/training.routes.ts:19:        path: 'my-learning',
+src/app/features/training/training.routes.ts:23:        path: 'courses/new',
+src/app/features/training/training.routes.ts:25:        canActivate: [roleGuard(['super_admin', 'admin', 'hr_manager', 'manager'])]
+src/app/features/training/training.routes.ts:28:        path: 'courses/:id/edit',
+src/app/features/training/training.routes.ts:30:        canActivate: [roleGuard(['super_admin', 'admin', 'hr_manager', 'manager'])]
+src/app/features/settings/settings.routes.ts:9:    path: '',
+src/app/features/settings/settings.routes.ts:12:      { path: '', redirectTo: 'general', pathMatch: 'full' },
+src/app/features/settings/settings.routes.ts:13:      { path: 'general', component: GeneralSettingsComponent },
+src/app/features/settings/settings.routes.ts:14:      { path: 'leave-policies', component: LeavePolicyListComponent }
+src/app/features/settings/settings.routes.ts:16:    canActivate: [roleGuard(['super_admin', 'admin', 'hr_manager'])]
+src/app/features/reports/reports.routes.ts:7:    path: '',
+src/app/features/reports/reports.routes.ts:9:    canActivate: [roleGuard(['super_admin', 'admin', 'hr_manager'])]
+src/app/features/reports/reports.routes.ts:12:    path: 'attendance',
+src/app/features/reports/reports.routes.ts:14:    canActivate: [roleGuard(['super_admin', 'admin', 'hr_manager'])]
+src/app/features/reports/reports.routes.ts:17:    path: 'analytics',
+src/app/features/reports/reports.routes.ts:19:    canActivate: [roleGuard(['super_admin', 'admin', 'hr_manager'])]
+src/app/features/reports/reports.routes.ts:22:    path: 'payroll',
+src/app/features/reports/reports.routes.ts:24:    canActivate: [roleGuard(['super_admin', 'admin', 'hr_manager'])]
+src/app/features/reports/reports.routes.ts:27:    path: 'tax',
+src/app/features/reports/reports.routes.ts:29:    canActivate: [roleGuard(['super_admin', 'admin', 'hr_manager'])]
+src/app/features/recruitment/recruitment.routes.ts:11:    path: '',
+src/app/features/recruitment/recruitment.routes.ts:14:      { path: '', redirectTo: 'jobs', pathMatch: 'full' },
+src/app/features/recruitment/recruitment.routes.ts:16:        path: 'jobs',
+src/app/features/recruitment/recruitment.routes.ts:20:        path: 'jobs/new',
+src/app/features/recruitment/recruitment.routes.ts:22:        canActivate: [roleGuard(['super_admin', 'admin', 'hr_manager', 'manager'])]
+src/app/features/recruitment/recruitment.routes.ts:25:        path: 'jobs/:id',
+src/app/features/recruitment/recruitment.routes.ts:29:        path: 'jobs/:id/edit',
+src/app/features/recruitment/recruitment.routes.ts:31:        canActivate: [roleGuard(['super_admin', 'admin', 'hr_manager', 'manager'])]
+src/app/features/recruitment/recruitment.routes.ts:34:        path: 'board',
+src/app/features/recruitment/recruitment.routes.ts:36:        canActivate: [roleGuard(['super_admin', 'admin', 'hr_manager', 'manager'])]
+src/app/features/organization/organization.routes.ts:5:    path: '',
+src/app/features/organization/organization.routes.ts:7:      { path: '', redirectTo: 'departments', pathMatch: 'full' },
+src/app/features/organization/organization.routes.ts:9:        path: 'departments',
+src/app/features/organization/organization.routes.ts:13:        path: 'designations',
+src/app/features/organization/organization.routes.ts:17:        path: 'locations',
+src/app/features/organization/organization.routes.ts:21:        path: 'user-linking',
+src/app/features/organization/organization.routes.ts:25:        path: 'chart',
+src/app/features/organization/organization.routes.ts:29:        path: 'settings',
+src/app/features/demo/demo.routes.ts:6:    path: '',
+src/app/features/demo/demo.routes.ts:9:      { path: '', redirectTo: 'buttons', pathMatch: 'full' },
+src/app/features/demo/demo.routes.ts:11:        path: 'buttons',
+src/app/features/demo/demo.routes.ts:15:        path: 'forms',
+src/app/features/demo/demo.routes.ts:19:        path: 'tables',
+src/app/features/demo/demo.routes.ts:23:        path: 'modals',
+src/app/features/demo/demo.routes.ts:27:        path: 'date-picker',
+src/app/features/payroll/payroll.routes.ts:10:    path: '',
+src/app/features/payroll/payroll.routes.ts:12:    canActivate: [roleGuard(['super_admin', 'admin', 'hr_manager'])]
+src/app/features/payroll/payroll.routes.ts:15:    path: 'slip/:id',
+src/app/features/payroll/payroll.routes.ts:17:    canActivate: [authGuard] // Logic inside component checks ownership
+src/app/features/payroll/payroll.routes.ts:20:    path: ':id',
+src/app/features/payroll/payroll.routes.ts:22:    canActivate: [roleGuard(['super_admin', 'admin', 'hr_manager'])]
+src/app/features/core-hr/core-hr.routes.ts:6:    path: '',
+src/app/features/core-hr/core-hr.routes.ts:9:      { path: '', redirectTo: 'promotions', pathMatch: 'full' },
+src/app/features/core-hr/core-hr.routes.ts:11:        path: 'promotions',
+src/app/features/core-hr/core-hr.routes.ts:15:        path: 'transfers',
+src/app/features/core-hr/core-hr.routes.ts:19:        path: 'awards',
+src/app/features/core-hr/core-hr.routes.ts:23:        path: 'warnings',
+src/app/features/core-hr/core-hr.routes.ts:27:        path: 'resignations',
+src/app/features/core-hr/core-hr.routes.ts:31:        path: 'terminations',
+src/app/features/core-hr/core-hr.routes.ts:35:        path: 'complaints',
+src/app/features/core-hr/core-hr.routes.ts:39:        path: 'travel',
+src/app/features/attendance/attendance.routes.ts:7:    path: 'team',
+src/app/features/attendance/attendance.routes.ts:9:    canActivate: [roleGuard(['super_admin', 'admin', 'hr_manager', 'manager'])]
+src/app/features/attendance/attendance.routes.ts:12:    path: '',
+src/app/app.routes.ts:10:    path: 'pending',
+src/app/app.routes.ts:12:    canActivate: [authGuard]
+src/app/app.routes.ts:15:    path: 'create-organization',
+src/app/app.routes.ts:17:    canActivate: [authGuard]
+src/app/app.routes.ts:20:    path: '',
+src/app/app.routes.ts:22:    canActivate: [authGuard],
+src/app/app.routes.ts:24:      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+src/app/app.routes.ts:25:      { path: 'dashboard', component: Dashboard },
+src/app/app.routes.ts:27:        path: 'profile',
+src/app/app.routes.ts:31:        path: 'settings',
+src/app/app.routes.ts:35:        path: 'recruitment',
+src/app/app.routes.ts:37:        canActivate: [roleGuard(['super_admin', 'admin', 'hr_manager', 'manager'])]
+src/app/app.routes.ts:40:        path: 'training',
+src/app/app.routes.ts:44:        path: 'employees',
+src/app/app.routes.ts:46:        canActivate: [roleGuard(['super_admin', 'admin', 'hr_manager', 'manager'])]
+src/app/app.routes.ts:49:        path: 'employees/:id',
+src/app/app.routes.ts:51:         canActivate: [roleGuard(['super_admin', 'admin', 'hr_manager', 'manager'])]
+src/app/app.routes.ts:54:        path: 'leave-requests',
+src/app/app.routes.ts:58:        path: 'attendance',
+src/app/app.routes.ts:62:        path: 'core-hr',
+src/app/app.routes.ts:64:        canActivate: [roleGuard(['super_admin', 'admin', 'hr_manager'])]
+src/app/app.routes.ts:67:        path: 'organization',
+src/app/app.routes.ts:69:        canActivate: [roleGuard(['super_admin', 'admin', 'hr_manager'])]
+src/app/app.routes.ts:72:        path: 'payroll',
+src/app/app.routes.ts:77:        path: 'reports',
+src/app/app.routes.ts:79:        canActivate: [roleGuard(['super_admin', 'admin', 'hr_manager'])]
+src/app/app.routes.ts:82:        path: 'super-admin',
+src/app/app.routes.ts:84:        canActivate: [roleGuard(['super_admin'])]
+src/app/app.routes.ts:89:    path: 'demo',
+src/app/app.routes.ts:93:    path: '6',
+src/app/app.routes.ts:97:    path: 'auth',
+src/app/app.routes.ts:100:      { path: 'login', loadComponent: () => import('./features/auth/login/login.component').then(m => m.LoginComponent) },
+src/app/app.routes.ts:101:      { path: 'register', loadComponent: () => import('./features/auth/register/register.component').then(m => m.RegisterComponent) },
+src/app/app.routes.ts:102:      { path: 'forgot-password', loadComponent: () => import('./features/auth/forgot-password/forgot-password.component').then(m => m.ForgotPasswordComponent) },
+src/app/app.routes.ts:103:      { path: '', redirectTo: 'login', pathMatch: 'full' },

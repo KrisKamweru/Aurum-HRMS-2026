@@ -64,6 +64,14 @@ Reference: `docs/rebuild-parity-plan.md`
   - Route parity complete (or explicit deprecation entries approved).
   - API parity complete for all currently used frontend Convex calls.
   - Security parity complete (`negative-auth`, `compensation-security`, attendance/payroll regression paths).
+- Progress update (2026-02-21):
+  - Phase 1 parity manifests generated under `docs/rebuild-manifests/`:
+    - `README.md`
+    - `functionality-index.md`
+    - `route-role-matrix.md`
+    - `high-risk-flow-map.md`
+    - `deprecation-register.md`
+    - generated inventories: `api-usage-summary.csv`, `api-usage-by-file.csv`, `route-guard-snapshot.txt`, `convex-function-surface.csv`
 
 ### P0. Immediate Stabilization and Context Hygiene (Now)
 Status: Substantially completed on 2026-02-09.
