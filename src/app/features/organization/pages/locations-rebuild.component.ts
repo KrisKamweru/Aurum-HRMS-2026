@@ -3,6 +3,7 @@ import { DynamicFormComponent } from '../../../shared/components/dynamic-form/dy
 import { ConfirmDialogOptions, UiConfirmDialogComponent } from '../../../shared/components/ui-confirm-dialog/ui-confirm-dialog.component';
 import { UiModalComponent } from '../../../shared/components/ui-modal/ui-modal.component';
 import { OrganizationListShellComponent } from '../components/organization-list-shell.component';
+import { OrganizationTableColumn, OrganizationTableHeaderRowComponent } from '../components/organization-table-header-row.component';
 import { OrganizationTableMetadataComponent } from '../components/organization-table-metadata.component';
 import { OrganizationTableActionsComponent } from '../components/organization-table-actions.component';
 import { FieldConfig, FormSectionConfig, FormStepConfig } from '../../../shared/services/form-helper.service';
@@ -13,7 +14,7 @@ import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
 @Component({
   selector: 'app-locations-rebuild',
   standalone: true,
-  imports: [UiModalComponent, DynamicFormComponent, UiConfirmDialogComponent, OrganizationPageStateComponent, OrganizationListShellComponent, OrganizationTableMetadataComponent, OrganizationTableActionsComponent],
+  imports: [UiModalComponent, DynamicFormComponent, UiConfirmDialogComponent, OrganizationPageStateComponent, OrganizationListShellComponent, OrganizationTableHeaderRowComponent, OrganizationTableMetadataComponent, OrganizationTableActionsComponent],
   template: `
     <main class="h-full px-4 py-8 sm:px-6 lg:px-8">
       <app-organization-list-shell
@@ -62,15 +63,7 @@ import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
           <app-organization-table-metadata itemLabel="Locations" [count]="locations().length" [lastRefreshedAt]="lastRefreshedAt()" />
           <div class="overflow-x-auto">
           <table class="min-w-full text-left">
-            <thead class="bg-stone-50 dark:bg-white/[0.03]">
-              <tr>
-                <th class="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-stone-500 dark:text-stone-500">Location</th>
-                <th class="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-stone-500 dark:text-stone-500">Address</th>
-                <th class="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-stone-500 dark:text-stone-500">City</th>
-                <th class="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-stone-500 dark:text-stone-500">Country</th>
-                <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-stone-500 dark:text-stone-500">Actions</th>
-              </tr>
-            </thead>
+            <thead app-organization-table-header-row [columns]="locationColumns"></thead>
             <tbody>
               @for (location of locations(); track location.id) {
                 <tr class="border-t border-stone-100 transition-colors hover:bg-burgundy-50/50 dark:border-white/[0.03] dark:hover:bg-burgundy-700/[0.06]">
@@ -168,6 +161,14 @@ export class LocationsRebuildComponent implements OnInit {
     cancelText: 'Cancel',
     variant: 'danger'
   };
+
+  readonly locationColumns: OrganizationTableColumn[] = [
+    { label: 'Location' },
+    { label: 'Address' },
+    { label: 'City' },
+    { label: 'Country' },
+    { label: 'Actions', align: 'right' }
+  ];
 
   readonly locationFields: FieldConfig[] = [
     {

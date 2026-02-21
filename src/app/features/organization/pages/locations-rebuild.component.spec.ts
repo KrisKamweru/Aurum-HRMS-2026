@@ -4,6 +4,7 @@ import { signal } from '@angular/core';
 import { vi } from 'vitest';
 import { OrganizationListShellComponent } from '../components/organization-list-shell.component';
 import { OrganizationPageStateComponent } from '../components/organization-page-state.component';
+import { OrganizationTableHeaderRowComponent } from '../components/organization-table-header-row.component';
 import { OrganizationTableMetadataComponent } from '../components/organization-table-metadata.component';
 import { RebuildLocation } from '../data/organization-rebuild.models';
 import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
@@ -131,6 +132,20 @@ describe('LocationsRebuildComponent', () => {
     expect(metadataComponent.itemLabel).toBe('Locations');
     expect(metadataComponent.count).toBe(component.locations().length);
     expect(metadataComponent.lastRefreshedAt).not.toBeNull();
+  });
+
+  it('uses shared table-header helper with location column definitions', () => {
+    const header = fixture.debugElement.query(By.directive(OrganizationTableHeaderRowComponent));
+    expect(header).not.toBeNull();
+
+    const headerComponent = header.componentInstance as OrganizationTableHeaderRowComponent;
+    expect(headerComponent.columns.map((column) => column.label)).toEqual([
+      'Location',
+      'Address',
+      'City',
+      'Country',
+      'Actions'
+    ]);
   });
 
   it('removes an existing location', async () => {

@@ -64,6 +64,10 @@ Status: In progress (Convex-backed organization module baseline expanded through
   - common `organization-table-metadata` component now renders count + last-refreshed status
   - applied at the top of list tables for departments, designations, and locations
   - refresh actions now stamp shared list-level `lastRefreshedAt` timestamps
+- Organization list screens now use shared table-header row helpers:
+  - common `organization-table-header-row` helper renders repeated header cell styling
+  - page-level column definitions now supply labels/alignment metadata for each list table
+  - applied across departments, designations, and locations table headers
 - User-linking rebuilt flow now uses:
   - `users.getUnlinkedUsers`
   - `users.getUnlinkedEmployees`
@@ -165,12 +169,20 @@ Status: In progress (Convex-backed organization module baseline expanded through
   - verifies shared table metadata wiring and populated refresh timestamp
 - `src/app/features/organization/pages/locations-rebuild.component.spec.ts`
   - verifies shared table metadata wiring and populated refresh timestamp
+- `src/app/features/organization/components/organization-table-header-row.component.spec.ts`
+  - verifies label rendering and right-aligned header handling
+- `src/app/features/organization/pages/departments-rebuild.component.spec.ts`
+  - verifies shared table-header helper wiring with department column definitions
+- `src/app/features/organization/pages/designations-rebuild.component.spec.ts`
+  - verifies shared table-header helper wiring with designation column definitions
+- `src/app/features/organization/pages/locations-rebuild.component.spec.ts`
+  - verifies shared table-header helper wiring with location column definitions
 
 ## Validation
 - `npm run build` passed.
-- `npm run test` passed (`36` files, `133` tests).
+- `npm run test` passed (`37` files, `138` tests).
 
 ## Next in This Track
-1. Apply shared table-column metadata helpers for repeated list table heading definitions.
-2. Extend shared list-shell slots to support reusable list-level status chips and badges.
-3. Extract common list-action button presets (refresh/create variants) to reduce per-page template duplication.
+1. Extend shared list-shell slots to support reusable list-level status chips and badges.
+2. Extract common list-action button presets (refresh/create variants) to reduce per-page template duplication.
+3. Continue Phase 4 feature rollout beyond organization list normalization tasks.

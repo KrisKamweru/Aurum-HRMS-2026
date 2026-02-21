@@ -4,6 +4,7 @@ import { signal } from '@angular/core';
 import { vi } from 'vitest';
 import { OrganizationListShellComponent } from '../components/organization-list-shell.component';
 import { OrganizationPageStateComponent } from '../components/organization-page-state.component';
+import { OrganizationTableHeaderRowComponent } from '../components/organization-table-header-row.component';
 import { OrganizationTableMetadataComponent } from '../components/organization-table-metadata.component';
 import { RebuildDepartment, RebuildEmployeeLookup } from '../data/organization-rebuild.models';
 import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
@@ -197,6 +198,21 @@ describe('DepartmentsRebuildComponent', () => {
     expect(metadataComponent.itemLabel).toBe('Departments');
     expect(metadataComponent.count).toBe(component.departments().length);
     expect(metadataComponent.lastRefreshedAt).not.toBeNull();
+  });
+
+  it('uses shared table-header helper with department column definitions', () => {
+    const header = fixture.debugElement.query(By.directive(OrganizationTableHeaderRowComponent));
+    expect(header).not.toBeNull();
+
+    const headerComponent = header.componentInstance as OrganizationTableHeaderRowComponent;
+    expect(headerComponent.columns.map((column) => column.label)).toEqual([
+      'Department Name',
+      'Code',
+      'Manager',
+      'Headcount',
+      'Description',
+      'Actions'
+    ]);
   });
 
   it('removes an existing department after confirmation', async () => {
