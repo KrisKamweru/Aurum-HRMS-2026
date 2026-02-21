@@ -7,6 +7,9 @@ describe('app routes', () => {
     expect(paths).toContain('employees/:id');
     expect(paths).toContain('payroll/slip/:id');
     expect(paths).toContain('reports/tax');
+    expect(paths).toContain('organization/departments');
+    expect(paths).toContain('organization/designations');
+    expect(paths).toContain('organization/locations');
     expect(paths).toContain('auth/login');
   });
 

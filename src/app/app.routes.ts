@@ -58,8 +58,20 @@ export const routes: Routes = [
     canActivate: [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])],
     data: { title: 'Departments' }
   },
-  placeholderRoute('organization/designations', 'Designations', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]),
-  placeholderRoute('organization/locations', 'Locations', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]),
+  {
+    path: 'organization/designations',
+    loadComponent: () =>
+      import('./features/organization/pages/designations-rebuild.component').then((m) => m.DesignationsRebuildComponent),
+    canActivate: [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])],
+    data: { title: 'Designations' }
+  },
+  {
+    path: 'organization/locations',
+    loadComponent: () =>
+      import('./features/organization/pages/locations-rebuild.component').then((m) => m.LocationsRebuildComponent),
+    canActivate: [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])],
+    data: { title: 'Locations' }
+  },
   placeholderRoute('organization/user-linking', 'User Linking', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]),
   placeholderRoute('organization/chart', 'Organization Chart', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]),
   placeholderRoute('organization/settings', 'Organization Settings', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]),
