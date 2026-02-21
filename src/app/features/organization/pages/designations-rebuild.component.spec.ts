@@ -110,6 +110,14 @@ describe('DesignationsRebuildComponent', () => {
     expect(shellComponent.title).toBe('Designations');
   });
 
+  it('projects designation status badges into shared list-shell status slot', () => {
+    const host = fixture.nativeElement as HTMLElement;
+    const status = host.querySelector('[data-testid="org-list-shell-status"]');
+
+    expect(status?.textContent).toContain('Leveled Designations');
+    expect(status?.textContent).toContain('Unleveled Designations');
+  });
+
   it('retries designation loading when page-state retry is requested', () => {
     const state = fixture.debugElement.query(By.directive(OrganizationPageStateComponent)).componentInstance as OrganizationPageStateComponent;
 

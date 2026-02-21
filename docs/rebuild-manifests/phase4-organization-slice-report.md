@@ -1,7 +1,7 @@
 # Phase 4 Organization Slice Report
 
 Date: 2026-02-21  
-Status: In progress (Convex-backed organization module baseline expanded through shared list-shell composition)
+Status: In progress (Convex-backed organization module baseline expanded through shared list-shell status badges)
 
 ## Slice Delivered
 - Replaced generic placeholders with rebuilt organization pages:
@@ -68,6 +68,11 @@ Status: In progress (Convex-backed organization module baseline expanded through
   - common `organization-table-header-row` helper renders repeated header cell styling
   - page-level column definitions now supply labels/alignment metadata for each list table
   - applied across departments, designations, and locations table headers
+- Organization list shell now supports shared status-chip slots:
+  - common `organization-list-shell` now projects reusable `org-list-status` badge content
+  - departments now expose assigned/unassigned manager status badges
+  - designations now expose leveled/unleveled role status badges
+  - locations now expose unique country/city status badges
 - User-linking rebuilt flow now uses:
   - `users.getUnlinkedUsers`
   - `users.getUnlinkedEmployees`
@@ -150,7 +155,7 @@ Status: In progress (Convex-backed organization module baseline expanded through
   - verifies page-level loading skeleton variant assignment
 - `src/app/features/organization/components/organization-list-shell.component.spec.ts`
   - verifies heading + action copy rendering
-  - verifies slot projection for page-state, toolbar actions, and table content
+  - verifies slot projection for page-state, status chips, toolbar actions, and table content
 - `src/app/features/organization/pages/departments-rebuild.component.spec.ts`
   - verifies shared list-shell usage for page heading/action composition
   - verifies empty-state action wiring for create + refresh
@@ -173,16 +178,19 @@ Status: In progress (Convex-backed organization module baseline expanded through
   - verifies label rendering and right-aligned header handling
 - `src/app/features/organization/pages/departments-rebuild.component.spec.ts`
   - verifies shared table-header helper wiring with department column definitions
+  - verifies status-badge projection in list-shell status slot
 - `src/app/features/organization/pages/designations-rebuild.component.spec.ts`
   - verifies shared table-header helper wiring with designation column definitions
+  - verifies status-badge projection in list-shell status slot
 - `src/app/features/organization/pages/locations-rebuild.component.spec.ts`
   - verifies shared table-header helper wiring with location column definitions
+  - verifies status-badge projection in list-shell status slot
 
 ## Validation
 - `npm run build` passed.
-- `npm run test` passed (`37` files, `138` tests).
+- `npm run test` passed (`37` files, `141` tests).
 
 ## Next in This Track
-1. Extend shared list-shell slots to support reusable list-level status chips and badges.
-2. Extract common list-action button presets (refresh/create variants) to reduce per-page template duplication.
-3. Continue Phase 4 feature rollout beyond organization list normalization tasks.
+1. Extract common list-action button presets (refresh/create variants) to reduce per-page template duplication.
+2. Continue Phase 4 feature rollout beyond organization list normalization tasks.
+3. Evaluate a shared list-row hover/interaction token helper for consistent row behavior across modules.

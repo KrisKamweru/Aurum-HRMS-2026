@@ -12,6 +12,8 @@ import { OrganizationListShellComponent } from './organization-list-shell.compon
       actionMessage="Use action controls to refresh data and add records."
     >
       <section org-list-page-state data-testid="page-state">state content</section>
+      <span org-list-status data-testid="status-chip">Live Sync</span>
+      <span org-list-status data-testid="status-chip">2 Alerts</span>
       <button type="button" org-list-toolbar-actions>Refresh</button>
       <button type="button" org-list-toolbar-actions>Add Department</button>
       <section org-list-table-content data-testid="table-content">table content</section>
@@ -41,12 +43,15 @@ describe('OrganizationListShellComponent', () => {
     expect(root.textContent).toContain('Use action controls to refresh data and add records.');
   });
 
-  it('projects page-state, toolbar actions, and table content slots', () => {
+  it('projects page-state, status, toolbar actions, and table content slots', () => {
     const root = fixture.nativeElement as HTMLElement;
+    const status = root.querySelector('[data-testid="org-list-shell-status"]');
     const actions = root.querySelector('[data-testid="org-list-shell-actions"]');
 
     expect(root.querySelector('[data-testid="page-state"]')).not.toBeNull();
     expect(root.querySelector('[data-testid="table-content"]')).not.toBeNull();
+    expect(status?.querySelectorAll('[data-testid="status-chip"]').length).toBe(2);
+    expect(status?.textContent).toContain('Live Sync');
     expect(actions?.querySelectorAll('button').length).toBe(2);
     expect(actions?.textContent).toContain('Refresh');
     expect(actions?.textContent).toContain('Add Department');

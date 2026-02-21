@@ -96,6 +96,14 @@ describe('LocationsRebuildComponent', () => {
     expect(shellComponent.title).toBe('Locations');
   });
 
+  it('projects location status badges into shared list-shell status slot', () => {
+    const host = fixture.nativeElement as HTMLElement;
+    const status = host.querySelector('[data-testid="org-list-shell-status"]');
+
+    expect(status?.textContent).toContain('Countries');
+    expect(status?.textContent).toContain('Cities');
+  });
+
   it('retries location loading when page-state retry is requested', () => {
     const state = fixture.debugElement.query(By.directive(OrganizationPageStateComponent)).componentInstance as OrganizationPageStateComponent;
 

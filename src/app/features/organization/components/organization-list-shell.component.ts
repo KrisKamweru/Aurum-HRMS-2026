@@ -17,7 +17,12 @@ import { Component, Input } from '@angular/core';
 
       <section class="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm dark:border-white/8 dark:bg-white/[0.04]">
         <div class="flex flex-wrap items-center justify-between gap-3">
-          <p class="text-sm text-stone-600 dark:text-stone-300">{{ actionMessage }}</p>
+          <div class="space-y-2">
+            <p class="text-sm text-stone-600 dark:text-stone-300">{{ actionMessage }}</p>
+            <div data-testid="org-list-shell-status" class="flex flex-wrap items-center gap-2">
+              <ng-content select="[org-list-status]" />
+            </div>
+          </div>
           <div data-testid="org-list-shell-actions" class="flex items-center gap-2">
             <ng-content select="[org-list-toolbar-actions]" />
           </div>

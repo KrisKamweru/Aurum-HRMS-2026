@@ -162,6 +162,14 @@ describe('DepartmentsRebuildComponent', () => {
     expect(shellComponent.title).toBe('Departments');
   });
 
+  it('projects department status badges into shared list-shell status slot', () => {
+    const host = fixture.nativeElement as HTMLElement;
+    const status = host.querySelector('[data-testid="org-list-shell-status"]');
+
+    expect(status?.textContent).toContain('Assigned Managers');
+    expect(status?.textContent).toContain('Unassigned Departments');
+  });
+
   it('retries department loading when page-state retry is requested', () => {
     const state = fixture.debugElement.query(By.directive(OrganizationPageStateComponent)).componentInstance as OrganizationPageStateComponent;
 

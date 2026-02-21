@@ -1,6 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { DynamicFormComponent } from '../../../shared/components/dynamic-form/dynamic-form.component';
 import { ConfirmDialogOptions, UiConfirmDialogComponent } from '../../../shared/components/ui-confirm-dialog/ui-confirm-dialog.component';
+import { UiBadgeComponent } from '../../../shared/components/ui-badge/ui-badge.component';
 import { UiModalComponent } from '../../../shared/components/ui-modal/ui-modal.component';
 import { OrganizationListShellComponent } from '../components/organization-list-shell.component';
 import { OrganizationTableColumn, OrganizationTableHeaderRowComponent } from '../components/organization-table-header-row.component';
@@ -14,7 +15,7 @@ import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
 @Component({
   selector: 'app-designations-rebuild',
   standalone: true,
-  imports: [UiModalComponent, DynamicFormComponent, UiConfirmDialogComponent, OrganizationPageStateComponent, OrganizationListShellComponent, OrganizationTableHeaderRowComponent, OrganizationTableMetadataComponent, OrganizationTableActionsComponent],
+  imports: [UiModalComponent, UiBadgeComponent, DynamicFormComponent, UiConfirmDialogComponent, OrganizationPageStateComponent, OrganizationListShellComponent, OrganizationTableHeaderRowComponent, OrganizationTableMetadataComponent, OrganizationTableActionsComponent],
   template: `
     <main class="h-full px-4 py-8 sm:px-6 lg:px-8">
       <app-organization-list-shell
@@ -38,6 +39,13 @@ import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
           (emptyPrimaryRequested)="openCreateModal()"
           (emptySecondaryRequested)="refreshDesignations()"
         />
+
+        <ui-badge org-list-status variant="primary" size="sm" [rounded]="true">
+          Leveled Designations {{ leveledDesignationCount() }}
+        </ui-badge>
+        <ui-badge org-list-status variant="neutral" size="sm" [rounded]="true">
+          Unleveled Designations {{ unleveledDesignationCount() }}
+        </ui-badge>
 
         <button
           type="button"
@@ -240,6 +248,14 @@ export class DesignationsRebuildComponent implements OnInit {
   refreshDesignations(): void {
     this.lastRefreshedAt.set(new Date());
     void this.store.loadDesignations();
+  }
+
+  leveledDesignationCount(): number {
+    return this.designations().filter((designation) => typeof designation.level === 'number' && designation.level > 0).length;
+  }
+
+  unleveledDesignationCount(): number {
+    return this.designations().length - this.leveledDesignationCount();
   }
 
   openCreateModal(): void {
