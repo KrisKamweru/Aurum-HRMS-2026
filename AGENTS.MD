@@ -32,13 +32,13 @@ While I'm trying to keep the project free of MD creep, here are some relevant on
 
 1. `ROADMAP.md`: Contains the overall project progress and next steps. Refer to this if unsure.
 2. `AGENTS.md`: This file. True above all other sources of truth. Where any differences are noted, let this file be your guide.
-3. `DESIGN LANGUAGE.md`: Contains the design language and ethos for the app, distilled from some design runs we did earlier. It is your bible when it comes to design implementation. Never stray from it.
-4. `CLAUDE.md`: OPTIONAL (not to be taken strictly), source of extra context and project history. 
+3. `DESIGN LANGUAGE.md`: Contains the design language and ethos for the app, distilled from some design runs we did earlier. It is your Bible when it comes to design implementation. Never stray from it.
+4. `CLAUDE.md`: OPTIONAL (not to be taken strictly), source of extra context and project history.
 5. `README.md`: Default angular CLI generated README file
 
 ## Working agreements
 
-- Practice TDD. Write your test cases for new components, methods or classes before writing the code. Write these tests based on the desired outcome. Make sure they pass before committing.
+- Practice TDD. Write your test cases for new components, methods or classes before writing the code. Write these tests based on the desired outcome. Make sure they pass before committing. All new code must be at 100% statement and branch coverage. This is especially true for component logic
 - Use `npm` as your package manager
 - Ask for confirmation before adding new deps
 - For any commands that require elevated access, include a short description of what the command does in the approval request.

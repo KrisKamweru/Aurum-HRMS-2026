@@ -12,7 +12,7 @@
 
 The Aurum design language is built on three pillars:
 
-1. **Structured confidence** — Swiss-grid discipline. Clean columns, consistent gutters, clear visual hierarchy. Data-dense screens should feel organized, not overwhelming.
+1. **Structured confidence** — Swiss-grid discipline. Clean columns, consistent gutters, clear visual hierarchy. Data-dense screens should feel organized, not overwhelming. Grids are sharp and angular, with a focus on clarity and precision. They contrast with the flowing nature of glasmorphism in a consistent beautiful way
 2. **Glass surfaces** — Frosted, translucent card surfaces with subtle borders. Creates depth without noise. Backdrop-blur gives a premium, layered feel.
 3. **Brand red as a focused weapon** — `#861821` is the hero. It appears in CTAs, active states, highlighted metrics, and section accents. It is *never* spread thin across backgrounds or large surfaces (except intentional banner sections). When the eye hits red, it should mean something.
 
