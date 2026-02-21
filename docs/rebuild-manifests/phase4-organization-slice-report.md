@@ -1,7 +1,7 @@
 # Phase 4 Organization Slice Report
 
 Date: 2026-02-21  
-Status: In progress (Convex-backed CRUD and user-linking integration completed for organization pages)
+Status: In progress (Convex-backed organization module baseline expanded through chart/settings)
 
 ## Slice Delivered
 - Replaced generic placeholders with rebuilt organization pages:
@@ -9,12 +9,15 @@ Status: In progress (Convex-backed CRUD and user-linking integration completed f
   - `src/app/features/organization/pages/designations-rebuild.component.ts`
   - `src/app/features/organization/pages/locations-rebuild.component.ts`
   - `src/app/features/organization/pages/user-linking-rebuild.component.ts`
+  - `src/app/features/organization/pages/organization-chart-rebuild.component.ts`
+  - `src/app/features/organization/pages/organization-settings-rebuild.component.ts`
 - Route wired with existing auth and role guards in:
   - `src/app/app.routes.ts`
 - Introduced shared feature store and Convex data adapter:
   - `src/app/features/organization/data/organization-rebuild.store.ts`
   - `src/app/features/organization/data/organization-rebuild.data.service.ts`
   - `src/app/features/organization/data/organization-rebuild.models.ts`
+  - data adapter now uses shared authenticated Convex HTTP client context from rebuild auth foundation
 
 ## Current Capability
 - Convex-backed list + create + update + remove interactions for:
@@ -33,6 +36,13 @@ Status: In progress (Convex-backed CRUD and user-linking integration completed f
   - per-row employee selection
   - auto-suggestion matching (email/full-name)
   - linked-count telemetry
+- Organization chart page now provides:
+  - live hierarchy visualization from `employees.getOrgChart`
+  - depth-indented reporting rows with report-count visibility
+- Organization settings page now provides:
+  - live organization snapshot from `organization.getOrganizationSettings`
+  - modal-based edit flow via `organization.updateOrganizationSettings`
+  - step-based form sections for identity and subscription controls
 - Duplicate guardrails active:
   - Department: unique by name.
   - Designation: unique by title.
@@ -56,12 +66,19 @@ Status: In progress (Convex-backed CRUD and user-linking integration completed f
   - verifies init load trigger
   - verifies link action and linked-count increment
   - verifies selection change propagation
+- `src/app/features/organization/pages/organization-chart-rebuild.component.spec.ts`
+  - verifies init load + hierarchy flattening behavior
+  - verifies error handling on load failure
+- `src/app/features/organization/pages/organization-settings-rebuild.component.spec.ts`
+  - verifies init load trigger
+  - verifies modal initialization from current settings
+  - verifies settings update submission path
 
 ## Validation
 - `npm run build` passed.
-- `npm run test` passed (`30` files, `82` tests).
+- `npm run test` passed (`32` files, `89` tests).
 
 ## Next in This Track
-1. Wire Convex auth token/session into the Angular app shell so privileged mutations succeed under real authenticated context.
-2. Add manager/employee lookup support for department manager assignment in the department edit/create modal.
-3. Expand organization chart and organization settings rebuild pages using the same shared patterns.
+1. Add manager/employee lookup support for department manager assignment in the department edit/create modal.
+2. Add page-level load/error/empty-state standardization helper for organization screens.
+3. Add optimistic update and conflict handling patterns for organization settings writes.
