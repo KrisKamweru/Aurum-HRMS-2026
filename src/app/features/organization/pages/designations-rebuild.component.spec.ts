@@ -27,4 +27,11 @@ describe('DesignationsRebuildComponent', () => {
 
     expect(component.designations().some((d) => d.title === 'Finance Manager')).toBe(true);
   });
+
+  it('removes an existing designation', () => {
+    const target = component.designations()[0];
+    component.removeDesignation(target.id);
+
+    expect(component.designations().some((d) => d.id === target.id)).toBe(false);
+  });
 });

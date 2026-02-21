@@ -18,6 +18,10 @@ Status: In progress (organization module scaffold expanded)
   - Departments
   - Designations
   - Locations
+- Row-level remove actions for:
+  - Departments
+  - Designations
+  - Locations
 - Duplicate guardrails active:
   - Department: unique by name.
   - Designation: unique by title.
@@ -29,19 +33,20 @@ Status: In progress (organization module scaffold expanded)
 - `src/app/features/organization/data/organization-rebuild.store.spec.ts`
   - verifies seeded datasets
   - verifies unique-create and duplicate guards across all three entities
+  - verifies remove actions by id across all three entities
 - `src/app/features/organization/pages/departments-rebuild.component.spec.ts`
   - verifies seed data render baseline
-  - verifies add-department behavior
+  - verifies add/remove behavior
 - `src/app/features/organization/pages/designations-rebuild.component.spec.ts`
   - verifies seeded designation render baseline
-  - verifies add-designation behavior
+  - verifies add/remove behavior
 - `src/app/features/organization/pages/locations-rebuild.component.spec.ts`
   - verifies seeded location render baseline
-  - verifies add-location behavior
+  - verifies add/remove behavior
 
 ## Validation
 - `npm run build` passed.
-- `npm run test` passed (`11` files, `28` tests).
+- `npm run test` passed (`11` files, `34` tests).
 
 ## Next in This Track
 1. Replace in-memory store with Convex-backed CRUD for departments/designations/locations.

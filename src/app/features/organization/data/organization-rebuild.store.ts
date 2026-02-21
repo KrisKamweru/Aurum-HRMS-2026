@@ -60,6 +60,15 @@ export class OrganizationRebuildStore {
     return true;
   }
 
+  removeDepartment(id: string): boolean {
+    const hasTarget = this.departmentState().some((row) => row.id === id);
+    if (!hasTarget) {
+      return false;
+    }
+    this.departmentState.update((rows) => rows.filter((row) => row.id !== id));
+    return true;
+  }
+
   addDesignation(title: string, level: number): boolean {
     const normalized = title.trim();
     if (!normalized) {
@@ -77,6 +86,15 @@ export class OrganizationRebuildStore {
         level
       }
     ]);
+    return true;
+  }
+
+  removeDesignation(id: string): boolean {
+    const hasTarget = this.designationState().some((row) => row.id === id);
+    if (!hasTarget) {
+      return false;
+    }
+    this.designationState.update((rows) => rows.filter((row) => row.id !== id));
     return true;
   }
 
@@ -103,6 +121,15 @@ export class OrganizationRebuildStore {
         country: normalizedCountry
       }
     ]);
+    return true;
+  }
+
+  removeLocation(id: string): boolean {
+    const hasTarget = this.locationState().some((row) => row.id === id);
+    if (!hasTarget) {
+      return false;
+    }
+    this.locationState.update((rows) => rows.filter((row) => row.id !== id));
     return true;
   }
 

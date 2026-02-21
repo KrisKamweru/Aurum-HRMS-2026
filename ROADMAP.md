@@ -89,7 +89,7 @@ Reference: `docs/rebuild-parity-plan.md`
   - Phase 4 organization module expansion:
     - rebuilt pages mapped for `organization/departments`, `organization/designations`, and `organization/locations`
     - shared in-memory organization rebuild store added for cross-page scaffold state
-    - TDD coverage added for store + three organization rebuild pages
+    - add/remove interactions implemented with TDD coverage for store + three organization rebuild pages
     - report: `docs/rebuild-manifests/phase4-organization-slice-report.md`
 
 ### P0. Immediate Stabilization and Context Hygiene (Now)

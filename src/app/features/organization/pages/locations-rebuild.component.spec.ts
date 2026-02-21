@@ -28,4 +28,11 @@ describe('LocationsRebuildComponent', () => {
 
     expect(component.locations().some((d) => d.name === 'London Hub' && d.city === 'London')).toBe(true);
   });
+
+  it('removes an existing location', () => {
+    const target = component.locations()[0];
+    component.removeLocation(target.id);
+
+    expect(component.locations().some((d) => d.id === target.id)).toBe(false);
+  });
 });

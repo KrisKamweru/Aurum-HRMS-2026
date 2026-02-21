@@ -26,4 +26,11 @@ describe('DepartmentsRebuildComponent', () => {
 
     expect(component.departments().some((d) => d.name === 'Finance')).toBe(true);
   });
+
+  it('removes an existing department', () => {
+    const target = component.departments()[0];
+    component.removeDepartment(target.id);
+
+    expect(component.departments().some((d) => d.id === target.id)).toBe(false);
+  });
 });

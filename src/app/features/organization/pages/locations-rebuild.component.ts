@@ -50,6 +50,7 @@ import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
                 <th class="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-stone-500 dark:text-stone-500">Location</th>
                 <th class="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-stone-500 dark:text-stone-500">City</th>
                 <th class="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-stone-500 dark:text-stone-500">Country</th>
+                <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-stone-500 dark:text-stone-500">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -58,6 +59,15 @@ import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
                   <td class="px-4 py-3 text-sm font-medium text-stone-800 dark:text-stone-200">{{ location.name }}</td>
                   <td class="px-4 py-3 text-sm text-stone-600 dark:text-stone-300">{{ location.city }}</td>
                   <td class="px-4 py-3 text-sm text-stone-600 dark:text-stone-300">{{ location.country }}</td>
+                  <td class="px-4 py-3 text-right">
+                    <button
+                      type="button"
+                      class="rounded-lg border border-stone-200 px-3 py-1.5 text-xs font-semibold text-stone-600 transition-colors hover:border-red-300 hover:bg-red-50 hover:text-red-700 dark:border-white/10 dark:text-stone-300 dark:hover:border-red-500/40 dark:hover:bg-red-500/10 dark:hover:text-red-300"
+                      (click)="removeLocation(location.id)"
+                    >
+                      Remove
+                    </button>
+                  </td>
                 </tr>
               }
             </tbody>
@@ -104,5 +114,9 @@ export class LocationsRebuildComponent {
     this.newLocationName.set('');
     this.newLocationCity.set('');
     this.newLocationCountry.set('');
+  }
+
+  removeLocation(id: string): void {
+    this.store.removeLocation(id);
   }
 }
