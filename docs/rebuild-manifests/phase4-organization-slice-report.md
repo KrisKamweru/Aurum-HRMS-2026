@@ -32,6 +32,11 @@ Status: In progress (Convex-backed organization module baseline expanded through
   - employee lookup sourced from `employees.list`
   - manager selection in create/edit modal flow
   - manager name projection in department table rows
+- Organization page-state standardization now supports:
+  - shared error treatment via `organization-page-state`
+  - shared initial loading treatment (no-data load phase)
+  - shared empty-state treatment for no-data screens
+  - applied across departments, designations, locations, user-linking, org chart, and org settings
 - User-linking rebuilt flow now uses:
   - `users.getUnlinkedUsers`
   - `users.getUnlinkedEmployees`
@@ -79,12 +84,16 @@ Status: In progress (Convex-backed organization module baseline expanded through
   - verifies init load trigger
   - verifies modal initialization from current settings
   - verifies settings update submission path
+- `src/app/features/organization/components/organization-page-state.component.spec.ts`
+  - verifies error-state rendering
+  - verifies no-data loading-state rendering
+  - verifies empty-state rendering
 
 ## Validation
 - `npm run build` passed.
-- `npm run test` passed (`32` files, `90` tests).
+- `npm run test` passed (`33` files, `93` tests).
 
 ## Next in This Track
-1. Add page-level load/error/empty-state standardization helper for organization screens.
-2. Add optimistic update and conflict handling patterns for organization settings writes.
-3. Add manager-assignment constraints/validation UX (inactive employee handling and stale-manager fallback).
+1. Add optimistic update and conflict handling patterns for organization settings writes.
+2. Add manager-assignment constraints/validation UX (inactive employee handling and stale-manager fallback).
+3. Extract shared table-action cell pattern to reduce page-template duplication across organization list screens.
