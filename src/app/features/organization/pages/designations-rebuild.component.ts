@@ -3,13 +3,14 @@ import { DynamicFormComponent } from '../../../shared/components/dynamic-form/dy
 import { ConfirmDialogOptions, UiConfirmDialogComponent } from '../../../shared/components/ui-confirm-dialog/ui-confirm-dialog.component';
 import { UiModalComponent } from '../../../shared/components/ui-modal/ui-modal.component';
 import { FieldConfig, FormSectionConfig, FormStepConfig } from '../../../shared/services/form-helper.service';
+import { OrganizationPageStateComponent } from '../components/organization-page-state.component';
 import { RebuildDesignation } from '../data/organization-rebuild.models';
 import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
 
 @Component({
   selector: 'app-designations-rebuild',
   standalone: true,
-  imports: [UiModalComponent, DynamicFormComponent, UiConfirmDialogComponent],
+  imports: [UiModalComponent, DynamicFormComponent, UiConfirmDialogComponent, OrganizationPageStateComponent],
   template: `
     <main class="h-full px-4 py-8 sm:px-6 lg:px-8">
       <div class="mx-auto w-full max-w-5xl space-y-8">
@@ -21,11 +22,14 @@ import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
           </p>
         </header>
 
-        @if (error()) {
-          <section class="rounded-2xl border border-red-200 bg-red-50/80 px-4 py-3 text-sm text-red-700 dark:border-red-500/40 dark:bg-red-500/10 dark:text-red-300">
-            {{ error() }}
-          </section>
-        }
+        <app-organization-page-state
+          [error]="error()"
+          [isLoading]="designationsLoading()"
+          [hasData]="designations().length > 0"
+          loadingLabel="Loading designations..."
+          emptyTitle="No designations found"
+          emptyMessage="Add at least one designation to define your role ladder."
+        />
 
         <section class="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm dark:border-white/8 dark:bg-white/[0.04]">
           <div class="flex flex-wrap items-center justify-between gap-3">
@@ -51,6 +55,7 @@ import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
           </div>
         </section>
 
+        @if (designations().length > 0) {
         <section class="overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm dark:border-white/8 dark:bg-white/[0.04]">
           <div class="overflow-x-auto">
           <table class="min-w-full text-left">
@@ -64,11 +69,6 @@ import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
               </tr>
             </thead>
             <tbody>
-              @if (designationsLoading() && designations().length === 0) {
-                <tr>
-                  <td colspan="5" class="px-4 py-8 text-center text-sm text-stone-500 dark:text-stone-400">Loading designations...</td>
-                </tr>
-              }
               @for (designation of designations(); track designation.id) {
                 <tr class="border-t border-stone-100 transition-colors hover:bg-burgundy-50/50 dark:border-white/[0.03] dark:hover:bg-burgundy-700/[0.06]">
                   <td class="px-4 py-3 text-sm font-medium text-stone-800 dark:text-stone-200">{{ designation.title }}</td>
@@ -94,17 +94,12 @@ import { OrganizationRebuildStore } from '../data/organization-rebuild.store';
                     </button>
                   </td>
                 </tr>
-              } @empty {
-                @if (!designationsLoading()) {
-                  <tr>
-                    <td colspan="5" class="px-4 py-8 text-center text-sm text-stone-500 dark:text-stone-400">No designations found.</td>
-                  </tr>
-                }
               }
             </tbody>
           </table>
           </div>
         </section>
+        }
       </div>
 
       <ui-modal

@@ -1,4 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
+import { OrganizationPageStateComponent } from '../components/organization-page-state.component';
 import { OrganizationRebuildDataService } from '../data/organization-rebuild.data.service';
 import { RebuildOrgChartNode } from '../data/organization-rebuild.models';
 
@@ -15,6 +16,7 @@ interface OrgChartRow {
 @Component({
   selector: 'app-organization-chart-rebuild',
   standalone: true,
+  imports: [OrganizationPageStateComponent],
   template: `
     <main class="h-full px-4 py-8 sm:px-6 lg:px-8">
       <div class="mx-auto w-full max-w-6xl space-y-8">
@@ -26,11 +28,14 @@ interface OrgChartRow {
           </p>
         </header>
 
-        @if (error()) {
-          <section class="rounded-2xl border border-red-200 bg-red-50/80 px-4 py-3 text-sm text-red-700 dark:border-red-500/40 dark:bg-red-500/10 dark:text-red-300">
-            {{ error() }}
-          </section>
-        }
+        <app-organization-page-state
+          [error]="error()"
+          [isLoading]="isLoading()"
+          [hasData]="rows().length > 0"
+          loadingLabel="Loading organization chart..."
+          emptyTitle="No chart data available"
+          emptyMessage="No reporting relationships were found for this organization."
+        />
 
         <section class="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm dark:border-white/8 dark:bg-white/[0.04]">
           <div class="flex flex-wrap items-center justify-between gap-3">
@@ -48,6 +53,7 @@ interface OrgChartRow {
           </div>
         </section>
 
+        @if (rows().length > 0) {
         <section class="overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm dark:border-white/8 dark:bg-white/[0.04]">
           <div class="overflow-x-auto">
             <table class="min-w-full text-left">
@@ -61,11 +67,6 @@ interface OrgChartRow {
                 </tr>
               </thead>
               <tbody>
-                @if (isLoading() && rows().length === 0) {
-                  <tr>
-                    <td colspan="5" class="px-4 py-8 text-center text-sm text-stone-500 dark:text-stone-400">Loading organization chart...</td>
-                  </tr>
-                }
                 @for (row of rows(); track row.id) {
                   <tr class="border-t border-stone-100 dark:border-white/[0.03]">
                     <td class="px-4 py-3 text-sm font-medium text-stone-800 dark:text-stone-200">
@@ -76,17 +77,12 @@ interface OrgChartRow {
                     <td class="px-4 py-3 text-sm text-stone-600 dark:text-stone-300">{{ row.directReportsCount }}</td>
                     <td class="px-4 py-3 text-sm text-stone-600 dark:text-stone-300">{{ row.status }}</td>
                   </tr>
-                } @empty {
-                  @if (!isLoading()) {
-                    <tr>
-                      <td colspan="5" class="px-4 py-8 text-center text-sm text-stone-500 dark:text-stone-400">No chart data available.</td>
-                    </tr>
-                  }
                 }
               </tbody>
             </table>
           </div>
         </section>
+        }
       </div>
     </main>
   `

@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { DynamicFormComponent } from '../../../shared/components/dynamic-form/dynamic-form.component';
 import { UiModalComponent } from '../../../shared/components/ui-modal/ui-modal.component';
 import { FieldConfig, FormSectionConfig, FormStepConfig } from '../../../shared/services/form-helper.service';
+import { OrganizationPageStateComponent } from '../components/organization-page-state.component';
 import {
   OrganizationPlan,
   OrganizationStatus,
@@ -12,7 +13,7 @@ import { OrganizationRebuildDataService } from '../data/organization-rebuild.dat
 @Component({
   selector: 'app-organization-settings-rebuild',
   standalone: true,
-  imports: [UiModalComponent, DynamicFormComponent],
+  imports: [UiModalComponent, DynamicFormComponent, OrganizationPageStateComponent],
   template: `
     <main class="h-full px-4 py-8 sm:px-6 lg:px-8">
       <div class="mx-auto w-full max-w-5xl space-y-8">
@@ -24,11 +25,14 @@ import { OrganizationRebuildDataService } from '../data/organization-rebuild.dat
           </p>
         </header>
 
-        @if (error()) {
-          <section class="rounded-2xl border border-red-200 bg-red-50/80 px-4 py-3 text-sm text-red-700 dark:border-red-500/40 dark:bg-red-500/10 dark:text-red-300">
-            {{ error() }}
-          </section>
-        }
+        <app-organization-page-state
+          [error]="error()"
+          [isLoading]="isLoading()"
+          [hasData]="!!settings()"
+          loadingLabel="Loading organization settings..."
+          emptyTitle="No organization settings available"
+          emptyMessage="No organization record was found for this account."
+        />
 
         <section class="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm dark:border-white/8 dark:bg-white/[0.04]">
           <div class="flex flex-wrap items-center justify-between gap-3">
@@ -56,10 +60,8 @@ import { OrganizationRebuildDataService } from '../data/organization-rebuild.dat
           </div>
         </section>
 
+        @if (settings(); as current) {
         <section class="rounded-2xl border border-stone-200 bg-white p-6 shadow-sm dark:border-white/8 dark:bg-white/[0.04]">
-          @if (isLoading() && !settings()) {
-            <p class="text-sm text-stone-500 dark:text-stone-400">Loading organization settings...</p>
-          } @else if (settings(); as current) {
             <dl class="grid gap-4 md:grid-cols-2">
               <div class="space-y-1">
                 <dt class="text-xs font-semibold uppercase tracking-wide text-stone-500 dark:text-stone-400">Organization Name</dt>
@@ -78,10 +80,8 @@ import { OrganizationRebuildDataService } from '../data/organization-rebuild.dat
                 <dd class="text-sm font-medium capitalize text-stone-800 dark:text-stone-100">{{ current.status }}</dd>
               </div>
             </dl>
-          } @else {
-            <p class="text-sm text-stone-500 dark:text-stone-400">No organization settings available for this account.</p>
-          }
         </section>
+        }
       </div>
 
       <ui-modal
