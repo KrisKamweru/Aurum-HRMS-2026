@@ -88,8 +88,11 @@ Reference: `docs/rebuild-parity-plan.md`
     - report: `docs/rebuild-manifests/phase3-foundation-report.md`
   - Phase 4 organization module expansion:
     - rebuilt pages mapped for `organization/departments`, `organization/designations`, `organization/locations`, and `organization/user-linking`
-    - shared in-memory organization rebuild store added for cross-page scaffold state
-    - add/remove interactions implemented with TDD coverage for store + organization rebuild pages
+    - shared organization rebuild store + Convex data adapter added for cross-page live data operations
+    - organization flows upgraded to create/edit/remove with confirmation patterns for departments, designations, and locations
+    - user-linking flow now uses `users.getUnlinkedUsers`, `users.getUnlinkedEmployees`, and `users.linkUserToEmployee`
+    - TDD coverage expanded for async store behavior + rebuilt organization pages
+    - validation: `npm run build` and `npm test` passing (`30` files, `82` tests)
     - report: `docs/rebuild-manifests/phase4-organization-slice-report.md`
   - Phase 4 shared form/modal baseline:
     - shared `dynamic-form` rebuilt with multi-column sections and stepper flows
@@ -101,7 +104,7 @@ Reference: `docs/rebuild-parity-plan.md`
   - Phase 4 shared component library port completed:
     - rebuilt shared components now present in active scope for: `notifications-panel`, `ui-avatar`, `ui-badge`, `ui-button`, `ui-card`, `ui-confirm-dialog`, `ui-data-table`, `ui-date-range`, `ui-form-field`, `ui-grid`, `ui-icon`, `ui-nav-item`, `ui-stepper`, `ui-toast`
     - TDD coverage added for the rebuilt shared component set
-    - validation: `npm test` passing with expanded coverage (`30` files, `74` tests)
+    - validation: `npm test` passing with expanded coverage (`30` files, `82` tests)
     - report: `docs/rebuild-manifests/phase4-shared-components-report.md`
 
 ### P0. Immediate Stabilization and Context Hygiene (Now)

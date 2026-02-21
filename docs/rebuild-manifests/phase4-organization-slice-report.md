@@ -1,7 +1,7 @@
 # Phase 4 Organization Slice Report
 
 Date: 2026-02-21  
-Status: In progress (organization module scaffold expanded)
+Status: In progress (Convex-backed CRUD and user-linking integration completed for organization pages)
 
 ## Slice Delivered
 - Replaced generic placeholders with rebuilt organization pages:
@@ -11,52 +11,57 @@ Status: In progress (organization module scaffold expanded)
   - `src/app/features/organization/pages/user-linking-rebuild.component.ts`
 - Route wired with existing auth and role guards in:
   - `src/app/app.routes.ts`
-- Introduced shared in-memory feature state:
+- Introduced shared feature store and Convex data adapter:
   - `src/app/features/organization/data/organization-rebuild.store.ts`
+  - `src/app/features/organization/data/organization-rebuild.data.service.ts`
+  - `src/app/features/organization/data/organization-rebuild.models.ts`
 
 ## Current Capability
-- Local scaffolded list + create interactions for:
-  - Departments
-  - Designations
-  - Locations
-- Departments, designations, and locations creation flows now use shared modal + dynamic-form with stepper and multi-column sections.
-- User-linking scaffold:
-  - pending link queue
-  - per-row link action with linked-count telemetry
-- Row-level remove actions for:
-  - Departments
-  - Designations
-  - Locations
+- Convex-backed list + create + update + remove interactions for:
+  - Departments (`organization.list/create/update/deleteDepartment`)
+  - Designations (`organization.list/create/update/deleteDesignation`)
+  - Locations (`organization.list/create/update/deleteLocation`)
+- Departments, designations, and locations now support:
+  - create modal flow
+  - edit modal flow
+  - destructive confirmation dialog on remove
+- User-linking rebuilt flow now uses:
+  - `users.getUnlinkedUsers`
+  - `users.getUnlinkedEmployees`
+  - `users.linkUserToEmployee`
+- User-linking UX includes:
+  - per-row employee selection
+  - auto-suggestion matching (email/full-name)
+  - linked-count telemetry
 - Duplicate guardrails active:
   - Department: unique by name.
   - Designation: unique by title.
   - Location: unique by name + city.
 - Design system alignment updates applied on rebuilt organization surfaces (stone/burgundy palette, glass dark-mode cards, typography scale).
-- Convex integration remains pending for this module.
 
 ## TDD Coverage
 - `src/app/features/organization/data/organization-rebuild.store.spec.ts`
-  - verifies seeded datasets
+  - verifies service-driven load behavior
   - verifies unique-create and duplicate guards across all three entities
-  - verifies remove actions by id across all three entities
+  - verifies update + remove actions by id across all three entities
+  - verifies user-linking load, auto-suggested pairings, and link action behavior
+  - verifies error-state propagation
 - `src/app/features/organization/pages/departments-rebuild.component.spec.ts`
-  - verifies seed data render baseline
-  - verifies add/remove behavior
+  - verifies init load trigger and create/remove interactions
 - `src/app/features/organization/pages/designations-rebuild.component.spec.ts`
-  - verifies seeded designation render baseline
-  - verifies add/remove behavior
+  - verifies init load trigger and create/remove interactions
 - `src/app/features/organization/pages/locations-rebuild.component.spec.ts`
-  - verifies seeded location render baseline
-  - verifies add/remove behavior
+  - verifies init load trigger and create/remove interactions
 - `src/app/features/organization/pages/user-linking-rebuild.component.spec.ts`
-  - verifies seeded pending queue
+  - verifies init load trigger
   - verifies link action and linked-count increment
+  - verifies selection change propagation
 
 ## Validation
 - `npm run build` passed.
-- `npm run test` passed (`15` files, `45` tests).
+- `npm run test` passed (`30` files, `82` tests).
 
 ## Next in This Track
-1. Replace in-memory store with Convex-backed CRUD for departments/designations/locations.
-2. Add edit interactions and confirmation patterns.
-3. Replace user-linking scaffold with real `users.getUnlinkedUsers` / `users.linkUserToEmployee` backed flow.
+1. Wire Convex auth token/session into the Angular app shell so privileged mutations succeed under real authenticated context.
+2. Add manager/employee lookup support for department manager assignment in the department edit/create modal.
+3. Expand organization chart and organization settings rebuild pages using the same shared patterns.
