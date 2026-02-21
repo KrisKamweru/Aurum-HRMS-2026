@@ -30,11 +30,12 @@ This is an Angular 21 HRMS / ERP application which uses tailwind for styling, an
 ### MD Files
 While I'm trying to keep the project free of MD creep, here are some relevant ones
 
-1. `ROADMAP.md`: Contains the overall project progress and next steps. Refer to this if unsure.
-2. `AGENTS.md`: This file. True above all other sources of truth. Where any differences are noted, let this file be your guide.
+1. `AGENTS.md`: This file. True above all other sources of truth. Where any differences are noted, let this file be your guide.
+2. `ROADMAP.md`: Contains the overall project progress and next steps. Refer to this if unsure.
 3. `DESIGN LANGUAGE.md`: Contains the design language and ethos for the app, distilled from some design runs we did earlier. It is your Bible when it comes to design implementation. Never stray from it.
-4. `CLAUDE.md`: OPTIONAL (not to be taken strictly), source of extra context and project history.
-5. `README.md`: Default angular CLI generated README file
+4. `ANGULAR BEST PRACTICES.md`: This contains some best practice guidelines for Angular, to avoid old patterns.
+5. `CLAUDE.md`: OPTIONAL (not to be taken strictly), source of extra context and project history.
+6. `README.md`: Default angular CLI generated README file
 
 ## Working agreements
 
@@ -45,3 +46,11 @@ While I'm trying to keep the project free of MD creep, here are some relevant on
 - Any and all changes to `AGENTS.md` must be explicitly approved by me first. Stop work to notify me and request permission before making edits to this file.
 - ALWAYS refer to the design guidelines when creating new HTML / CSS.
 - Keep commits atomic. Avoid thousand plus line diff commits. Break them up so progress is easy to follow, and reversion can be targeted as well
+- Use your mcp tools where it makes sense to, and where time can be saved.
+- You MUST adhere to best angular practices, and not outtdated ones.
+
+## Tooling
+You have access to these three mcps, and tools from them:
+1. Codex mcp: Useful for querying the db when the codex server is running, and running codemods.
+2. Playwright mcp: Crucial tool for running the app in a real browser. Use this to regression test where necessary
+3. Angular mcp: Angular tool you can use to get best practices, find examples, and migrate to onpush zoneless. Use it where you need context on ng20+ best practices
