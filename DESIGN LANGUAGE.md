@@ -562,6 +562,7 @@ Existing `@media (prefers-reduced-motion: reduce)` in `styles.css` already disab
 3. **Dark mode is always `dark:` prefixed.** Never use `:host-context(.dark)`. It doesn't compose well with Tailwind and creates specificity issues.
 4. **Prefer Tailwind arbitrary values over custom classes.** Example: `shadow-[0_4px_20px_rgba(134,24,33,0.35)]` instead of a custom `.shadow-glow-red` class.
 5. **Glass surfaces are dark-mode only.** Don't apply `backdrop-blur` in light mode — it tanks performance for no visual benefit on opaque backgrounds.
+6. **Scroll boundaries are internal, never page-level.** App shell uses fixed viewport (`h-dvh`/`overflow-hidden`), while feature containers, modal bodies, and table wrappers own their own `overflow-y-auto`/`overflow-x-auto` behavior.
 
 ---
 

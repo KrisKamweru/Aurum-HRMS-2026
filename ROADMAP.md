@@ -91,6 +91,12 @@ Reference: `docs/rebuild-parity-plan.md`
     - shared in-memory organization rebuild store added for cross-page scaffold state
     - add/remove interactions implemented with TDD coverage for store + organization rebuild pages
     - report: `docs/rebuild-manifests/phase4-organization-slice-report.md`
+  - Phase 4 shared form/modal baseline:
+    - shared `dynamic-form` rebuilt with multi-column sections and stepper flows
+    - shared `ui-modal` rebuilt with configurable widths (`thin|normal|wide`) and internal body scroll
+    - app shell and global styles now enforce internal container scrolling over page scrolling
+    - design rule added to `DESIGN LANGUAGE.md` for internal scroll boundaries
+    - report: `docs/rebuild-manifests/phase4-shared-foundation-report.md`
 
 ### P0. Immediate Stabilization and Context Hygiene (Now)
 Status: Substantially completed on 2026-02-09.
