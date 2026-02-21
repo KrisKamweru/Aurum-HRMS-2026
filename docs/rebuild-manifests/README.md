@@ -38,4 +38,4 @@ This folder is the Phase 1 parity baseline for the full frontend rebuild program
 2. Any route removal requires an approved update in `deprecation-register.md`.
 3. Any missing function in `api-usage-summary.csv` is a parity gap unless intentionally deprecated.
 4. Cutover is blocked until high-risk flows in `high-risk-flow-map.md` pass.
-
+5. `src/app.old` is functionality-reference only; rebuilt UI/UX should be newly authored per `DESIGN LANGUAGE.md`, not copied from legacy templates.

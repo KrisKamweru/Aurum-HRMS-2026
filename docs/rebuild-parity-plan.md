@@ -6,6 +6,19 @@ Status: Planning only (no migration started)
 ## Objective
 Archive the current frontend as legacy (`.old`) and rebuild the app from a clean structure without losing existing business behavior, security controls, or role-based access contracts.
 
+## Legacy Reference Policy (`src/app.old`)
+`src/app.old` exists only as a functionality and contract archive.
+
+- Allowed use:
+  - route/role/API parity verification
+  - behavior reference for business rules and edge cases
+  - migration checklists and regression mapping
+- Disallowed use:
+  - copy/paste of legacy templates/styles/layouts into rebuilt features
+  - visual or UX back-porting from legacy pages
+- Rebuild rule:
+  - all rebuilt UI must follow `DESIGN LANGUAGE.md` and shared rebuilt primitives (`dynamic-form`, `ui-modal`, etc.), while preserving functional parity.
+
 ## Scope
 - Frontend routes, pages, and critical user flows.
 - Frontend-to-Convex function usage.
