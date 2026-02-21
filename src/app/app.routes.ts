@@ -52,9 +52,29 @@ export const routes: Routes = [
     canActivate: [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager', 'manager'])],
     data: { title: 'Employee Detail' }
   },
-  placeholderRoute('leave-requests', 'Leave Requests', [authGuard]),
-  placeholderRoute('attendance', 'Attendance', [authGuard]),
-  placeholderRoute('attendance/team', 'Team Attendance', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager', 'manager'])]),
+  {
+    path: 'leave-requests',
+    loadComponent: () =>
+      import('./features/leave/pages/leave-requests-rebuild.component').then((m) => m.LeaveRequestsRebuildComponent),
+    canActivate: [authGuard],
+    data: { title: 'Leave Requests' }
+  },
+  {
+    path: 'attendance',
+    loadComponent: () =>
+      import('./features/attendance/pages/attendance-rebuild.component').then((m) => m.AttendanceRebuildComponent),
+    canActivate: [authGuard],
+    data: { title: 'Attendance' }
+  },
+  {
+    path: 'attendance/team',
+    loadComponent: () =>
+      import('./features/attendance/pages/team-attendance-rebuild.component').then(
+        (m) => m.TeamAttendanceRebuildComponent
+      ),
+    canActivate: [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager', 'manager'])],
+    data: { title: 'Team Attendance' }
+  },
   placeholderRoute('core-hr', 'Core HR', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]),
   placeholderRoute('core-hr/promotions', 'Promotions', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]),
   placeholderRoute('core-hr/transfers', 'Transfers', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]),

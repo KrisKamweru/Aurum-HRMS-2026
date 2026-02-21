@@ -140,6 +140,15 @@ Reference: `docs/rebuild-parity-plan.md`
     - TDD coverage added for employees data adapter, store, and list/detail pages
     - validation: `npm test` and `npm run build` passing (`42` files, `178` tests)
     - report: `docs/rebuild-manifests/phase4-employees-slice-report.md`
+  - Phase 4 leave + attendance baseline:
+    - rebuilt pages mapped for `leave-requests`, `attendance`, and `attendance/team` (replacing placeholders)
+    - leave rebuild store + Convex data adapter added under `src/app/features/leave/data/`
+    - attendance rebuild store + Convex data adapter added under `src/app/features/attendance/data/`
+    - leave flow now supports request creation, pending-state approvals/rejections/cancellations, and rejection-reason enforcement
+    - attendance personal flow now supports clock in/out, reason-required retry handling, summary cards, and history table
+    - attendance team flow now supports daily roster review, manual attendance corrections, and held trust-event approval/rejection actions
+    - TDD coverage added for leave + attendance adapters, stores, and rebuilt pages
+    - report: `docs/rebuild-manifests/phase4-leave-attendance-slice-report.md`
 
 ### P0. Immediate Stabilization and Context Hygiene (Now)
 Status: Substantially completed on 2026-02-09.
