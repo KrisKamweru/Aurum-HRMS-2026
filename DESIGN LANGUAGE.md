@@ -86,24 +86,35 @@ The existing warm stone palette is correct. Key usage:
 | Error     | `#dc2626`   | `#f87171`   |
 | Info      | `#2563eb`   | `#60a5fa`   |
 
-### 2.5 Glass Tokens (dark mode specific)
+### 2.5 Glass Tokens (adaptive by mode)
 
-These are used for the glassmorphic card surfaces in dark mode. In light mode, standard opaque white cards are used.
+Glass is a controlled material, not the default for every container. Use strongest glass on transient layers (modals, sheets, popovers), and use restrained/opaque surfaces for most persistent layout containers.
 
 ```css
+/* Light mode glass surfaces */
+--glass-light: rgba(255, 255, 255, 0.72);
+--glass-light-border: rgba(255, 255, 255, 0.55);
+--glass-light-hover: rgba(255, 255, 255, 0.82);
+
 /* Dark mode glass surfaces */
---glass: rgba(255, 255, 255, 0.05);
---glass-border: rgba(255, 255, 255, 0.08);
---glass-hover: rgba(255, 255, 255, 0.08);
+--glass-dark: rgba(255, 255, 255, 0.05);
+--glass-dark-border: rgba(255, 255, 255, 0.08);
+--glass-dark-hover: rgba(255, 255, 255, 0.08);
 ```
 
-**Tailwind equivalents**:
-- `bg-white/5` (glass surface)
-- `border-white/8` (glass border)
+**Tailwind equivalents (light glass)**:
+- `bg-white/[0.72]` (glass surface)
+- `border-white/[0.55]` (glass border)
 - `backdrop-blur-xl` (frosted effect)
 
-In light mode, cards use:
-- `bg-white` with `border border-stone-200` and `shadow-sm`
+**Tailwind equivalents (dark glass)**:
+- `dark:bg-white/5` (glass surface)
+- `dark:border-white/8` (glass border)
+- `dark:backdrop-blur-xl` (frosted effect)
+
+**Default non-glass surface**:
+- `bg-white border border-stone-200 shadow-sm` (light)
+- `dark:bg-white/5 dark:border-white/8` or opaque `dark:bg-stone-800` based on hierarchy
 
 ---
 
@@ -189,40 +200,59 @@ All sizes are in `rem`. Base is `16px` (`1rem`).
 
 ## 5. Surfaces & Elevation
 
-### 5.1 Light Mode
+### 5.1 Surface Hierarchy (where glass is allowed)
 
-Cards are opaque white with subtle shadows and stone borders:
+- **Tier 1: Structural surfaces (app shell, major page sections, table wrappers)** use mostly opaque surfaces for stability.
+- **Tier 2: Persistent cards/widgets** default to opaque or restrained glass depending on backdrop complexity.
+- **Tier 3: Transient overlays (modals, sheets, popovers, command menus)** are primary candidates for full glass treatment.
+
+Do not stack many adjacent high-blur glass panes. If a region already has layered glass, keep neighboring surfaces calmer/opaque.
+
+### 5.2 Light Mode Surfaces
+
+Default card (preferred for persistent surfaces):
 
 ```html
 <div class="bg-white border border-stone-200 rounded-2xl shadow-sm">
 ```
 
-Hover state (interactive cards):
+Light glass (allowed for transient overlays and select highlight panels):
+
 ```html
-<div class="bg-white border border-stone-200 rounded-2xl shadow-sm
-            hover:shadow-md hover:-translate-y-0.5 transition-all">
+<div class="bg-white/[0.72] border border-white/[0.55] rounded-2xl backdrop-blur-xl shadow-sm">
 ```
 
-### 5.2 Dark Mode — Glass Surfaces
+Interactive hover state:
 
-This is the signature look from Design 6. Cards become translucent with backdrop blur:
+```html
+<div class="bg-white/[0.72] border border-white/[0.55] rounded-2xl backdrop-blur-xl shadow-sm
+            hover:bg-white/[0.82] transition-all">
+```
+
+### 5.3 Dark Mode Surfaces
+
+Dark glass remains the signature surface for elevated UI:
 
 ```html
 <div class="bg-white border border-stone-200 rounded-2xl shadow-sm
             dark:bg-white/5 dark:border-white/8 dark:backdrop-blur-xl dark:shadow-none">
 ```
 
-**Highlighted card** (e.g., a stat card with the brand accent):
+Highlighted card (brand accent remains targeted):
+
 ```html
 <div class="bg-burgundy-50 border-burgundy-200
             dark:bg-burgundy-700/12 dark:border-burgundy-700/20">
 ```
 
-### 5.3 Shadows
+### 5.4 Shadows, Scrims, and Depth Control
 
-Light mode uses the existing warm burgundy-tinted shadows (`--shadow-sm` through `--shadow-xl`).
-
-Dark mode uses minimal shadows — the glass borders and backdrop blur provide enough depth. Set shadows to near-transparent black in `:root.dark`.
+- Light mode uses warm burgundy-tinted shadows (`--shadow-sm` through `--shadow-xl`) on opaque surfaces.
+- Dark mode uses minimal shadows; borders and blur carry most depth.
+- For modals/sheets over complex backgrounds, increase backdrop scrim first before increasing blur:
+  - Base: `bg-black/30`
+  - Elevated complexity: `bg-black/40` to `bg-black/50`
+- Never compensate for low contrast with stronger saturation alone; adjust scrim/surface opacity first.
 
 ---
 
@@ -448,7 +478,7 @@ Active item uses a brand-red left border and tinted background:
 ### 7.2 Dark Mode Specifics
 
 - **Background**: Near-black (`#0b0b0b` or `stone-900`) — NOT pure `#000`.
-- **Surfaces**: Glass (`bg-white/5 backdrop-blur-xl border-white/8`).
+- **Surfaces**: Glass for elevated/transient layers (`bg-white/5 backdrop-blur-xl border-white/8`), calmer opaque surfaces where density is high.
 - **Text**: `stone-100` primary, `stone-400` secondary, `stone-500` muted.
 - **Glow**: Subtle radial glow (`rgba(134,24,33,0.35)`) behind hero sections and CTAs.
 - **Shadows**: Minimal. Glass borders provide depth. Disable most box-shadows.
@@ -456,16 +486,41 @@ Active item uses a brand-red left border and tinted background:
 ### 7.3 Light Mode Specifics
 
 - **Background**: Warm off-white gradient (`stone-50` → `stone-100`).
-- **Surfaces**: Opaque `bg-white` with `border-stone-200` and `shadow-sm`.
+- **Surfaces**: Opaque `bg-white` with `border-stone-200` and `shadow-sm` by default; controlled light-glass for transient overlays and selective emphasis only.
 - **Text**: `stone-800` primary, `stone-500` secondary, `stone-400` muted.
-- **Brand red**: Same `burgundy-700` everywhere. No lightening.
+- **Brand red**: `burgundy-700` remains primary for CTA/active states. Contextual tints (`burgundy-600`/`500`) are allowed for secondary accents when required for contrast/composition.
 - **Shadows**: Warm burgundy-tinted shadows (existing `--shadow-*` tokens).
 
-### 7.4 Light Mode Glass Alternative
+### 7.4 Mode Cohesion Rules
 
-In light mode, instead of `backdrop-blur` glass, use:
-- Solid white backgrounds with borders and shadows.
-- On interactive elements (e.g., metric strip), a subtle `bg-stone-50` or `bg-white` with `shadow-sm` instead of transparency.
+- Keep component structure, spacing, border radius, and hierarchy identical across modes.
+- Change material parameters (tint, opacity, blur, border alpha), not layout logic.
+- If a component uses glass in one mode, it should use an equivalent material intent in the other mode (full glass, restrained glass, or opaque), not a completely different component identity.
+
+### 7.5 Background Composition for Glass
+
+- Prefer low-frequency, layered backgrounds: soft gradients, gentle radial color fields, optional subtle grain.
+- Avoid busy imagery directly behind glass-heavy UI regions.
+- Keep dense data regions calmer than hero/marketing regions.
+- If multiple glass layers overlap, simplify the background before increasing blur.
+
+### 7.6 Color Pop Rules (accent discipline)
+
+- Default glass UI remains neutral-first; accent color is for meaning and hierarchy, not decoration.
+- Use accent on: primary CTA, active nav state, key metric highlight, focused interaction.
+- Avoid large saturated accent fills behind long-form text.
+- Do not rely on color alone for status/state; pair with text labels or icons.
+
+### 7.7 Contrast and Fallback Rules
+
+- Validate contrast on the final composited surface (after transparency + blur), not token pairs in isolation.
+- Targets: `4.5:1` for normal text, `3:1` for large/bold text, `3:1` for UI boundaries/icons.
+- If contrast fails, adjust in this order:
+  1. Increase scrim opacity.
+  2. Increase surface opacity.
+  3. Reduce backdrop complexity.
+  4. Swap to opaque surface.
+- Provide solid-surface fallback for transparency-reduced/unsupported contexts.
 
 ---
 
@@ -510,7 +565,7 @@ Existing `@media (prefers-reduced-motion: reduce)` in `styles.css` already disab
 | **Brand primary**       | `#8b1e3f` (burgundy-800)                       | `#861821` (burgundy-700, the new anchor)            |
 | **Dark bg**             | `stone-900` (`#1c1917`)                        | Near-black `#0b0b0b` for page, `stone-800` for cards |
 | **Card style (dark)**   | Opaque `stone-800`                             | Glass: `bg-white/5 backdrop-blur-xl border-white/8` |
-| **Card style (light)**  | `bg-white shadow-md` (mostly unchanged)        | `bg-white shadow-sm border-stone-200` (softer)      |
+| **Card style (light)**  | `bg-white shadow-md` (mostly unchanged)        | Default opaque + optional light glass for transient overlays |
 | **Min font size**       | Some text at `0.5rem` (8px)                    | Floor of `0.75rem` (12px), body min `0.875rem`      |
 | **Button radius**       | Mixed (`rounded-md`, `rounded-lg`)             | Consistent `rounded-[10px]`                         |
 | **Card radius**         | `rounded-xl`                                   | `rounded-2xl` for page-level, `rounded-xl` for inner|
@@ -532,19 +587,19 @@ Existing `@media (prefers-reduced-motion: reduce)` in `styles.css` already disab
    ```
 3. Regenerate `--burgundy-*` palette around `#861821` as the 700 value.
 4. Update `:root.dark body` background to `#0b0b0b`.
-5. Update `.card-glass` dark override to use `bg-white/5 backdrop-blur-xl`.
+5. Update `.card-glass` to support adaptive glass (`bg-white/[0.72]` in light, `dark:bg-white/5` in dark) plus opaque fallback classes.
 6. Audit all global utility classes for font sizes below `0.75rem` — bump them up.
 
 #### `src/app/layouts/main-layout/main-layout.component.ts`
 - Update sidebar nav items to match Section 6.7 patterns.
 - Update dark mode background classes on the main content area.
-- Ensure the sidebar uses glass surface in dark mode.
+- Keep sidebar material cohesive by mode: restrained glass/opaque in light, glass in dark where contrast remains safe.
 
 #### Shared components (`src/app/shared/components/`)
 
 - **`ui-button`**: Update `getClasses()` to use `rounded-[10px]`, `text-sm font-semibold`, and the new `burgundy-700` based colors. Ensure minimum `py-2.5` for touch targets.
 - **`ui-card`**: Update the `glass` variant to use `dark:bg-white/5 dark:border-white/8 dark:backdrop-blur-xl`. Default variant: `bg-white border-stone-200 shadow-sm rounded-2xl`.
-- **`ui-modal`**: Ensure backdrop uses `backdrop-blur-sm` and modal panel uses the glass surface in dark mode.
+- **`ui-modal`**: Ensure backdrop uses `backdrop-blur-sm` with adaptive scrim and modal panel uses adaptive glass (light and dark) with opaque fallback.
 - **`ui-data-table`**: Apply Section 6.2 table patterns. Minimum `text-sm` for cells, `text-xs` for headers.
 - **`ui-form-field`**: Update label to `text-[13px] font-medium`.
 - **`ui-badge`**: Ensure `text-xs font-semibold` minimum.
@@ -553,7 +608,7 @@ Existing `@media (prefers-reduced-motion: reduce)` in `styles.css` already disab
 - Replace any inline `text-[#8b1e3f]` with `text-burgundy-700`.
 - Replace any inline `bg-[#8b1e3f]` with `bg-burgundy-700`.
 - Audit for font sizes below the floor.
-- Apply glass card pattern in dark mode where cards are currently `dark:bg-stone-800`.
+- Apply glass patterns by hierarchy (transient-first). Keep dense data regions restrained/opaque in both modes when readability is better.
 
 ### 9.3 General migration rules
 
@@ -561,8 +616,10 @@ Existing `@media (prefers-reduced-motion: reduce)` in `styles.css` already disab
 2. **No `:host` color declarations in components.** Theme colors come from Tailwind utilities referencing the global `@theme` tokens. `:host { display: block; }` is fine for layout.
 3. **Dark mode is always `dark:` prefixed.** Never use `:host-context(.dark)`. It doesn't compose well with Tailwind and creates specificity issues.
 4. **Prefer Tailwind arbitrary values over custom classes.** Example: `shadow-[0_4px_20px_rgba(134,24,33,0.35)]` instead of a custom `.shadow-glow-red` class.
-5. **Glass surfaces are dark-mode only.** Don't apply `backdrop-blur` in light mode — it tanks performance for no visual benefit on opaque backgrounds.
+5. **Glass surfaces are adaptive, not global.** Prioritize glass on transient layers; keep dense persistent regions calmer with opaque or restrained glass surfaces.
 6. **Scroll boundaries are internal, never page-level.** App shell uses fixed viewport (`h-dvh`/`overflow-hidden`), while feature containers, modal bodies, and table wrappers own their own `overflow-y-auto`/`overflow-x-auto` behavior.
+7. **Backgrounds must support glass readability.** Use low-frequency gradients and avoid busy textures directly behind dense glass regions.
+8. **Color pop is semantic and sparse.** Accent color highlights intent (CTA, active, key metric), never broad decoration.
 
 ---
 
@@ -573,11 +630,13 @@ Existing `@media (prefers-reduced-motion: reduce)` in `styles.css` already disab
 | **Minimum font size**          | `0.75rem` (12px) absolute floor. Body: `0.875rem`+.         |
 | **Contrast (normal text)**     | ≥ 4.5:1 against background (WCAG AA).                       |
 | **Contrast (large text/bold)** | ≥ 3:1 against background.                                   |
+| **Contrast validation method** | Measure against final composited glass surface (post blur/transparency). |
 | **Touch targets**              | Minimum `40px` height for all interactive elements.          |
 | **Focus indicators**           | `focus-visible:ring-2 ring-burgundy-500 ring-offset-2`.     |
 | **Reduced motion**             | All animations disabled via `prefers-reduced-motion: reduce`.|
 | **Color not sole indicator**   | Status uses color + text label (e.g., green dot + "Present").|
 | **Keyboard navigation**        | All interactive elements reachable via Tab.                  |
+| **Transparency fallback**      | If blur/transparency is unavailable or harms contrast, fall back to opaque surfaces. |
 
 ---
 
@@ -595,4 +654,4 @@ The showcase component at `/6` (`ShowcaseSixComponent`) is the living reference 
 
 When implementing new features, compare against `/6` for visual consistency.
 
-> **Note**: The showcase uses custom CSS because it's a self-contained demo page. Production app components should use Tailwind classes as described in this document. The showcase is the *what it looks like* reference; this document is the *how to build it* reference.
+> **Note**: The showcase uses custom CSS because it's a self-contained demo page. Production app components should use Tailwind classes as described in this document. The showcase is the *what it looks like* reference; this document is the *how to build it* reference, including adaptive light-mode glass and contrast guardrails not fully expressed in the showcase.
