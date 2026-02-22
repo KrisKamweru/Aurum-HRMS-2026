@@ -217,6 +217,15 @@ Reference: `docs/rebuild-parity-plan.md`
     - TDD coverage added for reports adapters, store, and rebuilt pages
     - validation: `npm test` and `npm run build` passing (`76` files, `309` tests)
     - report: `docs/rebuild-manifests/phase4-reports-slice-report.md`
+  - Phase 4 super-admin baseline:
+    - rebuilt page mapped for `super-admin` route (replacing placeholder)
+    - super-admin rebuild store + Convex data adapter added under `src/app/features/super-admin/data/`
+    - rebuilt super-admin dashboard now supports organization overview stats and organization table review
+    - create/edit organization modal flow rebuilt with shared dynamic-form (modal + stepper-compatible config)
+    - organization status activation/suspension flow rebuilt with shared confirm dialog guardrail
+    - TDD coverage added for super-admin adapter, store, and rebuilt page
+    - validation: `npm test` and `npm run build` passing (`79` files, `319` tests)
+    - report: `docs/rebuild-manifests/phase4-super-admin-slice-report.md`
 
 ### P0. Immediate Stabilization and Context Hygiene (Now)
 Status: Substantially completed on 2026-02-09.

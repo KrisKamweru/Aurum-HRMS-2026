@@ -325,7 +325,13 @@ export const routes: Routes = [
     canActivate: [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])],
     data: { title: 'Tax Report' }
   },
-  placeholderRoute('super-admin', 'Super Admin', [authGuard, roleGuard(['super_admin'])]),
+  {
+    path: 'super-admin',
+    loadComponent: () =>
+      import('./features/super-admin/pages/super-admin-rebuild.component').then((m) => m.SuperAdminRebuildComponent),
+    canActivate: [authGuard, roleGuard(['super_admin'])],
+    data: { title: 'Super Admin' }
+  },
   placeholderRoute('demo', 'Demo'),
   placeholderRoute('demo/buttons', 'Demo Buttons'),
   placeholderRoute('demo/forms', 'Demo Forms'),

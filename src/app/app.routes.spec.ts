@@ -35,6 +35,7 @@ describe('app routes', () => {
     expect(paths).toContain('reports/analytics');
     expect(paths).toContain('reports/payroll');
     expect(paths).toContain('reports/tax');
+    expect(paths).toContain('super-admin');
     expect(paths).toContain('auth/login');
   });
 
@@ -183,5 +184,12 @@ describe('app routes', () => {
     expect(analytics?.loadComponent).toBeTypeOf('function');
     expect(payroll?.loadComponent).toBeTypeOf('function');
     expect(tax?.loadComponent).toBeTypeOf('function');
+  });
+
+  it('maps super-admin route to rebuilt component with guard contracts', () => {
+    const superAdmin = routes.find((route) => route.path === 'super-admin');
+    expect(superAdmin?.data?.['title']).toBe('Super Admin');
+    expect(superAdmin?.canActivate?.length).toBeGreaterThan(0);
+    expect(superAdmin?.loadComponent).toBeTypeOf('function');
   });
 });
