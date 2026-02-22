@@ -217,13 +217,14 @@ describe('app routes', () => {
     expect(profile?.loadComponent).toBeTypeOf('function');
 
     expect(settings?.redirectTo).toBe('settings/general');
-    expect(settings?.canActivate?.length).toBeGreaterThan(0);
+    expect(settings?.canActivate).toBeUndefined();
     expect(settingsGeneral?.data?.['title']).toBe('General Settings');
     expect(settingsLeavePolicies?.data?.['title']).toBe('Leave Policies');
     expect(settingsGeneral?.loadComponent).toBeTypeOf('function');
     expect(settingsLeavePolicies?.loadComponent).toBeTypeOf('function');
 
     expect(organization?.redirectTo).toBe('organization/departments');
+    expect(organization?.canActivate).toBeUndefined();
     expect(auth?.redirectTo).toBe('auth/login');
   });
 

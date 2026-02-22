@@ -1,8 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { signal } from '@angular/core';
+import { WritableSignal, signal } from '@angular/core';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { vi } from 'vitest';
+import { AuthSessionService } from '../../../core/auth/auth-session.service';
+import { SessionUser } from '../../../core/auth/auth.types';
 import { RebuildEmployeeRecord } from '../data/employees-rebuild.models';
 import { EmployeesRebuildStore } from '../data/employees-rebuild.store';
 import { EmployeeDetailRebuildComponent } from './employee-detail-rebuild.component';
@@ -12,10 +14,13 @@ describe('EmployeeDetailRebuildComponent', () => {
   let component: EmployeeDetailRebuildComponent;
   let paramMapSubject: Subject<ReturnType<typeof convertToParamMap>>;
   let loadEmployeeDetail: ReturnType<typeof vi.fn>;
+  let submitCompensationChange: ReturnType<typeof vi.fn>;
   let routerMock: { navigate: ReturnType<typeof vi.fn> };
+  let user: WritableSignal<SessionUser | null>;
 
   beforeEach(async () => {
     paramMapSubject = new Subject<ReturnType<typeof convertToParamMap>>();
+    user = signal({ id: 'user-1', name: 'Admin User', role: 'admin', email: 'admin@aurum.dev' });
     const employeeState = signal<RebuildEmployeeRecord | null>({
       id: 'emp-1',
       firstName: 'Amina',
@@ -37,8 +42,10 @@ describe('EmployeeDetailRebuildComponent', () => {
     });
     const detailLoading = signal(false);
     const error = signal<string | null>(null);
+    const isSaving = signal(false);
 
     loadEmployeeDetail = vi.fn(async () => {});
+    submitCompensationChange = vi.fn(async () => ({ mode: 'pending' as const, changeRequestId: 'cr-1' }));
     routerMock = {
       navigate: vi.fn(async () => true)
     };
@@ -54,13 +61,21 @@ describe('EmployeeDetailRebuildComponent', () => {
         },
         { provide: Router, useValue: routerMock },
         {
+          provide: AuthSessionService,
+          useValue: {
+            user: user.asReadonly()
+          }
+        },
+        {
           provide: EmployeesRebuildStore,
           useValue: {
             selectedEmployee: employeeState.asReadonly(),
             detailCollections: detailCollections.asReadonly(),
             detailLoading: detailLoading.asReadonly(),
+            isSaving: isSaving.asReadonly(),
             error: error.asReadonly(),
-            loadEmployeeDetail
+            loadEmployeeDetail,
+            submitCompensationChange
           }
         }
       ]
@@ -110,5 +125,89 @@ describe('EmployeeDetailRebuildComponent', () => {
     expect(component.statusVariant('on-leave')).toBe('warning');
     expect(component.statusVariant('resigned')).toBe('danger');
     expect(component.statusVariant('unknown')).toBe('neutral');
+  });
+
+  it('supports compensation edit submit flow for admin users', async () => {
+    paramMapSubject.next(convertToParamMap({ id: 'emp-1' }));
+    fixture.detectChanges();
+
+    const host = fixture.nativeElement as HTMLElement;
+    host.querySelectorAll('button').forEach((button) => {
+      if (button.textContent?.trim() === 'Compensation') {
+        button.click();
+      }
+    });
+    fixture.detectChanges();
+
+    const editButton = Array.from(host.querySelectorAll('button')).find((button) => button.textContent?.trim() === 'Edit');
+    expect(editButton).toBeTruthy();
+    editButton?.click();
+    fixture.detectChanges();
+
+    const salaryInput = host.querySelector('input[formcontrolname="baseSalary"]') as HTMLInputElement | null;
+    expect(salaryInput).not.toBeNull();
+    if (!salaryInput) {
+      return;
+    }
+    salaryInput.value = '91000';
+    salaryInput.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+
+    const saveButton = Array.from(host.querySelectorAll('button')).find((button) => button.textContent?.trim() === 'Save Changes');
+    expect(saveButton).toBeTruthy();
+    saveButton?.click();
+    fixture.detectChanges();
+
+    const reasonInput = host.querySelector('#confirm-reason') as HTMLTextAreaElement | null;
+    expect(reasonInput).not.toBeNull();
+    if (!reasonInput) {
+      return;
+    }
+    reasonInput.value = 'Quarterly compensation review adjustment';
+    reasonInput.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+
+    const submitButton = Array.from(host.querySelectorAll('button')).find((button) => button.textContent?.trim() === 'Submit');
+    expect(submitButton).toBeTruthy();
+    submitButton?.click();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(submitCompensationChange).toHaveBeenCalledWith({
+      employeeId: 'emp-1',
+      baseSalary: 91000,
+      currency: 'USD',
+      payFrequency: 'monthly',
+      reason: 'Quarterly compensation review adjustment'
+    });
+    expect(Array.from(host.querySelectorAll('button')).some((button) => button.textContent?.trim() === 'Save Changes')).toBe(false);
+  });
+
+  it('hides compensation edit actions for managers and renders read-only financial tiles', () => {
+    user.set({ id: 'user-2', name: 'Manager User', role: 'manager', email: 'manager@aurum.dev' });
+    paramMapSubject.next(convertToParamMap({ id: 'emp-1' }));
+    fixture.detectChanges();
+
+    const host = fixture.nativeElement as HTMLElement;
+    host.querySelectorAll('button').forEach((button) => {
+      if (button.textContent?.trim() === 'Compensation') {
+        button.click();
+      }
+    });
+    fixture.detectChanges();
+
+    expect(Array.from(host.querySelectorAll('button')).some((button) => button.textContent?.trim() === 'Edit')).toBe(false);
+
+    host.querySelectorAll('button').forEach((button) => {
+      if (button.textContent?.trim() === 'Financial') {
+        button.click();
+      }
+    });
+    fixture.detectChanges();
+
+    const tileText = host.textContent ?? '';
+    expect(tileText).toContain('Allowances');
+    expect(tileText).toContain('Deductions');
+    expect(Array.from(host.querySelectorAll('button')).filter((button) => button.textContent?.trim() === 'Add')).toHaveLength(0);
   });
 });

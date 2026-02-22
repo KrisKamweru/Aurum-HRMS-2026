@@ -1,4 +1,5 @@
 export type RebuildEmployeeStatus = 'active' | 'on-leave' | 'terminated' | 'resigned';
+export type RebuildEmployeePayFrequency = 'monthly' | 'bi_weekly' | 'weekly';
 
 export interface RebuildEmployeeRecord {
   id: string;
@@ -22,7 +23,7 @@ export interface RebuildEmployeeRecord {
   dob?: string;
   baseSalary?: number;
   currency?: string;
-  payFrequency?: 'monthly' | 'bi_weekly' | 'weekly';
+  payFrequency?: RebuildEmployeePayFrequency;
 }
 
 export interface RebuildEmployeeReference {
@@ -57,4 +58,17 @@ export interface CreateEmployeeInput {
 
 export interface UpdateEmployeeInput extends CreateEmployeeInput {
   id: string;
+}
+
+export interface UpdateEmployeeCompensationInput {
+  employeeId: string;
+  baseSalary?: number;
+  currency?: string;
+  payFrequency?: RebuildEmployeePayFrequency;
+  reason?: string;
+}
+
+export interface RebuildEmployeeCompensationActionResult {
+  mode: 'pending' | 'applied';
+  changeRequestId?: string;
 }

@@ -166,6 +166,27 @@ describe('EmployeesRebuildDataService', () => {
     expect(mutation).toHaveBeenNthCalledWith(2, api.employees.remove, { id: 'emp-1' });
   });
 
+  it('updates employee compensation and maps pending action responses', async () => {
+    mutation.mockResolvedValueOnce({ success: true, mode: 'pending', changeRequestId: 'cr-1' });
+
+    const result = await service.updateEmployeeCompensation({
+      employeeId: 'emp-1',
+      baseSalary: 91000,
+      currency: ' usd ',
+      payFrequency: 'monthly',
+      reason: 'Quarterly review adjustment'
+    });
+
+    expect(mutation).toHaveBeenCalledWith(api.employees.updateCompensation, {
+      employeeId: 'emp-1',
+      baseSalary: 91000,
+      currency: 'usd',
+      payFrequency: 'monthly',
+      reason: 'Quarterly review adjustment'
+    });
+    expect(result).toEqual({ mode: 'pending', changeRequestId: 'cr-1' });
+  });
+
   it('loads detail collection counts from employee detail queries', async () => {
     query.mockResolvedValueOnce([{ _id: 'contact-1' }, { _id: 'contact-2' }]);
     query.mockResolvedValueOnce([{ _id: 'bank-1' }]);

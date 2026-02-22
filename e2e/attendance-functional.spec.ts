@@ -18,6 +18,7 @@ test('Employee Attendance Clock-In/Out Flow', async ({ page }) => {
   const clockInBtn = page.getByRole('button', { name: /Clock In/i });
   const clockOutBtn = page.getByRole('button', { name: /Clock Out/i });
   const completedText = page.getByText("You've completed today's shift");
+  const clockedOutHeading = page.getByRole('heading', { name: /clocked out/i });
 
   if (await completedText.isVisible()) {
     console.log('User has already completed shift for today. Cannot test clock flow.');
@@ -38,7 +39,7 @@ test('Employee Attendance Clock-In/Out Flow', async ({ page }) => {
     await clockOutBtn.click();
     
     // Expect completion message
-    await expect(completedText).toBeVisible({ timeout: 10000 });
+    await expect(completedText.or(clockedOutHeading)).toBeVisible({ timeout: 10000 });
     console.log('Success: Clocked Out. Completion message visible.');
     await page.screenshot({ path: 'e2e/screenshots/attendance-completed.png' });
     
@@ -47,7 +48,7 @@ test('Employee Attendance Clock-In/Out Flow', async ({ page }) => {
     await clockOutBtn.click();
     
     // Expect completion message
-    await expect(completedText).toBeVisible({ timeout: 10000 });
+    await expect(completedText.or(clockedOutHeading)).toBeVisible({ timeout: 10000 });
     console.log('Success: Clocked Out. Completion message visible.');
     await page.screenshot({ path: 'e2e/screenshots/attendance-completed.png' });
   }

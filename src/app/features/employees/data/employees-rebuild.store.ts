@@ -2,10 +2,13 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 import { EmployeesRebuildDataService } from './employees-rebuild.data.service';
 import {
   CreateEmployeeInput,
+  RebuildEmployeeCompensationActionResult,
   RebuildEmployeeDetailCollections,
   RebuildEmployeeRecord,
+  RebuildEmployeePayFrequency,
   RebuildEmployeeReference,
   RebuildEmployeeStatus,
+  UpdateEmployeeCompensationInput,
   UpdateEmployeeInput
 } from './employees-rebuild.models';
 
@@ -238,6 +241,54 @@ export class EmployeesRebuildStore {
     }
   }
 
+  async submitCompensationChange(
+    payload: UpdateEmployeeCompensationInput
+  ): Promise<RebuildEmployeeCompensationActionResult | null> {
+    const employeeId = payload.employeeId.trim();
+    const reason = this.normalizeOptionalText(payload.reason);
+    const currency = this.normalizeOptionalText(payload.currency)?.toUpperCase();
+    const payFrequency = this.normalizePayFrequency(payload.payFrequency);
+    const baseSalary = this.normalizeCompensationAmount(payload.baseSalary);
+
+    if (!employeeId) {
+      this.errorState.set('Employee id is required.');
+      return null;
+    }
+    if (!reason) {
+      this.errorState.set('A change reason is required for compensation updates.');
+      return null;
+    }
+    if (payload.baseSalary !== undefined && baseSalary === undefined) {
+      this.errorState.set('Base salary must be a valid non-negative number.');
+      return null;
+    }
+    if (!currency && baseSalary === undefined && !payFrequency) {
+      this.errorState.set('At least one compensation field is required.');
+      return null;
+    }
+
+    this.savingState.set(true);
+    this.clearError();
+    try {
+      const result = await this.data.updateEmployeeCompensation({
+        employeeId,
+        baseSalary,
+        currency,
+        payFrequency,
+        reason
+      });
+      if (this.selectedEmployee()?.id === employeeId) {
+        await this.loadEmployeeDetail(employeeId);
+      }
+      return result;
+    } catch (error: unknown) {
+      this.setError(error, 'Unable to update compensation.');
+      return null;
+    } finally {
+      this.savingState.set(false);
+    }
+  }
+
   clearError(): void {
     this.errorState.set(null);
   }
@@ -332,6 +383,23 @@ export class EmployeesRebuildStore {
   private normalizeOptionalText(value: string | undefined): string | undefined {
     const normalized = value?.trim() ?? '';
     return normalized.length > 0 ? normalized : undefined;
+  }
+
+  private normalizePayFrequency(value: string | undefined): RebuildEmployeePayFrequency | undefined {
+    if (value === 'monthly' || value === 'bi_weekly' || value === 'weekly') {
+      return value;
+    }
+    return undefined;
+  }
+
+  private normalizeCompensationAmount(value: number | undefined): number | undefined {
+    if (value === undefined) {
+      return undefined;
+    }
+    if (!Number.isFinite(value) || value < 0) {
+      return undefined;
+    }
+    return value;
   }
 
   private isKnownStatus(status: string): status is RebuildEmployeeStatus {

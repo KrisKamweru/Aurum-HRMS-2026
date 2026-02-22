@@ -4,10 +4,12 @@ import { Id, TableNames } from '../../../../../convex/_generated/dataModel';
 import { ConvexClientService } from '../../../core/services/convex-client.service';
 import {
   CreateEmployeeInput,
+  RebuildEmployeeCompensationActionResult,
   RebuildEmployeeDetailCollections,
   RebuildEmployeeRecord,
   RebuildEmployeeReference,
   RebuildEmployeeStatus,
+  UpdateEmployeeCompensationInput,
   UpdateEmployeeInput
 } from './employees-rebuild.models';
 
@@ -101,6 +103,19 @@ export class EmployeesRebuildDataService {
     await this.convex.mutation(api.employees.remove, {
       id: this.toId('employees', id)
     });
+  }
+
+  async updateEmployeeCompensation(
+    input: UpdateEmployeeCompensationInput
+  ): Promise<RebuildEmployeeCompensationActionResult> {
+    const response = await this.convex.mutation(api.employees.updateCompensation, {
+      employeeId: this.toId('employees', input.employeeId),
+      baseSalary: input.baseSalary,
+      currency: this.optionalText(input.currency),
+      payFrequency: input.payFrequency,
+      reason: this.optionalText(input.reason)
+    });
+    return this.mapCompensationActionResult(response);
   }
 
   async listEmployeeDetailCollections(employeeId: string): Promise<RebuildEmployeeDetailCollections> {
@@ -225,6 +240,17 @@ export class EmployeesRebuildDataService {
       return value;
     }
     return undefined;
+  }
+
+  private mapCompensationActionResult(value: unknown): RebuildEmployeeCompensationActionResult {
+    if (!value || typeof value !== 'object') {
+      return { mode: 'applied' };
+    }
+    const record = value as Record<string, unknown>;
+    return {
+      mode: record['mode'] === 'pending' ? 'pending' : 'applied',
+      changeRequestId: typeof record['changeRequestId'] === 'string' ? record['changeRequestId'] : undefined
+    };
   }
 
   private optionalText(value: string | undefined): string | undefined {

@@ -19,6 +19,7 @@ describe('EmployeesRebuildStore', () => {
     updateEmployee: ReturnType<typeof vi.fn>;
     updateEmployeeStatus: ReturnType<typeof vi.fn>;
     deleteEmployee: ReturnType<typeof vi.fn>;
+    updateEmployeeCompensation: ReturnType<typeof vi.fn>;
   };
 
   beforeEach(() => {
@@ -113,7 +114,11 @@ describe('EmployeesRebuildStore', () => {
       ),
       deleteEmployee: vi.fn(async (id: string) => {
         employees = employees.filter((employee) => employee.id !== id);
-      })
+      }),
+      updateEmployeeCompensation: vi.fn(async () => ({
+        mode: 'pending' as const,
+        changeRequestId: 'cr-1'
+      }))
     };
 
     TestBed.configureTestingModule({
@@ -303,5 +308,51 @@ describe('EmployeesRebuildStore', () => {
     await store.loadEmployees();
 
     expect(store.error()).toBe('Convex unavailable');
+  });
+
+  it('submits compensation changes and reloads selected employee detail', async () => {
+    await store.loadEmployeeDetail('emp-1');
+    dataService.getEmployee.mockClear();
+    dataService.listEmployeeDetailCollections.mockClear();
+
+    const result = await store.submitCompensationChange({
+      employeeId: 'emp-1',
+      baseSalary: 91000,
+      currency: 'usd',
+      payFrequency: 'monthly',
+      reason: 'Quarterly compensation review adjustment'
+    });
+
+    expect(result).toEqual({ mode: 'pending', changeRequestId: 'cr-1' });
+    expect(dataService.updateEmployeeCompensation).toHaveBeenCalledWith({
+      employeeId: 'emp-1',
+      baseSalary: 91000,
+      currency: 'USD',
+      payFrequency: 'monthly',
+      reason: 'Quarterly compensation review adjustment'
+    });
+    expect(dataService.getEmployee).toHaveBeenCalledWith('emp-1');
+    expect(dataService.listEmployeeDetailCollections).toHaveBeenCalledWith('emp-1');
+  });
+
+  it('validates compensation submissions before calling data service', async () => {
+    const missingReason = await store.submitCompensationChange({
+      employeeId: 'emp-1',
+      baseSalary: 91000,
+      reason: '   '
+    });
+
+    expect(missingReason).toBeNull();
+    expect(store.error()).toBe('A change reason is required for compensation updates.');
+
+    const invalidAmount = await store.submitCompensationChange({
+      employeeId: 'emp-1',
+      baseSalary: -1,
+      reason: 'Reason'
+    });
+
+    expect(invalidAmount).toBeNull();
+    expect(store.error()).toBe('Base salary must be a valid non-negative number.');
+    expect(dataService.updateEmployeeCompensation).not.toHaveBeenCalled();
   });
 });

@@ -33,8 +33,7 @@ export const routes: Routes = [
   {
     path: 'settings',
     redirectTo: 'settings/general',
-    pathMatch: 'full',
-    canActivate: [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]
+    pathMatch: 'full'
   },
   {
     path: 'settings/general',
@@ -251,8 +250,7 @@ export const routes: Routes = [
   {
     path: 'organization',
     redirectTo: 'organization/departments',
-    pathMatch: 'full',
-    canActivate: [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]
+    pathMatch: 'full'
   },
   {
     path: 'organization/departments',

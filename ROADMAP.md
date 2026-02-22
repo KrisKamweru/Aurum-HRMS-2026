@@ -276,6 +276,20 @@ Reference: `docs/rebuild-parity-plan.md`
     - deprecation register updated to resolve final `tbd` route decisions (`demo/*`, `/6`) as `keep`
     - TDD coverage added for demo routes/pages/shell and `/6` showcase component
     - report: `docs/rebuild-manifests/phase5-demo-showcase-slice-report.md`
+  - Phase 5 parity gates closeout:
+    - fixed Angular runtime route-config regression in redirect aliases (`settings`, `organization`) by removing invalid `canActivate` usage on `redirectTo` routes
+    - refreshed Playwright regression expectations for rebuilt UX text/navigation (`attendance-functional`, `regression`) without weakening security assertions
+    - rebuilt employee-detail compensation/financial parity surface:
+      - compensation + financial tab navigation
+      - admin/hr compensation edit flow with shared confirm-reason dialog and dual-control submit path (`employees.updateCompensation`)
+      - manager read-only financial controls (no add/edit actions)
+    - high-risk gate bundle passing:
+      - `e2e/negative-auth.spec.ts`
+      - `e2e/compensation-security.spec.ts`
+      - `e2e/attendance-functional.spec.ts`
+      - `e2e/regression.spec.ts`
+    - validation: `npm run build`, `npm test`, and Phase 5 Playwright gate bundle passing (`101` files, `402` tests)
+    - report: `docs/rebuild-manifests/phase5-cutover-gates-report.md`
 
 ### P0. Immediate Stabilization and Context Hygiene (Now)
 Status: Substantially completed on 2026-02-09.
