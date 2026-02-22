@@ -268,6 +268,14 @@ Reference: `docs/rebuild-parity-plan.md`
     - auth session service expanded with typed provider sign-in + password-reset request contracts
     - TDD coverage added for auth session service and rebuilt register/forgot-password pages
     - report: `docs/rebuild-manifests/phase5-auth-slice-report.md`
+  - Phase 5 demo/showcase cutover decision slice:
+    - `demo/*` route surface retained and rebuilt using active shared components (`ui-button`, `ui-badge`, `ui-avatar`, `ui-card`, `ui-data-table`, `ui-modal`, `ui-confirm-dialog`, `ui-toast`, `ui-date-range`, `dynamic-form`)
+    - new nested demo shell route added with internal-scroll layout and sidebar navigation
+    - `/6` route retained as a 1:1 design showcase reference port from legacy (`design-six`)
+    - placeholder-based demo/showcase routes removed from active route matrix
+    - deprecation register updated to resolve final `tbd` route decisions (`demo/*`, `/6`) as `keep`
+    - TDD coverage added for demo routes/pages/shell and `/6` showcase component
+    - report: `docs/rebuild-manifests/phase5-demo-showcase-slice-report.md`
 
 ### P0. Immediate Stabilization and Context Hygiene (Now)
 Status: Substantially completed on 2026-02-09.

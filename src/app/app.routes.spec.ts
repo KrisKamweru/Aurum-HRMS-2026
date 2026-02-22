@@ -46,6 +46,8 @@ describe('app routes', () => {
     expect(paths).toContain('auth');
     expect(paths).toContain('auth/register');
     expect(paths).toContain('auth/forgot-password');
+    expect(paths).toContain('demo');
+    expect(paths).toContain('6');
   });
 
   it('keeps wildcard fallback to dashboard', () => {
@@ -245,5 +247,15 @@ describe('app routes', () => {
     expect(forgotPassword?.data?.['title']).toBe('Forgot Password');
     expect(register?.loadComponent).toBeTypeOf('function');
     expect(forgotPassword?.loadComponent).toBeTypeOf('function');
+  });
+
+  it('maps demo and showcase routes to rebuilt demos', () => {
+    const demo = routes.find((route) => route.path === 'demo');
+    const showcase = routes.find((route) => route.path === '6');
+
+    expect(demo?.data?.['title']).toBe('Demo');
+    expect(demo?.loadChildren).toBeTypeOf('function');
+    expect(showcase?.data?.['title']).toBe('Showcase Six');
+    expect(showcase?.loadComponent).toBeTypeOf('function');
   });
 });

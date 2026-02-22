@@ -1,16 +1,6 @@
-import { Route, Routes } from '@angular/router';
+import { Routes } from '@angular/router';
 import { authGuard } from './core/auth/auth.guard';
 import { roleGuard } from './core/auth/role.guard';
-
-const placeholderLoader = () =>
-  import('./features/placeholder/placeholder-page.component').then((m) => m.PlaceholderPageComponent);
-
-const placeholderRoute = (path: string, title: string, canActivate: Route['canActivate'] = []): Route => ({
-  path,
-  loadComponent: placeholderLoader,
-  data: { title },
-  canActivate
-});
 
 export const routes: Routes = [
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
@@ -374,13 +364,16 @@ export const routes: Routes = [
     canActivate: [authGuard, roleGuard(['super_admin'])],
     data: { title: 'Super Admin' }
   },
-  placeholderRoute('demo', 'Demo'),
-  placeholderRoute('demo/buttons', 'Demo Buttons'),
-  placeholderRoute('demo/forms', 'Demo Forms'),
-  placeholderRoute('demo/tables', 'Demo Tables'),
-  placeholderRoute('demo/modals', 'Demo Modals'),
-  placeholderRoute('demo/date-picker', 'Demo Date Picker'),
-  placeholderRoute('6', 'Showcase Six'),
+  {
+    path: 'demo',
+    loadChildren: () => import('./features/demo/demo.routes').then((m) => m.DEMO_ROUTES),
+    data: { title: 'Demo' }
+  },
+  {
+    path: '6',
+    loadComponent: () => import('./features/showcase/design-six.component').then((m) => m.ShowcaseSixComponent),
+    data: { title: 'Showcase Six' }
+  },
   {
     path: 'auth/login',
     loadComponent: () => import('./features/auth/login/login.component').then((m) => m.LoginComponent)

@@ -25,17 +25,17 @@ Status key: `keep`, `deprecate`, `tbd`
 | `/settings/*` | Org settings and leave policy | `keep` | Rebuilt `general` + `leave-policies` on 2026-02-22 |
 | `/super-admin` | Cross-org administration | `keep` | Platform-level capability |
 | `/auth/*` | Public authentication entry | `keep` | `login`, `register`, and `forgot-password` rebuilt on 2026-02-22; `forgot-password` currently ships an explicit degraded fallback pending reset backend support |
-| `/demo/*` | UI demo pages | `tbd` | Candidate deprecation if non-product |
-| `/6` | Showcase page | `tbd` | Candidate deprecation if non-product |
+| `/demo/*` | UI demo pages | `keep` | Rebuilt on 2026-02-22 as active design-system demo surfaces using rebuilt shared components |
+| `/6` | Showcase page | `keep` | Retained on 2026-02-22 as a 1:1 design showcase reference route |
 
 ## Decision Rule
 - Any route marked `tbd` must be resolved before Phase 5 final cutover sign-off.
+- As of 2026-02-22, route-level `tbd` decisions are fully resolved.
 
 ## Phase 5 Notes (2026-02-22)
 - Remaining placeholder-backed keep routes:
   - None
 - Placeholder-backed `tbd` routes still awaiting deprecation decision:
-  - `/demo/*`
-  - `/6`
+  - None
 - Known parity caveat:
   - Password reset backend flow still exists only in `src/app.old` auth service/backend usage; rebuilt `auth/forgot-password` now provides an explicit degraded fallback UX until backend support is restored.
