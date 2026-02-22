@@ -34,8 +34,9 @@ While I'm trying to keep the project free of MD creep, here are some relevant on
 2. `ROADMAP.md`: Contains the overall project progress and next steps. Refer to this if unsure.
 3. `DESIGN LANGUAGE.md`: Contains the design language and ethos for the app, distilled from some design runs we did earlier. It is your Bible when it comes to design implementation. Never stray from it.
 4. `ANGULAR BEST PRACTICES.md`: This contains some best practice guidelines for Angular, to avoid old patterns.
-5. `CLAUDE.md`: OPTIONAL (not to be taken strictly), source of extra context and project history.
-6. `README.md`: Default angular CLI generated README file
+5. `CONVEX RULES.md`: This contains best practice guidelines for Convex. adhere to the guidelines within when writing our backend code.
+6. `CLAUDE.md`: OPTIONAL (not to be taken strictly), source of extra context and project history.
+7. `README.md`: Default angular CLI generated README file
 
 ## Working agreements
 
