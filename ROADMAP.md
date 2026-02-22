@@ -226,6 +226,19 @@ Reference: `docs/rebuild-parity-plan.md`
     - TDD coverage added for super-admin adapter, store, and rebuilt page
     - validation: `npm test` and `npm run build` passing (`79` files, `319` tests)
     - report: `docs/rebuild-manifests/phase4-super-admin-slice-report.md`
+  - Phase 5 parity/cutover started (account + settings slice):
+    - rebuilt `profile`, `settings/general`, and `settings/leave-policies` (replacing placeholders)
+    - route aliases now redirect to canonical rebuilt surfaces:
+      - `settings` -> `settings/general`
+      - `organization` -> `organization/departments`
+      - `auth` -> `auth/login`
+    - profile edit and leave-policy create/edit flows use shared modal + dynamic-form (multi-step, multi-column) and shared confirm dialog guardrails
+    - typed profile/settings rebuild adapters + stores added under:
+      - `src/app/features/profile/data/`
+      - `src/app/features/settings/data/`
+    - TDD coverage added for profile/settings adapters, stores, and rebuilt pages
+    - validation: `npm test` and `npm run build` passing (`86` files, `339` tests)
+    - report: `docs/rebuild-manifests/phase5-account-settings-slice-report.md`
 
 ### P0. Immediate Stabilization and Context Hygiene (Now)
 Status: Substantially completed on 2026-02-09.

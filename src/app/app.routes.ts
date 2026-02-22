@@ -21,10 +21,34 @@ export const routes: Routes = [
   },
   placeholderRoute('pending', 'Pending Onboarding', [authGuard]),
   placeholderRoute('create-organization', 'Organization Setup Wizard', [authGuard]),
-  placeholderRoute('profile', 'Profile', [authGuard]),
-  placeholderRoute('settings', 'Settings', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]),
-  placeholderRoute('settings/general', 'General Settings', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]),
-  placeholderRoute('settings/leave-policies', 'Leave Policies', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]),
+  {
+    path: 'profile',
+    loadComponent: () => import('./features/profile/pages/profile-rebuild.component').then((m) => m.ProfileRebuildComponent),
+    canActivate: [authGuard],
+    data: { title: 'Profile' }
+  },
+  {
+    path: 'settings',
+    redirectTo: 'settings/general',
+    pathMatch: 'full',
+    canActivate: [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]
+  },
+  {
+    path: 'settings/general',
+    loadComponent: () =>
+      import('./features/settings/pages/settings-general-rebuild.component').then((m) => m.SettingsGeneralRebuildComponent),
+    canActivate: [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])],
+    data: { title: 'General Settings' }
+  },
+  {
+    path: 'settings/leave-policies',
+    loadComponent: () =>
+      import('./features/settings/pages/settings-leave-policies-rebuild.component').then(
+        (m) => m.SettingsLeavePoliciesRebuildComponent
+      ),
+    canActivate: [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])],
+    data: { title: 'Leave Policies' }
+  },
   {
     path: 'recruitment',
     loadComponent: () =>
@@ -221,7 +245,12 @@ export const routes: Routes = [
     canActivate: [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])],
     data: { title: 'Travel', recordType: 'travel' }
   },
-  placeholderRoute('organization', 'Organization', [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]),
+  {
+    path: 'organization',
+    redirectTo: 'organization/departments',
+    pathMatch: 'full',
+    canActivate: [authGuard, roleGuard(['super_admin', 'admin', 'hr_manager'])]
+  },
   {
     path: 'organization/departments',
     loadComponent: () =>
@@ -343,7 +372,7 @@ export const routes: Routes = [
     path: 'auth/login',
     loadComponent: () => import('./features/auth/login/login.component').then((m) => m.LoginComponent)
   },
-  placeholderRoute('auth', 'Authentication'),
+  { path: 'auth', redirectTo: 'auth/login', pathMatch: 'full' },
   placeholderRoute('auth/register', 'Register'),
   placeholderRoute('auth/forgot-password', 'Forgot Password'),
   { path: '**', redirectTo: 'dashboard' }

@@ -36,7 +36,12 @@ describe('app routes', () => {
     expect(paths).toContain('reports/payroll');
     expect(paths).toContain('reports/tax');
     expect(paths).toContain('super-admin');
+    expect(paths).toContain('profile');
+    expect(paths).toContain('settings');
+    expect(paths).toContain('settings/general');
+    expect(paths).toContain('settings/leave-policies');
     expect(paths).toContain('auth/login');
+    expect(paths).toContain('auth');
   });
 
   it('keeps wildcard fallback to dashboard', () => {
@@ -191,5 +196,28 @@ describe('app routes', () => {
     expect(superAdmin?.data?.['title']).toBe('Super Admin');
     expect(superAdmin?.canActivate?.length).toBeGreaterThan(0);
     expect(superAdmin?.loadComponent).toBeTypeOf('function');
+  });
+
+  it('maps profile and settings routes to rebuilt components with redirect aliases', () => {
+    const profile = routes.find((route) => route.path === 'profile');
+    const settings = routes.find((route) => route.path === 'settings');
+    const settingsGeneral = routes.find((route) => route.path === 'settings/general');
+    const settingsLeavePolicies = routes.find((route) => route.path === 'settings/leave-policies');
+    const organization = routes.find((route) => route.path === 'organization');
+    const auth = routes.find((route) => route.path === 'auth');
+
+    expect(profile?.data?.['title']).toBe('Profile');
+    expect(profile?.canActivate?.length).toBeGreaterThan(0);
+    expect(profile?.loadComponent).toBeTypeOf('function');
+
+    expect(settings?.redirectTo).toBe('settings/general');
+    expect(settings?.canActivate?.length).toBeGreaterThan(0);
+    expect(settingsGeneral?.data?.['title']).toBe('General Settings');
+    expect(settingsLeavePolicies?.data?.['title']).toBe('Leave Policies');
+    expect(settingsGeneral?.loadComponent).toBeTypeOf('function');
+    expect(settingsLeavePolicies?.loadComponent).toBeTypeOf('function');
+
+    expect(organization?.redirectTo).toBe('organization/departments');
+    expect(auth?.redirectTo).toBe('auth/login');
   });
 });
