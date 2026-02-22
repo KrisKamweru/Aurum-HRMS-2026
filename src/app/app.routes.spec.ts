@@ -4,6 +4,8 @@ describe('app routes', () => {
   it('keeps key legacy paths mapped in rebuild shell', () => {
     const paths = routes.map((route) => route.path);
     expect(paths).toContain('dashboard');
+    expect(paths).toContain('pending');
+    expect(paths).toContain('create-organization');
     expect(paths).toContain('employees/:id');
     expect(paths).toContain('payroll/slip/:id');
     expect(paths).toContain('reports/tax');
@@ -219,5 +221,17 @@ describe('app routes', () => {
 
     expect(organization?.redirectTo).toBe('organization/departments');
     expect(auth?.redirectTo).toBe('auth/login');
+  });
+
+  it('maps onboarding pending routes to rebuilt components with auth guard contract', () => {
+    const pending = routes.find((route) => route.path === 'pending');
+    const createOrganization = routes.find((route) => route.path === 'create-organization');
+
+    expect(pending?.data?.['title']).toBe('Pending Onboarding');
+    expect(createOrganization?.data?.['title']).toBe('Organization Setup Wizard');
+    expect(pending?.canActivate?.length).toBeGreaterThan(0);
+    expect(createOrganization?.canActivate?.length).toBeGreaterThan(0);
+    expect(pending?.loadComponent).toBeTypeOf('function');
+    expect(createOrganization?.loadComponent).toBeTypeOf('function');
   });
 });

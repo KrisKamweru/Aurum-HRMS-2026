@@ -7,8 +7,8 @@ Status key: `keep`, `deprecate`, `tbd`
 
 | Route | Current purpose | Decision | Notes |
 |---|---|---|---|
-| `/pending` | Pending user hub and join request management | `keep` | Required onboarding contract |
-| `/create-organization` | New org setup wizard | `keep` | Required onboarding contract |
+| `/pending` | Pending user hub and join request management | `keep` | Rebuilt on 2026-02-22 (Phase 5 onboarding slice) |
+| `/create-organization` | New org setup wizard | `keep` | Rebuilt on 2026-02-22 (Phase 5 onboarding slice) |
 | `/dashboard` | Primary home by role | `keep` | Rebuild shell anchor route |
 | `/profile` | Self profile management | `keep` | Rebuilt on 2026-02-22 |
 | `/employees` | Employee directory and management | `keep` | Core HR foundational |
@@ -33,8 +33,6 @@ Status key: `keep`, `deprecate`, `tbd`
 
 ## Phase 5 Notes (2026-02-22)
 - Remaining placeholder-backed keep routes:
-  - `/pending`
-  - `/create-organization`
   - `/auth/register`
   - `/auth/forgot-password`
 - Known parity caveat:

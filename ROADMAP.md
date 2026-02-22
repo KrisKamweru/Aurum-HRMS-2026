@@ -239,6 +239,22 @@ Reference: `docs/rebuild-parity-plan.md`
     - TDD coverage added for profile/settings adapters, stores, and rebuilt pages
     - validation: `npm test` and `npm run build` passing (`86` files, `339` tests)
     - report: `docs/rebuild-manifests/phase5-account-settings-slice-report.md`
+  - Phase 5 onboarding parity slice:
+    - rebuilt `pending` and `create-organization` routes (replacing placeholders)
+    - pending access hub now supports:
+      - loading existing join requests
+      - canceling pending requests
+      - matching-organization suggestions
+      - searchable organization directory in shared modal
+      - join-request submission with optional note
+    - create-organization wizard rebuilt with shared `ui-stepper` and multi-column step layouts:
+      - organization details
+      - departments repeater
+      - designations repeater
+      - admin profile assignment step
+    - typed onboarding adapters/stores added under `src/app/features/onboarding/data/`
+    - TDD coverage added for onboarding adapters, stores, and rebuilt pages
+    - report: `docs/rebuild-manifests/phase5-onboarding-slice-report.md`
 
 ### P0. Immediate Stabilization and Context Hygiene (Now)
 Status: Substantially completed on 2026-02-09.

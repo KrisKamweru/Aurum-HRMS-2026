@@ -19,8 +19,21 @@ export const routes: Routes = [
     loadComponent: () => import('./features/rebuild-home/rebuild-home.component').then((m) => m.RebuildHomeComponent),
     canActivate: [authGuard]
   },
-  placeholderRoute('pending', 'Pending Onboarding', [authGuard]),
-  placeholderRoute('create-organization', 'Organization Setup Wizard', [authGuard]),
+  {
+    path: 'pending',
+    loadComponent: () => import('./features/onboarding/pages/pending-rebuild.component').then((m) => m.PendingRebuildComponent),
+    canActivate: [authGuard],
+    data: { title: 'Pending Onboarding' }
+  },
+  {
+    path: 'create-organization',
+    loadComponent: () =>
+      import('./features/onboarding/pages/create-organization-rebuild.component').then(
+        (m) => m.CreateOrganizationRebuildComponent
+      ),
+    canActivate: [authGuard],
+    data: { title: 'Organization Setup Wizard' }
+  },
   {
     path: 'profile',
     loadComponent: () => import('./features/profile/pages/profile-rebuild.component').then((m) => m.ProfileRebuildComponent),
