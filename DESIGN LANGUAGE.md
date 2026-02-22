@@ -4,6 +4,12 @@
 > **Scope**: App-wide. Every component, layout, and page.
 > **Status**: Living document. Update as the system evolves.
 
+# Aurum HRMS — Design System
+
+> **Visual north star**: Showcase Design 6 ("Dark Precision")
+> **Scope**: App-wide. Every component, layout, and page.
+> **Status**: Living document. Update as the system evolves.
+
 ---
 
 ## 1. Design Ethos
@@ -12,9 +18,9 @@
 
 The Aurum design language is built on three pillars:
 
-1. **Structured confidence** — Swiss-grid discipline. Clean columns, consistent gutters, clear visual hierarchy. Data-dense screens should feel organized, not overwhelming. Grids are sharp and angular, with a focus on clarity and precision. They contrast with the flowing nature of glasmorphism in a consistent beautiful way
-2. **Glass surfaces** — Frosted, translucent card surfaces with subtle borders. Creates depth without noise. Backdrop-blur gives a premium, layered feel.
-3. **Brand red as a focused weapon** — `#861821` is the hero. It appears in CTAs, active states, highlighted metrics, and section accents. It is *never* spread thin across backgrounds or large surfaces (except intentional banner sections). When the eye hits red, it should mean something.
+1.  **Structured confidence** — Swiss-grid discipline. Clean columns, consistent gutters, clear visual hierarchy. Data-dense screens should feel organized, not overwhelming. Grids are sharp and angular, leveraging ample negative space to prevent clutter. Typography strictly favors flush-left alignment for readability.
+2.  **Glass surfaces** — Frosted, translucent card surfaces with subtle borders. Creates depth without noise. Backdrop-blur gives a premium, layered feel. Opacities should be balanced (often 30-50% for pronounced glass overlays, but much lower ~5% for resting structural cards in dark mode) to maintain clarity without sacrificing the frosted aesthetic.
+3.  **Brand red as a focused weapon** — `#861821` is the hero. It appears in CTAs, active states, highlighted metrics, and section accents. It is *never* spread thin across backgrounds or large surfaces (except intentional banner sections). When the eye hits red, it should mean something.
 
 **Tone**: Corporate-premium. Not playful, not cold. Think: *"the finance team trusts it, the CEO is impressed by it."*
 
@@ -31,19 +37,19 @@ The Aurum design language is built on three pillars:
 
 The user-specified brand color is `#861821`. The current app uses a burgundy palette centered on `#8b1e3f`. These need to converge. The new palette is generated from `#861821` as the 700 anchor:
 
-| Token          | Hex       | Usage                                           |
+| Token | Hex | Usage |
 | -------------- | --------- | ----------------------------------------------- |
-| `burgundy-50`  | `#fef2f3` | Tinted backgrounds, hover fills (light mode)    |
-| `burgundy-100` | `#fce7ea` | Badge backgrounds, soft highlights              |
-| `burgundy-200` | `#f9ced6` | Selection background, focus rings (light mode)  |
-| `burgundy-300` | `#f4a3b4` | Muted accents, icon tints                       |
-| `burgundy-400` | `#ec6e8a` | Secondary accent in charts/graphs               |
-| `burgundy-500` | `#df4168` | Focus ring color, active indicators             |
-| `burgundy-600` | `#c92a52` | Hover state for primary buttons                 |
+| `burgundy-50` | `#fef2f3` | Tinted backgrounds, hover fills (light mode) |
+| `burgundy-100` | `#fce7ea` | Badge backgrounds, soft highlights |
+| `burgundy-200` | `#f9ced6` | Selection background, focus rings (light mode) |
+| `burgundy-300` | `#f4a3b4` | Muted accents, icon tints |
+| `burgundy-400` | `#ec6e8a` | Secondary accent in charts/graphs |
+| `burgundy-500` | `#df4168` | Focus ring color, active indicators |
+| `burgundy-600` | `#c92a52` | Hover state for primary buttons |
 | `burgundy-700` | `#861821` | **THE brand color.** Primary buttons, nav active, CTA fills. |
-| `burgundy-800` | `#741530` | Pressed/active button states                    |
-| `burgundy-900` | `#631530` | Dark-mode text accent, gradient endpoints       |
-| `burgundy-950` | `#380816` | Deepest tint for gradients                      |
+| `burgundy-800` | `#741530` | Pressed/active button states |
+| `burgundy-900` | `#631530` | Dark-mode text accent, gradient endpoints |
+| `burgundy-950` | `#380816` | Deepest tint for gradients |
 
 **CSS variable update** (`styles.css :root`):
 
@@ -56,6 +62,8 @@ The user-specified brand color is `#861821`. The current app uses a burgundy pal
 
 **Tailwind usage**: `bg-burgundy-700`, `text-burgundy-700`, `border-burgundy-700`, etc.
 
+**Color Theory Note (The "Hot" Accent):** `#861821` is an aggressive, deeply warm color. On light themes, it provides excellent contrast. In dark themes, highly saturated reds vibrate against dark backgrounds causing eye strain. Therefore, use the deep `700` shade strictly for large solid fills (like primary buttons with white text). For text, borders, or thin iconography in dark mode, aggressively step down to the desaturated, lighter tints (`burgundy-300` or `burgundy-400`).
+
 ### 2.2 Accent — Gold
 
 Unchanged. Gold (`gold-400` → `#fbbf24`) is used sparingly for:
@@ -67,26 +75,37 @@ Unchanged. Gold (`gold-400` → `#fbbf24`) is used sparingly for:
 
 The existing warm stone palette is correct. Key usage:
 
-| Context            | Light mode     | Dark mode       |
+| Context | Light mode | Dark mode |
 | ------------------ | -------------- | --------------- |
-| Page background    | `stone-50`     | `stone-900` / near-black (`#0b0b0b`) |
-| Card surface       | `white`        | `stone-800`     |
-| Primary text       | `stone-800`    | `stone-100`     |
-| Secondary text     | `stone-500`    | `stone-400`     |
-| Muted text         | `stone-400`    | `stone-500`     |
-| Borders            | `stone-200`    | `stone-700`     |
-| Dividers           | `stone-100`    | `stone-800`     |
+| Page background | `stone-50` | `stone-900` / near-black (`#0b0b0b`) |
+| Card surface | `white` | `stone-800` |
+| Primary text | `stone-800` | `stone-100` |
+| Secondary text | `stone-500` | `stone-400` |
+| Muted text | `stone-400` | `stone-500` |
+| Borders | `stone-200` | `stone-700` |
+| Dividers | `stone-100` | `stone-800` |
+
+**Color Theory Note (Temperature Tension):** We intentionally pair a cool/neutral near-black background (`#0b0b0b`) with warm `stone` grays (which have red/yellow undertones). This temperature contrast creates spatial depth—cool colors naturally recede into the void, while warm colors advance toward the user, making `stone` cards feel highly elevated off the cool background without relying heavily on drop shadows.
 
 ### 2.4 Semantic Colors
 
-| Token     | Light       | Dark        |
+| Token | Light | Dark |
 | --------- | ----------- | ----------- |
-| Success   | `#059669`   | `#34d399`   |
-| Warning   | `#d97706`   | `#fbbf24`   |
-| Error     | `#dc2626`   | `#f87171`   |
-| Info      | `#2563eb`   | `#60a5fa`   |
+| Success | `#059669` | `#34d399` |
+| Warning | `#d97706` | `#fbbf24` |
+| Error | `#dc2626` | `#f87171` |
+| Info | `#2563eb` | `#60a5fa` |
 
-### 2.5 Glass Tokens (adaptive by mode)
+### 2.5 Color Distribution (The 60-30-10 Rule)
+
+To prevent light mode layouts from feeling like a sterile "wall of white," and to keep dark mode layouts from feeling like an overwhelming void, rigidly apply the 60-30-10 distribution rule:
+
+- **60% Dominant (Structural):** The foundational colors. In light mode, this isn't just pure white—it's the interplay between the `stone-50` background and `white` cards. In dark mode, it's the `#0b0b0b` deep background and `stone-900` or `bg-white/5` structural cards. This provides the negative space.
+- **30% Secondary (Organizational):** This adds depth and prevents sterility. Use your secondary neutrals (`stone-100/200` borders, `stone-800` text in light mode, or `stone-400` auxiliary text) to define hierarchy, map out table headers, and outline input fields. It grounds the layout.
+- **10% Accent (Interactive & Intentional):** Here is where the interface comes alive. Use `burgundy-700` (or semantic colors) for primary buttons, active navigation states, selected checkboxes, and hero data points.
+  - **Crucial:** *Do not exceed 10%*. If everything is highlighted, nothing is highlighted. If an interface feels "boring," the solution is usually to improve the typography and the contrast of the 30% secondary elements, *not* to spray more of the 10% accent color everywhere.
+
+### 2.6 Glass Tokens (adaptive by mode)
 
 Glass is a controlled material, not the default for every container. Use strongest glass on transient layers (modals, sheets, popovers), and use restrained/opaque surfaces for most persistent layout containers.
 
@@ -111,6 +130,12 @@ Glass is a controlled material, not the default for every container. Use stronge
 - `dark:bg-white/5` (glass surface)
 - `dark:border-white/8` (glass border)
 - `dark:backdrop-blur-xl` (frosted effect)
+
+**Advanced Glassmorphism (Tailwind Specifics)**:
+- **Liquid Glass / Dynamic Depth:** Combine `backdrop-blur-*` with `backdrop-brightness-110`, `backdrop-contrast-125`, or `backdrop-saturate-150` for a more vibrant, dynamic frosted appearance that interacts beautifully with gradients.
+- **Gradient Glass:** You can layer radial or linear gradients *under* the glass (`bg-gradient-to-r` on a parent) or *within* the glass element itself using arbitrary low-opacity gradients.
+- **Hover Transitions:** Intensify the glass effect on interaction. Example: `hover:bg-white/10 hover:backdrop-blur-2xl transition-all duration-300`.
+- **Glow & Shadow:** Use `shadow-lg shadow-white/5` (dark mode) or `shadow-white/40` (light mode) to create an outer glow that detaches the glass from its background, simulating physical refraction.
 
 **Default non-glass surface**:
 - `bg-white border border-stone-200 shadow-sm` (light)
@@ -156,11 +181,13 @@ All sizes are in `rem`. Base is `16px` (`1rem`).
 | **Button text**         | `0.875rem`  | 600      | `text-sm font-semibold`   | All button variants                |
 | **Nav link**             | `0.875rem`  | 500      | `text-sm font-medium`     | Sidebar and top-bar navigation     |
 
-**Key accessibility rules**:
+**Key accessibility and reading rules**:
 - **No text smaller than `0.75rem` (12px)**. This is the absolute floor.
 - Body text and table cells should never go below `0.875rem` (14px).
 - Use `font-medium` (500) or `font-semibold` (600) for labels — never `font-light` (300) on small text.
 - Line height: body text at `leading-relaxed` (1.625) or `leading-normal` (1.5). Never `leading-tight` for multi-line body copy.
+- **Alignment:** Strictly flush-left, ragged-right for paragraphs to maintain the Swiss design order. Avoid justified text.
+- **Avoid pure white text** on deep dark backgrounds to reduce halation (blurring effect) and eye strain; rely on `stone-100` or `stone-200`.
 
 ### 3.3 Letter Spacing
 
@@ -185,7 +212,16 @@ All sizes are in `rem`. Base is `16px` (`1rem`).
 - **Compact cards** (stats, metric tiles): `p-4`.
 - **Internal element spacing**: `space-y-4` for stacked content within a card.
 
-### 4.3 Border Radius
+### 4.3 Dashboard Structure (Swiss Grid Application)
+
+Data-heavy corporate dashboards must prioritize objectivity and structure to prevent cognitive overload:
+- **The Inverted Pyramid (5-Second Rule):** Place the most critical, high-level KPIs and aggregate metrics at the top or upper-left. Detailed, granular tables and secondary charts belong lower down.
+- **Modular Blocks:** Group related information into distinct card blocks rather than letting data bleed together. Every card is a self-contained module within the overarching grid.
+- **Aggressive Whitespace:** Use gutters (`gap-4` to `gap-6`) and internal card padding to create visual breathing room. Do not pack modules tightly; 'empty space' is a functional design element that guides the eye.
+- **Progressive Disclosure (Drill-Downs):** Avoid cramming every data point into the top-level view. Use clean, flush-left tables with clear CTAs (like "View Full Report" or expandable rows) to allow users to drill down on demand.
+- **Strict Alignment:** Ensure every chart edge, text block, and table column strictly aligns to the underlying grid columns. Asymmetry is permitted (e.g., a massive hero graph next to a narrow column of tiny stat cards), provided the edges lock perfectly onto the grid.
+
+### 4.4 Border Radius
 
 | Element          | Radius            | Tailwind         |
 | ---------------- | ----------------- | ---------------- |
@@ -477,11 +513,12 @@ Active item uses a brand-red left border and tinted background:
 
 ### 7.2 Dark Mode Specifics
 
-- **Background**: Near-black (`#0b0b0b` or `stone-900`) — NOT pure `#000`.
-- **Surfaces**: Glass for elevated/transient layers (`bg-white/5 backdrop-blur-xl border-white/8`), calmer opaque surfaces where density is high.
-- **Text**: `stone-100` primary, `stone-400` secondary, `stone-500` muted.
+- **Background**: Deep dark gray (`#0b0b0b` or `stone-900`) — NEVER pure `#000`, as pure black kills depth perception and increases eye strain.
+- **Surfaces**: Glass for elevated/transient layers (`bg-white/5` to `bg-white/10` depending on elevation, combined with `backdrop-blur-xl border-white/8`), calmer opaque surfaces where density is high.
+- **Text**: `stone-100` primary (avoid pure `#fff`), `stone-400` secondary, `stone-500` muted.
 - **Glow**: Subtle radial glow (`rgba(134,24,33,0.35)`) behind hero sections and CTAs.
-- **Shadows**: Minimal. Glass borders provide depth. Disable most box-shadows.
+- **Shadows**: Minimal. Glass borders and subtle surface lightness changes provide depth, not drop shadows. Disable most box-shadows.
+- **Color Desaturation:** When using semantic colors as backgrounds, ensure they are adequately desaturated to prevent visual vibration against dark surfaces.
 
 ### 7.3 Light Mode Specifics
 
@@ -503,6 +540,7 @@ Active item uses a brand-red left border and tinted background:
 - Avoid busy imagery directly behind glass-heavy UI regions.
 - Keep dense data regions calmer than hero/marketing regions.
 - If multiple glass layers overlap, simplify the background before increasing blur.
+- **Performance Warning:** Heavy use of `backdrop-filter` is GPU-intensive. Apply it to key structural or overlay layers (modals, navbars, hero cards), but fall back to opaque surfaces for long lists of repeating items to ensure smooth 60fps scrolling on lower-end devices.
 
 ### 7.6 Color Pop Rules (accent discipline)
 
