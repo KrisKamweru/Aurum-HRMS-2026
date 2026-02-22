@@ -24,7 +24,7 @@ Status key: `keep`, `deprecate`, `tbd`
 | `/training/*` | Learning flows | `keep` | Completed module |
 | `/settings/*` | Org settings and leave policy | `keep` | Rebuilt `general` + `leave-policies` on 2026-02-22 |
 | `/super-admin` | Cross-org administration | `keep` | Platform-level capability |
-| `/auth/*` | Public authentication entry | `keep` | `login` rebuilt; `register` and `forgot-password` still pending Phase 5 slice |
+| `/auth/*` | Public authentication entry | `keep` | `login`, `register`, and `forgot-password` rebuilt on 2026-02-22; `forgot-password` currently ships an explicit degraded fallback pending reset backend support |
 | `/demo/*` | UI demo pages | `tbd` | Candidate deprecation if non-product |
 | `/6` | Showcase page | `tbd` | Candidate deprecation if non-product |
 
@@ -33,7 +33,9 @@ Status key: `keep`, `deprecate`, `tbd`
 
 ## Phase 5 Notes (2026-02-22)
 - Remaining placeholder-backed keep routes:
-  - `/auth/register`
-  - `/auth/forgot-password`
+  - None
+- Placeholder-backed `tbd` routes still awaiting deprecation decision:
+  - `/demo/*`
+  - `/6`
 - Known parity caveat:
-  - Password reset flow currently exists only in `src/app.old` auth service and is not yet represented in the rebuilt auth layer/backend surface.
+  - Password reset backend flow still exists only in `src/app.old` auth service/backend usage; rebuilt `auth/forgot-password` now provides an explicit degraded fallback UX until backend support is restored.

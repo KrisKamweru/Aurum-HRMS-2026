@@ -255,6 +255,19 @@ Reference: `docs/rebuild-parity-plan.md`
     - typed onboarding adapters/stores added under `src/app/features/onboarding/data/`
     - TDD coverage added for onboarding adapters, stores, and rebuilt pages
     - report: `docs/rebuild-manifests/phase5-onboarding-slice-report.md`
+  - Phase 5 auth parity slice:
+    - rebuilt `auth/register` and `auth/forgot-password` routes (replacing placeholders)
+    - rebuilt register flow now supports:
+      - email/password account creation via Convex password auth sign-up
+      - role-aware post-registration routing (`/pending` vs `/dashboard`)
+      - Google/Microsoft provider sign-in handoff through the rebuilt auth session layer
+    - rebuilt forgot-password flow now provides explicit degraded handling for the known reset-backend gap:
+      - validated email capture UX
+      - typed auth-service reset request contract
+      - user-facing unsupported-state guidance instead of false success messaging
+    - auth session service expanded with typed provider sign-in + password-reset request contracts
+    - TDD coverage added for auth session service and rebuilt register/forgot-password pages
+    - report: `docs/rebuild-manifests/phase5-auth-slice-report.md`
 
 ### P0. Immediate Stabilization and Context Hygiene (Now)
 Status: Substantially completed on 2026-02-09.

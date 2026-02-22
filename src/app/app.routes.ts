@@ -386,7 +386,16 @@ export const routes: Routes = [
     loadComponent: () => import('./features/auth/login/login.component').then((m) => m.LoginComponent)
   },
   { path: 'auth', redirectTo: 'auth/login', pathMatch: 'full' },
-  placeholderRoute('auth/register', 'Register'),
-  placeholderRoute('auth/forgot-password', 'Forgot Password'),
+  {
+    path: 'auth/register',
+    loadComponent: () => import('./features/auth/register/register.component').then((m) => m.RegisterComponent),
+    data: { title: 'Register' }
+  },
+  {
+    path: 'auth/forgot-password',
+    loadComponent: () =>
+      import('./features/auth/forgot-password/forgot-password.component').then((m) => m.ForgotPasswordComponent),
+    data: { title: 'Forgot Password' }
+  },
   { path: '**', redirectTo: 'dashboard' }
 ];

@@ -44,6 +44,8 @@ describe('app routes', () => {
     expect(paths).toContain('settings/leave-policies');
     expect(paths).toContain('auth/login');
     expect(paths).toContain('auth');
+    expect(paths).toContain('auth/register');
+    expect(paths).toContain('auth/forgot-password');
   });
 
   it('keeps wildcard fallback to dashboard', () => {
@@ -233,5 +235,15 @@ describe('app routes', () => {
     expect(createOrganization?.canActivate?.length).toBeGreaterThan(0);
     expect(pending?.loadComponent).toBeTypeOf('function');
     expect(createOrganization?.loadComponent).toBeTypeOf('function');
+  });
+
+  it('maps auth register and forgot-password routes to rebuilt components', () => {
+    const register = routes.find((route) => route.path === 'auth/register');
+    const forgotPassword = routes.find((route) => route.path === 'auth/forgot-password');
+
+    expect(register?.data?.['title']).toBe('Register');
+    expect(forgotPassword?.data?.['title']).toBe('Forgot Password');
+    expect(register?.loadComponent).toBeTypeOf('function');
+    expect(forgotPassword?.loadComponent).toBeTypeOf('function');
   });
 });

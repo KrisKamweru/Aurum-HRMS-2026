@@ -81,6 +81,43 @@ describe('AuthSessionService', () => {
     expect(service.isAuthenticated()).toBe(true);
   });
 
+  it('registers with password and hydrates viewer', async () => {
+    viewer = {
+      _id: 'user-2',
+      name: 'Pending User',
+      email: 'pending@aurum.dev',
+      role: 'pending'
+    };
+
+    const result = await service.registerWithPassword('Pending User', 'pending@aurum.dev', 'secret123');
+
+    expect(result).toBe(true);
+    expect(signIn).toHaveBeenCalledWith('password', {
+      flow: 'signUp',
+      name: 'Pending User',
+      email: 'pending@aurum.dev',
+      password: 'secret123'
+    });
+    expect(query).toHaveBeenCalled();
+    expect(service.user()?.role).toBe('pending');
+  });
+
+  it('starts provider sign-in through convex auth', async () => {
+    signIn.mockResolvedValue({ success: false, redirect: new URL('https://example.com/oauth') });
+
+    const result = await service.signInWithProvider('google');
+
+    expect(result).toBe(false);
+    expect(signIn).toHaveBeenCalledWith('google', {});
+  });
+
+  it('returns explicit unsupported result for password reset requests', async () => {
+    await expect(service.requestPasswordReset('person@aurum.dev')).resolves.toEqual({
+      status: 'unsupported',
+      message: expect.stringContaining('not yet available')
+    });
+  });
+
   it('waits for readiness and returns once loading settles', async () => {
     isLoading.set(true);
     const waitPromise = service.waitUntilReady(200);

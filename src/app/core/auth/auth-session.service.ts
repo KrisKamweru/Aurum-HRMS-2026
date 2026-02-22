@@ -1,7 +1,7 @@
 import { computed, effect, Injectable, signal, inject } from '@angular/core';
 import { api } from '../../../../convex/_generated/api';
 import { ConvexClientService } from '../services/convex-client.service';
-import { AppRole, SessionUser } from './auth.types';
+import { AppRole, OAuthProvider, PasswordResetRequestResult, SessionUser } from './auth.types';
 
 type ViewerRecord = {
   _id: string;
@@ -74,6 +74,23 @@ export class AuthSessionService {
     }
     await this.refreshUser();
     return this.currentUser() !== null;
+  }
+
+  async signInWithProvider(provider: OAuthProvider): Promise<boolean> {
+    const result = await this.convex.signIn(provider, {});
+    if (!result.success) {
+      return false;
+    }
+    await this.refreshUser();
+    return this.currentUser() !== null;
+  }
+
+  async requestPasswordReset(_email: string): Promise<PasswordResetRequestResult> {
+    // Rebuilt auth layer does not yet expose a password-reset backend flow.
+    return {
+      status: 'unsupported',
+      message: 'Password reset is not yet available in the rebuilt auth flow. Contact your administrator.'
+    };
   }
 
   async signOut(): Promise<void> {
