@@ -22,44 +22,7 @@ interface DemoUserRow extends Record<string, unknown> {
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-tables-demo',
   imports: [UiDataTableComponent, UiButtonComponent, UiCardComponent, UiToastComponent],
-  template: `
-    <ui-toast [toasts]="toasts()" (dismiss)="dismissToast($event)"></ui-toast>
-
-    <div class="space-y-6">
-      <header class="space-y-2">
-        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-burgundy-700 dark:text-burgundy-400">Demo</p>
-        <h2 class="text-2xl font-semibold tracking-tight text-stone-900 dark:text-stone-100">Data Tables</h2>
-        <p class="text-sm text-stone-600 dark:text-stone-400">
-          Config-driven table rendering using the rebuilt ui-data-table component.
-        </p>
-      </header>
-
-      <ui-card variant="glass" title="User Directory Table" subtitle="Sorting + row interaction + semantic badge columns">
-        <div class="space-y-4">
-          <div class="flex flex-wrap gap-3">
-            <ui-button variant="secondary" size="sm" (onClick)="toggleLoading()">
-              {{ loading() ? 'Disable Loading' : 'Show Loading State' }}
-            </ui-button>
-            <ui-button variant="outline" size="sm" (onClick)="resetRows()">Reset Rows</ui-button>
-            @if (selectedRowName()) {
-              <span class="inline-flex items-center rounded-full bg-burgundy-50 px-3 py-1 text-xs font-semibold text-burgundy-700 dark:bg-burgundy-700/20 dark:text-burgundy-300">
-                Selected: {{ selectedRowName() }}
-              </span>
-            }
-          </div>
-
-          <ui-data-table
-            [data]="rows()"
-            [columns]="columns"
-            [loading]="loading()"
-            headerVariant="neutral"
-            (sortChange)="onSort($event)"
-            (rowClick)="onRowClick($event)"
-          />
-        </div>
-      </ui-card>
-    </div>
-  `
+  template: ''
 })
 export class TablesDemoComponent {
   readonly loading = signal(false);

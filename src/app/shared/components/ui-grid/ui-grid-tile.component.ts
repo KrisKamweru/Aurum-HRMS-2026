@@ -6,15 +6,7 @@ export type GridTileDivider = 'none' | 'right' | 'bottom';
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'ui-grid-tile',
-  template: `
-    <section [class]="containerClasses()" [style.min-height]="minHeight()">
-      <header [class]="headerClasses()">
-        <span class="text-xs font-semibold uppercase tracking-wide text-stone-500 dark:text-stone-400">{{ title() }}</span>
-        <span class="flex items-center gap-2"><ng-content select="[tile-actions]"></ng-content></span>
-      </header>
-      <div class="flex min-h-0 flex-1 flex-col"><ng-content></ng-content></div>
-    </section>
-  `
+  template: ''
 })
 export class UiGridTileComponent {
   readonly title = input('');

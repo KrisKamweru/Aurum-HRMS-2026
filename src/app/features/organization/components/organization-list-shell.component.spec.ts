@@ -5,20 +5,7 @@ import { OrganizationListShellComponent } from './organization-list-shell.compon
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [OrganizationListShellComponent],
-  template: `
-    <app-organization-list-shell
-      title="Departments"
-      description="Department management for the rebuild."
-      actionMessage="Use action controls to refresh data and add records."
-    >
-      <section org-list-page-state data-testid="page-state">state content</section>
-      <span org-list-status data-testid="status-chip">Live Sync</span>
-      <span org-list-status data-testid="status-chip">2 Alerts</span>
-      <button type="button" org-list-toolbar-actions>Refresh</button>
-      <button type="button" org-list-toolbar-actions>Add Department</button>
-      <section org-list-table-content data-testid="table-content">table content</section>
-    </app-organization-list-shell>
-  `
+  template: ''
 })
 class OrganizationListShellHostComponent {}
 

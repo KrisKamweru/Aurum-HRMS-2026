@@ -6,19 +6,7 @@ export type AvatarStatus = 'online' | 'offline' | 'busy' | 'away' | null;
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'ui-avatar',
-  template: `
-    <span [class]="containerClasses()">
-      @if (src() && !hasError) {
-        <img [src]="src()" [alt]="alt()" class="h-full w-full object-cover" (error)="hasError = true" />
-      } @else {
-        <span [class]="textClasses()">{{ initials() }}</span>
-      }
-
-      @if (status()) {
-        <span [class]="statusClasses()"></span>
-      }
-    </span>
-  `
+  template: ''
 })
 export class UiAvatarComponent {
   readonly src = input<string | null>(null);

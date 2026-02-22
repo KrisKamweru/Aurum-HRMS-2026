@@ -20,46 +20,7 @@ export interface ConfirmDialogOptions {
   selector: 'ui-confirm-dialog',
   imports: [FormsModule, UiIconComponent],
   host: { class: 'contents' },
-  template: `
-    @if (isOpen()) {
-      <div class="fixed inset-0 z-[1100] overflow-hidden">
-        <button type="button" class="absolute inset-0 bg-black/40 backdrop-blur-sm" (click)="dismiss()"></button>
-
-        <div class="relative flex min-h-full items-center justify-center p-4">
-          <section class="w-full max-w-md overflow-hidden rounded-2xl border border-white/[0.55] bg-white/[0.72] shadow-lg backdrop-blur-xl dark:border-white/8 dark:bg-white/5 dark:backdrop-blur-xl">
-            <div class="space-y-4 p-6">
-              <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full" [class]="iconBgClass()">
-                <ui-icon [name]="iconName()" class="h-6 w-6" [class]="iconColorClass()"></ui-icon>
-              </div>
-
-              <div class="space-y-1 text-center">
-                <h3 class="text-lg font-semibold text-stone-900 dark:text-stone-100">{{ options().title }}</h3>
-                <p class="text-sm text-stone-600 dark:text-stone-400">{{ options().message }}</p>
-              </div>
-
-              @if (options().reasonRequired) {
-                <div class="space-y-1 text-left">
-                  <label for="confirm-reason" class="text-xs font-semibold uppercase tracking-wide text-stone-500 dark:text-stone-400">{{ options().reasonLabel || 'Reason' }}</label>
-                  <textarea
-                    id="confirm-reason"
-                    [(ngModel)]="reason"
-                    rows="3"
-                    class="w-full rounded-lg border border-stone-200 bg-white px-3 py-2 text-sm text-stone-800 focus:border-burgundy-500 focus:ring-2 focus:ring-burgundy-500/20 dark:border-white/8 dark:bg-white/[0.03] dark:text-stone-100"
-                    [placeholder]="options().reasonPlaceholder || 'Enter a reason'"
-                  ></textarea>
-                </div>
-              }
-
-              <div class="flex justify-end gap-3">
-                <button type="button" class="rounded-lg border border-stone-200 px-4 py-2 text-sm font-medium text-stone-700 hover:bg-stone-100 dark:border-white/8 dark:text-stone-200 dark:hover:bg-white/10" (click)="dismiss()">{{ options().cancelText || 'Cancel' }}</button>
-                <button type="button" class="rounded-lg px-4 py-2 text-sm font-medium text-white" [class]="confirmButtonClass()" [disabled]="isConfirmDisabled()" (click)="confirmAction()">{{ options().confirmText || 'Confirm' }}</button>
-              </div>
-            </div>
-          </section>
-        </div>
-      </div>
-    }
-  `
+  template: ''
 })
 export class UiConfirmDialogComponent {
   readonly isOpen = input(false);

@@ -24,48 +24,7 @@ export interface SortEvent {
   selector: 'ui-data-table',
   imports: [CommonModule, UiBadgeComponent],
   providers: [DatePipe, CurrencyPipe],
-  template: `
-    <div class="overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm dark:border-white/8 dark:bg-white/[0.04]">
-      <div class="overflow-x-auto">
-        <table class="min-w-full text-left text-sm">
-          <thead [class]="headerClasses()">
-            <tr>
-              @for (column of columns(); track column.key) {
-                <th class="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-stone-500" [style.width]="column.width" [class.cursor-pointer]="column.sortable" (click)="handleSort(column)">
-                  {{ column.header }}
-                </th>
-              }
-            </tr>
-          </thead>
-          <tbody>
-            @if (loading()) {
-              <tr>
-                <td [attr.colspan]="columns().length" class="px-4 py-8 text-center text-sm text-stone-500 dark:text-stone-400">Loading data...</td>
-              </tr>
-            } @else if (data().length === 0) {
-              <tr>
-                <td [attr.colspan]="columns().length" class="px-4 py-8 text-center text-sm text-stone-500 dark:text-stone-400">No data available</td>
-              </tr>
-            } @else {
-              @for (row of data(); track trackByFn(row, $index)) {
-                <tr class="border-t border-stone-100 transition-colors hover:bg-burgundy-50/50 dark:border-white/[0.03] dark:hover:bg-burgundy-700/[0.06]" (click)="rowClick.emit(row)">
-                  @for (column of columns(); track column.key) {
-                    <td class="px-4 py-3 text-sm text-stone-700 dark:text-stone-300">
-                      @if (column.type === 'badge') {
-                        <ui-badge [variant]="getBadgeVariant(column, row)">{{ formatValue(column, row) }}</ui-badge>
-                      } @else {
-                        {{ formatValue(column, row) }}
-                      }
-                    </td>
-                  }
-                </tr>
-              }
-            }
-          </tbody>
-        </table>
-      </div>
-    </div>
-  `
+  template: ''
 })
 export class UiDataTableComponent {
   private readonly datePipe = inject(DatePipe);

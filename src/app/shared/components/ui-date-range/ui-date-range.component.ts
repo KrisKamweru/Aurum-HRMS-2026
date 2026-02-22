@@ -10,19 +10,7 @@ export type PresetKey = 'thisMonth' | 'lastMonth' | 'last30' | 'thisYear';
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'ui-date-range',
-  template: `
-    <section class="space-y-4 rounded-2xl border border-stone-200 bg-white p-4 shadow-sm dark:border-white/8 dark:bg-white/[0.04]">
-      <div class="flex flex-wrap gap-2">
-        @for (preset of presets; track preset.key) {
-          <button type="button" class="rounded-lg px-3 py-1.5 text-xs font-medium transition-colors" [class]="presetClass(preset.key)" (click)="selectPreset(preset.key)">
-            {{ preset.label }}
-          </button>
-        }
-      </div>
-
-      <div class="text-sm text-stone-700 dark:text-stone-300">{{ formatRange() }}</div>
-    </section>
-  `
+  template: ''
 })
 export class UiDateRangeComponent {
   readonly startDate = input<Date | null>(null);

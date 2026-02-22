@@ -6,35 +6,7 @@ export type CardPadding = 'none' | 'sm' | 'md' | 'lg';
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'ui-card',
-  template: `
-    <section [class]="getContainerClasses()">
-      @if (accent()) {
-        <span class="absolute inset-y-0 left-0 w-1 rounded-l-2xl" [class]="accent()"></span>
-      }
-
-      @if (title() || subtitle() || hasHeaderActions()) {
-        <header class="flex items-center justify-between border-b border-stone-100 px-5 py-4 dark:border-white/8" [class.pl-8]="!!accent()">
-          <div>
-            @if (title()) {
-              <h3 class="text-lg font-semibold text-stone-900 dark:text-stone-100">{{ title() }}</h3>
-            }
-            @if (subtitle()) {
-              <p class="text-sm text-stone-500 dark:text-stone-400">{{ subtitle() }}</p>
-            }
-          </div>
-          <div class="flex items-center gap-2"><ng-content select="[header-actions]"></ng-content></div>
-        </header>
-      }
-
-      <div [class]="bodyClasses()"><ng-content></ng-content></div>
-
-      @if (hasFooter()) {
-        <footer class="border-t border-stone-100 px-5 py-4 dark:border-white/8" [class.pl-8]="!!accent()">
-          <ng-content select="[footer]"></ng-content>
-        </footer>
-      }
-    </section>
-  `
+  template: ''
 })
 export class UiCardComponent {
   readonly title = input<string>();

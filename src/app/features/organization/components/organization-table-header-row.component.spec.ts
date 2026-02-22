@@ -5,11 +5,7 @@ import { OrganizationTableColumn, OrganizationTableHeaderRowComponent } from './
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [OrganizationTableHeaderRowComponent],
-  template: `
-    <table>
-      <thead app-organization-table-header-row [columns]="columns"></thead>
-    </table>
-  `
+  template: ''
 })
 class OrganizationTableHeaderRowHostComponent {
   readonly columns: OrganizationTableColumn[] = [

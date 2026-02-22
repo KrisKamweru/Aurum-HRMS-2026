@@ -11,13 +11,7 @@ export interface OrganizationTableColumn {
   host: {
     class: 'bg-stone-50 dark:bg-white/[0.03]'
   },
-  template: `
-    <tr>
-      @for (column of columns(); track column.label) {
-        <th [class]="headerCellClass(column)">{{ column.label }}</th>
-      }
-    </tr>
-  `
+  template: ''
 })
 export class OrganizationTableHeaderRowComponent {
   readonly columns = input.required<ReadonlyArray<OrganizationTableColumn>>();

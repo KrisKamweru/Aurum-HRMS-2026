@@ -35,21 +35,7 @@ const ICONS: Record<string, IconDefinition> = {
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'ui-icon',
-  template: `
-    <svg
-      [attr.viewBox]="icon().viewBox"
-      class="h-full w-full"
-      fill="none"
-      [attr.stroke]="icon().stroke ? 'currentColor' : null"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      [attr.stroke-width]="icon().stroke ? 2 : null"
-    >
-      @for (segment of icon().paths; track $index) {
-        <path [attr.d]="segment" [attr.fill]="icon().stroke ? 'none' : 'currentColor'"></path>
-      }
-    </svg>
-  `,
+  template: '',
   host: {
     class: 'inline-block leading-none'
   }

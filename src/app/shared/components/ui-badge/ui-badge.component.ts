@@ -6,9 +6,7 @@ export type BadgeSize = 'sm' | 'md';
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'ui-badge',
-  template: `
-    <span [class]="getClasses()"><ng-content></ng-content></span>
-  `
+  template: ''
 })
 export class UiBadgeComponent {
   readonly variant = input<BadgeVariant>('neutral');

@@ -6,19 +6,7 @@ export type ButtonSize = 'sm' | 'md' | 'lg';
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'ui-button',
-  template: `
-    <button
-      [type]="type()"
-      [disabled]="disabled() || loading()"
-      [class]="getClasses()"
-      (click)="handleClick($event)"
-    >
-      @if (loading()) {
-        <span class="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white"></span>
-      }
-      <span><ng-content></ng-content></span>
-    </button>
-  `
+  template: ''
 })
 export class UiButtonComponent {
   readonly variant = input<ButtonVariant>('primary');

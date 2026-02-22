@@ -10,78 +10,7 @@ import { UiIconComponent } from '../../../shared/components/ui-icon/ui-icon.comp
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-reports-tax-rebuild',
   imports: [RouterLink, UiButtonComponent, UiIconComponent, UiDataTableComponent],
-  template: `
-    <main class="h-full px-4 py-8 sm:px-6 lg:px-8">
-      <section class="mb-6 flex flex-wrap items-start justify-between gap-4">
-        <div class="space-y-2">
-          <div class="flex items-center gap-2">
-            <a routerLink="/reports" class="text-stone-500 transition-colors hover:text-stone-700 dark:text-stone-400 dark:hover:text-stone-200">
-              <ui-icon name="arrow-left" class="h-4 w-4"></ui-icon>
-            </a>
-            <h1 class="text-3xl font-bold tracking-tight text-stone-900 dark:text-stone-100">Tax Report</h1>
-          </div>
-          <p class="max-w-2xl text-[15px] text-stone-600 dark:text-stone-400">
-            Statutory deduction detail for PAYE, NSSF, NHIF, and housing levy.
-          </p>
-        </div>
-        <div class="flex items-center gap-2">
-          <ui-button variant="secondary" size="sm" [disabled]="taxLoading()" (onClick)="applyFilters()">Refresh</ui-button>
-          <ui-button variant="outline" size="sm" [disabled]="taxRecords().length === 0" (onClick)="exportCsv()">Export CSV</ui-button>
-        </div>
-      </section>
-
-      @if (error()) {
-        <section class="mb-4 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-700/30 dark:bg-red-900/20 dark:text-red-300">
-          {{ error() }}
-        </section>
-      }
-
-      <section class="mb-4 rounded-2xl border border-stone-200 bg-white p-5 shadow-sm dark:border-white/8 dark:bg-white/[0.04]">
-        <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
-          <div>
-            <label for="tax-run" class="mb-2 block text-sm font-medium text-stone-700 dark:text-stone-300">Payroll Run</label>
-            <select
-              id="tax-run"
-              class="w-full rounded-lg border border-stone-200 bg-white px-3 py-2 text-sm focus:border-burgundy-500 focus:ring-2 focus:ring-burgundy-500/20 dark:border-white/8 dark:bg-white/[0.03] dark:text-white"
-              [value]="selectedRunId()"
-              (change)="setRun($event)"
-            >
-              <option value="">Select a run</option>
-              @for (run of payrollRuns(); track run.id) {
-                <option [value]="run.id">{{ run.label }}</option>
-              }
-            </select>
-          </div>
-          <div class="flex justify-start lg:justify-end">
-            <ui-button variant="primary" size="sm" [disabled]="taxLoading()" (onClick)="applyFilters()">Generate</ui-button>
-          </div>
-        </div>
-      </section>
-
-      <section class="mb-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <article class="rounded-xl border border-stone-200 bg-white p-4 shadow-sm dark:border-white/8 dark:bg-white/[0.04]">
-          <p class="text-xs uppercase tracking-wide text-stone-500 dark:text-stone-400">Employees</p>
-          <p class="mt-1 text-2xl font-semibold text-stone-900 dark:text-stone-100">{{ taxSummary().employeeCount }}</p>
-        </article>
-        <article class="rounded-xl border border-red-200 bg-red-50 p-4 dark:border-red-700/30 dark:bg-red-900/15">
-          <p class="text-xs uppercase tracking-wide text-red-700 dark:text-red-300">PAYE</p>
-          <p class="mt-1 text-2xl font-semibold text-red-800 dark:text-red-200">{{ formatMoney(taxSummary().totalPaye) }}</p>
-        </article>
-        <article class="rounded-xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-700/30 dark:bg-amber-900/15">
-          <p class="text-xs uppercase tracking-wide text-amber-700 dark:text-amber-300">NSSF + NHIF</p>
-          <p class="mt-1 text-2xl font-semibold text-amber-800 dark:text-amber-200">
-            {{ formatMoney(taxSummary().totalNssfEmployee + taxSummary().totalNssfEmployer + taxSummary().totalNhif) }}
-          </p>
-        </article>
-        <article class="rounded-xl border border-burgundy-200 bg-burgundy-50 p-4 dark:border-burgundy-700/30 dark:bg-burgundy-900/15">
-          <p class="text-xs uppercase tracking-wide text-burgundy-700 dark:text-burgundy-300">Total Statutory</p>
-          <p class="mt-1 text-2xl font-semibold text-burgundy-800 dark:text-burgundy-200">{{ formatMoney(taxSummary().totalStatutory) }}</p>
-        </article>
-      </section>
-
-      <ui-data-table [data]="taxRecords()" [columns]="columns" [loading]="taxLoading()" headerVariant="neutral" />
-    </main>
-  `
+  template: ''
 })
 export class ReportsTaxRebuildComponent implements OnInit {
   private readonly store = inject(ReportsRebuildStore);

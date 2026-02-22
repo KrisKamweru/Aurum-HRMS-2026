@@ -11,51 +11,7 @@ export interface StepperStepConfig {
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'ui-stepper',
   imports: [NgTemplateOutlet],
-  template: `
-    <div class="mb-6 flex items-center justify-center">
-      @for (step of renderSteps(); track $index; let i = $index) {
-        <div class="flex items-center">
-          <button type="button" class="flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold" [class]="getStepCircleClass(i)" [disabled]="!canNavigateToStep(i)" (click)="goToStep(i)">
-            @if (i < currentStep()) {
-              <span>✓</span>
-            } @else {
-              <span>{{ i + 1 }}</span>
-            }
-          </button>
-          <div class="ml-3 mr-6">
-            <p class="text-sm font-medium" [class]="getStepLabelClass(i)">{{ step.title }}</p>
-            @if (step.subtitle) {
-              <p class="text-xs text-stone-500 dark:text-stone-400">{{ step.subtitle }}</p>
-            }
-          </div>
-          @if (i < renderSteps().length - 1) {
-            <div class="mr-6 h-0.5 w-16" [class]="i < currentStep() ? 'bg-burgundy-600' : 'bg-stone-300 dark:bg-stone-700'"></div>
-          }
-        </div>
-      }
-    </div>
-
-    <div class="mb-6">
-      @if (stepsData().length === 0) {
-        @for (step of steps.toArray(); track $index; let i = $index) {
-          @if (i === currentStep()) {
-            <ng-container [ngTemplateOutlet]="step.contentTemplate"></ng-container>
-          }
-        }
-      }
-    </div>
-
-    @if (showNavigation()) {
-      <div class="flex items-center justify-between border-t border-stone-200 pt-4 dark:border-white/8">
-        <button type="button" class="rounded-lg border border-stone-200 px-4 py-2 text-sm font-medium text-stone-700 dark:border-white/8 dark:text-stone-200" [disabled]="currentStep() === 0 || disabled()" (click)="previous()">Back</button>
-        @if (currentStep() < renderSteps().length - 1) {
-          <button type="button" class="rounded-lg bg-burgundy-700 px-5 py-2 text-sm font-medium text-white" [disabled]="disabled()" (click)="next()">Next</button>
-        } @else {
-          <button type="button" class="rounded-lg bg-burgundy-700 px-5 py-2 text-sm font-medium text-white" [disabled]="disabled()" (click)="submit()">{{ submitText() }}</button>
-        }
-      </div>
-    }
-  `
+  template: ''
 })
 export class UiStepperComponent {
   readonly stepsData = input<StepperStepConfig[]>([]);
