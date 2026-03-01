@@ -6,7 +6,18 @@ export type AvatarStatus = 'online' | 'offline' | 'busy' | 'away' | null;
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'ui-avatar',
-  template: ''
+  template: `
+    <div [class]="containerClasses()">
+      @if (src() && !hasError) {
+        <img [src]="src()" [alt]="alt()" class="h-full w-full object-cover" (error)="hasError = true" />
+      } @else {
+        <span [class]="textClasses()">{{ initials() }}</span>
+      }
+      @if (status()) {
+        <span [class]="statusClasses()"></span>
+      }
+    </div>
+  `
 })
 export class UiAvatarComponent {
   readonly src = input<string | null>(null);
@@ -26,7 +37,7 @@ export class UiAvatarComponent {
     if (parts.length === 1) {
       return parts[0].slice(0, 2).toUpperCase();
     }
-    return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
   }
 
   containerClasses(): string {
@@ -37,7 +48,7 @@ export class UiAvatarComponent {
       lg: 'h-12 w-12',
       xl: 'h-16 w-16'
     };
-    return `relative inline-flex items-center justify-center overflow-hidden rounded-full border border-stone-200 bg-stone-100 text-stone-700 dark:border-white/10 dark:bg-white/10 dark:text-stone-200 ${sizeMap[this.size()]}`;
+    return "relative inline-flex items-center justify-center overflow-hidden rounded-full border border-white/40 bg-white/60 text-primary-800 dark:border-white/10 dark:bg-white/10 dark:text-primary-300 backdrop-blur-md shadow-sm " + sizeMap[this.size()];
   }
 
   textClasses(): string {
@@ -55,20 +66,17 @@ export class UiAvatarComponent {
     const sizeMap: Record<AvatarSize, string> = {
       xs: 'h-1.5 w-1.5',
       sm: 'h-2 w-2',
-      md: 'h-2.5 w-2.5',
-      lg: 'h-3 w-3',
+      md: 'h-3 w-3',
+      lg: 'h-3.5 w-3.5',
       xl: 'h-4 w-4'
     };
     const colorMap: Record<Exclude<AvatarStatus, null>, string> = {
       online: 'bg-emerald-400',
-      offline: 'bg-stone-300',
+      offline: 'bg-slate-300',
       busy: 'bg-red-400',
       away: 'bg-amber-400'
     };
     const status = this.status() ?? 'offline';
-    return `absolute bottom-0 right-0 rounded-full ring-2 ring-white dark:ring-[#0b0b0b] ${sizeMap[this.size()]} ${colorMap[status]}`;
+    return "absolute bottom-0 right-0 rounded-full ring-2 ring-white/50 backdrop-blur-sm dark:ring-black/50 " + sizeMap[this.size()] + " " + colorMap[status];
   }
 }
-
-
-

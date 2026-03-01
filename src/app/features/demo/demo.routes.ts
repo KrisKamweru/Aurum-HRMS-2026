@@ -5,11 +5,11 @@ export const DEMO_ROUTES: Routes = [
     path: '',
     loadComponent: () => import('./demo-shell.component').then((m) => m.DemoShellComponent),
     children: [
-      { path: '', redirectTo: 'buttons', pathMatch: 'full' },
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       {
-        path: 'buttons',
-        loadComponent: () => import('./pages/buttons-demo.component').then((m) => m.ButtonsDemoComponent),
-        data: { title: 'Demo Buttons' }
+        path: 'dashboard',
+        loadComponent: () => import('./pages/dashboard-demo.component').then((m) => m.DashboardDemoComponent),
+        data: { title: 'HRMS Dashboard' }
       },
       {
         path: 'forms',
@@ -22,14 +22,9 @@ export const DEMO_ROUTES: Routes = [
         data: { title: 'Demo Tables' }
       },
       {
-        path: 'modals',
-        loadComponent: () => import('./pages/modals-demo.component').then((m) => m.ModalsDemoComponent),
-        data: { title: 'Demo Modals' }
-      },
-      {
-        path: 'date-picker',
-        loadComponent: () => import('./pages/date-picker-demo.component').then((m) => m.DatePickerDemoComponent),
-        data: { title: 'Demo Date Picker' }
+        path: 'glassmorphism',
+        loadComponent: () => import('./pages/glassmorphism-demo.component').then((m) => m.GlassmorphismDemoComponent),
+        data: { title: 'Glassmorphism' }
       }
     ]
   }

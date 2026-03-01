@@ -16,7 +16,7 @@ describe('UiButtonComponent', () => {
   });
 
   it('builds primary class set by default', () => {
-    expect(component.getClasses()).toContain('bg-burgundy-700');
+    expect(component.getClasses()).toContain('bg-primary-800');
   });
 
   it('emits blocked when prerequisites are not met', () => {

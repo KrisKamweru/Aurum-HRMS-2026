@@ -5,7 +5,29 @@ import { AbstractControl, ReactiveFormsModule } from '@angular/forms';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'ui-form-field',
   imports: [ReactiveFormsModule],
-  template: ''
+  template: `
+    <div class="flex flex-col space-y-2 w-full">
+      <label [for]="id()" class="text-[13px] font-semibold tracking-wide text-slate-700 dark:text-slate-300 flex justify-between uppercase">
+        <span>
+          {{ label() }}
+          @if (required()) {
+            <span class="text-red-500 ml-1">*</span>
+          }
+        </span>
+        @if (hint()) {
+          <span class="text-xs text-slate-500 font-normal normal-case">{{ hint() }}</span>
+        }
+      </label>
+      <div class="relative">
+        <ng-content></ng-content>
+      </div>
+      @if (error() || (control() && control()?.invalid && (control()?.dirty || control()?.touched))) {
+        <p class="text-xs font-medium text-red-500 mt-1 animate-in fade-in slide-in-from-top-1">
+          {{ errorMessage() }}
+        </p>
+      }
+    </div>
+  `
 })
 export class UiFormFieldComponent {
   readonly label = input.required<string>();
@@ -41,6 +63,3 @@ export class UiFormFieldComponent {
     return 'Invalid value';
   }
 }
-
-
-

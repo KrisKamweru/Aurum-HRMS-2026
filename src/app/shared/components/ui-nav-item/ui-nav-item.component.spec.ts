@@ -14,6 +14,8 @@ describe('UiNavItemComponent', () => {
 
     fixture = TestBed.createComponent(UiNavItemComponent);
     component = fixture.componentInstance;
+    component = fixture.componentInstance;
+    fixture.componentRef.setInput('label', 'Test Label');
     fixture.componentRef.setInput('route', '/dashboard');
     fixture.detectChanges();
   });

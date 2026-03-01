@@ -11,7 +11,57 @@ import { FieldConfig, FormSectionConfig, FormStepConfig } from '../../../shared/
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-forms-demo',
   imports: [ReactiveFormsModule, UiCardComponent, UiFormFieldComponent, UiButtonComponent, DynamicFormComponent, UiToastComponent],
-  template: ''
+  template: `
+    <div class="space-y-6 animate-in slide-in-from-bottom-4 duration-500 fade-in">
+      <div>
+        <h1 class="text-3xl font-display font-semibold text-slate-900 dark:text-white">Forms & Inputs</h1>
+        <p class="text-slate-500 mt-1">Demonstrating data capture interfaces with glassmorphic elements.</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Manual Form -->
+        <ui-card variant="interactive" title="Manual Reactive Form" subtitle="Using ui-form-field components directly">
+          <form [formGroup]="manualForm" (ngSubmit)="submitManualForm()" class="space-y-5 mt-4">
+            <ui-form-field label="Full Name" [control]="manualForm.controls.fullName" [required]="true" hint="As it appears on your ID">
+              <input type="text" formControlName="fullName" class="w-full px-4 py-2.5 rounded-xl bg-white/50 dark:bg-black/20 border border-white/60 dark:border-white/10 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all placeholder:text-slate-400 glass-surface-hover shadow-sm" placeholder="Jane Doe" />
+            </ui-form-field>
+
+            <ui-form-field label="Email Address" [control]="manualForm.controls.email" [required]="true">
+              <input type="email" formControlName="email" class="w-full px-4 py-2.5 rounded-xl bg-white/50 dark:bg-black/20 border border-white/60 dark:border-white/10 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all placeholder:text-slate-400 glass-surface-hover shadow-sm" placeholder="jane@company.com" />
+            </ui-form-field>
+
+            <ui-form-field label="Role" [control]="manualForm.controls.role" [required]="true">
+              <select formControlName="role" class="w-full px-4 py-2.5 rounded-xl bg-white/50 dark:bg-black/20 border border-white/60 dark:border-white/10 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all glass-surface-hover appearance-none cursor-pointer shadow-sm">
+                <option value="" disabled selected>Select a role...</option>
+                <option value="admin">Administrator</option>
+                <option value="manager">Manager</option>
+                <option value="employee">Employee</option>
+              </select>
+            </ui-form-field>
+
+            <div class="pt-4 flex justify-end">
+              <ui-button variant="primary" type="submit" [disabled]="manualForm.invalid && manualForm.touched">Submit Form</ui-button>
+            </div>
+          </form>
+        </ui-card>
+
+        <!-- Dynamic Form -->
+        <ui-card variant="interactive" padding="lg" accent="primary" title="Dynamic Configuration Form" subtitle="JSON-driven layout generation">
+          <div class="mt-4">
+            <app-dynamic-form 
+              [sections]="dynamicSections" 
+              [steps]="dynamicSteps" 
+              [fields]="dynamicFields" 
+              (formSubmit)="onDynamicSubmit($event)"
+              (cancel)="onDynamicCancel()"
+            ></app-dynamic-form>
+          </div>
+        </ui-card>
+      </div>
+    </div>
+
+    <ui-toast [toasts]="toasts()" (dismiss)="dismissToast($event)"></ui-toast>
+  `
 })
 export class FormsDemoComponent {
   private readonly fb = inject(FormBuilder);

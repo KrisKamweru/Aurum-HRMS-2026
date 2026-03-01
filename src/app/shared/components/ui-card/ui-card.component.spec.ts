@@ -16,7 +16,7 @@ describe('UiCardComponent', () => {
   });
 
   it('uses default variant classes', () => {
-    expect(component.getContainerClasses()).toContain('border-stone-200');
+    expect(component.getContainerClasses()).toContain('glass-surface');
   });
 
   it('applies accent padding to body', () => {

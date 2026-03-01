@@ -1,0 +1,162 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+@import "tailwindcss";
+
+/* Allow manual dark mode toggling */
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+    /* Primary Brand Color: Deep Burgundy (#852022) */
+    --color-primary-50: #fdf3f4;
+    --color-primary-100: #fbe5e6;
+    --color-primary-200: #f6c4c7;
+    --color-primary-300: #ef969a;
+    --color-primary-400: #e45b61;
+    --color-primary-500: #d43138;
+    --color-primary-600: #bb1f25;
+    --color-primary-700: #9d171d;
+    --color-primary-800: #852022;
+    --color-primary-900: #701d1f;
+    --color-primary-950: #3f0c0d;
+
+}
+
+@layer base {
+    :root {
+        /* Semantic Accents */
+        --color-accent: #f59e0b;
+        --color-success: #059669;
+        --color-warning: #f59e0b;
+        --color-danger: #dc2626;
+        --color-info: #475569;
+
+        /* Backgrounds & Textures */
+        --color-bg-canvas: #f8fafc;
+        --color-bg-canvas-end: #e2e8f0;
+        --color-bg-surface: rgba(226, 232, 240, 0.6);
+        --color-bg-surface-elevated: rgba(255, 255, 255, 0.5);
+        --color-bg-surface-hover: rgba(255, 255, 255, 0.95);
+        --color-border-glass: rgba(255, 255, 255, 0.8);
+
+        /* Text / Copy */
+        --color-text-main: #0f172a;
+        --color-text-muted: #64748b;
+    }
+
+    .dark {
+        /* Backgrounds & Textures - Dark Mode */
+        --color-bg-canvas: #020617;
+        --color-bg-canvas-end: #0f172a;
+        --color-bg-surface: rgba(30, 41, 59, 0.6);
+        --color-bg-surface-elevated: rgba(255, 255, 255, 0.05);
+        --color-bg-surface-hover: rgba(255, 255, 255, 0.1);
+        --color-border-glass: rgba(255, 255, 255, 0.1);
+
+        /* Text / Copy */
+        --color-text-main: #f8fafc;
+        --color-text-muted: #94a3b8;
+
+        --color-success: #10b981;
+        --color-info: #94a3b8;
+    }
+
+    html,
+    body {
+        @apply h-full antialiased font-sans;
+        color: var(--color-text-main);
+    }
+
+    body {
+        background-color: var(--color-bg-canvas);
+        background-image: linear-gradient(to bottom right, var(--color-bg-canvas), var(--color-bg-canvas-end));
+        background-attachment: fixed;
+        position: relative;
+        z-index: 0;
+    }
+
+    /* Noise overlay for texture */
+    body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: -1;
+        opacity: 0.025;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        background-repeat: repeat;
+    }
+}
+
+@layer components {
+
+    /* Frosted Glass Base Utility */
+    .glass-surface {
+        @apply backdrop-blur-xl shadow-sm;
+        background-color: var(--color-bg-surface);
+        border: 1px solid var(--color-border-glass);
+    }
+
+    .glass-surface-interactive {
+        @apply transition-all duration-300 ease-out;
+    }
+
+    .glass-surface-interactive:hover {
+        background-color: var(--color-bg-surface-hover);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 0 15px -3px rgba(133, 32, 34, 0.1);
+    }
+
+    .glass-surface-hover {
+        @apply hover:-translate-y-1 hover:shadow-lg transition-all duration-300 ease-out;
+    }
+
+    .glass-surface-hover:hover {
+        background-color: var(--color-bg-surface-hover);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 0 20px -3px rgba(133, 32, 34, 0.15);
+    }
+
+    /* Thin Scrollbars mapped to theme */
+    .scrollbar-custom {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(0, 0, 0, 0.1) transparent;
+    }
+
+    .dark .scrollbar-custom {
+        scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+    }
+
+    .scrollbar-custom::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+
+    .scrollbar-custom::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .scrollbar-custom::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.1);
+        border-radius: 9999px;
+    }
+
+    .scrollbar-custom:hover::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.2);
+    }
+
+    .dark .scrollbar-custom::-webkit-scrollbar-thumb {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .dark .scrollbar-custom:hover::-webkit-scrollbar-thumb {
+        background-color: rgba(255, 255, 255, 0.2);
+    }
+}
+
+@layer utilities {
+    .text-display {
+        font-family: 'Outfit', sans-serif;
+    }
+
+    .text-body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+}

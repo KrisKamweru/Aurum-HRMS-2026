@@ -22,7 +22,51 @@ interface DemoUserRow extends Record<string, unknown> {
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-tables-demo',
   imports: [UiDataTableComponent, UiButtonComponent, UiCardComponent, UiToastComponent],
-  template: ''
+  template: `
+    <div class="space-y-6 animate-in slide-in-from-bottom-4 duration-500 fade-in">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-3xl font-display font-semibold text-slate-900 dark:text-white">Data Tables</h1>
+          <p class="text-slate-500 mt-1">High-density information display using glass surfaces.</p>
+        </div>
+        <div class="flex gap-3">
+          <ui-button variant="secondary" (click)="toggleLoading()">
+            {{ loading() ? 'Stop Loading' : 'Simulate Loading' }}
+          </ui-button>
+          <ui-button variant="secondary" icon="x-mark" (click)="resetRows()">Reset</ui-button>
+        </div>
+      </div>
+
+      <ui-card variant="interactive" padding="none">
+        <div class="p-6 border-b border-white/40 dark:border-white/10 flex justify-between items-center bg-white/20 dark:bg-white/5">
+          <h3 class="font-display font-medium text-lg text-slate-800 dark:text-slate-200">Employee Directory</h3>
+          <div class="flex gap-2">
+            <input type="text" placeholder="Search employees..." class="px-4 py-2 rounded-full bg-white/50 dark:bg-black/20 border border-white/60 dark:border-white/10 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all placeholder:text-slate-400 text-sm w-64 glass-surface-hover shadow-sm" />
+          </div>
+        </div>
+        
+        <div class="p-0">
+          <ui-data-table 
+            [columns]="columns" 
+            [data]="rows()" 
+            [loading]="loading()"
+            [headerVariant]="'plain'"
+            (sortChange)="onSort($event)"
+            (rowClick)="onRowClick($event)"
+          ></ui-data-table>
+        </div>
+        
+        @if (selectedRowName()) {
+          <div class="p-4 bg-primary-50/50 dark:bg-primary-900/10 border-t border-primary-100/50 dark:border-primary-800/20 text-sm text-primary-800 dark:text-primary-300 flex items-center gap-2 rounded-b-2xl">
+            <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg>
+            <span>Selected employee: <strong>{{ selectedRowName() }}</strong></span>
+          </div>
+        }
+      </ui-card>
+    </div>
+
+    <ui-toast [toasts]="toasts()" (dismiss)="dismissToast($event)"></ui-toast>
+  `
 })
 export class TablesDemoComponent {
   readonly loading = signal(false);

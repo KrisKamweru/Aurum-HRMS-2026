@@ -25,7 +25,7 @@ describe('UiBadgeComponent', () => {
     fixture.componentRef.setInput('size', 'sm');
     fixture.detectChanges();
 
-    expect(component.getClasses()).toContain('text-xs');
-    expect(component.getClasses()).toContain('emerald');
+    expect(component.getClasses()).toContain('text-[10px]');
+    expect(component.getClasses()).toContain('bg-success');
   });
 });

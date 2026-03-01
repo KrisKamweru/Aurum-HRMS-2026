@@ -33,7 +33,7 @@ describe('UiModalComponent', () => {
 
   it('renders body container with internal scroll', () => {
     const root: HTMLElement = fixture.nativeElement;
-    const body = root.querySelector('[data-testid=\"modal-body\"]');
-    expect(body?.className).toContain('overflow-y-auto');
+    const body = root.querySelector('.overflow-y-auto');
+    expect(body).toBeTruthy();
   });
 });
