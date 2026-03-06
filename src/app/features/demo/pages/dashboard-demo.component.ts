@@ -49,7 +49,7 @@ import { UiBadgeComponent } from '../../../shared/components/ui-badge/ui-badge.c
         <div class="lg:col-span-2">
           <ui-card variant="interactive" title="Recent Activity" subtitle="Your team's latest updates">
             <div class="space-y-2 mt-4">
-              <div class="flex items-center gap-4 p-3 rounded-2xl transition-all hover:bg-[var(--color-bg-surface-elevated)] cursor-pointer border border-transparent hover:border-black/5 dark:hover:border-white/10">
+              <div class="flex items-center gap-4 p-3 rounded-2xl transition-all hover:bg-(--color-bg-surface-elevated) cursor-pointer border border-transparent hover:border-black/5 dark:hover:border-white/10">
                 <ui-avatar name="Michael Chen" status="online"></ui-avatar>
                 <div class="flex-1">
                   <p class="text-sm font-semibold text-slate-900 dark:text-slate-100">Michael Chen requested sick leave</p>
@@ -57,7 +57,7 @@ import { UiBadgeComponent } from '../../../shared/components/ui-badge/ui-badge.c
                 </div>
                 <ui-badge variant="neutral">Pending</ui-badge>
               </div>
-              <div class="flex items-center gap-4 p-3 rounded-2xl transition-all hover:bg-[var(--color-bg-surface-elevated)] cursor-pointer border border-transparent hover:border-black/5 dark:hover:border-white/10">
+              <div class="flex items-center gap-4 p-3 rounded-2xl transition-all hover:bg-(--color-bg-surface-elevated) cursor-pointer border border-transparent hover:border-black/5 dark:hover:border-white/10">
                 <ui-avatar name="Emily Watson" status="busy"></ui-avatar>
                 <div class="flex-1">
                   <p class="text-sm font-semibold text-slate-900 dark:text-slate-100">Emily Watson updated her quarterly OKRs</p>
@@ -65,7 +65,7 @@ import { UiBadgeComponent } from '../../../shared/components/ui-badge/ui-badge.c
                 </div>
                 <ui-badge variant="success">Updated</ui-badge>
               </div>
-              <div class="flex items-center gap-4 p-3 rounded-2xl transition-all hover:bg-[var(--color-bg-surface-elevated)] cursor-pointer border border-transparent hover:border-black/5 dark:hover:border-white/10">
+              <div class="flex items-center gap-4 p-3 rounded-2xl transition-all hover:bg-(--color-bg-surface-elevated) cursor-pointer border border-transparent hover:border-black/5 dark:hover:border-white/10">
                 <ui-avatar name="David Kim" status="away"></ui-avatar>
                 <div class="flex-1">
                   <p class="text-sm font-semibold text-slate-900 dark:text-slate-100">David Kim completed onboarding</p>
@@ -79,15 +79,15 @@ import { UiBadgeComponent } from '../../../shared/components/ui-badge/ui-badge.c
         <div>
           <ui-card variant="interactive" title="Quick Actions">
             <div class="flex flex-col gap-3 mt-4">
-              <button class="flex items-center justify-between p-3.5 rounded-2xl bg-[var(--color-bg-surface-elevated)] border border-black/5 dark:border-white/10 hover:bg-[var(--color-bg-surface-hover)] transition-colors text-left group">
+              <button class="flex items-center justify-between p-3.5 rounded-2xl border border-transparent hover:bg-(--color-bg-surface-elevated) hover:border-border-glass transition-colors text-left group">
                 <span class="font-semibold text-sm text-slate-800 dark:text-slate-200">Onboard New Hire</span>
                 <span class="text-slate-400 group-hover:translate-x-1 transition-transform">&rarr;</span>
               </button>
-              <button class="flex items-center justify-between p-3.5 rounded-2xl bg-[var(--color-bg-surface-elevated)] border border-black/5 dark:border-white/10 hover:bg-[var(--color-bg-surface-hover)] transition-colors text-left group">
+              <button class="flex items-center justify-between p-3.5 rounded-2xl border border-transparent hover:bg-(--color-bg-surface-elevated) hover:border-border-glass transition-colors text-left group">
                 <span class="font-semibold text-sm text-slate-800 dark:text-slate-200">Run Payroll</span>
                 <span class="text-slate-400 group-hover:translate-x-1 transition-transform">&rarr;</span>
               </button>
-              <button class="flex items-center justify-between p-3.5 rounded-2xl bg-[var(--color-bg-surface-elevated)] border border-black/5 dark:border-white/10 hover:bg-[var(--color-bg-surface-hover)] transition-colors text-left group">
+              <button class="flex items-center justify-between p-3.5 rounded-2xl border border-transparent hover:bg-(--color-bg-surface-elevated) hover:border-border-glass transition-colors text-left group">
                 <span class="font-semibold text-sm text-slate-800 dark:text-slate-200">Manage Benefits</span>
                 <span class="text-slate-400 group-hover:translate-x-1 transition-transform">&rarr;</span>
               </button>

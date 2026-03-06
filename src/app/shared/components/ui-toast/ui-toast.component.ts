@@ -15,9 +15,9 @@ export interface ToastMessage {
   template: `
     <div class="fixed bottom-4 right-4 z-50 flex flex-col gap-3 pointer-events-none">
       @for (toast of toasts(); track toast.id) {
-        <div class="pointer-events-auto flex w-full max-w-sm overflow-hidden rounded-2xl glass-surface shadow-lg ring-1 ring-black/5 dark:ring-white/10 animate-in slide-in-from-bottom-5 fade-in duration-300">
+        <div class="pointer-events-auto flex w-full max-w-sm overflow-hidden rounded-2xl glass-surface ring-1 ring-black/5 dark:ring-white/10 animate-in slide-in-from-bottom-5 fade-in duration-300">
           <div class="w-1.5" [class]="dotClass(toast.type)"></div>
-          <div class="flex flex-1 items-start justify-between p-4 bg-white/60 dark:bg-black/40">
+          <div class="flex flex-1 items-start justify-between p-4 bg-(--color-bg-surface-elevated) dark:bg-black/40">
             <div class="flex-1">
               <p class="text-[13px] font-medium text-slate-900 dark:text-slate-100">{{ toast.message }}</p>
               @if (toast.actionLabel) {

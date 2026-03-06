@@ -13,13 +13,13 @@ import { UiButtonComponent } from '../../shared/components/ui-button/ui-button.c
       style="background-color: var(--color-bg-canvas); background-image: linear-gradient(to bottom right, var(--color-bg-canvas), var(--color-bg-canvas-end));"
     >
       <div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-        <div class="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] rounded-full bg-primary-400/10 dark:bg-primary-900/20 blur-[100px]"></div>
-        <div class="absolute top-[20%] -right-[10%] w-[30%] h-[30%] rounded-full bg-amber-400/10 dark:bg-amber-900/20 blur-[100px]"></div>
-        <div class="absolute -bottom-[10%] left-[20%] w-[50%] h-[50%] rounded-full bg-emerald-400/10 dark:bg-emerald-900/20 blur-[120px]"></div>
+        <div class="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] rounded-full bg-emerald-400/10 dark:bg-primary-900/20 blur-[100px] animate-blob-1"></div>
+        <div class="absolute top-[20%] -right-[10%] w-[30%] h-[30%] rounded-full bg-emerald-300/10 dark:bg-amber-900/20 blur-[100px] animate-blob-2"></div>
+        <div class="absolute -bottom-[10%] left-[20%] w-[50%] h-[50%] rounded-full bg-emerald-400/10 dark:bg-emerald-900/20 blur-[120px] animate-blob-3"></div>
         <div class="absolute inset-0 bg-noise opacity-30 mix-blend-overlay"></div>
       </div>
 
-      <nav class="w-64 shrink-0 border-r border-white/40 dark:border-white/10 glass-surface flex flex-col z-10 p-4 shadow-[1px_0_10px_rgba(0,0,0,0.02)]">
+      <nav class="w-64 shrink-0 border-r border-border-glass glass-surface flex flex-col z-10 p-4">
         <div class="mb-8 px-4 py-3 flex flex-col">
           <h2 class="text-2xl font-display font-medium text-slate-900 dark:text-white flex items-center gap-3">
             <svg class="h-8 w-8 text-primary-800 dark:text-primary-400 drop-shadow-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -34,6 +34,10 @@ import { UiButtonComponent } from '../../shared/components/ui-button/ui-button.c
           <ui-nav-item label="Forms & Inputs" icon="selector" route="/demo/forms"></ui-nav-item>
           <ui-nav-item label="Data Tables" icon="information-circle" route="/demo/tables"></ui-nav-item>
           <ui-nav-item label="Glassmorphism" icon="check" route="/demo/glassmorphism"></ui-nav-item>
+          <ui-nav-item label="Buttons & Elements" icon="selector" route="/demo/buttons"></ui-nav-item>
+          <ui-nav-item label="Modals & Dialogs" icon="x-mark" route="/demo/modals"></ui-nav-item>
+          <ui-nav-item label="Date Picker" icon="calendar" route="/demo/date-picker"></ui-nav-item>
+          <ui-nav-item label="Stepper & Extras" icon="bell" route="/demo/extras"></ui-nav-item>
         </div>
         <div class="mt-auto px-4 py-4 pt-6 text-xs text-slate-400 border-t border-black/5 dark:border-white/5 text-center flex flex-col items-center gap-5">
           <div class="flex items-center gap-3 font-semibold text-slate-500 text-sm">

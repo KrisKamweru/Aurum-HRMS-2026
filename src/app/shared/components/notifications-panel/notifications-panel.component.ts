@@ -22,7 +22,7 @@ export interface NotificationItem {
   template: `
     @if (isOpen()) {
       <div 
-        class="absolute right-0 top-full mt-2 w-80 sm:w-96 rounded-3xl glass-surface shadow-2xl border border-white/40 dark:border-white/10 overflow-hidden z-50 animate-in slide-in-from-top-2 fade-in duration-300 transform origin-top-right"
+        class="absolute right-0 top-full mt-2 w-80 sm:w-96 rounded-3xl glass-surface border border-border-glass overflow-hidden z-50 animate-in slide-in-from-top-2 fade-in duration-300 transform origin-top-right"
       >
         <!-- Header -->
         <div class="px-5 py-4 flex items-center justify-between border-b border-black/5 dark:border-white/5 bg-transparent">
@@ -56,7 +56,7 @@ export interface NotificationItem {
             <div class="divide-y divide-black/5 dark:divide-white/5">
               @for (note of notifications(); track note.id) {
                 <div 
-                  class="px-5 py-4 flex gap-4 transition-colors hover:bg-[var(--color-bg-surface-elevated)] cursor-pointer relative group"
+                  class="px-5 py-4 flex gap-4 transition-colors hover:bg-(--color-bg-surface-elevated) cursor-pointer relative group"
                   [class.bg-primary-50]="!note.isRead"
                   [class.dark:bg-primary-900/10]="!note.isRead"
                   (click)="select.emit(note.id)"

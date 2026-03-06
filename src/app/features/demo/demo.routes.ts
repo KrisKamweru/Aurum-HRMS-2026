@@ -25,6 +25,26 @@ export const DEMO_ROUTES: Routes = [
         path: 'glassmorphism',
         loadComponent: () => import('./pages/glassmorphism-demo.component').then((m) => m.GlassmorphismDemoComponent),
         data: { title: 'Glassmorphism' }
+      },
+      {
+        path: 'buttons',
+        loadComponent: () => import('./pages/buttons-demo.component').then((m) => m.ButtonsDemoComponent),
+        data: { title: 'Buttons & Elements' }
+      },
+      {
+        path: 'modals',
+        loadComponent: () => import('./pages/modals-demo.component').then((m) => m.ModalsDemoComponent),
+        data: { title: 'Modals & Dialogs' }
+      },
+      {
+        path: 'date-picker',
+        loadComponent: () => import('./pages/date-picker-demo.component').then((m) => m.DatePickerDemoComponent),
+        data: { title: 'Date Picker' }
+      },
+      {
+        path: 'extras',
+        loadComponent: () => import('./pages/extras-demo.component').then((m) => m.ExtrasDemoComponent),
+        data: { title: 'Stepper & Notifications' }
       }
     ]
   }

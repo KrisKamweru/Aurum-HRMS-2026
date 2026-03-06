@@ -25,9 +25,9 @@ export interface SortEvent {
   imports: [CommonModule, UiBadgeComponent],
   providers: [DatePipe, CurrencyPipe],
   template: `
-    <div class="w-full relative overflow-x-auto rounded-2xl glass-surface scrollbar-custom border border-white/40 dark:border-white/10 shadow-sm mx-auto">
+    <div class="w-full relative overflow-x-auto rounded-2xl glass-surface scrollbar-custom border border-border-glass mx-auto">
       <table class="w-full text-sm text-left">
-        <thead class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 sticky top-0 z-20 backdrop-blur-md" [ngClass]="headerClasses()">
+        <thead class="text-xs font-semibold uppercase tracking-wider text-text-muted sticky top-0 z-20 backdrop-blur-md" [ngClass]="headerClasses()">
           <tr>
             @for (col of columns(); track col.key; let first = $first) {
               <th 
@@ -40,7 +40,7 @@ export interface SortEvent {
                 <div class="flex items-center gap-2" [class.justify-end]="col.type === 'currency'" [class.justify-center]="col.type === 'badge'">
                   {{ col.header }}
                   @if (col.sortable) {
-                    <span class="text-slate-400 flex flex-col transition-colors duration-200" [class.text-primary-800]="sortKey === col.key" [class.dark:text-primary-400]="sortKey === col.key">
+                    <span class="text-text-muted flex flex-col transition-colors duration-200" [class.text-primary-800]="sortKey === col.key" [class.dark:text-primary-400]="sortKey === col.key">
                       <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5 transition-transform" [class.rotate-180]="sortKey === col.key && sortDirection === 'desc'"><path d="m6 9 6 6 6-6"/></svg>
                     </span>
                   }
@@ -71,7 +71,7 @@ export interface SortEvent {
           } @else {
             @for (row of data(); track trackByFn(row, $index)) {
               <tr 
-                class="hover:bg-[var(--color-bg-surface-elevated)] transition-colors duration-200 cursor-pointer group"
+                class="hover:bg-(--color-bg-surface-elevated) transition-colors duration-200 cursor-pointer group"
                 (click)="rowClick.emit(row)"
               >
                 @for (col of columns(); track col.key; let first = $first) {
@@ -138,7 +138,7 @@ export class UiDataTableComponent {
     if (headerVariant === 'neutral') {
       return 'bg-slate-50/80 dark:bg-white/5 border-b border-black/5 dark:border-white/5';
     }
-    return 'bg-[var(--color-bg-surface-elevated)] border-b border-black/5 dark:border-white/5';
+    return 'bg-(--color-bg-surface-elevated) border-b border-black/5 dark:border-white/5';
   }
 
   formatValue(column: TableColumn, row: Record<string, unknown>): string {

@@ -16,7 +16,7 @@ export type ModalWidth = 'thin' | 'normal' | 'wide';
       <div class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 sm:pb-20">
         <div class="fixed inset-0 bg-slate-900/40 dark:bg-black/60 backdrop-blur-sm transition-opacity animate-in fade-in duration-300" (click)="handleBackdrop()"></div>
         <div 
-          class="relative flex max-h-[90vh] flex-col overflow-hidden rounded-3xl glass-surface shadow-2xl transition-all animate-in zoom-in-95 duration-300 w-full"
+          class="relative flex max-h-[90vh] flex-col overflow-hidden rounded-3xl glass-surface transition-all animate-in zoom-in-95 duration-300 w-full"
           [class]="getWidthClass()"
           role="dialog"
           aria-modal="true"

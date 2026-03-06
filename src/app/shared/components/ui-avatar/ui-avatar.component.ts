@@ -48,7 +48,7 @@ export class UiAvatarComponent {
       lg: 'h-12 w-12',
       xl: 'h-16 w-16'
     };
-    return "relative inline-flex items-center justify-center overflow-hidden rounded-full border border-white/40 bg-white/60 text-primary-800 dark:border-white/10 dark:bg-white/10 dark:text-primary-300 backdrop-blur-md shadow-sm " + sizeMap[this.size()];
+    return "relative inline-flex items-center justify-center overflow-hidden rounded-full border border-border-glass bg-(--color-bg-surface-elevated) text-primary-800 dark:text-primary-300 backdrop-blur-md " + sizeMap[this.size()];
   }
 
   textClasses(): string {

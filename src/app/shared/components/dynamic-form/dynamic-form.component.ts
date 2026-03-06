@@ -23,7 +23,7 @@ interface ResolvedSection {
     <form [formGroup]="form" (ngSubmit)="submit()" [class]="containerClass()" class="relative">
       <!-- Steps Progress -->
       @if (steps().length > 1) {
-        <div class="mb-8 flex items-center justify-between relative before:absolute before:inset-0 before:top-1/2 before:-translate-y-1/2 before:h-0.5 before:w-full before:bg-slate-200 dark:before:bg-slate-800 before:-z-10">
+        <div class="mb-8 flex items-start justify-between relative before:absolute before:inset-x-0 before:top-[20px] before:h-0.5 before:bg-slate-200 dark:before:bg-slate-800 before:-z-10">
           @for (step of steps(); track step.id; let i = $index) {
             <div class="flex flex-col items-center gap-2 z-10 bg-transparent px-2 relative">
               <button 
@@ -63,7 +63,7 @@ interface ResolvedSection {
                       <input 
                         [type]="field.type" 
                         [formControlName]="field.name"
-                        class="w-full px-4 py-2.5 rounded-xl bg-[var(--color-bg-surface-elevated)] border border-white/60 dark:border-white/10 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all placeholder:text-slate-400 glass-surface-hover shadow-sm"
+                        class="w-full px-4 py-2.5 rounded-xl bg-(--color-bg-surface-elevated) border border-border-glass focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all placeholder:text-text-muted"
                         [placeholder]="field.placeholder || ''"
                       />
                     </ui-form-field>
@@ -72,7 +72,7 @@ interface ResolvedSection {
                     <ui-form-field [label]="field.label" [required]="!!field.required" [hint]="field.placeholder" [error]="isInvalid(field.name) ? 'Required' : ''" [control]="form.get(field.name)">
                       <select 
                         [formControlName]="field.name"
-                        class="w-full px-4 py-2.5 rounded-xl bg-[var(--color-bg-surface-elevated)] border border-white/60 dark:border-white/10 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all glass-surface-hover appearance-none cursor-pointer shadow-sm"
+                        class="w-full px-4 py-2.5 rounded-xl bg-(--color-bg-surface-elevated) border border-border-glass focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all appearance-none cursor-pointer"
                       >
                         <option value="" disabled selected>{{ field.placeholder || 'Select...' }}</option>
                         @for (opt of field.options; track opt.value) {
@@ -83,7 +83,7 @@ interface ResolvedSection {
                   }
                   @if (field.type === 'checkbox') {
                     <label class="flex items-center gap-3 cursor-pointer mt-8">
-                      <input type="checkbox" [formControlName]="field.name" class="w-5 h-5 rounded text-primary-600 focus:ring-primary-500 bg-[var(--color-bg-surface-elevated)] border-white/60 dark:border-white/10" />
+                      <input type="checkbox" [formControlName]="field.name" class="w-5 h-5 rounded text-primary-600 focus:ring-primary-500 bg-(--color-bg-surface-elevated) border-border-glass" />
                       <span class="text-sm font-medium text-slate-800 dark:text-slate-200">{{ field.label }}</span>
                     </label>
                   }
@@ -92,7 +92,7 @@ interface ResolvedSection {
                       <textarea 
                         [formControlName]="field.name"
                         rows="3"
-                        class="w-full px-4 py-2.5 rounded-xl bg-[var(--color-bg-surface-elevated)] border border-white/60 dark:border-white/10 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all placeholder:text-slate-400 glass-surface-hover shadow-sm resize-y"
+                        class="w-full px-4 py-2.5 rounded-xl bg-(--color-bg-surface-elevated) border border-border-glass focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all placeholder:text-text-muted resize-y"
                         [placeholder]="field.placeholder || ''"
                       ></textarea>
                     </ui-form-field>

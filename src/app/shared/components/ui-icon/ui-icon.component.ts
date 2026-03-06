@@ -20,6 +20,7 @@ const ICONS: Record<string, IconDefinition> = {
     stroke: true
   },
   'x-mark': { viewBox: '0 0 24 24', paths: ['M6 6l12 12M18 6L6 18'], stroke: true },
+  'x-circle': { viewBox: '0 0 24 24', paths: ['M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm3.54 12.46a1 1 0 0 1-1.42 1.42L12 13.41l-2.12 2.47a1 1 0 1 1-1.42-1.42L10.59 12 8.46 9.88a1 1 0 0 1 1.42-1.42L12 10.59l2.12-2.13a1 1 0 0 1 1.42 1.42L13.41 12z'], stroke: false },
   'exclamation-triangle': {
     viewBox: '0 0 24 24',
     paths: ['M12 9v4m0 4h.01M10.3 3.9l-8.1 14A2 2 0 0 0 3.9 21h16.2a2 2 0 0 0 1.7-3.1l-8.1-14a2 2 0 0 0-3.4 0z'],

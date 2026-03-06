@@ -25,7 +25,7 @@ export interface ConfirmDialogOptions {
       <div class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
         <div class="fixed inset-0 bg-slate-900/40 dark:bg-black/60 backdrop-blur-[2px] transition-opacity animate-in fade-in duration-300" (click)="dismiss()"></div>
         
-        <div class="relative w-full max-w-sm flex flex-col overflow-hidden rounded-[24px] glass-surface shadow-2xl transition-all animate-in zoom-in-95 duration-300">
+        <div class="relative w-full max-w-sm flex flex-col overflow-hidden rounded-[24px] glass-surface transition-all animate-in zoom-in-95 duration-300">
           <!-- Header Area -->
           <div class="px-6 pt-6 pb-4 flex flex-col items-center text-center">
             <div class="w-12 h-12 rounded-full flex items-center justify-center mb-4 {{ iconBgClass() }}">
@@ -123,7 +123,7 @@ export class UiConfirmDialogComponent {
     if (this.options().variant === 'warning') {
       return 'bg-amber-100 dark:bg-amber-900/20';
     }
-    return 'bg-burgundy-100 dark:bg-burgundy-900/20';
+    return 'bg-primary-100 dark:bg-primary-900/20';
   }
 
   iconColorClass(): string {
@@ -133,7 +133,7 @@ export class UiConfirmDialogComponent {
     if (this.options().variant === 'warning') {
       return 'text-amber-600 dark:text-amber-400';
     }
-    return 'text-burgundy-700 dark:text-burgundy-300';
+    return 'text-primary-700 dark:text-primary-300';
   }
 
   confirmButtonClass(): string {
@@ -143,7 +143,7 @@ export class UiConfirmDialogComponent {
     if (this.options().variant === 'warning') {
       return 'bg-amber-500 hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed';
     }
-    return 'bg-burgundy-700 hover:bg-burgundy-600 disabled:opacity-50 disabled:cursor-not-allowed';
+    return 'bg-primary-700 hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed';
   }
 }
 

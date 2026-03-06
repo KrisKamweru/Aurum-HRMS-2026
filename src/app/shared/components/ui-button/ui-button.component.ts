@@ -68,12 +68,12 @@ export class UiButtonComponent {
     };
 
     const variantMap: Record<ButtonVariant, string> = {
-      primary: 'bg-primary-800 text-white hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-600 shadow-sm hover:shadow-md transition-colors',
-      secondary: 'bg-[var(--color-bg-surface-elevated)] backdrop-blur-sm border border-black/5 dark:border-white/10 text-slate-800 hover:bg-[var(--color-bg-surface-hover)] dark:hover:bg-[var(--color-bg-surface-hover)] hover:text-slate-900 dark:bg-white/5 dark:text-white dark:hover:text-slate-900 transition-colors',
-      danger: 'bg-danger text-white hover:bg-red-500 shadow-sm hover:shadow-md transition-colors',
-      ghost: 'bg-transparent text-text-main hover:bg-[var(--color-bg-surface-elevated)] dark:text-white transition-colors',
+      primary: 'bg-primary-800 text-white hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-600 transition-colors',
+      secondary: 'bg-(--color-bg-surface-elevated) backdrop-blur-sm border border-border-glass text-slate-800 hover:bg-(--color-bg-surface-hover) hover:text-slate-900 dark:text-white dark:hover:text-white transition-colors',
+      danger: 'bg-danger text-white hover:bg-red-500 transition-colors',
+      ghost: 'bg-transparent text-text-main hover:bg-(--color-bg-surface-elevated) dark:text-white transition-colors',
       outline: 'border border-primary-800/30 bg-transparent text-primary-800 hover:border-primary-800 dark:border-primary-600/30 dark:text-primary-600 dark:hover:border-primary-600 transition-colors',
-      gold: 'bg-accent text-white hover:bg-amber-400 shadow-sm hover:shadow-md transition-colors'
+      gold: 'bg-accent text-white hover:bg-amber-400 transition-colors'
     };
 
     return `${base} ${sizeMap[this.size()]} ${variantMap[this.variant()]} ${width} ${state} ${this.customClass()}`.trim();

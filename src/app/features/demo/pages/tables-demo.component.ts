@@ -23,7 +23,7 @@ interface DemoUserRow extends Record<string, unknown> {
   selector: 'app-tables-demo',
   imports: [UiDataTableComponent, UiButtonComponent, UiCardComponent, UiToastComponent],
   template: `
-    <div class="space-y-6 animate-in slide-in-from-bottom-4 duration-500 fade-in">
+    <div class="space-y-2 animate-in slide-in-from-bottom-4 duration-500 fade-in">
       <div class="flex items-center justify-between">
         <div>
           <h1 class="text-3xl font-display font-semibold text-slate-900 dark:text-white">Data Tables</h1>

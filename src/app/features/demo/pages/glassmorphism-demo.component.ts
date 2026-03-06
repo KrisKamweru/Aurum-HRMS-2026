@@ -8,7 +8,7 @@ import { UiBadgeComponent } from '../../../shared/components/ui-badge/ui-badge.c
   selector: 'app-glassmorphism-demo',
   imports: [UiCardComponent, UiButtonComponent, UiBadgeComponent],
   template: `
-    <div class="space-y-8 animate-in slide-in-from-bottom-4 duration-500 fade-in">
+    <div class="space-y-2 animate-in slide-in-from-bottom-4 duration-500 fade-in">
       <div>
         <h1 class="text-3xl font-display font-semibold text-slate-900 dark:text-white">Glassmorphism Elements</h1>
         <p class="text-slate-500 font-medium mt-1">Showcasing the frosted clarity design language components.</p>
