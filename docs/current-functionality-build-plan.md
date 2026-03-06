@@ -1,856 +1,687 @@
-# Current Functionality Build Plan
+# Aurum Reset Build Plan
 
 Date: 2026-03-06
 
-## Purpose
+## Premise
 
-This document indexes the functionality currently present in the codebase so the app can be rebuilt from scratch without losing important product behavior, permissions, or backend contracts.
+This plan replaces the earlier parity-oriented rebuild plan.
 
-It is intentionally based on live TypeScript and Convex code, not visual completeness.
+The new assumption is stricter:
 
-## Scope And Reading Rules
+- keep documentation only
+- delete all current implementation code
+- rebuild the product from first principles
+- treat Convex as the primary system to design correctly before feature UI work
+- preserve product intent, security requirements, and platform roles, not the current code shape
 
-- Indexed from:
-  - `src/app/app.routes.ts`
-  - feature page components, stores, and data services in `src/app/features/**`
-  - shared UI components in `src/app/shared/components/**`
-  - backend surface in `convex/*.ts`
-- Ignored:
-  - missing or empty templates
-  - visual completeness
-  - archived/historical markdown except as cross-reference
-- Important constraint:
-  - many active rebuild components currently use `template: ''`
-  - this plan treats the route contracts, page logic, store methods, data service calls, guards, and Convex APIs as the source of truth
-
-## Snapshot
-
-- Angular route entries in `src/app/app.routes.ts`: `56`
-- active empty-template components in `src/app/features` and `src/app/shared`: `48`
-- exported Convex queries/mutations/actions: `182`
-- current frontend architecture:
-  - standalone Angular components
-  - signals-based local state
-  - data-service layer per feature
-  - Convex-backed auth and data access
-  - role-guarded route matrix
-
-## What The Current Rebuild Is Actually Trying To Be
-
-The current codebase is not just rebuilding feature pages. It is also rebuilding a product shell and a reusable design system.
-
-Observed direction from modified files:
-
-- demo shell is being used as a live design-system playground
-- shared components are being upgraded into a coherent glass/frosted UI kit
-- dynamic forms, data tables, toasts, stepper flows, nav items, confirm dialogs, date ranges, icons, avatar states, and notification dropdowns are meant to be first-class primitives
-- business features are mostly written against those shared primitives, even when the final HTML has not been restored yet
-
-If you restart, the design-system rebuild should be treated as a real workstream, not incidental polish.
-
-## Rebuild Principles
-
-- Preserve route parity unless a route is explicitly deprecated.
-- Preserve RBAC parity before feature parity.
-- Preserve Convex contract parity for all frontend-used functions before optimizing anything.
-- Rebuild shared primitives before feature-heavy pages.
-- Treat maker-checker, trust-review, and compensation flows as high-risk and non-optional.
-- Do not assume “missing template” means “unfinished feature”; most behavior exists in TS already.
-
-## Cross-Cutting Foundations
-
-### 1. App Shell And Routing
-
-Must preserve:
-
-- guarded route matrix with lazy-loaded standalone pages
-- redirects:
-  - `/` -> `/dashboard`
-  - `/settings` -> `/settings/general`
-  - `/organization` -> `/organization/departments`
-  - `/auth` -> `/auth/login`
-- fallback `**` -> `/dashboard`
-- route metadata titles
-
-### 2. Authentication And Session
-
-Frontend contracts:
-
-- password login
-- password registration
-- OAuth provider sign-in handoff
-- session hydration from Convex `users.viewer`
-- sign-out
-- pending-user routing rules
-- unsupported password-reset handling with explicit user messaging
-
-Key files:
-
-- `src/app/core/auth/auth-session.service.ts`
-- `src/app/core/auth/auth.guard.ts`
-- `src/app/core/auth/role.guard.ts`
-- `src/app/core/services/convex-client.service.ts`
-
-Behavior to preserve:
-
-- unauthenticated users go to `/auth/login`
-- `pending` users are restricted to `/pending` and `/create-organization`
-- non-pending users are bounced away from `/pending`
-- role guard redirects unauthorized users to `/dashboard`
-
-### 3. Shared UI Platform
-
-These are platform dependencies, not decorative extras:
-
-- `dynamic-form`
-  - section-based forms
-  - step-based forms
-  - page/modal container modes
-  - typed submit/cancel events
-- `ui-modal`
-  - `thin|normal|wide`
-  - internal body scroll
-- `ui-confirm-dialog`
-  - `info|warning|danger`
-  - optional required reason capture
-- `ui-data-table`
-  - sortable columns
-  - typed display modes: `text|date|currency|badge`
-  - row click events
-  - loading and empty states
-- `ui-button`
-  - variants: `primary|secondary|danger|ghost|outline|gold`
-  - blocked state via `prerequisitesMet`
-- `ui-toast`
-- `ui-date-range`
-- `ui-avatar`
-- `ui-badge`
-- `ui-icon`
-- `ui-nav-item`
-- `notifications-panel`
-- `ui-stepper`
+The only app workstream allowed to outrank Convex is the shared component foundation, because the frontend needs a stable primitive layer before feature screens can be rebuilt.
 
-### 4. Design-System Demo Surface
-
-Routes under `/demo/*` plus `/6` are optional from a product perspective but useful as:
-
-- component verification surfaces
-- regression harnesses for the design language
-- pattern references during rebuild
+## Phase 0. Hard Reset
 
-Current demo subareas:
-
-- dashboard demo
-- forms demo
-- tables demo
-- glassmorphism demo
-- buttons demo
-- modals demo
-- date picker demo
-- extras demo
-  - stepper
-  - notifications panel
-  - toast triggers
-
-## Functional Domain Inventory
-
-### Dashboard
-
-Routes:
-
-- `/dashboard`
-
-Current state:
-
-- route exists and is authenticated
-- current page class is mostly empty
-- backend dashboard functions exist:
-  - `dashboard.getStats`
-  - `dashboard.getEmployeeStats`
-
-Rebuild classification:
-
-- foundation shell route must exist
-- actual dashboard UX likely needs to be rebuilt from backend capability rather than current page HTML
-
-### Onboarding
-
-Routes:
-
-- `/pending`
-- `/create-organization`
-
-Functionality:
-
-- list organizations
-- suggest matching organizations by email/domain
-- view current join requests
-- cancel join requests
-- open searchable organization directory
-- submit join request with optional note
-- create organization through a multi-step setup wizard
-- create starter departments and designations during org setup
-- create admin employee record during org setup
-- refresh session after org creation and route to dashboard
-
-Convex dependencies:
-
-- `onboarding.listOrganizations`
-- `onboarding.getMatchingOrganizations`
-- `onboarding.getMyJoinRequests`
-- `onboarding.createJoinRequest`
-- `onboarding.cancelJoinRequest`
-- `onboarding.createOrganizationWithSetup`
-
-### Profile
-
-Routes:
-
-- `/profile`
-
-Functionality:
-
-- load own employee profile
-- edit personal information in modal/stepper flow
-- save profile updates
-
-Convex dependencies:
-
-- `employees.getMyProfile`
-- `employees.updateMyProfile`
-
-### Settings
-
-Routes:
-
-- `/settings/general`
-- `/settings/leave-policies`
-
-Functionality:
-
-- general organization settings load/save
-- leave policy list
-- create leave policy
-- edit leave policy
-- delete leave policy
-- seed default leave policies
-
-Convex dependencies:
-
-- `settings.getSettings`
-- `settings.updateSettings`
-- `settings.listLeavePolicies`
-- `settings.createLeavePolicy`
-- `settings.updateLeavePolicy`
-- `settings.deleteLeavePolicy`
-- `settings.seedDefaultPolicies`
-
-### Organization Masters
-
-Routes:
-
-- `/organization/departments`
-- `/organization/designations`
-- `/organization/locations`
-- `/organization/user-linking`
-- `/organization/chart`
-- `/organization/settings`
-
-Functionality:
-
-- departments CRUD
-- manager assignment for departments
-- designations CRUD
-- locations CRUD
-- user-to-employee linking
-- unlinked user lookup
-- unlinked employee lookup
-- organization chart load
-- organization settings edit with optimistic UI
-- stale-write conflict detection via `expectedUpdatedAt`
-- shared page states for loading, empty, and retry
-
-Convex dependencies:
-
-- `organization.listDepartments`
-- `organization.createDepartment`
-- `organization.updateDepartment`
-- `organization.deleteDepartment`
-- `organization.listDesignations`
-- `organization.createDesignation`
-- `organization.updateDesignation`
-- `organization.deleteDesignation`
-- `organization.listLocations`
-- `organization.createLocation`
-- `organization.updateLocation`
-- `organization.deleteLocation`
-- `users.getUnlinkedUsers`
-- `users.getUnlinkedEmployees`
-- `users.linkUserToEmployee`
-- `employees.getOrgChart`
-- `organization.getOrganizationSettings`
-- `organization.updateOrganizationSettings`
-
-### Employees
-
-Routes:
-
-- `/employees`
-- `/employees/:id`
-
-Functionality:
-
-- employee list
-- create employee
-- update employee core record
-- activate/deactivate employee
-- delete employee
-- load reference data:
-  - departments
-  - designations
-  - locations
-  - managers
-- employee detail summary
-- employee compensation tab
-- employee financial tab
-- compensation edit flow for `super_admin|admin|hr_manager`
-- compensation read-only restrictions for `manager|employee`
-- compensation changes require reason and route through approval behavior
-- detail collections:
-  - emergency contacts
-  - banking details
-  - education
-  - statutory info
-  - documents
-
-Convex dependencies:
-
-- `employees.list`
-- `employees.get`
-- `employees.create`
-- `employees.update`
-- `employees.updateStatus`
-- `employees.remove`
-- `employees.updateCompensation`
-- `organization.listDepartments`
-- `organization.listDesignations`
-- `organization.listLocations`
-- `employee_details.listEmergencyContacts`
-- `employee_details.listBankingDetails`
-- `employee_details.listEducation`
-- `employee_details.getStatutoryInfo`
-- `employee_details.listDocuments`
-
-### Leave Management
-
-Routes:
-
-- `/leave-requests`
-
-Functionality:
-
-- load leave requests
-- derive employee options
-- detect manager/admin capability
-- create leave request
-- approve request
-- reject request
-- cancel request
-- enforce rejection-reason path via status workflow
-
-Convex dependencies:
-
-- `leave_requests.list`
-- `leave_requests.create`
-- `leave_requests.updateStatus`
-- `employees.list`
-- `users.viewer`
-
-### Attendance
-
-Routes:
-
-- `/attendance`
-- `/attendance/team`
-
-Functionality:
-
-- personal attendance dashboard
-- today status
-- monthly summary
-- attendance history
-- clock in
-- clock out
-- reason-required retry path
-- team attendance daily view
-- manual attendance entry/correction
-- held trust-event review queue
-- approve/reject held trust events
-- team rollups:
-  - present
-  - late
-  - absent
-  - on leave
-
-Convex dependencies:
-
-- `users.viewer`
-- `attendance.getTodayStatus`
-- `attendance.getMyAttendance`
-- `attendance.getAttendanceSummary`
-- `attendance.getTeamAttendance`
-- `attendance.listHeldTrustEvents`
-- `attendance.clockIn`
-- `attendance.clockOut`
-- `attendance.manualEntry`
-- `attendance.reviewHeldTrustEvent`
-
-### Payroll
-
-Routes:
-
-- `/payroll`
-- `/payroll/:id`
-- `/payroll/slip/:id`
-
-Functionality:
-
-- payroll home with run summaries
-- create payroll run
-- derive next payroll period
-- review pending sensitive changes
-- approve sensitive change
-- reject sensitive change with required reason
-- payroll run detail
-- process payroll run
-- finalize payroll run with required reason
-- delete payroll run with required reason
-- payslip drill-down
-- payslip access with unauthorized redirect handling
-- print-friendly payslip action
-- YTD metrics
-- run slip list
-
-Convex dependencies:
-
-- `users.viewer`
-- `payroll.listRuns`
-- `payroll.listPendingSensitiveChanges`
-- `payroll.createRun`
-- `payroll.getRun`
-- `payroll.getRunSlips`
-- `payroll.processRun`
-- `payroll.finalizeRun`
-- `payroll.deleteRun`
-- `payroll.reviewSensitiveChange`
-- `payroll.getPayslip`
-
-### Core HR Lifecycle
-
-Routes:
-
-- `/core-hr`
-- `/core-hr/promotions`
-- `/core-hr/transfers`
-- `/core-hr/awards`
-- `/core-hr/warnings`
-- `/core-hr/resignations`
-- `/core-hr/terminations`
-- `/core-hr/complaints`
-- `/core-hr/travel`
-
-Functionality:
-
-- overview cards/counts
-- unified records page driven by route `recordType`
-- reference loading:
-  - employees
-  - departments
-  - designations
-  - locations
-- create promotion
-- create transfer
-- give award
-- issue warning
-- submit resignation
-- approve resignation
-- reject resignation
-- terminate employee
-- file complaint
-- create travel request
-
-Convex dependencies:
-
-- `users.viewer`
-- `employees.list`
-- `organization.listDepartments`
-- `organization.listDesignations`
-- `organization.listLocations`
-- `core_hr.getPromotions`
-- `core_hr.createPromotion`
-- `core_hr.getTransfers`
-- `core_hr.createTransfer`
-- `core_hr.getAwards`
-- `core_hr.giveAward`
-- `core_hr.getWarnings`
-- `core_hr.issueWarning`
-- `core_hr.getResignations`
-- `core_hr.submitResignation`
-- `core_hr.updateResignationStatus`
-- `core_hr.getTerminations`
-- `core_hr.terminateEmployee`
-- `core_hr.getComplaints`
-- `core_hr.fileComplaint`
-- `core_hr.getTravelRequests`
-- `core_hr.createTravelRequest`
-
-### Recruitment
-
-Routes:
-
-- `/recruitment`
-- `/recruitment/jobs`
-- `/recruitment/jobs/new`
-- `/recruitment/jobs/:id`
-- `/recruitment/jobs/:id/edit`
-- `/recruitment/board`
-
-Functionality:
-
-- jobs list
-- create job
-- edit job
-- load job detail
-- apply to job
-- view application pipeline by job
-- update application status
-- load department/location references
-- role-aware management vs applicant behavior
-
-Convex dependencies:
-
-- `users.viewer`
-- `recruitment.listJobs`
-- `recruitment.getJob`
-- `recruitment.createJob`
-- `recruitment.updateJob`
-- `recruitment.listApplications`
-- `recruitment.submitApplication`
-- `recruitment.updateApplicationStatus`
-- `organization.listDepartments`
-- `organization.listLocations`
-
-### Training
-
-Routes:
-
-- `/training`
-- `/training/catalog`
-- `/training/my-learning`
-- `/training/courses/new`
-- `/training/courses/:id/edit`
-
-Functionality:
-
-- course catalog
-- filter by status
-- role-aware create/edit controls
-- course detail load for editing
-- create course
-- update course
-- my-learning enrollments
-- enroll in course
-- progress/status visualization in learning flow
-
-Convex dependencies:
-
-- `users.viewer`
-- `training.listCourses`
-- `training.getCourse`
-- `training.createCourse`
-- `training.updateCourse`
-- `training.getMyEnrollments`
-- `training.enrollEmployee`
-
-### Reports
-
-Routes:
-
-- `/reports`
-- `/reports/attendance`
-- `/reports/analytics`
-- `/reports/payroll`
-- `/reports/tax`
-
-Functionality:
-
-- report index/home
-- load shared filter options:
-  - departments
-  - payroll runs
-- attendance report:
-  - date range filters
-  - department filter
-  - summary metrics
-  - CSV export
-- payroll report:
-  - run filter
-  - department filter
-  - summary metrics
-  - CSV export
-- tax report:
-  - payroll run filter
-  - tax table
-  - CSV export
-- analytics report:
-  - period filter `daily|weekly|monthly|quarterly`
-  - canonical metrics load
-  - run due report schedules
-
-Convex dependencies:
-
-- `reports.getDepartments`
-- `reports.getPayrollRuns`
-- `reports.getAttendanceReport`
-- `reports.getPayrollReport`
-- `reports.getTaxReport`
-- `reporting_ops.getCanonicalMetrics`
-- `reporting_ops.runDueReportSchedules`
-
-### Super Admin
-
-Routes:
-
-- `/super-admin`
-
-Functionality:
-
-- organization list
-- system stats
-- create organization
-- edit organization
-- activate organization
-- suspend organization
-- form-driven org management with confirm dialog guardrails
-
-Convex dependencies:
-
-- `super_admin.listOrganizations`
-- `super_admin.getSystemStats`
-- `super_admin.createOrganization`
-- `super_admin.updateOrganization`
-- `super_admin.updateOrganizationStatus`
-
-## Backend Surface Present But Not Clearly Used By Active Frontend
-
-These exist in Convex and should be consciously kept, deferred, or deprecated during a restart:
-
-- notifications domain
-  - list/unread/mark/clear/create APIs exist
-  - active rebuilt shell does not currently wire them into production pages
-- compliance domain
-  - change-request audit
-  - access review assignments
-  - retention preview/purge
-- operations domain
-  - alert routes
-  - incident template generation
-- org-context domain
-  - active-organization context switching backend exists
-  - no active rebuilt frontend shell for this was found in current `src/app`
-- workflow engine
-  - workflow definitions, instances, actions, timeline, escalation helpers
-- reporting schedule management beyond “run due now”
-  - schedule CRUD and delivery logs exist in backend
-- employee detail write paths not surfaced in current rebuild pages
-  - emergency contacts mutations
-  - banking detail mutations
-  - education mutations
-  - statutory upsert
-  - document add/delete/upload URL
-- recruitment support API not surfaced in rebuild pages
-  - candidate detail query
-  - job status mutation
-- training support API not surfaced in rebuild pages
-  - course enrollment management/admin updates
-- super-admin support API not surfaced in rebuild page
-  - `getOrganization`
-  - `assignUserToOrg`
-  - `listPendingUsers`
-- tax configuration and seed utilities
-- seed/dev support modules
-
-These are the easiest places to accidentally lose capability in a rewrite because they are not obvious from the current route matrix.
-
-## Security And Risk-Critical Flows
-
-These should be rebuilt before general UI polish:
-
-- auth session hydration and guard timing
-- pending-user route restrictions
-- role-based route protection
-- compensation-change workflow with reason capture
-- payroll sensitive-change approval/rejection
-- payroll finalize/delete with reason capture
-- payslip authorization handling
-- attendance held trust-event review
-- resignation approval/rejection
-- organization settings optimistic concurrency handling
-- cross-role read-only behavior on employee compensation/financial views
-
-## Recommended Restart Build Order
-
-### Phase 0. Contract Capture
-
-- freeze route matrix
-- freeze active frontend-to-Convex API map
-- freeze role matrix per route and action
-- mark explicit deprecations instead of silently dropping routes
-
-### Phase 1. Foundations
-
-- app shell
-- router
-- auth session
-- auth guard
-- role guard
-- Convex client
-- layout/container/scroll rules
-
-### Phase 2. Shared System
+### 0.1 Files To Keep
 
+Keep exactly these tracked file paths:
+
+- `AGENTS.md`
+- `ROADMAP.md`
+- `DESIGN LANGUAGE.md`
+- `ANGULAR BEST PRACTICES.md`
+- `CONVEX RULES.md`
+- `README.md`
+- `convex/README.md`
+- `docs/current-functionality-build-plan.md`
+
+Content handling rules for kept files:
+
+- `ROADMAP.md`: keep the file path, wipe the contents, replace later with the new roadmap
+- `DESIGN LANGUAGE.md`: keep the file path, wipe the contents, replace later with the new design system guidance
+- all other kept files: preserve as-is unless explicitly replaced later
+
+Delete `CLAUDE.md` entirely.
+
+Everything else is disposable.
+
+### 0.2 Files To Delete
+
+Delete all other tracked and untracked implementation artifacts, including:
+
+- all Angular source under `src/`
+- all Convex source under `convex/` except `convex/README.md`
+- all tests
+- all scripts
+- all configs and toolchain files that describe the current app shape
+- all assets and public files
+- all previous rebuild docs and manifests under `docs/` except this file
+- all generated test and regression outputs
+
+This is a real reset, not an archive-and-carry-forward exercise.
+
+### 0.3 Convex Dev Deployment Cleanup
+
+Target deployment to wipe:
+
+- dev deployment: `usable-firefly-689`
+
+Do not touch:
+
+- prod deployment: `flippant-anteater-747` (read-only in this session)
+
+### 0.4 Live Dev Data Snapshot
+
+Current dev data observed on 2026-03-06:
+
+- `organizations`: 2
+- `users`: 10
+- `employees`: 9
+- `departments`: 5
+- `designations`: 9
+- `locations`: 2
+- `change_requests`: 33
+- `attendance_records`: 6
+- `attendance_trust_events`: 2
+- `payroll_runs`: 1
+- `salary_slips`: 8
+- `authAccounts`: 10
+- `authSessions`: 304
+- `authRefreshTokens`: 304
+- `authVerifiers`: 1
+- `user_org_permissions`: 0
+- `approval_workflows`: 0
+- `workflow_instances`: 0
+- `workflow_actions`: 0
+- `notifications`: 0
+- `leave_requests`: 0
+- `jobs`: 0
+- `applications`: 0
+- `training_courses`: 0
+- `training_enrollments`: 0
+- `tax_regions`: 1
+- `tax_rules`: 8
+
+Observed tenant sample:
+
+- orgs include `Aurum Test Org` and `Aurum Test Corp`
+- current `super_admin` users are stored as ordinary tenant users
+- one `super_admin` is linked to an employee record inside a tenant org
+
+That confirms the current backend is mixing platform identity and tenant identity. The reset should deliberately break that pattern.
+
+### 0.5 Dev Data Reset Decision
+
+Wipe the dev backend completely.
+
+Delete all records from:
+
+- platform and tenant business tables
+- auth/session/token tables
+- workflow and approval tables
+- reporting and notification tables
+- seeded tax and statutory config tables
+- any storage objects linked to resumes, documents, certificates, or uploads
+
+After the wipe, reseed only what the new architecture requires:
+
+- one platform super-admin account for you
+- no tenant orgs by default, or one deterministic fixture tenant pack created by the new seed system
+
+No legacy test data should be migrated.
+
+## What The Reset Must Preserve
+
+The reset is not preserving code, but it is preserving product scope and risk posture.
+
+Must survive into the new architecture:
+
+- multi-tenant HRMS/ERP scope
+- outsourced HR / delegated cross-org operations
+- strict tenant isolation
+- maker-checker and approval workflows for sensitive changes
+- payroll and compensation guardrails
+- attendance trust review model
+- super-admin platform control plane
+- rich shared component system
+- Angular standalone + signals + modern patterns
+
+## Core Architecture Decisions
+
+## 1. Identity Is Not Membership
+
+The current model collapses too much into `users`.
+
+The rebuild should separate:
+
+- identity
+- tenant membership
+- delegated access
+- platform administration
+- active session context
+
+Recommended core tables:
+
+- `users`
+- `user_org_memberships`
+- `provider_organizations`
+- `provider_teams`
+- `provider_team_memberships`
+- `permission_profiles`
+- `delegated_org_grants`
+- `grant_approvals`
+- `audit_events`
+- `access_reviews`
+- `support_sessions`
+- `platform_role_assignments`
+
+`users` should be identity only. It should not be the source of truth for org authority.
+
+## 2. Super-Admin Is A Platform Role, Not A Tenant Role
+
+The super-admin must not need to belong to a tenant org.
+
+Rules for the rebuild:
+
+- a super-admin is a platform principal
+- a super-admin does not need `orgId`
+- a super-admin does not need an employee profile
+- a super-admin is not automatically a member of every org
+- tenant access by a super-admin must happen through an explicit support session or platform action path
+- there is no break-glass authorization bypass in the product
+
+Super-admin capabilities:
+
+- create, suspend, archive, and restore tenant orgs
+- create provider orgs and provider teams
+- manage platform-wide permission profiles and delegated-access templates
+- manage statutory/tax packs
+- manage feature flags and platform config
+- inspect platform telemetry, audit streams, and access reviews
+- open time-boxed support sessions into tenant orgs
+
+Support-session rules:
+
+- explicit target org
+- explicit reason
+- explicit duration
+- default read-only unless elevated
+- fully audited
+- cannot silently masquerade as tenant membership
+- cannot grant or extend their own access
+- cannot bypass tenant authorization rules; they only create a temporary access context evaluated by the same policy engine
+
+## 2.1 Platform Access Model
+
+The rebuild should use three platform access modes only:
+
+1. `platform_super_admin`
+2. `support_session.read_only`
+3. `support_session.limited_write`
+
+There is no `break_glass` mode.
+
+### `platform_super_admin`
+
+This role governs the platform, not tenant business data.
+
+Allowed:
+
+- tenant lifecycle management
+- provider org and provider team management
+- platform configuration
+- feature flags
+- tax/statutory pack management
+- platform audit and telemetry review
+- support-session creation requests
+
+Not allowed by default:
+
+- direct employee-data browsing
+- payroll data browsing
+- compensation visibility
+- banking/statutory visibility
+- tenant impersonation
+- ad hoc cross-org data queries
+
+### `support_session.read_only`
+
+This is the default tenant support mode.
+
+Allowed examples:
+
+- inspect org settings
+- inspect permission assignments
+- inspect workflow states
+- inspect non-sensitive employee metadata
+- inspect operational health and processing state
+- inspect masked summaries for attendance, payroll, and reporting
+
+Not allowed:
+
+- sensitive field reads unless separately approved by policy
+- any data mutation
+- any export of sensitive data
+- impersonation
+
+### `support_session.limited_write`
+
+This exists for support operations that genuinely require intervention.
+
+Allowed examples:
+
+- fix broken configuration
+- retry or repair operational workflows
+- correct non-sensitive metadata where policy permits
+- assist with delegated-access and membership problems
+
+Not allowed:
+
+- payroll finalization
+- compensation changes
+- banking-detail changes
+- statutory-ID changes
+- document deletion
+- audit-log modification
+- permission self-escalation
+- extending the same session beyond policy
+
+### Support Session Rules
+
+Every support session must be:
+
+- single-org scoped
+- time-boxed
+- reason-coded
+- ticket-linked
+- customer-visible in audit history
+- fully attributed to the real actor
+- terminated automatically at expiry
+
+Recommended session policy:
+
+- `read_only`: short-lived, optionally auto-approved under tenant policy
+- `limited_write`: stronger approval and shorter lifetime
+
+### Tenant Approval Policy
+
+Each tenant should choose one of these policies:
+
+- `notify_only`
+- `approval_required`
+
+Policy should be configurable separately for:
+
+- read-only support access
+- limited-write support access
+- sensitive-data visibility during support
+
+### Sensitive Data Policy
+
+Support access should classify data into bands:
+
+1. operational metadata
+2. standard tenant data
+3. sensitive HR data
+4. restricted financial/identity data
+
+Support sessions should not automatically unlock all bands.
+
+Default recommendation:
+
+- read-only support can access 1 and limited parts of 2
+- limited-write support can modify only approved subsets of 2
+- 3 and 4 require explicit tenant policy and stronger approval
+
+### Explicitly Forbidden Platform Capabilities
+
+The rebuild should not include:
+
+- any universal authorization bypass
+- any all-org support session
+- permanent standing tenant-data access for platform admins
+- hidden impersonation
+- silent support access
+- self-approved support elevation
+- unrestricted raw database browsing from support tools
+
+## 3. Outsourced HR Must Be A First-Class Authorization Model
+
+Do not implement outsourced HR as a user allow-list array.
+
+Use explicit grant records with:
+
+- provider org
+- provider team
+- client org
+- permission profile
+- scope restrictions
+- effective dates
+- approval state
+- revocation state
+
+Permissions must be capability-based, not role-label based.
+
+Examples:
+
+- `employee.read`
+- `employee.write`
+- `leave.manage`
+- `attendance.manage`
+- `payroll.read`
+- `payroll.run`
+- `compliance.manage`
+- `reports.read`
+- `org.settings.manage`
+
+Scope must also be explicit:
+
+- all employees
+- selected departments
+- selected legal entities
+- exclude executives
+- exclude compensation
+- no settings access
+- read-only
+
+## 4. Every Request Acts In One Org Context
+
+Every request must resolve an explicit `actingOrgId`.
+
+Authorization flow for every Convex function:
+
+1. authenticate user
+2. resolve platform role if applicable
+3. resolve requested `actingOrgId`
+4. verify direct membership, delegated grant, or support-session access
+5. verify the required permission
+6. verify every referenced record belongs to the acting org unless the workflow explicitly models cross-org linkage
+7. audit the action
+
+No function should trust `activeOrgId ?? orgId` from a user document as a security boundary.
+
+## 5. Public Convex Surface Must Be Thin
+
+Public Convex functions should:
+
+- validate args
+- validate returns
+- resolve auth and org context
+- call internal orchestration helpers
+
+Internal helpers should contain shared business logic and invariant checks.
+
+This is necessary to eliminate the fragmented authorization patterns currently scattered across the backend.
+
+## 6. Data Access Must Be Index-First
+
+The reset should not carry forward scan-heavy patterns.
+
+Rules:
+
+- no broad `collect()` for operational lists
+- no critical filtering in JavaScript after a weak index read
+- paginate all non-trivial list queries
+- use summary/materialized tables for dashboard and reporting workloads
+- add indexes for actual access paths, not idealized ones
+
+## Current Backend Lessons To Carry Forward
+
+These are the concrete issues the rebuild must close:
+
+- current notification creation is too open
+- current leave-request handling allows bad cross-org linkage
+- many writes trust foreign IDs without same-org validation
+- org/auth resolution is duplicated and inconsistent
+- several queries swallow errors and return fake empty states
+- schema and function validation discipline is too weak
+- reports, attendance, and super-admin flows overuse scan/filter patterns
+- current super-admin records are tenant-bound when they should be platform-bound
+- current multi-org support is not backed by actual membership/delegation data
+
+## Rebuild Order
+
+## Phase 1. Workspace Bootstrap
+
+Recreate the minimum viable project skeleton after the reset:
+
+- fresh Angular workspace and app shell scaffolding
+- fresh Convex project scaffolding
+- package manager and scripts
+- lint, test, and build configuration
+- environment/config handling
+- CI baseline and coverage gates
+- artifact and seed script structure
+
+This phase exists because phase 0 intentionally deletes the current toolchain along with the app code. No feature or component work should start until the new workspace is buildable and testable.
+
+## Phase 2. Shared Component Spine
+
+Build only the primitive layer needed to support everything else:
+
+- design tokens and app shell primitives
 - button
-- badge
-- icon
-- avatar
+- form field
+- input controls
 - modal
 - confirm dialog
-- toast
-- nav item
-- data table
-- date range
 - stepper
-- dynamic form
-- notifications panel
+- toast
+- table
+- empty/error/loading states
+- navigation primitives
 
-### Phase 3. Account And Access Entry
+This phase is not about feature pages. It is about creating the visual and interaction contract all rebuilt screens will use.
 
-- login
-- register
-- forgot password degraded state
-- pending onboarding
-- create organization wizard
-- profile
+## Phase 3. Convex Platform Control Plane
 
-### Phase 4. Core Master Data
+Build the backend foundation before tenant features:
 
-- organization masters
-- organization settings
-- employees list/detail
-- settings general
+- identity model
+- platform role model
+- super-admin model
+- support-session model
+- audit-event model
+- error model
+- permission profile model
+- tenant support-approval policy model
+- sensitive-data classification model
+
+Deliverables:
+
+- canonical auth helpers
+- canonical permission helpers
+- canonical org-context helpers
+- canonical audit writer
+- typed error surface
+- support-session policy engine
+- support-session audit surface
+
+## Phase 4. Convex Tenant Access Model
+
+Build the tenant access backbone:
+
+- `user_org_memberships`
+- provider org/team model
+- delegated grant model
+- grant approvals
+- access reviews
+
+Deliverables:
+
+- direct membership checks
+- delegated access checks
+- support-session checks
+- scope evaluation engine
+- expiry and revocation handling
+
+This phase closes the outsourced-HR problem correctly.
+
+## Phase 5. Convex Organization And People Core
+
+Rebuild the tenant data model with strict invariants:
+
+- organizations
+- departments
+- designations
+- locations
+- employees
+- employee details
+- org settings
 - leave policies
 
-### Phase 5. Daily Operations
+Rules:
 
-- leave
-- attendance personal
-- attendance team
-- reports attendance
+- every tenant-owned record has `orgId`
+- every foreign ID is validated against `actingOrgId`
+- optimistic concurrency is designed in where needed
 
-### Phase 6. Money And Controls
+## Phase 6. Convex Daily Operations
 
-- payroll home
-- payroll run detail
-- payslip view
-- payroll report
-- tax report
+Rebuild the operational modules in this order:
 
-### Phase 7. HR Expansion
+1. onboarding and org creation
+2. leave
+3. attendance
+4. attendance trust review
+5. notifications
+6. recruitment
+7. training
 
-- core HR lifecycle suite
-- recruitment suite
-- training suite
+Requirements:
 
-### Phase 8. Admin And Support Surfaces
+- tenant-safe self-service
+- tenant-safe manager/admin workflows
+- delegated operator support where explicitly allowed
+- no public privileged mutations without permission checks
+- external or applicant-facing flows must be isolated from tenant-admin flows
+- training enrollment and course-management permissions must be distinct
 
-- analytics report
-- super admin
-- notification wiring
-- org switcher if multi-org operator mode is still required
+## Phase 7. Convex Sensitive HR And Payroll
 
-### Phase 9. Optional Surfaces
+Rebuild high-risk modules next:
 
-- demo routes
-- `/6` showcase route
-- operations/compliance/workflow admin surfaces
+1. compensation and employee financial controls
+2. change requests and maker-checker
+3. payroll runs
+4. payslips
+5. core HR lifecycle actions
+6. compliance services
+7. workflow engine
 
-## Keep / Defer / Decide
+Requirements:
 
-Keep:
+- approval-aware flows
+- anti-self-approval where applicable
+- required reasons on destructive or sensitive actions
+- full audit coverage
+- explicit permission separation for payroll read vs payroll run vs payroll approval
 
-- auth
-- onboarding
+## Phase 8. Convex Reporting And Admin Services
+
+Rebuild the read-heavy and platform-heavy backend services:
+
+1. reports
+2. analytics and canonical metrics
+3. report scheduling and delivery
+4. super-admin platform APIs
+5. provider-admin APIs
+6. dashboard summary services
+
+Requirements:
+
+- summary tables where appropriate
+- pagination everywhere
+- platform vs tenant boundaries kept explicit
+
+## Phase 9. Angular Shell And Access Flows
+
+Only after the Convex model is stable:
+
+- app shell
+- auth flows
+- org-context UX
+- support-session UX for super-admin
+- provider/delegated-access UX
 - profile
-- settings
-- organization
-- employees
-- leave
-- attendance
-- payroll
-- core HR lifecycle
-- recruitment
-- training
-- reports
-- super admin
-- shared component system
+- pending/join/create-org flows
 
-Defer if needed:
+## Phase 10. Angular Feature Rebuild
 
-- dashboard visual rebuild
-- notifications production shell integration
-- compliance admin UI
-- operations admin UI
-- workflow admin UI
-- report schedule management UI
-- org context switcher UI
+Rebuild feature UIs against the new Convex contracts in this order:
 
-Decide explicitly:
+1. organization masters
+2. employees
+3. settings
+4. leave
+5. attendance
+6. payroll
+7. core HR lifecycle
+8. reports
+9. recruitment
+10. training
+11. super-admin control plane
+12. dashboard
 
-- `/demo/*`
-- `/6`
-- backend-only maintenance modules
-- seed utilities in a clean restart repo
+Notification shell wiring and workflow admin screens should only be added after the backend contracts are stable.
 
-## Rebuild Acceptance Checklist
+## Phase 11. Seed, Test, And Cutover
 
-- every kept route is reachable
-- every kept route has matching guard behavior
-- every kept route has matching Convex contract coverage
-- every risk-critical action has tests
-- no role escalation path is introduced
-- no approval/reason workflow is simplified away by accident
-- no backend module is removed without an explicit deprecation decision
-- empty-template logic-only pages are either fully rebuilt or intentionally retired
+Build deterministic seed packs for:
 
-## Related Existing Docs
+- platform super-admin bootstrap
+- single-tenant baseline org
+- provider-org with delegated access to a client org
+- payroll-ready org
+- attendance-trust org
 
-- `docs/rebuild-manifests/functionality-index.md`
-- `docs/rebuild-manifests/high-risk-flow-map.md`
-- `docs/rebuild-manifests/route-role-matrix.md`
-- `docs/rebuild-parity-plan.md`
-- `ROADMAP.md`
+Then add test gates:
+
+- tenant isolation tests
+- delegated access tests
+- support-session tests
+- super-admin platform tests
+- approval workflow tests
+- payroll negative-path tests
+- reporting performance tests
+
+Only after those pass should broader frontend polish begin.
+
+## Dev Cleanup Plan
+
+When the reset starts, wipe the dev deployment in this order:
+
+1. storage objects
+2. auth tables
+3. workflow and audit derivative tables
+4. tenant business tables
+5. tax/statutory seed tables
+6. platform tables introduced during transition
+
+Then apply the new schema and seed only the new baseline fixtures.
+
+The current dev data is useful only as evidence of design problems, not as migration input.
+
+## Acceptance Criteria For The Reset
+
+- repo contains only the retained docs before rebuild work begins
+- dev Convex deployment is empty except for intentional new bootstrap data
+- super-admin exists as a platform role without tenant membership requirements
+- there is no break-glass or universal authorization-bypass path
+- all tenant access by platform operators happens through explicit support sessions
+- outsourced HR is implemented through explicit delegated grants, not ad hoc org lists
+- every backend mutation validates org ownership of referenced records
+- every public Convex function has arg and return validators
+- no module defines its own auth model independently
+- no critical list/report path relies on scan-first access patterns
+- high-risk HR and payroll actions are approval-aware and audited
 
 ## Bottom Line
 
-If you trash the current frontend and start again, the minimum product you are preserving is not “a few screens.” It is:
+The rebuild is no longer a parity port of the current app.
 
-- a guarded multi-role HRMS route matrix
-- a shared form/table/modal design system
-- onboarding plus org setup
-- employee and org master data
-- leave, attendance, payroll, and reports
-- lifecycle HR actions
-- recruitment and training
-- super-admin controls
+It is a controlled restart with these priorities:
 
-The biggest hidden risk is dropping backend capability that is present but not obvious from the current empty-template pages. Preserve contract parity first, then choose what to simplify.
+1. shared component primitives
+2. enterprise-grade Convex authorization and data model
+3. platform super-admin and delegated outsourced-HR support
+4. strict tenant-safe business workflows
+5. feature UI rebuild on top of those contracts
+
+That is the only path that fixes the current cross-org weaknesses without sacrificing the outsourced-HR requirement.
