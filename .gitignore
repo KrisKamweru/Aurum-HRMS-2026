@@ -1,67 +1,53 @@
-# See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
-
-# Compiled output
+# Build output
 /dist
 /tmp
 /out-tsc
-/bazel-out
 
-# Node
+# Dependencies
 /node_modules
-npm-debug.log
-yarn-error.log
 
-# IDEs and editors
+# Angular cache
+/.angular/cache
+
+# Test output
+/coverage
+/playwright-report
+/test-results
+/artifacts
+/e2e/screenshots
+
+# Local environment and credentials
+.env.local
+.test-credentials
+
+# Local tooling state
+.claude/
+.playwright-mcp/
+
+# Editor files
 .idea/
+.history/
 .project
 .classpath
-.c9/
-*.launch
 .settings/
+*.launch
 *.sublime-workspace
 
-# Visual Studio Code
+# VS Code
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
 !.vscode/mcp.json
-.history/*
 
-# Miscellaneous
-/.angular/cache
-.sass-cache/
-/connect.lock
-/coverage
-/libpeerconnection.log
-testem.log
-/typings
-__screenshots__/
-
-# System files
-.DS_Store
-Thumbs.db
-
-.env.local
-
-# Test credentials (E2E testing)
-.test-credentials
-
-# Playwright test artifacts
-/playwright-report
-/test-results
-/artifacts
-
-# Internal design docs
-SHOWCASE-6-DESIGN.md
-
-# Local tooling
-.claude/
-.playwright-mcp/
-
-# Local visual capture artifacts (root-level ad-hoc screenshots)
+# Logs and ad hoc captures
+npm-debug.log*
+yarn-error.log*
 /playwright-*.png
 /mcp-*.png
 /playwright-*.md
-*.pre-reset-backup
+
+# OS files
+.DS_Store
+Thumbs.db
